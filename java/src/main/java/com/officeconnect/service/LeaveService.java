@@ -578,18 +578,180 @@ public class LeaveService {
     }
 
     public List<EmpLeaveApplicationViewModel> getAllApplyHRLeave(EmpLeaveApplicationViewModel model) {
-        // Returns leave applications that need HR approval
-        // .NET logic: Status = "APPROVED BY MANAGER" AND (HRApproved = 0 OR HRApproved IS NULL)
-        return empLeaveApplicationRepository.findByIsDeleted(false).stream()
-            .filter(ela -> "APPROVED BY MANAGER".equals(ela.getStatus()))
-            .filter(ela -> ela.getHrApproved() == null || ela.getHrApproved() == 0)
-            .map(ela -> convertToViewModel(ela))
+        Integer loginId = model.getLoginId();
+        if (loginId == null || loginId == 0) throw new RuntimeException("EmpId is Missing");
+
+        // Get current employee details
+        EmployeeMaster currentEmp = employeeMasterRepository.findById(loginId)
+            .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        Integer locationId = currentEmp.getLocationId() != null ? currentEmp.getLocationId() : 0;
+        Integer designationId = currentEmp.getDesignationId() != null ? currentEmp.getDesignationId() : 0;
+        Integer categoryId = currentEmp.getCategoryId() != null ? currentEmp.getCategoryId() : 0;
+
+        boolean isHR = designationId == 186;
+        boolean isManager = categoryId != null && categoryId > 1;
+
+        List<EmpLeaveApplication> leaveList;
+
+        if (isHR) {
+            // HR sees ALL APPLIED leaves
+            leaveList = empLeaveApplicationRepository.findByIsDeleted(false).stream()
+                .filter(e -> "APPLIED".equals(e.getStatus()) && Boolean.TRUE.equals(e.getIsActive()))
+                .collect(Collectors.toList());
+        } else if (isManager) {
+            // Manager sees APPLIED leaves where they are the approver
+            leaveList = empLeaveApplicationRepository.findByIsDeleted(false).stream()
+                .filter(e -> "APPLIED".equals(e.getStatus()) && Boolean.TRUE.equals(e.getIsActive())
+                    && loginId.equals(e.getApprovedBy()))
+                .collect(Collectors.toList());
+        } else {
+            // Regular employee at same location
+            leaveList = empLeaveApplicationRepository.findByIsDeleted(false).stream()
+                .filter(e -> "APPLIED".equals(e.getStatus()) && Boolean.TRUE.equals(e.getIsActive()))
+                .filter(e -> {
+                    Optional<EmployeeMaster> empOpt = employeeMasterRepository.findById(e.getEmpId());
+                    return empOpt.isPresent() && locationId.equals(empOpt.get().getLocationId());
+                })
+                .collect(Collectors.toList());
+        }
+
+        leaveList.sort(Comparator.comparing(EmpLeaveApplication::getStatus)
+            .thenComparing(Comparator.comparing(EmpLeaveApplication::getLeaveTypeId,
+                Comparator.nullsLast(Comparator.reverseOrder()))));
+
+        return leaveList.stream()
+            .map(ela -> convertToHRLeaveViewModel(ela))
             .collect(Collectors.toList());
     }
 
     public List<EmpLeaveApplicationViewModel> getAllHRLeave(EmpLeaveApplicationViewModel model) {
-        // Same as GetAllApplyHRLeave
-        return getAllApplyHRLeave(model);
+        Integer loginId = model.getLoginId();
+        if (loginId == null || loginId == 0) throw new RuntimeException("EmpId is Missing");
+
+        // Get current employee details
+        EmployeeMaster currentEmp = employeeMasterRepository.findById(loginId)
+            .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        Integer locationId = currentEmp.getLocationId() != null ? currentEmp.getLocationId() : 0;
+        Integer designationId = currentEmp.getDesignationId() != null ? currentEmp.getDesignationId() : 0;
+        Integer categoryId = currentEmp.getCategoryId() != null ? currentEmp.getCategoryId() : 0;
+
+        boolean isHR = designationId == 186;
+        boolean isManager = categoryId != null && categoryId > 1;
+
+        List<EmpLeaveApplication> leaveList;
+
+        if (isHR) {
+            // HR sees ALL non-APPLIED leaves
+            leaveList = empLeaveApplicationRepository.findByIsDeleted(false).stream()
+                .filter(e -> !"APPLIED".equals(e.getStatus()) && Boolean.TRUE.equals(e.getIsActive()))
+                .collect(Collectors.toList());
+        } else if (isManager) {
+            // Manager sees non-APPLIED leaves where they are the approver
+            leaveList = empLeaveApplicationRepository.findByIsDeleted(false).stream()
+                .filter(e -> !"APPLIED".equals(e.getStatus()) && Boolean.TRUE.equals(e.getIsActive())
+                    && loginId.equals(e.getApprovedBy()))
+                .collect(Collectors.toList());
+        } else {
+            // Regular employee at same location
+            leaveList = empLeaveApplicationRepository.findByIsDeleted(false).stream()
+                .filter(e -> !"APPLIED".equals(e.getStatus()) && Boolean.TRUE.equals(e.getIsActive()))
+                .filter(e -> {
+                    Optional<EmployeeMaster> empOpt = employeeMasterRepository.findById(e.getEmpId());
+                    return empOpt.isPresent() && locationId.equals(empOpt.get().getLocationId());
+                })
+                .collect(Collectors.toList());
+        }
+
+        leaveList.sort(Comparator.comparing(EmpLeaveApplication::getLeaveTypeId,
+            Comparator.nullsLast(Comparator.reverseOrder())));
+
+        return leaveList.stream()
+            .map(ela -> convertToHRLeaveViewModel(ela))
+            .collect(Collectors.toList());
+    }
+
+    private EmpLeaveApplicationViewModel convertToHRLeaveViewModel(EmpLeaveApplication ela) {
+        EmpLeaveApplicationViewModel vm = new EmpLeaveApplicationViewModel();
+        vm.setLoginId(0);
+        vm.setLeaveAppId(ela.getEmpLeaveId());
+        vm.setEmpId(ela.getEmpId());
+        vm.setEmpCode(ela.getEmpCode() != null ? ela.getEmpCode() : "");
+
+        // Resolve EmpName
+        if (ela.getEmpId() != null) {
+            employeeMasterRepository.findById(ela.getEmpId()).ifPresent(emp -> {
+                String fn = emp.getFirstName() != null ? emp.getFirstName().trim() : "";
+                String mn = emp.getMiddleName() != null ? " " + emp.getMiddleName().trim() : "";
+                String ln = emp.getLastName() != null ? " " + emp.getLastName().trim() : "";
+                vm.setEmpName((fn + mn + ln).trim());
+            });
+        }
+        if (vm.getEmpName() == null) vm.setEmpName("");
+
+        vm.setLeaveTypeId(ela.getLeaveTypeId());
+
+        // Resolve LeaveType name
+        Integer ltId = ela.getLeaveTypeId();
+        if (ltId != null && ltId == 0) {
+            vm.setLeaveType("LOP");
+        } else if (ltId != null) {
+            leaveTypeMasterRepository.findById(ltId).ifPresent(lt -> {
+                String name = lt.getLeaveName() != null ? lt.getLeaveName() : "";
+                String shortName = lt.getShortName() != null ? lt.getShortName() : "";
+                vm.setLeaveType(name + " - (" + shortName + ")");
+            });
+        }
+        if (vm.getLeaveType() == null) vm.setLeaveType("");
+
+        vm.setStartDate(ela.getFromDate());
+        vm.setEndDate(ela.getToDate());
+        vm.setDuration(ela.getNoOfDays() != null ? ela.getNoOfDays().doubleValue() : 0.0);
+        vm.setReason(ela.getReason());
+
+        // Normalize status
+        String status = ela.getStatus();
+        if (status != null) {
+            String upper = status.toUpperCase();
+            if (upper.contains("APPROVED BY HR") || upper.contains("APPROVED BY MANAGER"))
+                vm.setStatus("APPROVED");
+            else if (upper.contains("REJECTED BY HR") || upper.contains("REJECTED BY MANAGER"))
+                vm.setStatus("REJECTED");
+            else
+                vm.setStatus(status);
+        } else {
+            vm.setStatus("");
+        }
+
+        if (ela.getCompOffDate() != null) vm.setCompOffDate(ela.getCompOffDate());
+        if (ela.getCompOffReason() != null) vm.setCompOffReason(ela.getCompOffReason());
+        if (ela.getDocName() != null && !ela.getDocName().isEmpty()) vm.setDocName(ela.getDocName());
+
+        vm.setAppliedDate(ela.getAppliedDate());
+        vm.setApprovedBy(ela.getApprovedBy());
+
+        // Resolve Approver name
+        if (ela.getApprovedBy() != null) {
+            Integer approverId = ela.getApprovedBy();
+            employeeMasterRepository.findById(approverId).ifPresent(approver -> {
+                String fn = approver.getFirstName() != null ? approver.getFirstName().trim() : "";
+                vm.setApprover(fn);
+            });
+        }
+        if (vm.getApprover() == null) vm.setApprover("");
+
+        vm.setApprovedDate(ela.getApprovedDate());
+        vm.setRemarks(ela.getRemarks());
+        vm.setCreatedby(ela.getCreatedBy());
+        vm.setCreatedDate(ela.getCreatedDate());
+        vm.setLastUpdatedBy(ela.getLastUpdatedBy());
+        vm.setLastUpdatedDate(ela.getLastUpdatedDate());
+        vm.setIsActive(ela.getIsActive());
+        vm.setIsUpdated(ela.getIsUpdated());
+        vm.setIsDeleted(ela.getIsDeleted());
+
+        return vm;
     }
 
     public ApproveLeaveViewModel approveLeaveByManager(ApproveLeaveViewModel model) {
