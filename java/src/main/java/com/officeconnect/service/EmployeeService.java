@@ -6998,10 +6998,10 @@ public class EmployeeService {
                 result.put("Status", attendance.getStatus());
                 result.put("IsLogin", attendance.getIsLogin());
                 result.put("IsLogout", attendance.getIsLogout());
-                result.put("LoginTime", attendance.getLoginTime());
-                result.put("LogoutTime", attendance.getLogoutTime());
-                result.put("Activehrs", attendance.getActivehrs());
-                result.put("Approvedhrs", attendance.getApprovedhrs());
+                result.put("LoginTime", parseTimeToObject(attendance.getLoginTime()));
+                result.put("LogoutTime", parseTimeToObject(attendance.getLogoutTime()));
+                result.put("Activehrs", parseTimeToObject(attendance.getActivehrs()));
+                result.put("Approvedhrs", parseTimeToObject(attendance.getApprovedhrs()));
                 result.put("LoginAddress", attendance.getLoginAddress());
                 result.put("LoginLonqitude", attendance.getLoginLonqitude());
                 result.put("LoginLatitude", attendance.getLoginLatitude());
@@ -7162,8 +7162,25 @@ public class EmployeeService {
                     attendance.setIsLogout(true);
                     attendance.setLogoutTime(currentTime);
                     
-                    // Calculate active hours (simplified - in real app you'd parse times and calculate difference)
-                    attendance.setActivehrs("00:00:00"); // Placeholder - actual calculation would be more complex
+                    // Calculate active hours (like dotnet: activehrs = logoutTime - loginTime)
+                    String loginTimeStr = attendance.getLoginTime();
+                    if (loginTimeStr != null && !loginTimeStr.isEmpty()) {
+                        try {
+                            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm:ss");
+                            Date loginDt = sdf.parse(cleanTimeString(loginTimeStr));
+                            Date logoutDt = sdf.parse(currentTime);
+                            long diffMillis = logoutDt.getTime() - loginDt.getTime();
+                            if (diffMillis < 0) diffMillis += 24 * 60 * 60 * 1000;
+                            attendance.setActivehrs(String.format("%02d:%02d:%02d",
+                                (diffMillis / (60 * 60 * 1000)) % 24,
+                                (diffMillis / (60 * 1000)) % 60,
+                                (diffMillis / 1000) % 60));
+                        } catch (Exception e) {
+                            attendance.setActivehrs("00:00:00");
+                        }
+                    } else {
+                        attendance.setActivehrs("00:00:00");
+                    }
                     
                     attendance.setLogoutAddress(logoutAddress);
                     attendance.setLogoutLonqitude(logoutLonqitude);
@@ -7290,16 +7307,16 @@ public class EmployeeService {
                 return b.getCreatedDate().compareTo(a.getCreatedDate());
             });
 
-             for (ContractAttendance ca : attendanceList) {
-                 Map<String, Object> record = new LinkedHashMap<>();
-                 record.put("CId", ca.getcId());
-                 
-                 // Format Date fields as strings to avoid "/Date(timestamp)/" serialization
-                 SimpleDateFormat dateSdf = new SimpleDateFormat("yyyy-MM-dd");
-                 SimpleDateFormat timestampSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                 
-                 record.put("Date", ca.getDate() != null ? dateSdf.format(ca.getDate()) : null);
-                 record.put("Mobile", ca.getMobile());
+              for (ContractAttendance ca : attendanceList) {
+                  Map<String, Object> record = new LinkedHashMap<>();
+                  record.put("CId", ca.getcId());
+                  
+                  SimpleDateFormat dateSdf = new SimpleDateFormat("yyyy-MM-dd");
+                  SimpleDateFormat timestampSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                  
+                  // Format Date in .NET JSON format "/Date(timestamp)/" for frontend parsing
+                  record.put("Date", ca.getDate() != null ? "/Date(" + ca.getDate().getTime() + ")/" : null);
+                  record.put("Mobile", ca.getMobile());
                  record.put("Mail", ca.getMail());
                  record.put("EmpCode", ca.getEmpCode());
                  record.put("EmpName", ca.getEmpName());
@@ -7328,11 +7345,11 @@ public class EmployeeService {
                  record.put("IsLogin", ca.getIsLogin());
                  record.put("IsLogout", ca.getIsLogout());
                  
-                 // Clean time fields to remove extra decimal precision (e.g., "18:56:36.0000000" -> "18:56:36")
-                 record.put("LoginTime", cleanTimeString(ca.getLoginTime()));
-                 record.put("LogoutTime", cleanTimeString(ca.getLogoutTime()));
-                 record.put("Activehrs", cleanTimeString(ca.getActivehrs()));
-                 record.put("Approvedhrs", cleanTimeString(ca.getApprovedhrs()));
+                  // Clean time fields to remove extra decimal precision (e.g., "18:56:36.0000000" -> "18:56:36")
+                  record.put("LoginTime", parseTimeToObject(ca.getLoginTime()));
+                  record.put("LogoutTime", parseTimeToObject(ca.getLogoutTime()));
+                  record.put("Activehrs", parseTimeToObject(ca.getActivehrs()));
+                  record.put("Approvedhrs", parseTimeToObject(ca.getApprovedhrs()));
                  
                  record.put("LoginAddress", ca.getLoginAddress());
                  record.put("LoginLongitude", ca.getLoginLonqitude());
@@ -7479,7 +7496,43 @@ public class EmployeeService {
     }
 
     public Map<String, Object> approvedHrbyManager(Map<String, Object> model) {
-        return Map.of("msg", "HR Approved", "StatusCode", 200);
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Integer loginId = parseInteger(model.get("LoginId"));
+            if (loginId == null || loginId <= 0) {
+                throw new RuntimeException("LoginId is required");
+            }
+
+            Integer cId = parseInteger(model.get("CId"));
+            if (cId == null || cId <= 0) {
+                throw new RuntimeException("CId is required");
+            }
+
+            Optional<ContractAttendance> attOpt = contractAttendanceRepository.findById(cId);
+            if (attOpt.isEmpty()) {
+                throw new RuntimeException("Attendance record not found for logout");
+            }
+
+            ContractAttendance att = attOpt.get();
+            String approvedHrs = (String) model.get("Approvedhrs");
+            if (approvedHrs != null && !approvedHrs.isEmpty()) {
+                att.setApprovedhrs(approvedHrs);
+            }
+            att.setLastUpdatedBy(loginId);
+            att.setLastUpdatedDate(new Date());
+            att.setIsActive(true);
+            att.setIsUpdated(true);
+
+            contractAttendanceRepository.save(att);
+
+            response.put("msg", "Approved hours added Successfully");
+            response.put("StatusCode", 200);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("An error occurred while processing your request: " + e.getMessage());
+        }
+        return response;
     }
 
     public List<Map<String, Object>> ddVendorList(Map<String, Object> model) {
@@ -7699,17 +7752,39 @@ public class EmployeeService {
         return result;
     }
 
-    public List<Map<String, Object>> getAllEmpAccDetails() {
+    public List<Map<String, Object>> getAllEmpAccDetails(Map<String, Object> model) {
+        Integer loginId = parseInteger(model.get("LoginId"));
+        if (loginId == 0) throw new RuntimeException("EmpId is Missing");
+
         List<EmployeeAccDetail> accs = employeeAccDetailRepository.findByIsActiveAndIsDeletedOrderByCreatedDateDesc(true, false);
         return accs.stream().map(a -> {
             Map<String, Object> m = new HashMap<>();
             m.put("AccId", a.getAccId());
             m.put("EmpId", a.getEmpId());
+            Integer empId = a.getEmpId();
+            if (empId != null) {
+                EmployeeMaster emp = employeeMasterRepository.findById(empId).orElse(null);
+                m.put("EmpCode", emp != null ? emp.getEmpCode() : "");
+                m.put("EmpName", (emp != null ? emp.getFirstName() : "")
+                    + " " + (emp != null ? emp.getMiddleName() : "")
+                    + " " + (emp != null ? emp.getLastName() : ""));
+            } else {
+                m.put("EmpCode", "");
+                m.put("EmpName", "");
+            }
             m.put("BankName", a.getBankName());
-            m.put("Branch", a.getBranch());
-            m.put("AccountNo", a.getAccountNo());
-            m.put("IfscCode", a.getIfscCode());
-            m.put("AccountType", a.getAccountType());
+            m.put("BranchName", a.getBranchName());
+            m.put("IFSCCode", a.getIfscCode());
+            m.put("AccHolderName", a.getAccHolderName());
+            m.put("AccNo", a.getAccNo());
+            m.put("PFNo", a.getPfNo());
+            m.put("ESIInsuranceNo", a.getEsiInsuranceNo());
+            m.put("HealthInsuranceNo", a.getHealthInsuranceNo());
+            m.put("PANNo", a.getPanNo());
+            m.put("UANNo", a.getUanNo());
+            m.put("AadharNo", a.getAadharNo());
+            m.put("MobileNo", a.getMobileNo());
+            m.put("Status", a.getStatus());
             m.put("CreatedBy", a.getCreatedBy());
             m.put("CreatedDate", a.getCreatedDate());
             m.put("LastUpdatedBy", a.getLastUpdatedBy());
@@ -8011,6 +8086,7 @@ public class EmployeeService {
         return years.stream().filter(y -> y.getStatus() != null && y.getStatus()).map(y -> {
             Map<String, Object> m = new LinkedHashMap<>();
             m.put("LoginId", loginId);
+            m.put("Id", y.getYearId());
             m.put("YearId", y.getYearId());
             m.put("FinancialYear", y.getFinancialYear());
             m.put("Status", y.getStatus());
@@ -8034,7 +8110,9 @@ public class EmployeeService {
         }
 
         Optional<FinancialYearMaster> yOpt = financialYearMasterRepository.findById(yearId);
-        if (yOpt.isEmpty() || (yOpt.get().getIsDeleted() != null && yOpt.get().getIsDeleted())
+        if (yOpt.isEmpty()
+            || (yOpt.get().getIsActive() != null && !yOpt.get().getIsActive())
+            || (yOpt.get().getIsDeleted() != null && yOpt.get().getIsDeleted())
             || (yOpt.get().getStatus() != null && !yOpt.get().getStatus())) {
             throw new RuntimeException("Financial Year Details Not Found");
         }
@@ -8042,6 +8120,7 @@ public class EmployeeService {
         FinancialYearMaster y = yOpt.get();
         Map<String, Object> m = new LinkedHashMap<>();
         m.put("LoginId", loginId);
+        m.put("Id", y.getYearId());
         m.put("YearId", y.getYearId());
         m.put("FinancialYear", y.getFinancialYear());
         m.put("Status", y.getStatus());
@@ -8099,7 +8178,9 @@ public class EmployeeService {
         }
 
         Optional<FinancialYearMaster> yOpt = financialYearMasterRepository.findById(yearId);
-        if (yOpt.isEmpty() || (yOpt.get().getIsDeleted() != null && yOpt.get().getIsDeleted())
+        if (yOpt.isEmpty()
+            || (yOpt.get().getIsActive() != null && !yOpt.get().getIsActive())
+            || (yOpt.get().getIsDeleted() != null && yOpt.get().getIsDeleted())
             || (yOpt.get().getStatus() != null && !yOpt.get().getStatus())) {
             throw new RuntimeException("Financial Year Details Not Found");
         }
@@ -8118,15 +8199,20 @@ public class EmployeeService {
 
     public Map<String, Object> deleteFinancialYear(Map<String, Object> model) {
         Map<String, Object> result = new LinkedHashMap<>();
-        Integer loginId = model.get("LoginId") != null ? Integer.parseInt(model.get("LoginId").toString()) : 0;
-        Integer yearId = model.get("YearId") != null ? Integer.parseInt(model.get("YearId").toString()) : 0;
+        Integer loginId = parseInteger(model.get("LoginId"));
+        Integer yearId = parseInteger(model.get("YearId"));
 
         if (loginId == null || loginId == 0) {
             throw new RuntimeException("LoginId is Missing");
         }
+        if (yearId == null || yearId == 0) {
+            throw new RuntimeException("Financial Year Details Not Found");
+        }
 
         Optional<FinancialYearMaster> yOpt = financialYearMasterRepository.findById(yearId);
-        if (yOpt.isEmpty() || (yOpt.get().getIsDeleted() != null && yOpt.get().getIsDeleted())
+        if (yOpt.isEmpty()
+            || (yOpt.get().getIsActive() != null && !yOpt.get().getIsActive())
+            || (yOpt.get().getIsDeleted() != null && yOpt.get().getIsDeleted())
             || (yOpt.get().getStatus() != null && !yOpt.get().getStatus())) {
             throw new RuntimeException("Financial Year Details Not Found");
         }
@@ -8199,12 +8285,29 @@ public class EmployeeService {
             Map<String, Object> m = new HashMap<>();
             m.put("AccId", a.getAccId());
             m.put("EmpId", a.getEmpId());
+            if (empId != null) {
+                EmployeeMaster emp = employeeMasterRepository.findById(empId).orElse(null);
+                m.put("EmpCode", emp != null ? emp.getEmpCode() : "");
+                m.put("EmpName", (emp != null ? emp.getFirstName() : "")
+                    + " " + (emp != null ? emp.getMiddleName() : "")
+                    + " " + (emp != null ? emp.getLastName() : ""));
+            } else {
+                m.put("EmpCode", "");
+                m.put("EmpName", "");
+            }
             m.put("BankName", a.getBankName());
-            m.put("Branch", a.getBranch());
-            m.put("AccountNo", a.getAccountNo());
-            m.put("IfscCode", a.getIfscCode());
-            m.put("AccountType", a.getAccountType());
-            m.put("IsPrimary", a.getIsPrimary());
+            m.put("BranchName", a.getBranchName());
+            m.put("IFSCCode", a.getIfscCode());
+            m.put("AccHolderName", a.getAccHolderName());
+            m.put("AccNo", a.getAccNo());
+            m.put("PFNo", a.getPfNo());
+            m.put("ESIInsuranceNo", a.getEsiInsuranceNo());
+            m.put("HealthInsuranceNo", a.getHealthInsuranceNo());
+            m.put("PANNo", a.getPanNo());
+            m.put("UANNo", a.getUanNo());
+            m.put("AadharNo", a.getAadharNo());
+            m.put("MobileNo", a.getMobileNo());
+            m.put("Status", a.getStatus());
             m.put("CreatedBy", a.getCreatedBy());
             m.put("CreatedDate", a.getCreatedDate());
             m.put("LastUpdatedBy", a.getLastUpdatedBy());
@@ -8219,16 +8322,23 @@ public class EmployeeService {
     public Map<String, Object> addEmpAccDetails(Map<String, Object> model) {
         Integer loginId = parseInteger(model.get("LoginId"));
         Integer empId = parseInteger(model.get("EmpId"));
-        if (loginId == 0) throw new RuntimeException("LoginId is Missing");
+        if (loginId == 0) throw new RuntimeException("EmpId is Mismatching");
 
         EmployeeAccDetail acc = new EmployeeAccDetail();
         acc.setEmpId(empId);
         acc.setBankName(parseString(model.get("BankName")));
-        acc.setBranch(parseString(model.get("Branch")));
-        acc.setAccountNo(parseString(model.get("AccountNo")));
-        acc.setIfscCode(parseString(model.get("IfscCode")));
-        acc.setAccountType(parseString(model.get("AccountType")));
-        acc.setIsPrimary("true".equalsIgnoreCase(parseString(model.get("IsPrimary"))));
+        acc.setBranchName(parseString(model.get("BranchName")));
+        acc.setIfscCode(parseString(model.get("IFSCCode")));
+        acc.setAccHolderName(parseString(model.get("AccHolderName")));
+        acc.setAccNo(parseString(model.get("AccNo")));
+        acc.setPfNo(parseString(model.get("PFNo")));
+        acc.setEsiInsuranceNo(parseString(model.get("ESIInsuranceNo")));
+        acc.setHealthInsuranceNo(parseString(model.get("HealthInsuranceNo")));
+        acc.setPanNo(parseString(model.get("PANNo")));
+        acc.setUanNo(parseString(model.get("UANNo")));
+        acc.setAadharNo(parseString(model.get("AadharNo")));
+        acc.setMobileNo(parseString(model.get("MobileNo")));
+        acc.setStatus(true);
         acc.setCreatedBy(loginId);
         acc.setCreatedDate(new Date());
         acc.setLastUpdatedBy(loginId);
@@ -8244,26 +8354,67 @@ public class EmployeeService {
     }
 
     public Map<String, Object> updateEmpAccDetails(Map<String, Object> model) {
+        Integer loginId = parseInteger(model.get("LoginId"));
+        Integer empId = parseInteger(model.get("EmpId"));
         Integer accId = parseInteger(model.get("AccId"));
-        if (accId == 0) throw new RuntimeException("AccId is Missing");
+        if (loginId == 0) throw new RuntimeException("EmpId is Mismatching");
 
-        Optional<EmployeeAccDetail> opt = employeeAccDetailRepository.findById(accId);
-        if (opt.isEmpty()) throw new RuntimeException("Account detail not found");
+        if (accId == 0) {
+            EmployeeAccDetail acc = new EmployeeAccDetail();
+            acc.setEmpId(empId);
+            acc.setBankName(parseString(model.get("BankName")));
+            acc.setBranchName(parseString(model.get("BranchName")));
+            acc.setIfscCode(parseString(model.get("IFSCCode")));
+            acc.setAccHolderName(parseString(model.get("AccHolderName")));
+            acc.setAccNo(parseString(model.get("AccNo")));
+            acc.setPfNo(parseString(model.get("PFNo")));
+            acc.setEsiInsuranceNo(parseString(model.get("ESIInsuranceNo")));
+            acc.setHealthInsuranceNo(parseString(model.get("HealthInsuranceNo")));
+            acc.setPanNo(parseString(model.get("PANNo")));
+            acc.setUanNo(parseString(model.get("UANNo")));
+            acc.setAadharNo(parseString(model.get("AadharNo")));
+            acc.setMobileNo(parseString(model.get("MobileNo")));
+            acc.setStatus(true);
+            acc.setIsActive(true);
+            acc.setIsUpdated(false);
+            acc.setIsDeleted(false);
+            acc.setCreatedBy(loginId);
+            acc.setCreatedDate(new Date());
+            acc.setLastUpdatedBy(loginId);
+            acc.setLastUpdatedDate(new Date());
+            employeeAccDetailRepository.save(acc);
 
-        EmployeeAccDetail acc = opt.get();
-        if (model.containsKey("BankName")) acc.setBankName(parseString(model.get("BankName")));
-        if (model.containsKey("Branch")) acc.setBranch(parseString(model.get("Branch")));
-        if (model.containsKey("AccountNo")) acc.setAccountNo(parseString(model.get("AccountNo")));
-        if (model.containsKey("IfscCode")) acc.setIfscCode(parseString(model.get("IfscCode")));
-        if (model.containsKey("AccountType")) acc.setAccountType(parseString(model.get("AccountType")));
-        if (model.containsKey("IsPrimary")) acc.setIsPrimary("true".equalsIgnoreCase(parseString(model.get("IsPrimary"))));
-        acc.setIsUpdated(true);
-        acc.setLastUpdatedDate(new Date());
-        employeeAccDetailRepository.save(acc);
+            Map<String, Object> result = new HashMap<>();
+            result.put("msg", "Added");
+            return result;
+        } else {
+            EmployeeAccDetail acc = employeeAccDetailRepository.findByEmpIdAndAccIdAndIsActiveAndIsDeleted(empId, accId, true, false);
+            if (acc == null) throw new RuntimeException("Account Details Not Found");
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("msg", "Updated");
-        return result;
+            acc.setBankName(parseString(model.get("BankName")));
+            acc.setBranchName(parseString(model.get("BranchName")));
+            acc.setIfscCode(parseString(model.get("IFSCCode")));
+            acc.setAccHolderName(parseString(model.get("AccHolderName")));
+            acc.setAccNo(parseString(model.get("AccNo")));
+            acc.setPfNo(parseString(model.get("PFNo")));
+            acc.setEsiInsuranceNo(parseString(model.get("ESIInsuranceNo")));
+            acc.setHealthInsuranceNo(parseString(model.get("HealthInsuranceNo")));
+            acc.setPanNo(parseString(model.get("PANNo")));
+            acc.setUanNo(parseString(model.get("UANNo")));
+            acc.setAadharNo(parseString(model.get("AadharNo")));
+            acc.setMobileNo(parseString(model.get("MobileNo")));
+            acc.setStatus(true);
+            acc.setIsActive(true);
+            acc.setIsUpdated(true);
+            acc.setIsDeleted(false);
+            acc.setLastUpdatedBy(loginId);
+            acc.setLastUpdatedDate(new Date());
+            employeeAccDetailRepository.save(acc);
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("msg", "Updated");
+            return result;
+        }
     }
 
     public Map<String, Object> deleteEmpAccDetails(Map<String, Object> model) {
@@ -8309,14 +8460,37 @@ public class EmployeeService {
       * @param timeString The time string to clean
       * @return Cleaned time string
       */
-     private String cleanTimeString(String timeString) {
-         if (timeString == null || timeString.isEmpty()) {
-             return timeString;
-         }
-         // Split by decimal point and take only the integer part
-         if (timeString.contains(".")) {
-             return timeString.split("\\.")[0];
-         }
-         return timeString;
-     }
- }
+    private String cleanTimeString(String timeString) {
+        if (timeString == null || timeString.isEmpty()) {
+            return timeString;
+        }
+        if (timeString.contains(".")) {
+            return timeString.split("\\.")[0];
+        }
+        return timeString;
+    }
+
+    private Map<String, Object> parseTimeToObject(String timeStr) {
+        Map<String, Object> result = new HashMap<>();
+        if (timeStr == null || timeStr.isEmpty()) {
+            result.put("Hours", 0);
+            result.put("Minutes", 0);
+            result.put("Seconds", 0);
+            return result;
+        }
+        String clean = timeStr.contains(".") ? timeStr.split("\\.")[0] : timeStr;
+        String[] parts = clean.split(":");
+        int hours = 0, minutes = 0, seconds = 0;
+        try {
+            if (parts.length >= 1) hours = Integer.parseInt(parts[0]);
+            if (parts.length >= 2) minutes = Integer.parseInt(parts[1]);
+            if (parts.length >= 3) seconds = Integer.parseInt(parts[2]);
+        } catch (NumberFormatException e) {
+            // ignore
+        }
+        result.put("Hours", hours);
+        result.put("Minutes", minutes);
+        result.put("Seconds", seconds);
+        return result;
+    }
+}

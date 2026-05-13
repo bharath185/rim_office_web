@@ -260,7 +260,7 @@ public class EmployeeController {
     @PostMapping("/GetAllEmpAccDetails")
     public ResponseEntity<?> getAllEmpAccDetails(@RequestBody Map<String, Object> model) {
         try {
-            List<Map<String, Object>> result = employeeService.getAllEmpAccDetails();
+            List<Map<String, Object>> result = employeeService.getAllEmpAccDetails(model);
             return ResponseEntity.ok(result);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

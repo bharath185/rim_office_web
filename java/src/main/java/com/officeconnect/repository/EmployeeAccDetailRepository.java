@@ -9,4 +9,5 @@ import java.util.List;
 public interface EmployeeAccDetailRepository extends JpaRepository<EmployeeAccDetail, Integer> {
     List<EmployeeAccDetail> findByEmpIdAndIsActiveAndIsDeletedOrderByCreatedDateDesc(Integer empId, Boolean isActive, Boolean isDeleted);
     List<EmployeeAccDetail> findByIsActiveAndIsDeletedOrderByCreatedDateDesc(Boolean isActive, Boolean isDeleted);
+    EmployeeAccDetail findByEmpIdAndAccIdAndIsActiveAndIsDeleted(Integer empId, Integer accId, Boolean isActive, Boolean isDeleted);
 }

@@ -54,12 +54,6 @@ public class EmployeeAccDetail {
     @Column(name = "Status")
     private Boolean status;
 
-    @Column(name = "IsPrimary")
-    private Boolean isPrimary;
-
-    @Column(name = "AccountType")
-    private String accountType;
-
     @Column(name = "CreatedBy")
     private Integer createdBy;
 
@@ -133,12 +127,6 @@ public class EmployeeAccDetail {
 
     public Boolean getStatus() { return status; }
     public void setStatus(Boolean status) { this.status = status; }
-
-    public Boolean getIsPrimary() { return isPrimary; }
-    public void setIsPrimary(Boolean isPrimary) { this.isPrimary = isPrimary; }
-
-    public String getAccountType() { return accountType; }
-    public void setAccountType(String accountType) { this.accountType = accountType; }
 
     public Integer getCreatedBy() { return createdBy; }
     public void setCreatedBy(Integer createdBy) { this.createdBy = createdBy; }
