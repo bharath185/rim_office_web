@@ -42,6 +42,16 @@ public class EmpLeaveApplication {
     @Temporal(TemporalType.DATE)
     private Date appliedDate;
 
+    @Column(name = "CompOffDate")
+    @Temporal(TemporalType.DATE)
+    private Date compOffDate;
+
+    @Column(name = "CompOffReason")
+    private String compOffReason;
+
+    @Column(name = "DocName")
+    private String docName;
+
     @Column(name = "ApprovedBy")
     private Integer approvedBy;
 
@@ -111,6 +121,15 @@ public class EmpLeaveApplication {
 
     public Date getAppliedDate() { return appliedDate; }
     public void setAppliedDate(Date appliedDate) { this.appliedDate = appliedDate; }
+
+    public Date getCompOffDate() { return compOffDate; }
+    public void setCompOffDate(Date compOffDate) { this.compOffDate = compOffDate; }
+
+    public String getCompOffReason() { return compOffReason; }
+    public void setCompOffReason(String compOffReason) { this.compOffReason = compOffReason; }
+
+    public String getDocName() { return docName; }
+    public void setDocName(String docName) { this.docName = docName; }
 
     public Integer getApprovedBy() { return approvedBy; }
     public void setApprovedBy(Integer approvedBy) { this.approvedBy = approvedBy; }

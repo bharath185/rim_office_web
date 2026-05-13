@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.text.SimpleDateFormat;
 
 @Service
 public class LeaveService {
@@ -29,6 +30,9 @@ public class LeaveService {
 
     @Autowired
     private AttendanceRepository attendanceRepository;
+
+    @Autowired
+    private HolidayRepository holidayRepository;
 
     public List<LeaveTypeViewModel> getAllLeaveType(LeaveTypeViewModel model) {
         return leaveTypeMasterRepository.findByIsActiveAndIsDeleted(true, false).stream()
@@ -263,77 +267,226 @@ public class LeaveService {
     }
 
     public EmpLeaveApplicationViewModel applyLeave(EmpLeaveApplicationViewModel model) {
-        if (model.getEmpId() == null || model.getEmpId() == 0) {
-            throw new RuntimeException("EmpId is Missing");
-        }
-        if (model.getLeaveTypeId() == null || model.getLeaveTypeId() == 0) {
-            throw new RuntimeException("LeaveTypeId is Missing");
-        }
+        Integer loginId = model.getLoginId();
+        Integer empId = model.getEmpId();
+        Integer leaveTypeId = model.getLeaveTypeId();
+        if (loginId == null || loginId == 0) throw new RuntimeException("EmpId is Mismatching");
+        if (empId == null || empId == 0) throw new RuntimeException("EmpId is Missing");
+        if (leaveTypeId == null || leaveTypeId == 0) throw new RuntimeException("Select the Leave Type");
+
+        Date startDate = model.getStartDate();
+        Date endDate = model.getEndDate();
 
         // Get leave type
-        Optional<LeaveTypeMaster> ltOpt = leaveTypeMasterRepository.findById(model.getLeaveTypeId());
-        if (ltOpt.isEmpty()) {
-            throw new RuntimeException("Leave type not found");
-        }
-        LeaveTypeMaster lt = ltOpt.get();
+        LeaveTypeMaster lt = leaveTypeMasterRepository.findById(leaveTypeId)
+            .orElseThrow(() -> new RuntimeException("Leave type not found"));
+        String shortName = lt.getShortName() != null ? lt.getShortName().toUpperCase() : "";
 
-        // Get employee
-        Optional<EmployeeMaster> empOpt = employeeMasterRepository.findById(model.getEmpId());
-        if (empOpt.isEmpty()) {
-            throw new RuntimeException("Employee not found");
-        }
-        EmployeeMaster emp = empOpt.get();
-
-        // Check for overlapping leaves
-        List<EmpLeaveApplication> overlapping = empLeaveApplicationRepository
-            .findByEmpIdAndIsDeleted(model.getEmpId(), false).stream()
-            .filter(e -> !"Rejected".equals(e.getStatus()) && !"Cancelled".equals(e.getStatus()))
-            .filter(e -> {
-                Date from = model.getFromDate();
-                Date to = model.getToDate();
-                return (from != null && to != null) &&
-                       !(to.before(e.getFromDate()) || from.after(e.getToDate()));
-            })
+        // Check exact duplicate (same dates, same emp, not cancelled/withdrawn/deleted/rejected)
+        List<EmpLeaveApplication> exactDuplicates = empLeaveApplicationRepository
+            .findByEmpIdAndIsDeleted(empId, false).stream()
+            .filter(e -> e.getFromDate() != null && e.getToDate() != null
+                && e.getFromDate().equals(startDate) && e.getToDate().equals(endDate)
+                && !"CANCELLED".equalsIgnoreCase(e.getStatus())
+                && !"WITHDRAWN".equalsIgnoreCase(e.getStatus())
+                && !"DELETE".equalsIgnoreCase(e.getStatus())
+                && !e.getStatus().toUpperCase().contains("REJECT")
+                && Boolean.TRUE.equals(e.getIsActive()))
             .collect(Collectors.toList());
 
-        if (!overlapping.isEmpty()) {
-            throw new RuntimeException("Leave already applied for this date range");
+        if (!exactDuplicates.isEmpty()) throw new RuntimeException("Leave Already Exists");
+
+        // Overlap check
+        List<EmpLeaveApplication> overlapping = empLeaveApplicationRepository
+            .findByEmpIdAndIsDeleted(empId, false).stream()
+            .filter(e -> Boolean.TRUE.equals(e.getIsActive())
+                && !"CANCELLED".equalsIgnoreCase(e.getStatus())
+                && !"WITHDRAWN".equalsIgnoreCase(e.getStatus())
+                && !"DELETE".equalsIgnoreCase(e.getStatus())
+                && !e.getStatus().toUpperCase().contains("REJECT"))
+            .filter(e -> e.getFromDate() != null && e.getToDate() != null
+                && startDate != null && endDate != null
+                && !e.getToDate().before(startDate) && !endDate.before(e.getFromDate()))
+            .collect(Collectors.toList());
+
+        if (!overlapping.isEmpty()) throw new RuntimeException("Leave already applied for the selected date range.");
+
+        // Check draft with same dates
+        List<EmpLeaveApplication> draftCheck = empLeaveApplicationRepository
+            .findByEmpIdAndIsDeleted(empId, false).stream()
+            .filter(e -> e.getFromDate() != null && e.getToDate() != null
+                && e.getFromDate().equals(startDate) && e.getToDate().equals(endDate)
+                && "DRAFT".equalsIgnoreCase(e.getStatus())
+                && !Boolean.TRUE.equals(e.getIsActive()))
+            .collect(Collectors.toList());
+
+        if (!draftCheck.isEmpty()) throw new RuntimeException("Leave request could not be submitted. A draft leave for the same date already exists. Please review your draft requests.");
+
+        // Get carry forward balance
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH) + 1;
+        LeaveCarryForwardMaster carryForward = leaveCarryForwardMasterRepository
+            .findByEmpIdAndLeaveTypeIdAndLeaveYearAndLeaveMonth(empId, leaveTypeId, year, month);
+
+        if (carryForward == null) throw new RuntimeException("Your Leave Balance Not Available");
+
+        double availCount = (carryForward.getOpeningBalance() != null ? carryForward.getOpeningBalance() : 0.0)
+            - (carryForward.getAvailed() != null ? carryForward.getAvailed() : 0.0);
+
+        // Balance validation (skip if IsLOP)
+        if (!Boolean.TRUE.equals(model.getIsLOP())) {
+            if (leaveTypeId == 1) {
+                Integer leaveMonth = startDate != null ? getMonth(startDate) : null;
+                Integer leaveYear = startDate != null ? getYear(startDate) : null;
+                LeaveCarryForwardMaster clBalance = leaveCarryForwardMasterRepository
+                    .findByEmpIdAndLeaveTypeIdAndLeaveYearAndLeaveMonth(empId, leaveTypeId, leaveYear, leaveMonth);
+                if (clBalance == null)
+                    throw new RuntimeException("Insufficient CL leave balance for the last month. This leave will be marked as LOP. Confirmation is required to proceed.");
+                if (clBalance.getClosingBalance() == null || clBalance.getClosingBalance() == 0)
+                    throw new RuntimeException("Insufficient CL leave balance for the last month. This leave will be marked as LOP. Confirmation is required to proceed.");
+                Double totalDays = model.getDuration();
+                if (totalDays != null && totalDays > clBalance.getClosingBalance())
+                    throw new RuntimeException("Insufficient CL leave balance for the last month. This leave will be marked as LOP. Confirmation is required to proceed.");
+            }
+            if (availCount < (model.getDuration() != null ? model.getDuration() : 0.0))
+                throw new RuntimeException("Your " + shortName + " balance - " + (long)availCount + ". Applied leave will be Consider as LOP");
         }
 
-        // Calculate duration
-        int duration = 1;
-        if (model.getFromDate() != null && model.getToDate() != null) {
-            long diff = model.getToDate().getTime() - model.getFromDate().getTime();
-            duration = (int) (diff / (1000 * 60 * 60 * 24)) + 1;
-        }
-        
-        // Handle leaveDay (Full Day/Half Day) override
-        String leaveDay = model.getLeaveDay();
-        if ("Half Day".equals(leaveDay)) {
-            duration = 1; // Half day is 0.5 but DB stores as integer, so we need to handle this
+        // Get reporting manager
+        EmployeeMaster emp = employeeMasterRepository.findById(empId)
+            .orElseThrow(() -> new RuntimeException("Employee not found"));
+        Integer reportId = emp.getReportId() != null && emp.getReportId() != 0 ? emp.getReportId() : 149;
+        Integer hrId = 149;
+
+        // Max days check
+        if (lt.getMaxApply() != null && startDate != null && endDate != null) {
+            int dateDiff = (int)((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+            if (dateDiff > lt.getMaxApply())
+                throw new RuntimeException("For this LeaveType, user can apply maximum " + lt.getMaxApply() + " days only..");
         }
 
-        // Create leave application
+        // Holiday check
+        if (startDate != null && endDate != null) {
+            Integer locationId = emp.getLocationId();
+            if (locationId != null) {
+                List<Holiday> holidays = holidayRepository.findByLocationIdAndDateBetween(locationId, startDate, endDate);
+                List<Date> holidayDates = holidays.stream()
+                    .filter(h -> h.getHolidayType() == null || !"RH HOLIDAYS".equalsIgnoreCase(h.getHolidayType().trim()))
+                    .map(Holiday::getDate)
+                    .filter(d -> d != null)
+                    .collect(Collectors.toList());
+                if (!holidayDates.isEmpty()) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    String dates = holidayDates.stream().map(sdf::format).collect(Collectors.joining(", "));
+                    throw new RuntimeException("Leave cannot be applied on holiday(s): " + dates);
+                }
+            }
+        }
+
+        // Build entity
         EmpLeaveApplication ela = new EmpLeaveApplication();
-        ela.setEmpId(model.getEmpId());
-        ela.setEmpCode(emp.getEmpCode());
-        ela.setLeaveTypeId(model.getLeaveTypeId());
-        ela.setFromDate(model.getFromDate());
-        ela.setToDate(model.getToDate());
-        ela.setNoOfDays(duration);
+        ela.setEmpId(empId);
+        ela.setEmpCode(model.getEmpCode());
+        boolean isLOP = Boolean.TRUE.equals(model.getIsLOP());
+        if (isLOP) {
+            ela.setLeaveTypeId(0);
+        } else {
+            ela.setLeaveTypeId(model.getLeaveTypeId());
+        }
+        Integer finalLeaveTypeId = isLOP ? 0 : leaveTypeId;
+        ela.setFromDate(startDate);
+        ela.setToDate(endDate);
+
+        // Duration logic including EL Friday/weekend handling
+        Double modelDuration = model.getDuration() != null ? model.getDuration() : 1.0;
+        if (startDate != null) {
+            Calendar startCal = Calendar.getInstance();
+            startCal.setTime(startDate);
+            if (startCal.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY && "EL".equalsIgnoreCase(shortName)) {
+                Calendar lastFriday = Calendar.getInstance();
+                lastFriday.setTime(startDate);
+                lastFriday.add(Calendar.DAY_OF_MONTH, -3);
+                Date fridayDate = lastFriday.getTime();
+
+                boolean hasFridayLeave = empLeaveApplicationRepository.findByEmpIdAndIsDeleted(empId, false).stream()
+                    .anyMatch(e -> e.getFromDate() != null && e.getToDate() != null
+                        && !fridayDate.before(e.getFromDate()) && !fridayDate.after(e.getToDate())
+                        && !"CANCELLED".equalsIgnoreCase(e.getStatus())
+                        && Boolean.TRUE.equals(e.getIsActive())
+                        && (finalLeaveTypeId != 0 && finalLeaveTypeId.equals(e.getLeaveTypeId())));
+
+                if (hasFridayLeave) {
+                    ela.setNoOfDays(2);
+                    modelDuration = modelDuration + 2;
+                } else {
+                    ela.setNoOfDays(modelDuration.intValue());
+                }
+            } else {
+                ela.setNoOfDays(modelDuration.intValue());
+            }
+        } else {
+            ela.setNoOfDays(modelDuration.intValue());
+        }
+
         ela.setReason(model.getReason());
         ela.setStatus("APPLIED");
+
+        if ("COMP OFF".equals(shortName)) {
+            ela.setCompOffDate(model.getCompOffDate());
+            ela.setCompOffReason(model.getCompOffReason());
+        }
+
+        if (model.getDocName() != null && !model.getDocName().isEmpty()) {
+            ela.setDocName(model.getDocName());
+        } else {
+            ela.setDocName("");
+        }
+
+        ela.setAppliedDate(new Date());
+        ela.setApprovedBy(reportId);
+        ela.setHrApproved(hrId);
+        ela.setRemarks(model.getRemarks());
         ela.setIsActive(true);
         ela.setIsUpdated(false);
         ela.setIsDeleted(false);
-        ela.setAppliedDate(new Date());
+        ela.setCreatedBy(loginId);
         ela.setCreatedDate(new Date());
+        ela.setLastUpdatedBy(loginId);
+        ela.setLastUpdatedDate(new Date());
 
         ela = empLeaveApplicationRepository.save(ela);
 
+        // Update carry forward balance
+        if (carryForward != null) {
+            double open = carryForward.getOpeningBalance() != null ? carryForward.getOpeningBalance() : 0.0;
+            double avail = carryForward.getAvailed() != null ? carryForward.getAvailed() : 0.0;
+            double close = carryForward.getClosingBalance() != null ? carryForward.getClosingBalance() : 0.0;
+            double daysCount = modelDuration;
+
+            Boolean isSingleApp = lt.getIsSingleApplication();
+            carryForward.setOpeningBalance(open);
+            carryForward.setAvailed(avail + daysCount);
+            if (close == 0) {
+                carryForward.setClosingBalance(open - daysCount);
+            } else {
+                carryForward.setClosingBalance(close - daysCount);
+            }
+            if (Boolean.TRUE.equals(isSingleApp)) {
+                carryForward.setOpeningBalance(0.0);
+                carryForward.setAvailed(avail + daysCount);
+                carryForward.setClosingBalance(0.0);
+            }
+            carryForward.setLastUpdatedBy(loginId);
+            carryForward.setLastUpdatedDate(new Date());
+            carryForward.setIsActive(true);
+            carryForward.setIsUpdated(true);
+            leaveCarryForwardMasterRepository.save(carryForward);
+        }
+
         model.setEmpLeaveId(ela.getEmpLeaveId());
         model.setStatus("APPLIED");
-        model.setMsg("Leave applied successfully");
+        model.setMsg("Applied");
         return model;
     }
 
@@ -698,22 +851,150 @@ public class LeaveService {
     }
 
     public EmpLeaveApplicationViewModel draftApplyLeave(EmpLeaveApplicationViewModel model) {
-        EmpLeaveApplication ela = new EmpLeaveApplication();
-        ela.setEmpId(model.getEmpId());
-        ela.setLeaveTypeId(model.getLeaveTypeId());
-        ela.setFromDate(model.getFromDate());
-        ela.setToDate(model.getToDate());
-        ela.setNoOfDays(model.getNoOfDays());
-        ela.setReason(model.getReason());
-        ela.setStatus("Draft");
-        ela.setIsActive(true);
-        ela.setIsUpdated(false);
-        ela.setIsDeleted(false);
-        ela.setCreatedDate(new Date());
-        ela = empLeaveApplicationRepository.save(ela);
-        model.setEmpLeaveId(ela.getEmpLeaveId());
-        model.setStatus("Draft");
-        model.setMsg("Leave saved as draft");
+        Integer loginId = model.getLoginId();
+        Integer empId = model.getEmpId();
+        Integer leaveTypeId = model.getLeaveTypeId();
+        Integer leaveAppId = model.getLeaveAppId();
+        if (loginId == null || loginId == 0) throw new RuntimeException("EmpId is Mismatching");
+        if (empId == null || empId == 0) throw new RuntimeException("EmpId is Missing");
+        if (leaveTypeId == null || leaveTypeId == 0) throw new RuntimeException("Select the Leave Type");
+
+        Date startDate = model.getStartDate();
+        Date endDate = model.getEndDate();
+
+        // Get leave type
+        LeaveTypeMaster lt = leaveTypeMasterRepository.findById(leaveTypeId)
+            .orElseThrow(() -> new RuntimeException("Leave type not found"));
+        String shortName = lt.getShortName() != null ? lt.getShortName().toUpperCase() : "";
+
+        // Fetch existing draft record
+        if (leaveAppId == null || leaveAppId == 0) throw new RuntimeException("LeaveAppId is Missing");
+        EmpLeaveApplication existingDraft = empLeaveApplicationRepository.findById(leaveAppId)
+            .orElseThrow(() -> new RuntimeException("Draft Leave details Not Found"));
+        if (!"DRAFT".equals(existingDraft.getStatus())) throw new RuntimeException("Draft Leave details Not Found");
+
+        // Overlap check
+        List<EmpLeaveApplication> overlapping = empLeaveApplicationRepository
+            .findByEmpIdAndIsDeleted(empId, false).stream()
+            .filter(e -> Boolean.TRUE.equals(e.getIsActive())
+                && !"CANCELLED".equalsIgnoreCase(e.getStatus())
+                && !"WITHDRAWN".equalsIgnoreCase(e.getStatus())
+                && !"DELETE".equalsIgnoreCase(e.getStatus())
+                && !e.getStatus().toUpperCase().contains("REJECT"))
+            .filter(e -> e.getFromDate() != null && e.getToDate() != null
+                && startDate != null && endDate != null
+                && !e.getToDate().before(startDate) && !endDate.before(e.getFromDate()))
+            .collect(Collectors.toList());
+        if (!overlapping.isEmpty()) throw new RuntimeException("Leave already applied for the selected date range.");
+
+        // Check exact duplicate
+        List<EmpLeaveApplication> exactDuplicates = empLeaveApplicationRepository
+            .findByEmpIdAndIsDeleted(empId, false).stream()
+            .filter(e -> e.getFromDate() != null && e.getToDate() != null
+                && e.getFromDate().equals(startDate) && e.getToDate().equals(endDate)
+                && !"CANCELLED".equalsIgnoreCase(e.getStatus())
+                && !"WITHDRAWN".equalsIgnoreCase(e.getStatus())
+                && !"DELETE".equalsIgnoreCase(e.getStatus())
+                && !e.getStatus().toUpperCase().contains("REJECT")
+                && Boolean.TRUE.equals(e.getIsActive()))
+            .collect(Collectors.toList());
+        if (!exactDuplicates.isEmpty()) throw new RuntimeException("Leave Already Exists");
+
+        // Get carry forward balance
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH) + 1;
+        LeaveCarryForwardMaster carryForward = leaveCarryForwardMasterRepository
+            .findByEmpIdAndLeaveTypeIdAndLeaveYearAndLeaveMonth(empId, leaveTypeId, year, month);
+        if (carryForward == null) throw new RuntimeException("Your Leave Balance Not Available");
+        double availCount = (carryForward.getOpeningBalance() != null ? carryForward.getOpeningBalance() : 0.0)
+            - (carryForward.getAvailed() != null ? carryForward.getAvailed() : 0.0);
+
+        if (!Boolean.TRUE.equals(model.getIsLOP())) {
+            if (availCount < (model.getDuration() != null ? model.getDuration() : 0.0))
+                throw new RuntimeException("Your " + shortName + " balance - " + (long)availCount + ". Applied leave will be Consider as LOP");
+        }
+
+        // Get reporting manager
+        EmployeeMaster emp = employeeMasterRepository.findById(empId)
+            .orElseThrow(() -> new RuntimeException("Employee not found"));
+        Integer reportId = emp.getReportId() != null && emp.getReportId() != 0 ? emp.getReportId() : 149;
+        Integer hrId = 149;
+
+        // Max days check
+        if (lt.getMaxApply() != null && startDate != null && endDate != null) {
+            int dateDiff = (int)((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+            if (dateDiff > lt.getMaxApply())
+                throw new RuntimeException("For this LeaveType, user can apply maximum " + lt.getMaxApply() + " days only..");
+        }
+
+        // Update existing draft
+        existingDraft.setEmpId(empId);
+        existingDraft.setEmpCode(model.getEmpCode());
+        if (Boolean.TRUE.equals(model.getIsLOP())) {
+            existingDraft.setLeaveTypeId(0);
+            leaveTypeId = 0;
+        } else {
+            existingDraft.setLeaveTypeId(model.getLeaveTypeId());
+        }
+        existingDraft.setFromDate(startDate);
+        existingDraft.setToDate(endDate);
+        existingDraft.setNoOfDays(model.getDuration() != null ? model.getDuration().intValue() : 1);
+        existingDraft.setReason(model.getReason());
+        existingDraft.setStatus("APPLIED");
+
+        if ("COMP OFF".equals(shortName)) {
+            existingDraft.setCompOffDate(model.getCompOffDate());
+            existingDraft.setCompOffReason(model.getCompOffReason());
+        }
+
+        if (model.getDocName() != null && !model.getDocName().isEmpty()) {
+            existingDraft.setDocName(model.getDocName());
+        } else {
+            existingDraft.setDocName("");
+        }
+
+        existingDraft.setAppliedDate(new Date());
+        existingDraft.setApprovedBy(reportId);
+        existingDraft.setHrApproved(hrId);
+        existingDraft.setRemarks(model.getRemarks());
+        existingDraft.setIsActive(true);
+        existingDraft.setIsUpdated(true);
+        existingDraft.setIsDeleted(false);
+        existingDraft.setLastUpdatedBy(loginId);
+        existingDraft.setLastUpdatedDate(new Date());
+        empLeaveApplicationRepository.save(existingDraft);
+
+        // Update carry forward balance
+        if (carryForward != null) {
+            double open = carryForward.getOpeningBalance() != null ? carryForward.getOpeningBalance() : 0.0;
+            double avail = carryForward.getAvailed() != null ? carryForward.getAvailed() : 0.0;
+            double close = carryForward.getClosingBalance() != null ? carryForward.getClosingBalance() : 0.0;
+            double daysCount = model.getDuration() != null ? model.getDuration() : 1.0;
+
+            Boolean isSingleApp = lt.getIsSingleApplication();
+            carryForward.setOpeningBalance(open);
+            carryForward.setAvailed(avail + daysCount);
+            if (close == 0) {
+                carryForward.setClosingBalance(open - daysCount);
+            } else {
+                carryForward.setClosingBalance(close - daysCount);
+            }
+            if (Boolean.TRUE.equals(isSingleApp)) {
+                carryForward.setOpeningBalance(0.0);
+                carryForward.setAvailed(avail + daysCount);
+                carryForward.setClosingBalance(0.0);
+            }
+            carryForward.setLastUpdatedBy(loginId);
+            carryForward.setLastUpdatedDate(new Date());
+            carryForward.setIsActive(true);
+            carryForward.setIsUpdated(true);
+            leaveCarryForwardMasterRepository.save(carryForward);
+        }
+
+        model.setEmpLeaveId(existingDraft.getEmpLeaveId());
+        model.setStatus("APPLIED");
+        model.setMsg("Applied");
         return model;
     }
 
@@ -1173,5 +1454,17 @@ public class LeaveService {
         result.setStatus(rejectedIds.size() >0 ? "200" : "206");
         result.setMsg("Leave rejected by HR");
         return result;
+    }
+
+    private int getMonth(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return cal.get(Calendar.MONTH) + 1;
+    }
+
+    private int getYear(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return cal.get(Calendar.YEAR);
     }
 }
