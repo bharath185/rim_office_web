@@ -43,6 +43,9 @@ public class AccessService {
     @Autowired
     private DesignationMasterRepository designationMasterRepository;
 
+    @Autowired
+    private GradeMasterRepository gradeMasterRepository;
+
     private Integer getIntegerValue(Object obj) {
         if (obj == null) return 0;
         try {
@@ -1493,10 +1496,11 @@ public class AccessService {
 
     public List<Map<String, Object>> getDDGrade() {
         List<Map<String, Object>> result = new ArrayList<>();
-        for (int gradeId = 1; gradeId <= 25; gradeId++) {
+        List<GradeMaster> grades = gradeMasterRepository.findByIsActive(true);
+        for (GradeMaster g : grades) {
             Map<String, Object> m = new HashMap<>();
-            m.put("GradeId", gradeId);
-            m.put("Grade", "Grade-" + gradeId);
+            m.put("GradeId", g.getGradeId());
+            m.put("Grade", g.getGrade());
             m.put("EmpId", 0);
             result.add(m);
         }

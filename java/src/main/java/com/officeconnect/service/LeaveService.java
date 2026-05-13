@@ -34,18 +34,78 @@ public class LeaveService {
     @Autowired
     private HolidayRepository holidayRepository;
 
+    @Autowired
+    private LocationMasterRepository locationMasterRepository;
+
+    @Autowired
+    private EmpTypeMasterRepository empTypeMasterRepository;
+
     public List<LeaveTypeViewModel> getAllLeaveType(LeaveTypeViewModel model) {
+        Integer loginId = model.getLoginId();
+        if (loginId == null || loginId == 0) throw new RuntimeException("EmpId is Missing");
+
         return leaveTypeMasterRepository.findByIsActiveAndIsDeleted(true, false).stream()
             .map(lt -> {
                 LeaveTypeViewModel vm = new LeaveTypeViewModel();
                 vm.setLeaveTypeId(lt.getLeaveTypeId());
-                vm.setLeaveType(lt.getLeaveName());
                 vm.setLeaveName(lt.getLeaveName());
                 vm.setShortName(lt.getShortName());
                 vm.setDescription(lt.getDescription());
+                vm.setLocationId(lt.getLocationId());
+
+                // Resolve location names from comma-separated IDs
+                if (lt.getLocationId() != null && !lt.getLocationId().isEmpty()) {
+                    List<Integer> locIds = Arrays.stream(lt.getLocationId().split(","))
+                        .map(String::trim).filter(s -> !s.isEmpty()).map(Integer::parseInt)
+                        .collect(Collectors.toList());
+                    String locNames = locationMasterRepository.findAllById(locIds).stream()
+                        .filter(l -> Boolean.TRUE.equals(l.getIsActive()) && !Boolean.TRUE.equals(l.getIsDeleted()))
+                        .map(LocationMaster::getLocation).collect(Collectors.joining(", "));
+                    vm.setLocation(locNames);
+                }
+
+                vm.setYearType(lt.getYearType());
+                vm.setDurationType(lt.getDurationType());
+                vm.setApplicableTo(lt.getApplicableTo());
+                vm.setEmpTypeId(lt.getEmpTypeId());
+
+                // Resolve employee type names from comma-separated IDs
+                if (lt.getEmpTypeId() != null && !lt.getEmpTypeId().isEmpty()) {
+                    List<Integer> typeIds = Arrays.stream(lt.getEmpTypeId().split(","))
+                        .map(String::trim).filter(s -> !s.isEmpty()).map(Integer::parseInt)
+                        .collect(Collectors.toList());
+                    String typeNames = empTypeMasterRepository.findAllById(typeIds).stream()
+                        .filter(e -> Boolean.TRUE.equals(e.getIsActive()) && !Boolean.TRUE.equals(e.getIsDeleted()))
+                        .map(EmpTypeMaster::getEmpType).collect(Collectors.joining(", "));
+                    vm.setEmpType(typeNames);
+                }
+
+                vm.setEmpLevel(lt.getEmpLevel());
+                vm.setCarryForward(lt.getCarryForward());
                 vm.setCredit(lt.getCredit() != null ? lt.getCredit() : 0);
+                vm.setIsMonth(lt.getIsMonth());
+                vm.setIsYear(lt.getIsYear());
+                vm.setMaxCarryForward(lt.getMaxCarryForward());
+                vm.setResetYear(lt.getResetYear());
+                vm.setEncashable(lt.getEncashable());
+                vm.setMaxPerMonth(lt.getMaxPerMonth());
+                vm.setMaxPerYear(lt.getMaxPerYear());
+                vm.setMaxApply(lt.getMaxApply());
+                vm.setIsPaid(lt.getIsPaid());
+                vm.setApplicableDuration(lt.getApplicableDuration());
+                vm.setIsSingleApplication(lt.getIsSingleApplication());
+                vm.setMaxAllowedEvents(lt.getMaxAllowedEvents());
+                vm.setWeekEndInclusive(lt.getWeekEndInclusive());
+                vm.setCreatedBy(lt.getCreatedBy());
+                vm.setCreatedDate(lt.getCreatedDate());
+                vm.setLastUpdatedBy(lt.getLastUpdatedBy());
+                vm.setLastUpdatedDate(lt.getLastUpdatedDate());
+                vm.setIsActive(lt.getIsActive());
+                vm.setIsUpdated(lt.getIsUpdated());
+                vm.setIsDeleted(lt.getIsDeleted());
                 return vm;
             })
+            .sorted(Comparator.comparing(LeaveTypeViewModel::getLeaveTypeId, Comparator.reverseOrder()))
             .collect(Collectors.toList());
     }
 
