@@ -15,6 +15,9 @@ public interface LeaveCarryForwardMasterRepository extends JpaRepository<LeaveCa
     
     @Query("SELECT c FROM LeaveCarryForwardMaster c WHERE c.empId = ?1 AND c.leaveTypeId = ?2 AND c.leaveYear = ?3 AND c.isActive = true AND c.isDeleted = false")
     List<LeaveCarryForwardMaster> findByEmpIdAndLeaveTypeIdAndLeaveYear(Integer empId, Integer leaveTypeId, Integer leaveYear);
+
+    @Query("SELECT c FROM LeaveCarryForwardMaster c WHERE c.empId = ?1 AND c.leaveTypeId = ?2 AND (c.leaveMonth = ?3 OR c.leaveYear = ?4) AND c.isActive = true AND c.isDeleted = false")
+    List<LeaveCarryForwardMaster> findByEmpIdAndLeaveTypeIdAndLeaveMonthOrLeaveYear(Integer empId, Integer leaveTypeId, Integer leaveMonth, Integer leaveYear);
     
     @Query("SELECT c FROM LeaveCarryForwardMaster c WHERE c.empId = ?1 AND c.isActive = true AND c.isDeleted = false")
     List<LeaveCarryForwardMaster> findByEmpId(Integer empId);

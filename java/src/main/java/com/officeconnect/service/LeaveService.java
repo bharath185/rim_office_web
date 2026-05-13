@@ -322,12 +322,13 @@ public class LeaveService {
 
         if (!draftCheck.isEmpty()) throw new RuntimeException("Leave request could not be submitted. A draft leave for the same date already exists. Please review your draft requests.");
 
-        // Get carry forward balance
+        // Get carry forward balance (matching .NET: LeaveMonth == Month OR LeaveYear == Year)
         Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH) + 1;
-        LeaveCarryForwardMaster carryForward = leaveCarryForwardMasterRepository
-            .findByEmpIdAndLeaveTypeIdAndLeaveYearAndLeaveMonth(empId, leaveTypeId, year, month);
+        List<LeaveCarryForwardMaster> carryForwardList = leaveCarryForwardMasterRepository
+            .findByEmpIdAndLeaveTypeIdAndLeaveMonthOrLeaveYear(empId, leaveTypeId, month, year);
+        LeaveCarryForwardMaster carryForward = carryForwardList.isEmpty() ? null : carryForwardList.get(0);
 
         if (carryForward == null) throw new RuntimeException("Your Leave Balance Not Available");
 
@@ -900,12 +901,13 @@ public class LeaveService {
             .collect(Collectors.toList());
         if (!exactDuplicates.isEmpty()) throw new RuntimeException("Leave Already Exists");
 
-        // Get carry forward balance
+        // Get carry forward balance (matching .NET: LeaveMonth == Month OR LeaveYear == Year)
         Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH) + 1;
-        LeaveCarryForwardMaster carryForward = leaveCarryForwardMasterRepository
-            .findByEmpIdAndLeaveTypeIdAndLeaveYearAndLeaveMonth(empId, leaveTypeId, year, month);
+        List<LeaveCarryForwardMaster> carryForwardList = leaveCarryForwardMasterRepository
+            .findByEmpIdAndLeaveTypeIdAndLeaveMonthOrLeaveYear(empId, leaveTypeId, month, year);
+        LeaveCarryForwardMaster carryForward = carryForwardList.isEmpty() ? null : carryForwardList.get(0);
         if (carryForward == null) throw new RuntimeException("Your Leave Balance Not Available");
         double availCount = (carryForward.getOpeningBalance() != null ? carryForward.getOpeningBalance() : 0.0)
             - (carryForward.getAvailed() != null ? carryForward.getAvailed() : 0.0);
