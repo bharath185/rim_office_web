@@ -188,9 +188,7 @@ public class LeaveController {
     @PostMapping("/CancelLeave")
     public ResponseEntity<?> cancelLeave(@RequestBody EmpLeaveApplicationViewModel model) {
         try {
-            EmpLeaveApplicationViewModel result = leaveService.draftLeave(model);
-            result.setStatus("Cancelled");
-            result.setMsg("Leave cancelled successfully");
+            Map<String, Object> result = leaveService.cancelLeave(model);
             return ResponseEntity.ok(result);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

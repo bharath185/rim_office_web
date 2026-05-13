@@ -465,7 +465,7 @@ public class LeaveService {
             double close = carryForward.getClosingBalance() != null ? carryForward.getClosingBalance() : 0.0;
             double daysCount = modelDuration;
 
-            Boolean isSingleApp = lt.getIsSingleApplication();
+            Boolean isSingleApp = Boolean.TRUE.equals(lt.getIsSingleApplication());
             carryForward.setOpeningBalance(open);
             carryForward.setAvailed(avail + daysCount);
             if (close == 0) {
@@ -974,7 +974,7 @@ public class LeaveService {
             double close = carryForward.getClosingBalance() != null ? carryForward.getClosingBalance() : 0.0;
             double daysCount = model.getDuration() != null ? model.getDuration() : 1.0;
 
-            Boolean isSingleApp = lt.getIsSingleApplication();
+            Boolean isSingleApp = Boolean.TRUE.equals(lt.getIsSingleApplication());
             carryForward.setOpeningBalance(open);
             carryForward.setAvailed(avail + daysCount);
             if (close == 0) {
@@ -1142,6 +1142,68 @@ public class LeaveService {
         model.setStatus("Deleted");
         model.setMsg("Draft leave deleted");
         return model;
+    }
+
+    public Map<String, Object> cancelLeave(EmpLeaveApplicationViewModel model) {
+        Integer loginId = model.getLoginId();
+        Integer empId = model.getEmpId();
+        Integer leaveAppId = model.getLeaveAppId();
+        if (loginId == null || loginId == 0) throw new RuntimeException("EmpId is Missing");
+        if (empId == null || empId == 0) throw new RuntimeException("EmpId is Missing");
+        if (leaveAppId == null || leaveAppId == 0) throw new RuntimeException("LeaveAppId is Missing");
+
+        EmpLeaveApplication lev = empLeaveApplicationRepository.findById(leaveAppId)
+            .orElseThrow(() -> new RuntimeException("Leave Details Not Found"));
+        if (!"APPLIED".equals(lev.getStatus()))
+            throw new RuntimeException("Leave Details Not Found");
+
+        Integer leaveTypeId = lev.getLeaveTypeId();
+
+        lev.setStatus("CANCELLED");
+        lev.setIsActive(true);
+        lev.setIsUpdated(true);
+        lev.setIsDeleted(false);
+        lev.setLastUpdatedBy(loginId);
+        lev.setLastUpdatedDate(new Date());
+        empLeaveApplicationRepository.save(lev);
+
+        // Reverse leave balance in LeaveCarryForwardMaster
+        Calendar cal = Calendar.getInstance();
+        Integer year = lev.getFromDate() != null ? getYear(lev.getFromDate()) : cal.get(Calendar.YEAR);
+        Integer month = lev.getFromDate() != null ? getMonth(lev.getFromDate()) : cal.get(Calendar.MONTH) + 1;
+        List<LeaveCarryForwardMaster> cfList = leaveCarryForwardMasterRepository
+            .findByEmpIdAndLeaveTypeIdAndLeaveMonthOrLeaveYear(empId, leaveTypeId, month, year);
+        LeaveCarryForwardMaster cf = cfList.isEmpty() ? null : cfList.get(0);
+
+        if (cf != null) {
+            double open = cf.getOpeningBalance() != null ? cf.getOpeningBalance() : 0.0;
+            double avail = cf.getAvailed() != null ? cf.getAvailed() : 0.0;
+            double close = cf.getClosingBalance() != null ? cf.getClosingBalance() : 0.0;
+            double daysCount = lev.getNoOfDays() != null ? lev.getNoOfDays().doubleValue() : 0.0;
+
+            LeaveTypeMaster lt = leaveTypeMasterRepository.findById(leaveTypeId).orElse(null);
+            Boolean isSingleApp = lt != null ? lt.getIsSingleApplication() : Boolean.FALSE;
+            Integer maxPerYear = lt != null ? lt.getMaxPerYear() : null;
+
+            cf.setOpeningBalance(open);
+            cf.setAvailed(avail - daysCount);
+            cf.setClosingBalance(close + daysCount);
+            if (Boolean.TRUE.equals(isSingleApp) && maxPerYear != null) {
+                cf.setOpeningBalance(maxPerYear.doubleValue());
+                cf.setAvailed(0.0);
+                cf.setClosingBalance(maxPerYear.doubleValue());
+            }
+            cf.setLastUpdatedBy(loginId);
+            cf.setLastUpdatedDate(new Date());
+            cf.setIsActive(true);
+            cf.setIsUpdated(true);
+            leaveCarryForwardMasterRepository.save(cf);
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("Status", 200);
+        result.put("msg", "Cancelled");
+        return result;
     }
 
     public Map<String, Object> getIndividualLeaveCount(EmpLeaveApplicationViewModel model) {
