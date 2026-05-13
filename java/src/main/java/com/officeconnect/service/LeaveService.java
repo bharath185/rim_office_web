@@ -1504,172 +1504,160 @@ public class LeaveService {
 
     public List<Map<String, Object>> leaveBalReport(Map<String, Object> model) {
         List<Map<String, Object>> result = new ArrayList<>();
-        
+
+        Integer loginId = model.get("LoginId") != null ? Integer.parseInt(model.get("LoginId").toString()) : 0;
+        if (loginId <= 0) throw new RuntimeException("LoginId is Missing");
+
+        Integer compId = model.get("CompId") != null ? Integer.parseInt(model.get("CompId").toString()) : 0;
+        Integer leId = model.get("LEId") != null ? Integer.parseInt(model.get("LEId").toString()) : 0;
         Integer buId = model.get("BUId") != null ? Integer.parseInt(model.get("BUId").toString()) : 0;
-        Integer locationId = model.get("LocationId") != null ? Integer.parseInt(model.get("LocationId").toString()) : 0;
+        Integer locId = model.get("LocationId") != null ? Integer.parseInt(model.get("LocationId").toString()) : 0;
         Integer deptId = model.get("DeptId") != null ? Integer.parseInt(model.get("DeptId").toString()) : 0;
         Integer designationId = model.get("DesignationId") != null ? Integer.parseInt(model.get("DesignationId").toString()) : 0;
         Integer empId = model.get("EmpId") != null ? Integer.parseInt(model.get("EmpId").toString()) : 0;
-        Integer year = model.get("Year") != null ? Integer.parseInt(model.get("Year").toString()) : Calendar.getInstance().get(Calendar.YEAR);
+
+        Calendar cal = Calendar.getInstance();
+        int currentYear = cal.get(Calendar.YEAR);
+        int currentMonth = cal.get(Calendar.MONTH) + 1;
+
+        Integer year = model.get("Year") != null ? Integer.parseInt(model.get("Year").toString()) : 0;
         Integer month = model.get("Month") != null ? Integer.parseInt(model.get("Month").toString()) : 0;
-        
+
+        if (month == 0 && year == 0) { year = currentYear; month = currentMonth; }
+        else if (month == 0 && year != 0) { /* year stays, month stays 0 */ }
+        else if (month != 0 && year != 0) { /* both stay */ }
+
+        Integer finalYear = year;
+        Integer finalMonth = month;
+
+        // Get all active employees
         List<EmployeeMaster> employees = employeeMasterRepository.findByIsActiveAndIsDeleted(Boolean.TRUE, Boolean.FALSE);
-        
-        // Filter employees based on criteria (only if value > 0)
-        employees = employees.stream()
-            .filter(e -> buId == 0 || (e.getBuId() != null && e.getBuId().equals(buId)))
-            .filter(e -> locationId == 0 || (e.getLocationId() != null && e.getLocationId().equals(locationId)))
-            .filter(e -> deptId == 0 || (e.getCategoryId() != null && e.getCategoryId().equals(deptId)))
-            .filter(e -> designationId == 0 || (e.getDesignationId() != null && e.getDesignationId().equals(designationId)))
-            .filter(e -> empId == 0 || e.getEmpId().equals(empId))
-            .collect(Collectors.toList());
-        
-        if (employees.isEmpty()) {
-            throw new RuntimeException("No employees found for the given criteria");
+
+        // Apply filters matching .NET
+        if (compId != 0) employees = employees.stream().filter(e -> compId.equals(e.getCompId())).collect(Collectors.toList());
+        if (leId != 0) employees = employees.stream().filter(e -> leId.equals(e.getLeId())).collect(Collectors.toList());
+        if (buId != 0) employees = employees.stream().filter(e -> buId.equals(e.getBuId())).collect(Collectors.toList());
+        if (locId != 0) employees = employees.stream().filter(e -> locId.equals(e.getLocationId())).collect(Collectors.toList());
+        if (deptId != 0) employees = employees.stream().filter(e -> deptId.equals(e.getCategoryId())).collect(Collectors.toList());
+        if (designationId != 0) employees = employees.stream().filter(e -> designationId.equals(e.getDesignationId())).collect(Collectors.toList());
+        if (empId != 0) employees = employees.stream().filter(e -> empId.equals(e.getEmpId())).collect(Collectors.toList());
+
+        // Get all active leave types for matching short names
+        List<LeaveTypeMaster> allLeaveTypes = leaveTypeMasterRepository.findByIsActiveAndIsDeleted(true, false);
+
+        // Build carry forward data: .NET equivalent of joining LeaveCarryForwardMaster with LeaveTypeMaster
+        // where (LeaveMonth == finalMonth AND LeaveYear == finalYear) OR (LeaveMonth == 0 AND LeaveYear == finalYear)
+        List<LeaveCarryForwardMaster> allCF = leaveCarryForwardMasterRepository.findAllActive();
+        List<Map<String, Object>> cfDetails = new ArrayList<>();
+        for (LeaveCarryForwardMaster cf : allCF) {
+            if (cf.getLeaveYear() != null && cf.getLeaveYear().equals(finalYear)
+                && (cf.getLeaveMonth() != null && (cf.getLeaveMonth().equals(finalMonth) || cf.getLeaveMonth() == 0))
+                && Boolean.FALSE.equals(cf.getIsDeleted())) {
+                LeaveTypeMaster lt = allLeaveTypes.stream()
+                    .filter(l -> l.getLeaveTypeId().equals(cf.getLeaveTypeId()) && Boolean.TRUE.equals(l.getIsActive()) && Boolean.FALSE.equals(l.getIsDeleted()))
+                    .findFirst().orElse(null);
+                if (lt != null) {
+                    Map<String, Object> cfm = new HashMap<>();
+                    cfm.put("LeaveTypeId", lt.getLeaveTypeId());
+                    cfm.put("LeaveName", lt.getLeaveName());
+                    cfm.put("ShortName", lt.getShortName());
+                    cfm.put("EmpId", cf.getEmpId());
+                    cfm.put("EmpCode", cf.getEmpCode());
+                    cfm.put("LeaveMonth", cf.getLeaveMonth());
+                    cfm.put("LeaveYear", cf.getLeaveYear());
+                    cfm.put("OpeningBalance", cf.getOpeningBalance() != null ? cf.getOpeningBalance() : 0.0);
+                    cfm.put("Availed", cf.getAvailed() != null ? cf.getAvailed() : 0.0);
+                    cfm.put("CarryForward", cf.getClosingBalance() != null ? cf.getClosingBalance() : 0.0);
+                    cfm.put("ClosingBalance", cf.getClosingBalance() != null ? cf.getClosingBalance() : 0.0);
+                    cfDetails.add(cfm);
+                }
+            }
         }
-        
-        if (employees.isEmpty()) {
-            throw new RuntimeException("No employees found for the given criteria");
-        }
-        
+
         for (EmployeeMaster emp : employees) {
             Map<String, Object> m = new HashMap<>();
-            
-            // Basic employee info
+            m.put("LoginId", loginId);
+            m.put("CompId", emp.getCompId());
+            m.put("LEId", emp.getLeId());
+            m.put("BUId", emp.getBuId());
+            m.put("LocationId", emp.getLocationId());
+            m.put("DeptId", emp.getCategoryId());
+            m.put("DesignationId", emp.getDesignationId());
             m.put("EmpId", emp.getEmpId());
+            m.put("EmpName", (emp.getFirstName() != null ? emp.getFirstName().trim() : "")
+                + (emp.getMiddleName() != null ? " " + emp.getMiddleName().trim() : "")
+                + (emp.getLastName() != null ? " " + emp.getLastName().trim() : ""));
             m.put("EmpCode", emp.getEmpCode());
-            
-            String fullName = String.join(" ", 
-                emp.getFirstName() != null ? emp.getFirstName().trim() : "",
-                emp.getMiddleName() != null ? emp.getMiddleName().trim() : "",
-                emp.getLastName() != null ? emp.getLastName().trim() : "").trim();
-            m.put("EmpName", fullName);
-            m.put("DeptId", emp.getCategoryId() != null ? emp.getCategoryId() : 0);
-            m.put("LocationId", emp.getLocationId() != null ? emp.getLocationId() : 0);
             m.put("Year", year);
-            m.put("Month", month != null ? month : 0);
-            
-        List<LeaveTypeMaster> leaveTypes = leaveTypeMasterRepository.findAll();
-        System.out.println("Total leave types: " + leaveTypes.size());
-        for (LeaveTypeMaster lt : leaveTypes) {
-            System.out.println("Leave Type: " + lt.getLeaveName() + " (ID: " + lt.getLeaveTypeId() + ")");
-        }
-        
-        Integer clTypeId = leaveTypes.stream()
-                .filter(lt -> "CL".equalsIgnoreCase(lt.getLeaveName()))
-                .findFirst()
-                .map(LeaveTypeMaster::getLeaveTypeId)
-                .orElse(null);
-        System.out.println("CL Type ID: " + clTypeId);
-            Integer elTypeId = leaveTypes.stream()
-                .filter(lt -> "EL".equalsIgnoreCase(lt.getLeaveName()) || "PL".equalsIgnoreCase(lt.getLeaveName()))
-                .findFirst()
-                .map(LeaveTypeMaster::getLeaveTypeId)
-                .orElse(null);
-            Integer rhTypeId = leaveTypes.stream()
-                .filter(lt -> "RH".equalsIgnoreCase(lt.getLeaveName()))
-                .findFirst()
-                .map(LeaveTypeMaster::getLeaveTypeId)
-                .orElse(null);
-            Integer compoffTypeId = leaveTypes.stream()
-                .filter(lt -> "COMPOFF".equalsIgnoreCase(lt.getLeaveName()))
-                .findFirst()
-                .map(LeaveTypeMaster::getLeaveTypeId)
-                .orElse(null);
-            
-            // Calculate CL balance
-            if (clTypeId != null) {
-                List<EmpLeaveApplication> clApproved = empLeaveApplicationRepository.findByEmpIdAndLeaveTypeIdAndStatusAndIsDeletedFalse(emp.getEmpId(), clTypeId, "APPROVED BY HR");
-                Double clOpening = clApproved.stream().mapToDouble(e -> e.getNoOfDays() != null ? e.getNoOfDays().doubleValue() : 0.0).sum();
-                
-                List<EmpLeaveApplication> clAvailedList;
-                if (month != null && month > 0) {
-                    clAvailedList = empLeaveApplicationRepository.findByEmpIdAndLeaveTypeIdAndYearMonthAndStatusAndIsDeletedFalse(emp.getEmpId(), clTypeId, year, month);
-                } else {
-                    clAvailedList = empLeaveApplicationRepository.findByEmpIdAndLeaveTypeIdAndYearAndStatusAndIsDeletedFalse(emp.getEmpId(), clTypeId, year);
-                }
-                Double clAvailed = clAvailedList.stream().mapToDouble(e -> e.getNoOfDays() != null ? e.getNoOfDays().doubleValue() : 0.0).sum();
-                
-                m.put("CLOpeningBalance", clOpening);
-                m.put("CLAvailed", clAvailed);
-                m.put("CLColsingBalance", clOpening - clAvailed);
-                m.put("CLCarryFroward", 0.0);
+            m.put("Month", month);
+
+            // CL balance
+            Map<String, Object> cfCL = cfDetails.stream()
+                .filter(c -> "CL".equalsIgnoreCase((String)c.get("ShortName")) && c.get("EmpId") != null && c.get("EmpId").equals(emp.getEmpId()))
+                .findFirst().orElse(null);
+            if (cfCL != null) {
+                m.put("CLOpeningBalance", ((Number)cfCL.get("OpeningBalance")).doubleValue());
+                m.put("CLAvailed", ((Number)cfCL.get("Availed")).doubleValue());
+                m.put("CLColsingBalance", ((Number)cfCL.get("ClosingBalance")).doubleValue());
+                m.put("CLCarryFroward", ((Number)cfCL.get("CarryForward")).doubleValue());
             } else {
                 m.put("CLOpeningBalance", 0.0);
                 m.put("CLAvailed", 0.0);
                 m.put("CLColsingBalance", 0.0);
                 m.put("CLCarryFroward", 0.0);
             }
-            
-            // Calculate EL balance
-            if (elTypeId != null) {
-                List<EmpLeaveApplication> elApproved = empLeaveApplicationRepository.findByEmpIdAndLeaveTypeIdAndStatusAndIsDeletedFalse(emp.getEmpId(), elTypeId, "APPROVED BY HR");
-                Double elOpening = elApproved.stream().mapToDouble(e -> e.getNoOfDays() != null ? e.getNoOfDays().doubleValue() : 0.0).sum();
-                
-                List<EmpLeaveApplication> elAvailedList;
-                if (month != null && month > 0) {
-                    elAvailedList = empLeaveApplicationRepository.findByEmpIdAndLeaveTypeIdAndYearMonthAndStatusAndIsDeletedFalse(emp.getEmpId(), elTypeId, year, month);
-                } else {
-                    elAvailedList = empLeaveApplicationRepository.findByEmpIdAndLeaveTypeIdAndYearAndStatusAndIsDeletedFalse(emp.getEmpId(), elTypeId, year);
-                }
-                Double elAvailed = elAvailedList.stream().mapToDouble(e -> e.getNoOfDays() != null ? e.getNoOfDays().doubleValue() : 0.0).sum();
-                
-                m.put("ELOpeningBalance", elOpening);
-                m.put("ELAvailed", elAvailed);
-                m.put("ELColsingBalance", elOpening - elAvailed);
+
+            // EL balance
+            Map<String, Object> cfEL = cfDetails.stream()
+                .filter(c -> "EL".equalsIgnoreCase((String)c.get("ShortName")) && c.get("EmpId") != null && c.get("EmpId").equals(emp.getEmpId()))
+                .findFirst().orElse(null);
+            if (cfEL != null) {
+                m.put("ELOpeningBalance", ((Number)cfEL.get("OpeningBalance")).doubleValue());
+                m.put("ELAvailed", ((Number)cfEL.get("Availed")).doubleValue());
+                m.put("ELColsingBalance", ((Number)cfEL.get("ClosingBalance")).doubleValue());
+                m.put("ELCarryFroward", ((Number)cfEL.get("CarryForward")).doubleValue());
             } else {
                 m.put("ELOpeningBalance", 0.0);
                 m.put("ELAvailed", 0.0);
                 m.put("ELColsingBalance", 0.0);
+                m.put("ELCarryFroward", 0.0);
             }
-            
-            // Calculate RH balance
-            if (rhTypeId != null) {
-                List<EmpLeaveApplication> rhApproved = empLeaveApplicationRepository.findByEmpIdAndLeaveTypeIdAndStatusAndIsDeletedFalse(emp.getEmpId(), rhTypeId, "APPROVED BY HR");
-                Double rhOpening = rhApproved.stream().mapToDouble(e -> e.getNoOfDays() != null ? e.getNoOfDays().doubleValue() : 0.0).sum();
-                
-                List<EmpLeaveApplication> rhAvailedList;
-                if (month != null && month > 0) {
-                    rhAvailedList = empLeaveApplicationRepository.findByEmpIdAndLeaveTypeIdAndYearMonthAndStatusAndIsDeletedFalse(emp.getEmpId(), rhTypeId, year, month);
-                } else {
-                    rhAvailedList = empLeaveApplicationRepository.findByEmpIdAndLeaveTypeIdAndYearAndStatusAndIsDeletedFalse(emp.getEmpId(), rhTypeId, year);
-                }
-                Double rhAvailed = rhAvailedList.stream().mapToDouble(e -> e.getNoOfDays() != null ? e.getNoOfDays().doubleValue() : 0.0).sum();
-                
-                m.put("RHOpeningBalance", rhOpening);
-                m.put("RHAvailed", rhAvailed);
-                m.put("RHColsingBalance", rhOpening - rhAvailed);
+
+            // RH balance
+            Map<String, Object> cfRH = cfDetails.stream()
+                .filter(c -> "RH".equalsIgnoreCase((String)c.get("ShortName")) && c.get("EmpId") != null && c.get("EmpId").equals(emp.getEmpId()))
+                .findFirst().orElse(null);
+            if (cfRH != null) {
+                m.put("RHOpeningBalance", ((Number)cfRH.get("OpeningBalance")).doubleValue());
+                m.put("RHAvailed", ((Number)cfRH.get("Availed")).doubleValue());
+                m.put("RHColsingBalance", ((Number)cfRH.get("ClosingBalance")).doubleValue());
+                m.put("RHCarryFroward", ((Number)cfRH.get("CarryForward")).doubleValue());
             } else {
                 m.put("RHOpeningBalance", 0.0);
                 m.put("RHAvailed", 0.0);
                 m.put("RHColsingBalance", 0.0);
+                m.put("RHCarryFroward", 0.0);
             }
-            
-            // Calculate COMPOFF balance
-            if (compoffTypeId != null) {
-                List<EmpLeaveApplication> compoffApproved = empLeaveApplicationRepository.findByEmpIdAndLeaveTypeIdAndStatusAndIsDeletedFalse(emp.getEmpId(), compoffTypeId, "APPROVED BY HR");
-                Double compoffOpening = compoffApproved.stream().mapToDouble(e -> e.getNoOfDays() != null ? e.getNoOfDays().doubleValue() : 0.0).sum();
-                
-                List<EmpLeaveApplication> compoffAvailedList;
-                if (month != null && month > 0) {
-                    compoffAvailedList = empLeaveApplicationRepository.findByEmpIdAndLeaveTypeIdAndYearMonthAndStatusAndIsDeletedFalse(emp.getEmpId(), compoffTypeId, year, month);
-                } else {
-                    compoffAvailedList = empLeaveApplicationRepository.findByEmpIdAndLeaveTypeIdAndYearAndStatusAndIsDeletedFalse(emp.getEmpId(), compoffTypeId, year);
-                }
-                Double compoffAvailed = compoffAvailedList.stream().mapToDouble(e -> e.getNoOfDays() != null ? e.getNoOfDays().doubleValue() : 0.0).sum();
-                
-                m.put("COMPOFFOpeningBalance", compoffOpening);
-                m.put("COMPOFFAvailed", compoffAvailed);
-                m.put("COMPOFFColsingBalance", compoffOpening - compoffAvailed);
+
+            // COMPOFF balance
+            Map<String, Object> cfCOMPOFF = cfDetails.stream()
+                .filter(c -> "COMP OFF".equalsIgnoreCase((String)c.get("ShortName")) && c.get("EmpId") != null && c.get("EmpId").equals(emp.getEmpId()))
+                .findFirst().orElse(null);
+            if (cfCOMPOFF != null) {
+                m.put("COMPOFFOpeningBalance", ((Number)cfCOMPOFF.get("OpeningBalance")).doubleValue());
+                m.put("COMPOFFAvailed", ((Number)cfCOMPOFF.get("Availed")).doubleValue());
+                m.put("COMPOFFColsingBalance", ((Number)cfCOMPOFF.get("ClosingBalance")).doubleValue());
+                m.put("COMPOFFCarryFroward", ((Number)cfCOMPOFF.get("CarryForward")).doubleValue());
             } else {
                 m.put("COMPOFFOpeningBalance", 0.0);
                 m.put("COMPOFFAvailed", 0.0);
                 m.put("COMPOFFColsingBalance", 0.0);
+                m.put("COMPOFFCarryFroward", 0.0);
             }
-            
+
             result.add(m);
         }
-        
+
         return result;
     }
 
