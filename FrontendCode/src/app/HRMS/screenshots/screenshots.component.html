@@ -1,0 +1,235 @@
+<app-toast-message></app-toast-message>
+<div class="dis-fl-end">
+    <div class="heading-dash-sub">
+        <span>Screenshot Analysis</span>
+    </div>
+    <div class="text-end">
+        <button class="HRMS_Create_Close text-end" data-bs-toggle="modal" data-bs-target="#analysisHours"
+            (click)="callWorkAnaHr()">
+            <i class="feather icon-plus"></i>&nbsp; &nbsp;Work Analysis
+        </button>
+    </div>
+</div>
+
+<div class="divSpinner" *ngIf="isSpinner">
+    <div class="spinner"></div>
+</div>
+<app-card [options]="false">
+    <!-- <div class="d-flex justify-content-end align-items-center mb-3">
+        <button style="background-color: #1B85FF;" class="HRMS_secondary_button" data-bs-toggle="modal"
+            data-bs-target="#analysisHours" (click)="callWorkAnaHr()">
+            <i class="fas fa-plus"></i>&nbsp;Work Analysis
+        </button>
+    </div> -->
+
+    <form [formGroup]="screenshotForm">
+        <div class="row">
+
+            <div class="form-group floating-label-group col-12 col-md-3 inputPadding mb-3">
+                <input type="text" class="form-control floating-input" formControlName="employee_code"
+                    id="nameInputEmpCode" placeholder=" "
+                    [ngClass]="{'is-invalid': (isFormSubmitted || screenshotForm.get('employee_code')?.touched) && (screenshotForm.get('employee_code')?.invalid)}">
+                <label for="nameInputEmpCode" class="floating-label" style="left: 20px;"
+                    [ngClass]="{'text-danger': (isFormSubmitted || screenshotForm.get('employee_code')?.touched) && (screenshotForm.get('employee_code')?.invalid)}">Employee
+                    Code*</label>
+                <div *ngIf="(isFormSubmitted || screenshotForm.get('employee_code')?.touched) && screenshotForm.get('employee_code')?.invalid"
+                    class="invalid-feedback m-0">
+                    <span *ngIf="screenshotForm.get('employee_code')?.errors?.required" class="px-1">Employee Code
+                        required.</span>
+                </div>
+            </div>
+
+            <div class="form-group floating-label-group col-12 col-md-3 inputPadding mb-3">
+                <div class="custom-date-input">
+                    <input type="date" formControlName="date" [max]="today"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || screenshotForm.get('date')?.touched) && (screenshotForm.get('date')?.invalid)}"
+                        (keydown)="preventKeyboardInput($event)" (keypress)="preventKeyboardInput($event)"
+                        (paste)="preventPaste($event)" id="dateId">
+                    <label for="dateId" class="floating-label"
+                        [ngClass]="{'text-danger': (isFormSubmitted || screenshotForm.get('date')?.touched) && (screenshotForm.get('date')?.invalid)}">Date
+                    </label>
+                    <div *ngIf="(isFormSubmitted || screenshotForm.get('date')?.touched) && screenshotForm.get('date')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="screenshotForm.get('date')?.errors?.required" class="px-1">Date is
+                            required.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex flex-column flex-md-row justify-content-end gap-2 mt-3">
+            <button class="HRMS_secondary_button" type="button" (click)="resetData()"><i
+                    class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+            <button class="HRMS_primary_button" type="submit" (click)="submitFormdata()">
+                <span *ngIf="controlAccessPage?.AddAccess === true"><i class="feather icon-check"></i>&nbsp;Submit</span>
+            </button>
+        </div>
+
+    </form>
+
+    <div *ngIf="availableDates?.length" class="note-box">
+        <h5 class="note-title">🗓️ Available Dates:</h5>
+        <ul class="note-list">
+            <li *ngFor="let item of availableDates" (click)="downloadByDate(item.Date)" class="clickable-date">
+                {{ item.Date }}
+            </li>
+        </ul>
+
+    </div>
+
+
+</app-card>
+
+
+<!--============== Modal ================== -->
+<div class="modal fade" id="analysisHours" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="divSpinner1" *ngIf="isSpinner1">
+                <div class="spinner1"></div>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    <div class="text-end">
+                        <button type="reset" class="btn-close " data-bs-dismiss="modal" #closeModal aria-label="Close"
+                            (click)="resetWAF()"></button>
+                    </div>
+                    <form [formGroup]="workAnalysisForm">
+                        <div class="row mb-1">
+                            <div class="col-md-3 form-group floating-label-group">
+                                <input type="text" placeholder=" " id="employeeCode" class="form-control floating-input"
+                                    formControlName="emp_code_WAF"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || workAnalysisForm.get('emp_code_WAF')?.touched) && (workAnalysisForm.get('emp_code_WAF')?.invalid)}" />
+                                <label for="employeeCodeId" class="floating-label m-0" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || workAnalysisForm.get('emp_code_WAF')?.touched) && (workAnalysisForm.get('emp_code_WAF')?.invalid)}">Employee
+                                    Code</label>
+                                <div *ngIf="(isFormSubmitted || workAnalysisForm.get('emp_code_WAF')?.touched) && workAnalysisForm.get('emp_code_WAF')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="workAnalysisForm.get('emp_code_WAF')?.errors?.required"
+                                        class="px-1">Empcode is
+                                        required.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 mb-1">
+                                <div class="custom-date-input">
+                                    <input type="date" placeholder=" " id="dateModalId" [max]="today"
+                                        class="form-control floating-input" formControlName="date_WAF"
+                                        [ngClass]="{'is-invalid': (isFormSubmitted || workAnalysisForm.get('date_WAF')?.touched) && (workAnalysisForm.get('date_WAF')?.invalid)}" />
+                                    <label for="dateModalId" class="floating-label"
+                                        [ngClass]="{'text-danger': (isFormSubmitted || workAnalysisForm.get('date_WAF')?.touched) && (workAnalysisForm.get('date_WAF')?.invalid)}">Date*</label>
+                                    <div *ngIf="(isFormSubmitted || workAnalysisForm.get('date_WAF')?.touched) && workAnalysisForm.get('date_WAF')?.invalid"
+                                        class="invalid-feedback m-0">
+                                        <span *ngIf="workAnalysisForm.get('date_WAF')?.errors?.required"
+                                            class="px-1">Date is
+                                            required.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3 form-group floating-label-group">
+                                <input type="text" placeholder="00:00:00.000" id="analysishourId"
+                                    class="form-control floating-input" formControlName="analysis_hour"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || workAnalysisForm.get('analysis_hour')?.touched) && (workAnalysisForm.get('analysis_hour')?.invalid)}" />
+                                <label for="analysishourIdId" class="floating-label m-0" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || workAnalysisForm.get('analysis_hour')?.touched) && (workAnalysisForm.get('analysis_hour')?.invalid)}">
+                                    Analysis Hour</label>
+                                <div *ngIf="(isFormSubmitted || workAnalysisForm.get('analysis_hour')?.touched) && workAnalysisForm.get('analysis_hour')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="workAnalysisForm.get('analysis_hour')?.errors?.required"
+                                        class="px-1">Hour is required.</span>
+                                    <span *ngIf="workAnalysisForm.get('analysis_hour')?.errors?.pattern" class="px-1">
+                                        Time must be in format like <strong
+                                            style="font-size: 11px;">00:00:00.000</strong>
+                                    </span>
+
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="text-end">
+                            <button class="HRMS_primary_button" (click)="submitWorkAnalysisHour()">
+                                <i class="feather icon-check"></i>&nbsp; Submit
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+
+                <div class="container-fluid p-1">
+                    <div class="text-end">
+                        <div class="text-right hrms_search_field">
+                           <input type="text" class="form-control rad-50" #inputValue (keyup)="applyFilter($event)"
+                        placeholder="Search" id="serachInputId" style="max-width: 200px;" />
+                        </div>
+                    </div>
+                    <!-- Table -->
+                    <div class="table-wrapper">
+                        <ng-container>
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light sticky-header">
+                                    <tr>
+                                        <th class="">Name</th>
+                                        <th class="">ID</th>
+                                        <th class=" fw-bold">Date</th>
+                                        <th class="">Login Time</th>
+                                        <th class="">Logout Time</th>
+                                        <th class="">Active Hours</th>
+                                        <th class="">Analysis Hours</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody *ngIf="isTableData == false">
+                                    <tr
+                                        *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                                        <td class="">
+                                            <span>{{row.EmpName}}</span>
+                                        </td>
+                                        <td class="">
+                                            <span>{{row.EmpCode}}</span>
+                                        </td>
+                                        <td class=" fw-bold" *ngIf="(row.Date != null)">
+                                            <span>{{row.Date }}</span>
+                                        </td>
+                                        <td class="">
+                                            <span>{{ row.LoginTimeStr }}</span>
+                                        </td>
+                                        <td class="">
+                                            <span>{{ row.LogoutTimeStr }}</span>
+                                        </td>
+                                        <td class="">
+                                            <span>{{ row.ActiveHoursStr }}</span>
+                                        </td>
+                                        <td class="">
+                                            <span>{{ row.AnalysisHoursStr }}</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </ng-container>
+
+                        <div *ngIf="isTableData == true" class="text-center errorMassage">
+                            <span class="text-danger">{{errorMessage}}</span>
+                        </div>
+                    </div>
+
+
+                    <div class="pagination-controls-wrapper">
+                        <div class="row align-items-center" style="padding-top: 1rem;">
+                            <div class="col-auto">
+                                <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+                                <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+                                    <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+                                </select>
+                            </div>
+                            <div class="col">
+                            </div>
+                            <div class="col-auto">
+                                <pagination-controls (pageChange)="page = $event"></pagination-controls>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

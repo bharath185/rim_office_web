@@ -1,0 +1,54 @@
+@media only screen and (max-width: 991px) {
+  ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+    margin-left: 0px;
+    margin-top: 57px !important;
+  }
+}
+
+::ng-deep .pcoded-content {
+  position: relative;
+  display: block;
+  padding: 0px !important;
+  padding-left: 25px !important;
+  padding-right: 25px !important;
+
+}
+
+.pcoded-header {
+  .card {
+    margin: 0px !important;
+  }
+}
+
+.form-group {
+  margin-bottom: 0px !important;
+}
+
+.table-wrapper {
+  max-height: 500px !important;
+}
+
+.table thead th {
+  padding: 10px 10px !important;
+}
+
+.table tbody td {
+  padding: 5px 10px !important;
+}
+
+/* Mobile-specific styling */
+@media (max-width: 768px) {  /* You can adjust breakpoint */
+  .table-wrapper {
+    max-width: 100%;         /* fits screen width */
+    overflow-x: auto !important;        /* ensures horizontal scroll */
+  }
+
+  .table-wrapper table {
+    min-width: 600px;        /* table wider than screen to enable scroll */
+  }
+
+  th, td {
+    padding: 8px 12px;       /* smaller padding for mobile */
+  }
+}
+

@@ -1,0 +1,190 @@
+<app-toast-message></app-toast-message>
+
+<div class="org-tree-container">
+  <!-- Compact Header -->
+  <div class="tree-header">
+    <div class="header-title">
+      <i class="bi bi-diagram-3"></i>
+      <h2>Org Tree</h2>
+      <span class="total-count">{{ getTotalCount() }}</span>
+      <div class="header-controls">
+ 
+        <select class="grade-filter" [(ngModel)]="selectedGrade" (change)="filterByGrade()">
+          <option value="">All Grades</option>
+          <option *ngFor="let grade of availableGrades" [value]="grade">{{ grade }}</option>
+        </select>
+ 
+      </div>
+    </div>
+ 
+    <div [formGroup]="hierarchyForm">
+      <div class="row">
+        <div class="form-group floating-label-group col-md-2 inputPadding">
+          <select class="form-control floating-input" formControlName="BUId" id="businessId">
+            <!-- (change)="callLocation()" -->
+            <option disabled selected hidden value=""></option>
+            <option *ngFor="let unitList of getBusinessUnitlist" [value]="unitList.BUId">
+              {{unitList.BusinessUnit}}</option>
+          </select>
+          <label for="businessId" class="floating-label m-0" style="left: 20px;">Business Unit</label>
+        </div>
+        <div class="form-group floating-label-group col-md-2 inputPadding">
+          <select class="form-control floating-input" formControlName="LocationId" id="locationId">
+            <option disabled selected hidden value=""></option>
+            <option *ngFor="let location of getLocations" [value]="location.LocationId">
+              {{location.Location}}</option>
+          </select>
+          <label for="locationId" class="floating-label m-0" style="left: 20px;">Location</label>
+        </div>
+        <div class="form-group floating-label-group col-md-2 inputPadding">
+          <select class="form-control floating-input" formControlName="DeptId" id="depNameId"
+            (change)="callDDDesignation()">
+            <option value="" selected hidden></option>
+            <option *ngFor="let option of getDepartementName" [value]="option['DeptId']">
+              {{ option['DeptName']['length'] > 20 ? (option['DeptName'] | slice: 0:20) + '...' :
+              option['DeptName'] }}
+            </option>
+          </select>
+          <label for="depNameId" class="floating-label m-0" style="left: 20px;">Department</label>
+        </div>
+        <div class="form-group floating-label-group col-md-2 inputPadding">
+          <select class="form-control floating-input" formControlName="DesignationId" id="designationId"
+            (change)="callReporter()">
+            <option value="" selected hidden></option>
+            <option *ngFor="let option of getDepartementRole" [value]="option['DesignationId']">
+              {{ option.Designation.length > 17 ? (option.Designation | slice: 0:17) + '...' :
+              option.Designation }}
+            </option>
+          </select>
+          <label for="designationId" class="floating-label m-0" style="left: 20px;">Designation</label>
+        </div>
+ 
+        <div class="form-group floating-label-group col-md-2 inputPadding">
+          <select class="form-control floating-input" formControlName="ReporterId" id="reporter_name_id"
+            (change)="callDDEmployee()">
+            <option value="" selected hidden></option>
+            <option *ngFor="let reporter of getDropdownReporter" [value]="reporter.ReporterId">
+              {{reporter.ReporterName}}({{reporter.ReporterCode}})</option>
+          </select>
+          <label for="reporter_name_id" class="floating-label m-0" style="left: 20px;">Reporting To</label>
+        </div>
+ 
+        <div class="form-group floating-label-group col-md-2 inputPadding">
+          <select class="form-control floating-input" formControlName="EmpId" id="reporter_name_id">
+            <option value="" selected hidden></option>
+            <option *ngFor="let emp of getDropdownEmployee" [value]="emp.EmpId">
+              {{emp.EmpName}}({{emp.EmpCode}})</option>
+          </select>
+          <label for="reporter_name_id" class="floating-label m-0" style="left: 20px;">Employee</label>
+        </div>
+ 
+        <!-- <div class="col-md-2"> -->
+        <div class="text-end">
+          <button class="HRMS_secondary_button" type="reset" (click)="resetData()">
+            <i class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+          <button class="HRMS_primary_button" type="button" (click)="submitFilterData()">
+ 
+            <span *ngIf="!isSpinner">
+              <i class="feather icon-filter"></i>&nbsp;Filter
+            </span>
+ 
+            <span *ngIf="isSpinner">
+              <i class="fa fa-spinner fa-spin"></i>&nbsp;Filtering...
+            </span>
+ 
+          </button>
+        </div>
+        <!-- </div> -->
+      </div>
+ 
+    </div>
+ 
+ 
+  </div>
+ 
+ 
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="loader"></div>
+  </div>
+ 
+ 
+  <!-- Tree Structure -->
+  <div class="org-tree" *ngIf="!isLoading && !errorMessage && treeData.length > 0">
+    <div class="tree-root">
+      <div class="tree-branch" *ngFor="let rootNode of treeData; let rootIdx = index">
+        <ng-container
+          *ngTemplateOutlet="treeNode; context: { node: rootNode, isFirst: rootIdx === 0, isLast: rootIdx === treeData.length - 1, parentCount: treeData.length }"></ng-container>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- Empty -->
+  <div class="empty-state" *ngIf="!isLoading && !errorMessage && treeData.length === 0">
+    <i class="bi bi-tree"></i>
+    <p>No data</p>
+  </div>
+</div>
+ 
+<!-- Recursive Tree Node Template -->
+<ng-template #treeNode let-node="node" let-isFirst="isFirst" let-isLast="isLast" let-parentCount="parentCount">
+  <div class="tree-node-wrapper">
+    <!-- Node Card -->
+    <div class="tree-card" [class]="getTreeLevelClass(node.level)" [class.logged-in]="isLoggedInUser(node)"
+      [class.has-children]="node.Reportees?.length > 0"
+      (click)="node.Reportees?.length > 0 ? toggleNode(node, $event) : null">
+ 
+      <button class="expand-toggle" *ngIf="node.Reportees?.length > 0"
+        (click)="toggleNode(node, $event); $event.stopPropagation()">
+        <i class="bi" [class.bi-plus]="!node.isExpanded" [class.bi-dash]="node.isExpanded"></i>
+      </button>
+ 
+      <div class="node-avatar" [class]="getGradeClass(node.GradeName)">
+        <span>{{ getInitials(node.EmployeeName) }}</span>
+        <div class="you-badge" *ngIf="isLoggedInUser(node)">●</div>
+      </div>
+ 
+      <div class="node-info">
+        <div class="node-name">
+          {{ node.EmployeeName | slice:0:18 }}{{ node.EmployeeName.length > 18 ? '..' : '' }}
+          <span class="emp-code">{{ node.EmpCode }}</span>
+        </div>
+        <div class="node-designation">
+          {{ node.DesignationName | slice:0:20 }}{{ node.DesignationName.length > 20 ? '..' : '' }}
+        </div>
+        <div class="node-meta">
+          <span class="grade-badge" [class]="'g' + getGradeNumber(node.GradeName)">
+            {{ node.GradeName }}
+          </span>
+          <span class="report-badge" *ngIf="node.ReporteesCount > 0">
+            <i class="bi bi-people"></i> {{ node.ReporteesCount }}
+          </span>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- Children with proper tree lines -->
+    <div class="tree-children" *ngIf="node.isExpanded && node.Reportees?.length > 0">
+      <!-- Vertical line from parent to children group -->
+      <div class="parent-connector"></div>
+ 
+      <!-- Horizontal line connecting all children -->
+      <div class="horizontal-connector"></div>
+ 
+      <div class="children-wrapper">
+        <div class="child-node" *ngFor="let child of node.Reportees; let childIdx = index">
+          <!-- Vertical line to each child -->
+          <div class="child-connector" [class.first-child]="childIdx === 0"
+            [class.last-child]="childIdx === node.Reportees.length - 1">
+          </div>
+          <ng-container *ngTemplateOutlet="treeNode; context: {
+            node: child,
+            isFirst: childIdx === 0,
+            isLast: childIdx === node.Reportees.length - 1,
+            parentCount: node.Reportees.length
+          }"></ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

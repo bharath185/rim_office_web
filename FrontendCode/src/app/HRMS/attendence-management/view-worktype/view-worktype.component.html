@@ -1,0 +1,250 @@
+<app-toast-message></app-toast-message>
+
+<div class="dis-fl-end">
+     <div class="heading-dash-sub">
+        <span>View Work Type</span>
+        <ol class="breadcrumb fade-left">
+            <li class="breadcrumb-item active dis-fl" aria-current="page">
+                <span class="breadC">Attendance</span>
+                <span class="breadC" [routerLink]="['/add_worktype']" style="color:rgb(127, 186, 235);cursor: pointer"> <i
+                        class="feather icon-chevron-right"></i>&nbsp;Add Work Type</span>
+                <span class="breadC"><i class="feather icon-chevron-right"></i></span><span class="breadC col-act">View Work Type</span>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<app-card [options]="false">
+
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <form [formGroup]="viewWorkTypeForm">
+                <div class="row">
+
+                    <!-- {{ employee.EmpName.length > 20 ? (employee.EmpName | slice: 0:20) + '...' : employee.EmpName }} -->
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <div class="dropdown">
+                            <input type="text" formControlName="employeeName" class="form-control floating-input"
+                                placeholder="Select Employee" [(ngModel)]="searchText" id="employeeNameId"
+                                (focus)="openDropdown()" (input)="filterEmployees()"
+                                (blur)="closeDropdown(); checkValidEmployee()" autocomplete="off" />
+                            <label class="floating-label m-0" style="left: 10px;" for="employeeNameId"
+                                [ngClass]="{'text-danger':(isFormSubmitted || viewWorkTypeForm.get('employeeName')?.touched) && viewWorkTypeForm.get('employeeName')?.invalid}">Employee
+                                Name</label>
+                            <i class="fas fa-chevron-down dropdown-icon"></i>
+                            <ul class="dropdown-menu" [class.show]="isDropdownOpen && filteredEmployees.length >= 0">
+                                <li *ngFor="let employee of filteredEmployees" (click)="selectEmployee(employee)"
+                                    class="dropdown-item">
+                                    {{ employee.EmpName }} ({{ employee.EmpCode }})
+                                </li>
+                                <li *ngIf="filteredEmployees.length === 0" class="dropdown-item text-danger">
+                                    No results found
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                            (blur)="onBlur($event)" formControlName="employee_code" id="nameInputEmpCode"
+                            placeholder=" " readonly>
+                        <label for="nameInputEmpCode" class="floating-label" style="left: 20px;">Employee
+                            Code</label>
+                    </div>
+
+                    <!-- (keydown)="preventKeyboardInput($event)" (keypress)="preventKeyboardInput($event)" (paste)="preventPaste($event)" -->
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <div class="custom-date-input">
+                            <input type="date" placeholder=" " formControlName="date_from"
+                                (ngModelChange)="onFromDate()" [ngClass]="{'is-invalid': isFromDateInvalid()}"
+                                id="fromDateId" />
+                            <label for="fromDateId" class="floating-label"
+                                [ngClass]="{'text-danger': (isFormSubmitted || viewWorkTypeForm.get('date_from')?.touched) && (viewWorkTypeForm.get('date_from')?.invalid)}">From
+                                Date</label>
+                            <div *ngIf="isFromDateInvalid()" class="invalid-feedback m-0">
+                                <span *ngIf="viewWorkTypeForm.get('date_from')?.errors?.required">From
+                                    Date is
+                                    required.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <div class="custom-date-input">
+                            <input type="date" placeholder=" " formControlName="date_to" (ngModelChange)="onToDate()"
+                                [min]="minDate" [ngClass]="{'is-invalid': isToDateInvalid() || dateRangeError}"
+                                id="toDateId" />
+                            <label for="toDateId" class="floating-label"
+                                [ngClass]="{'text-danger': (isFormSubmitted || viewWorkTypeForm.get('date_to')?.touched) && (viewWorkTypeForm.get('date_to')?.invalid)}">To
+                                Date</label>
+                            <div *ngIf="isToDateInvalid() || dateRangeError" class="invalid-feedback m-0">
+                                <span *ngIf="viewWorkTypeForm.get('date_to')?.errors?.required">To Date is
+                                    required.</span>
+                                <span *ngIf="dateRangeError">To Date must be after Start
+                                    Date.</span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <select class="form-control floating-input" formControlName="staus" id="staus"
+                            (focus)="onFocus($event)" (blur)="onBlur($event)"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || viewWorkTypeForm.get('staus')?.touched) && (viewWorkTypeForm.get('staus')?.invalid)}">
+                            <option value="" selected disabled hidden></option>
+                            <option value="Applied">Applied</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Rejected">Rejected</option>
+                            <!-- <option value="Completed">Completed</option> -->
+                        </select>
+                        <label for="staus" class="floating-label m-0" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || viewWorkTypeForm.get('staus')?.touched) && viewWorkTypeForm.get('staus')?.invalid}">Status</label>
+
+                    </div>
+
+                    <div style="display: flex;justify-content: end;align-items: center;">
+                        <button class="HRMS_secondary_button" type="reset" (click)="resetData()">
+                            <i class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+                        <button class="HRMS_primary_button" type="submit" (click)="submitFormData()">
+                            <i class="feather icon-filter"></i>&nbsp;Filter</button>
+                    </div>
+
+                </div>
+            </form>
+
+        </div>
+    </div>
+    <div class="divSpinner" *ngIf="isSpinner">
+        <div class="spinner"></div>
+    </div>
+    <div class="col-md-12 my-3">
+        <div class="row">
+            <div class="col-md-9">
+                <h5 class="mb-0 form-heading">View Work Type</h5>
+            </div>
+            <div class="col-md-3 text-end">
+                <input type="text" class="form-control rad-50" #inputValue (keyup)="applyFilter($event)"
+                    placeholder="Search" id="serachInputId" />
+            </div>
+        </div>
+
+        <div class="table-wrapper mt-3">
+            <table class="table table-hover align-middle">
+                <thead class="table-light sticky-header">
+                    <tr class="inner-shadow ">
+                        <th class="">Emloyee Name</th>
+                        <th class="">Emloyee Code</th>
+                        <th class="">Work Type</th>
+                        <th class="">From Date</th>
+                        <th class="">To Date</th>
+                        <th class="">Reason</th>
+                        <th class="">Status</th>
+                        <!-- <th class="">Approver</th> -->
+                        <th class="text-end me-2" *ngIf="controlAccessPage?.UpdateAccess === true">Action</th>
+                    </tr>
+                </thead>
+                <tbody *ngIf="isTableData == false">
+                    <tr
+                        *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                        <td class="">
+                            <span>{{row.EmpName}}</span>
+                        </td>
+                        <td class="">
+                            <span>{{row.EmpCode}}</span>
+                        </td>
+                        <td class="">
+                            <span>{{row.WorkType}}</span>
+                        </td>
+                        <td class="">
+                            <span>{{row.StartDate }}</span>
+                        </td>
+                        <td class="">
+                            <span>{{row.EndDate}}</span>
+                        </td>
+                        <td class="">
+                            <span>{{row.Reason}}</span>
+                        </td>
+                        <td class="" >
+                            <Span *ngIf="row.IsApproved === false && row.IsRejected === false">Applied</Span>
+                            <Span *ngIf="row.IsApproved === true && row.IsRejected === false"
+                                style="color:green">Approved</Span>
+                            <Span *ngIf="row.IsApproved === false && row.IsRejected === true"
+                                style="color: red;">Rejected</Span>
+                        </td>
+                        <td class="text-end" *ngIf="controlAccessPage?.UpdateAccess === true">
+                            <i class="fas fa-ellipsis-h fa-md action-icon" (click)="toggleDropdownNew($event, row)"
+                                [ngClass]="{'disabled-icon': row.IsApproved || row.IsRejected}"
+                                [style.color]="(row.IsApproved || row.IsRejected) ? 'gray' : '#072f5f'"
+                                [style.cursor]="(row.IsApproved === true || row.IsRejected === true) ? 'not-allowed' : 'pointer'"></i>
+                        </td>
+
+                    </tr>
+                </tbody>
+
+                <!-- Dropdown Menu -->
+                <div *ngIf="dropdownVisible" class="dropdown-menu-new">
+                    <button (click)="approveAction()">Approve</button>
+                    <button (click)="rejectAction()">Reject</button>
+                </div>
+            </table>
+            <div *ngIf="isTableData == true" class="text-center errorMassage">
+                <span class="text-danger">{{errorMessage}}</span>
+            </div>
+
+        </div>
+        <div class="pagination-controls-wrapper">
+            <div class="row align-items-center" style="padding-top: 1rem;">
+                <div class="col-auto">
+                    <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+                    <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+                        <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+                    </select>
+                </div>
+                <div class="col">
+                </div>
+                <div class="col-auto">
+                    <pagination-controls (pageChange)="page = $event"></pagination-controls>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</app-card>
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    data-bs-backdrop="static">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header d-flex align-items-center justify-content-between">
+                <button type="reset" class="btn-close " data-bs-dismiss="modal" aria-label="Close" #closeModal>
+                    <i class="fa fa-times lg"></i>
+                </button>
+            </div>
+            <div class="modal-body pt-2">
+                <ng-container>
+                    <form [formGroup]="actionForm">
+                        <div class="col-md-12">
+                            <div class="form-group floating-label-group col-md-6">
+                                <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="description" id="descriptionID"
+                                    placeholder=" ">
+                                <label for="descriptionID" class="floating-label"
+                                    style="left: 15px;">Description</label>
+                            </div>
+                            <div style="display: flex; justify-content: end;">
+                                <button class="HRMS_primary_button" type="submit" *ngIf="isApproveMode"
+                                    (click)="approve()">Approve</button>
+                                <button class="HRMS_primary_button mx-2" type="submit" *ngIf="!isApproveMode"
+                                    (click)="reject()">Reject</button>
+                            </div>
+                        </div>
+                    </form>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,380 @@
+<app-toast-message></app-toast-message>
+<div class="overlay" *ngIf="isSpinner"></div>
+<div class="dis-fl-end">
+    <div class="heading-dash-sub">
+        <span>View Visitor</span>
+        <ol class="breadcrumb fade-left">
+            <li class="breadcrumb-item active dis-fl" aria-current="page">
+                <span class="breadC">Visitor Module</span>
+                <span class="breadC" [routerLink]="['/visitor']" style="color:rgb(127, 186, 235);cursor: pointer"> <i
+                        class="feather icon-chevron-right"></i>&nbsp;Visitor</span>
+                <span class="breadC"><i class="feather icon-chevron-right"></i></span><span class="breadC col-act"> View Visitor</span>
+            </li>
+        </ol>
+    </div>
+</div>
+<app-card [options]="false">
+    <div class="col-md-12">
+        <form [formGroup]="viewSearchForm">
+            <div class="row mt-2">
+                <div class="export-container" style="display: flex;justify-content: end;align-items: center;">
+                    <button class="export-button" (click)="toggleDropdown()">
+                        <i class="fas fa-download me-1"></i>Export<i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-content" *ngIf="dropdownVisible">
+                        <div class="dropdown-item" (click)="exportFile('csv')">
+                            <i class="fas fa-file-csv"></i>CSV
+                        </div>
+                        <div class="dropdown-item" (click)="exportFile('excel')">
+                            <i class="fas fa-file-excel"></i> Excel
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <!-- (keydown)="preventKeyboardInput($event)" (keypress)="preventKeyboardInput($event)" -->
+                <div class="form-group floating-label-group col-md-3 inputPadding mt-2">
+                    <div class="custom-date-input">
+                        <input type="date" class="form-control date-input" id="dateFromId" formControlName="date_from"
+                            (change)="onFromDateChange($event)" [max]="maxDate" [value]="null"
+                            [ngClass]="{'is-invalid': isFromDateInvalid()}">
+                        <label for="dateFromId" class="floating-label"
+                            [ngClass]="{'text-danger': (isFormSubmitted || viewSearchForm.get('date_from')?.touched) && (viewSearchForm.get('date_from')?.invalid)}">
+                            From Date
+                        </label>
+                        <div *ngIf="isFromDateInvalid()" class="invalid-feedback">
+                            <span *ngIf="viewSearchForm.get('date_from')?.errors?.required">From Date is
+                                required.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3 inputPadding mt-2">
+                    <div class="custom-date-input">
+                        <input type="date" class="form-control date-input" id="dateTo" formControlName="date_to"
+                            (change)="onToDateChange($event)" [min]="minDate"
+                            [ngClass]="{'is-invalid': isToDateInvalid()}" [value]="null">
+                        <label for="dateTo"
+                            [ngClass]="{'text-danger': (isFormSubmitted || viewSearchForm.get('date_to')?.touched) && (viewSearchForm.get('date_to')?.invalid)}">
+                            To Date
+                        </label>
+                        <div *ngIf="isToDateInvalid()" class="invalid-feedback">
+                            <span *ngIf="viewSearchForm.get('date_to')?.errors?.required">To Date is required.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group floating-label-group col-md-3 inputPadding mt-2">
+                    <select class="form-control floating-input" aria-label="Default select example"
+                        formControlName="status" id="selectStatusId">
+                        <option hidden value="" selected disabled></option>
+                        <option value="INVITED">INVITED</option>
+                        <option value="INVITE ACCEPTED">INVITE ACCEPTED</option>
+                        <option value="CHECKED IN">CHECKED IN</option>
+                        <option value="CHECKED OUT">CHECKED OUT</option>
+                        <option value="EXPIRED">EXPIRED</option>
+                    </select>
+                    <label for="selectStatusId" class="floating-label" style="left: 20px;">Status</label>
+                </div>
+                <div class="col-md-1"></div>
+
+            </div>
+
+            <div style="display: flex;justify-content: end;align-items: center;" class="mt-2">
+                <button class="HRMS_secondary_button" type="reset" (click)="resetForm()">
+                    <i class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+                <button class="HRMS_primary_button" type="submit" (click)="submitForm()">
+                    <i class="feather icon-filter"></i>&nbsp;Filter</button>
+            </div>
+        </form>
+
+    </div>
+    <div class="divSpinner" *ngIf="isSpinner">
+        <div class="spinner"></div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-9">
+            <h5 class="mb-0 form-heading">Invited List</h5>
+        </div>
+        <div class="col-md-3 text-end mb-2">
+            <input type="text" class="form-control rad-50" #inputValue (keyup)="applyFilter($event)"
+                placeholder="Search" id="serachInputId" />
+        </div>
+    </div>
+    <div class="table-wrapper">
+        <table class="table table-hover align-middle">
+            <thead class="table-light sticky-header">
+                <tr class="inner-shadow ">
+                    <th class="">Date </th>
+                    <th class="">Name</th>
+                    <th class="">Contact Person</th>
+                    <th class="">Check In</th>
+                    <th class="">Check Out</th>
+                    <th class="">Status</th>
+                    <th class="text-end me-2"  *ngIf="controlAccessPage?.UpdateAccess === true">Action</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="isTableData == false">
+                <tr *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page } ;let i = index;">
+                    <td class="" [ngClass]="{'highlight-today': row.Date === today}">
+                        <span>{{row.Date | date:'dd-MM-yyyy'}}</span>&nbsp;
+                    </td>
+                    <td class="">
+                        <span>{{row.Name}}</span>
+                    </td>
+                    <td class="">
+                        <span>{{row.WName}}</span>
+                    </td>
+                    <td class="">
+                        <span>{{row.CheckIn}}</span>
+                    </td>
+                    <td class="">
+                        <span>{{row.CheckOut}}</span>
+                    </td>
+                    <td class="">
+                        <span *ngIf="row.Expired === true && row.Expired !== null"
+                            style="color: #A9A9A9;">Expired</span>
+
+                        <span *ngIf="row.Expired !== true">
+                            <span
+                                *ngIf="(row.Invited === true) && (row.Accept === false) && (row.CheckIn === '') && (row.CheckOut === '')">Invited</span>
+
+                            <span *ngIf="(row.Invited === true) && (row.Accept === true) && (row.Approved === false)"
+                                style="color: #072f5f">Invite Accepted</span>
+
+                            <span *ngIf="(row.CheckIn != null) && (row.CheckIn !== '') && (row.CheckOut === '')"
+                                style="color: green">Checked In</span>
+
+                            <span
+                                *ngIf="(row.CheckIn != null) && (row.CheckOut != null) && (row.CheckIn !== '') && (row.CheckOut !== '')"
+                                style="color: red;">Checked Out</span>
+                        </span>
+
+                    </td>
+                    <td class="text-end" *ngIf="controlAccessPage?.UpdateAccess === true"><span><i class="action-icon action-edit feather icon-eye" data-bs-toggle="modal"
+                                data-bs-target="#exampleModal" style="color:#072f5f;cursor: pointer;"
+                                (click)="onView(row)"></i></span></td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="isTableData == true" class="text-center errorMassage">
+            <span class="text-danger">{{errorMessage}}</span>
+        </div>
+    </div>
+
+    <div class="pagination-controls-wrapper">
+        <div class="row align-items-center" style="padding-top: 1rem;">
+            <div class="col-auto">
+                <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+                <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+                    <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+                </select>
+            </div>
+            <div class="col">
+            </div>
+            <div class="col-auto">
+                <pagination-controls (pageChange)="page = $event"></pagination-controls>
+            </div>
+        </div>
+    </div>
+</app-card> 
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header d-flex align-items-center justify-content-between">
+                <h1 class="modal-title fs-5 mx-auto" id="exampleModalLabel">View Visitor Details</h1>
+                <button type="reset" (click)="closeModalResetData()" class="btn-close " data-bs-dismiss="modal"
+                    aria-label="Close" #closeModal><i class="fa fa-times lg"></i></button>
+            </div>
+            <div class="modal-body pt-2">
+                <div class="container">
+                    <div class="divSpinner1" *ngIf="isSpinner1">
+                        <div class="spinner1"></div>
+                    </div>
+                    <div class="row mb-1">
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Name :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.Name}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Designation :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.Designation}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Company :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.Company}}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Purpose of Visit :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.Purpose}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Employee Code :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.WEmpCode}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Email ID :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.OMail}}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Mobile Number :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.Mobile}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Alternate Mobile Number :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.AMobile}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Contact Person :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.WName}}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Facilities :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.CompName}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Date :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.Date}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Time :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.Time}}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Check In :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.CheckIn}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Check Out :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.CheckOut}}</span>
+                            </div>
+                        </div>
+                        <!-- <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Expired :</span>
+                                <span class="fw-bold text-truncate text-danger">{{viewdata?.Expired}}</span>
+                            </div>
+                        </div> -->
+
+                    </div>
+
+                    <ng-container *ngIf="(viewdata?.Accept === true)">
+                        <form [formGroup]="viewDetailsForm">
+                            <div class="form-group col-md-12 mb-3">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label for="idCardId" class="form-label p-0 m-0">Visitor ID
+                                            Card*:</label>
+                                        <input type="text" class="form-control" id="exampleInputAccess"
+                                            formControlName="IdCard" id="idCardId"
+                                            [ngClass]="{'is-invalid': (isFormSubmitted || viewDetailsForm.get('IdCard')?.touched) && (viewDetailsForm.get('IdCard')?.invalid)}">
+                                        <div *ngIf="(isFormSubmitted || viewDetailsForm.get('IdCard')?.touched) && viewDetailsForm.get('IdCard')?.invalid"
+                                            class="invalid-feedback">
+                                            <span *ngIf="viewDetailsForm?.get('IdCard')?.errors?.required">Visitor Id
+                                                Card is required.</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                    <div class="col-md-4">
+                                        <label for="AccessoriesId" class="form-label p-0 m-0">Accessories :</label>
+                                        <textarea type="text" class="form-control" id="exampleInputAccess"
+                                            formControlName="description" id="AccessoriesId"></textarea>
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                    <div class="form-group col-md-3" style="padding-left: 10px !important;">
+                                        <label for="select1" class="p-0 m-0">Photo :</label>
+                                        <div class="d-flex align-items-center" *ngIf="isValidPhoto">
+                                            <img [src]="patchPhotoUrl" class="img-fluid" style="height: 50px;" alt="">
+                                        </div>
+                                        <ng-container *ngIf="shouldShowCheckIn()">
+                                            <div class="d-flex align-items-center" *ngIf="!isValidPhoto">
+                                                <label for="fileInput" class="fileInput">Choose Photo</label> OR
+                                                <label>
+                                                    <i class="fas fa-camera fa-lg ml-2" style="cursor: pointer;"
+                                                        (click)="toggleCamera()" [class.disabled]="isPhotoChosen">
+                                                    </i>
+                                                </label>
+                                                <input type="file" id="fileInput" (change)="onFileChange($event)"
+                                                    accept=".jpg" class="form-control" formControlName="uploadImage"
+                                                    [attr.disabled]="showCamera ? true : null">
+
+                                                <div *ngIf="imageSrc" class="form-group">
+                                                    <img [src]="imageSrc" alt="Uploaded" class="img-thumbnail">
+                                                    <br>
+                                                </div>
+
+                                                <app-camera (pictureTaken)="handleImage($event)" *ngIf="showCamera"
+                                                    [videoHeight]="videoHeight" [videoWidth]="videoWidth">
+                                                </app-camera>
+
+                                                <div class="snapshot" *ngIf="webcamImage">
+                                                    <img [src]="webcamImage.imageAsDataUrl" alt=""
+                                                        [style.height.px]="imageHeight" [style.width.px]="imageWidth" />
+                                                </div>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 d-flex justify-content-end gap-2 mt-3">
+                                <button type="button" class="HRMS_secondary_button" data-bs-dismiss="modal"
+                                    (click)="closeModalResetData()">Close</button>
+                                <button type="submit" class="HRMS_primary_button" *ngIf="shouldShowCheckIn()"
+                                    (click)="checkIn()">Check In</button>
+                                <ng-container *ngIf="viewdata?.Expired === false || viewdata?.Expired === null">
+                                    <button type="submit" class="HRMS_primary_button"
+                                        *ngIf="(viewdata?.Accept === true) && (viewdata?.Approved === true) && (viewdata?.CheckIn !== ' ') && (viewdata?.CheckOut === '')"
+                                        (click)="checkOut()">Check Out</button>
+                                </ng-container>
+
+                            </div>
+                        </form>
+                    </ng-container>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

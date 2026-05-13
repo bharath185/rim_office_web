@@ -1,0 +1,165 @@
+<div class="">
+    <button class="btn btn-primary me-2" (click)="downloadPDF()">Download PDF</button>
+</div>
+
+<div class="col-md-12 mt-2">
+    <div class="row mb-3">
+        <div class="form-group floating-label-group col-md-3 inputPadding">
+            <select class="form-control floating-input" id="employeeNameId">
+                <option selected hidden value="" disabled></option>
+                <option value="ABC">ABC</option>
+                <option value="DEF">DEF</option>
+                <option value="XYZ">XYZ</option>
+            </select>
+            <label for="employeeNameId" class="floating-label" style="left: 20px;">Employee*</label>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 inputPadding">
+            <input type="text" class="form-control floating-input" readonly>
+            <label class="floating-label" style="left: 20px;">Id</label>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 inputPadding">
+            <input id="annualCTC" type="number" class="form-control floating-input" (input)="onCTCChange($event)">
+            <label class="floating-label" style="left: 20px;">Annual CTC (₹)</label>
+        </div>
+
+    </div>
+</div>
+
+<app-card [options]="false">
+
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center">
+                <button type="button" class="btn" style="border-color:#072f5f;color:#072f5f;border-radius:0%;"
+                    (click)="addRow()">
+                    <i class="feather icon-plus"></i> Add Component
+                </button>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light sticky-header">
+                        <tr>
+                            <th>Component</th>
+                            <th>Formula(%)</th>
+                            <th>Amount (₹)</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor="let row of rows; let i = index">
+                            <td>
+                                <input *ngIf="row.isEditing" type="text" [(ngModel)]="row.Component"
+                                    class="form-control" />
+                                <span *ngIf="!row.isEditing">{{ row.Component }}</span>
+                            </td>
+                            <td>
+                                <input *ngIf="row.isEditing" type="text" [(ngModel)]="row.Formula" class="form-control"
+                                    (input)="calculateAmount(row)" />
+                                <span *ngIf="!row.isEditing">{{ row.Formula }}</span>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" [value]="row.Amount | number:'1.2-2'" readonly>
+                            </td>
+
+                            <td class="">
+                                <ng-container
+                                    *ngIf="(row.Component !== 'Monthly CTC' && row.Component !== 'Group Insurance')">
+
+                                    <span *ngIf="!row.isEditing" (click)="editRow(row, i)">
+                                        <i class="action-icon action-edit feather icon-edit-2 cursor_pointer"></i>
+                                    </span>
+
+                                    <span *ngIf="row.isEditing" (click)="saveRow(row, i)">
+                                        <i
+                                            class="action-icon action-save feather icon-check cursor_pointer text-success"></i>
+                                    </span>
+
+                                    <span *ngIf="row.isEditing" (click)="cancelEdit(row)">
+                                        <i
+                                            class="action-icon action-cancel feather icon-x cursor_pointer text-secondary"></i>
+                                    </span>
+
+                                    <span *ngIf="!row.isEditing" (click)="removeRow(i)">
+                                        <i
+                                            class="action-icon action-delete feather icon-trash-2 cursor_pointer text-danger"></i>
+                                    </span>
+
+                                </ng-container>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center">
+                <button type="button" class="btn" style="border-color:#072f5f;color:#072f5f;border-radius:0%;"
+                    (click)="addBenefitRow()">
+                    <i class="feather icon-plus"></i> Add Benefit
+                </button>
+            </div>
+
+            <div class="table-wrapper ">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light sticky-header">
+                        <tr>
+                            <th>Component</th>
+                            <th>Formula</th>
+                            <th>Amount (₹)</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of benefitsRows; let i = index">
+                            <td>{{ row.Component }}</td>
+                            <td>{{ row.Formula }}</td>
+                            <td>{{ row.Amount | number:'1.2-2' }}</td>
+                            <td>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <div class="d-flex justify-content-between align-items-center">
+                <button type="button" class="btn" style="border-color:#072f5f;color:#072f5f;border-radius:0%;"
+                    (click)="addBenefitRow()">
+                    <i class="feather icon-plus"></i> Add Deduction
+                </button>
+            </div>
+
+            <div class="table-wrapper ">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light sticky-header">
+                        <tr>
+                            <th>Component</th>
+                            <th>Formula</th>
+                            <th>Amount (₹)</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of deduction; let i = index">
+                            <td>{{ row.Component }}</td>
+                            <td>{{ row.Formula }}</td>
+                            <td>{{ row.Amount | number:'1.2-2' }}</td>
+                            <td>
+                                <!-- Add similar edit/save/cancel logic if needed -->
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</app-card>
+
+

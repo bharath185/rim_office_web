@@ -1,0 +1,308 @@
+<app-toast-message></app-toast-message>
+<div class="divSpinner" *ngIf="isSpinner">
+    <div class="spinner"></div>
+</div>
+<div class="container-fluid p-0">
+    <fieldset class="border p-3 mb-3 custom-fieldset">
+        <legend class="w-auto px-2 custom-legend"></legend>
+        <form [formGroup]="payoutForm">
+            <div class="row">
+                <div class="form-group floating-label-group col-md-3 inputPadding">
+                    <select #payoutDD class="form-control floating-input" id="PayoutTypeFor"
+                        (change)="onPayoutTypeChange(payoutDD.value)" formControlName="PayoutTypeId">
+                        <option selected hidden value="" disabled></option>
+                        <option *ngFor="let type of getDDOfPayoutType" [ngValue]="type.PayoutTypeId">
+                            {{type.PayoutTypeName }}</option>
+                    </select>
+                    <label for="PayoutTypeFor" class="floating-label" style="left: 20px;">Payout
+                        Type*</label>
+                </div>
+                <div class="custom-date-input col-md-3">
+                    <input type="date" placeholder=" " id="addStartDateId" formControlName="date_from"
+                        class="form-control floating-input" (ngModelChange)="onFromDate()" [max]="maxStartDate"
+                        [ngClass]="{'is-invalid': isFromDateInvalid()}" />
+                    <label for="addStartDateId" style="left: 20px;" class="floating-label"
+                        [ngClass]="{'text-danger': (isFormSubmitted || payoutForm.get('date_from')?.touched) && (payoutForm.get('date_from')?.invalid)}">Effective
+                        From Date*</label>
+                    <div *ngIf="isFromDateInvalid()" class="invalid-feedback m-0">
+                        <span *ngIf="payoutForm.get('date_from')?.errors?.required">Effective
+                            Date is
+                            required.</span>
+                    </div>
+                </div>
+                <div class="custom-date-input col-md-3">
+                    <input type="date" placeholder=" " id="addEndDateId" formControlName="date_to"
+                        class="form-control floating-input" (ngModelChange)="onToDate()" [min]="minStartDate"
+                        [ngClass]="{'is-invalid': isToDateInvalid() || dateRangeError}" />
+                    <label for="addEndDateId" style="left: 20px;" class="floating-label"
+                        [ngClass]="{'text-danger': (isFormSubmitted || payoutForm.get('date_to')?.touched) && (payoutForm.get('date_to')?.invalid)}">Effective
+                        End
+                        Date*</label>
+                    <div *ngIf="isToDateInvalid() || dateRangeError" class="invalid-feedback m-0">
+                        <span *ngIf="payoutForm.get('date_to')?.errors?.required">Effective End Date is
+                            required.</span>
+                        <span *ngIf="dateRangeError">Effective End Date must be after Start
+                            Date.</span>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </fieldset>
+</div>
+<!-- Horizontal Stepper -->
+<app-card [options]="false" *ngIf="selectedPayoutType">
+    <div class="horizontal-stepper d-flex justify-content-between align-items-center mb-4">
+        <div class="step-item text-center">
+            <div class="step-circle" [class.active]="currentStep === 1">
+                1
+            </div>
+            <div class="step-label">Earning</div>
+        </div>
+        <div class="step-line" [class.completed]="currentStep > 1"></div>
+        <div class="step-item text-center">
+            <div class="step-circle" [class.active]="currentStep === 2">
+                2
+            </div>
+            <div class="step-label">Deduction</div>
+        </div>
+        <div class="step-line" [class.completed]="currentStep > 2"></div>
+        <div class="step-item text-center">
+            <div class="step-circle" [class.active]="currentStep === 3">
+                3
+            </div>
+            <div class="step-label">Summary</div>
+        </div>
+    </div>
+    <div class="container mt-5">
+        <fieldset class="border p-3 mb-3 custom-fieldset" *ngIf="currentStep === 1">
+            <legend class="w-auto px-2 custom-legend">Earning</legend>
+            <div class="step-panel">
+                <form [formGroup]="earningForm">
+                    <button class="btn me-2" style="border-color:#072f5f;color:#072f5f;border-radius:0%;"
+                        (click)="addComponentRow('earning')">
+                        <i class="feather icon-plus"></i> Add Earning
+                    </button>
+                    <div formArrayName="components">
+                        <div class="row mb-2 mt-3"
+                            *ngFor="let group of getComponents('earning').controls; let i = index" [formGroupName]="i">
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <select class="form-control floating-input" id="earningCompId"
+                                    formControlName="componentDD">
+                                    <option selected hidden value="" disabled></option>
+                                    <option *ngFor="let item of getDDOfComponent" [ngValue]="item.ComponentId"
+                                        [disabled]="isComponentDisabled('earning', item, i)">
+                                        {{ item.ComponentName }}
+                                    </option>
+                                </select>
+                                <label for="earningCompId" class="floating-label" style="left: 20px;">Component*</label>
+                            </div>
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="number" id="earningSequenceNoId" class="form-control floating-input"
+                                    formControlName="SequenceNo" [readonly]="true">
+                                <label for="earningSequenceNoId" class="floating-label" style="left: 20px;">Sequence
+                                    No*</label>
+                            </div>
+                            <div class="col-md-1 d-flex align-items-center"
+                                *ngIf="i === getComponents('earning').controls.length - 1">
+                                <button type="button" class="btn btn-danger btn-sm" (click)="removeRow('earning', i)">
+                                    <i class="feather icon-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <button class="HRMS_primary_button mt-2" (click)="nextStep()" [disabled]="earningForm.invalid"
+                    *ngIf="controlAccessPage?.AddAccess === true">
+                    <i class="feather icon-arrow-right"></i>&nbsp;Next</button>
+            </div>
+        </fieldset>
+
+        <fieldset class="border p-3 mb-3 custom-fieldset" *ngIf="currentStep === 2">
+            <legend class="w-auto px-2 custom-legend">Deduction</legend>
+            <div class="step-panel">
+                <form [formGroup]="deductionForm">
+                    <button class="btn me-2" style="border-color:#072f5f;color:#072f5f;border-radius:0%;"
+                        (click)="addComponentRow('deduction')">
+                        <i class="feather icon-plus"></i> Add Deduction
+                    </button>
+                    <div formArrayName="components">
+                        <div class="row mb-2 mt-3"
+                            *ngFor="let group of getComponents('deduction').controls; let i = index"
+                            [formGroupName]="i">
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <select class="form-control floating-input" formControlName="componentDD"
+                                    id="deductionCompId">
+                                    <option selected hidden value="" disabled></option>
+                                    <option *ngFor="let item of getDDOfComponent" [ngValue]="item.ComponentId"
+                                        [disabled]="isComponentDisabled('deduction', item, i)">
+                                        {{ item.ComponentName }}
+                                    </option>
+                                </select>
+                                <label for="deductionCompId" class="floating-label"
+                                    style="left: 20px;">Component*</label>
+                            </div>
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="number" id="deductionSequenceId" class="form-control floating-input"
+                                    formControlName="SequenceNo" [readonly]="true">
+                                <label for="deductionSequenceId" class="floating-label" style="left: 20px;">Sequence
+                                    No*</label>
+                            </div>
+                            <div class="col-md-1 d-flex align-items-center"
+                                *ngIf="i === getComponents('deduction').controls.length - 1">
+                                <button type="button" class="btn btn-danger btn-sm" (click)="removeRow('deduction', i)">
+                                    <i class="feather icon-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <button class="HRMS_secondary_button me-2 " (click)="prevStep()">
+                    <i class="feather icon-arrow-left"></i>&nbsp;Back</button>
+                <button class="HRMS_primary_button mt-2" (click)="nextStep()" [disabled]="deductionForm.invalid"><i
+                        class="feather icon-arrow-right"></i>&nbsp;Next</button>
+            </div>
+        </fieldset>
+
+        <fieldset class="border p-3 mb-3 custom-fieldset" *ngIf="currentStep === 3">
+            <legend class="w-auto px-2 custom-legend">Summary</legend>
+            <div class="step-panel">
+                <form [formGroup]="summaryForm">
+                    <button class="btn me-2" style="border-color:#072f5f;color:#072f5f;border-radius:0%;"
+                        (click)="addComponentRow('summary')">
+                        <i class="feather icon-plus"></i> Add Summary
+                    </button>
+                    <div formArrayName="components">
+                        <div class="row mb-2 mt-3"
+                            *ngFor="let group of getComponents('summary').controls; let i = index" [formGroupName]="i">
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <select class="form-control floating-input" formControlName="componentDD"
+                                    id="summaryCompId">
+                                    <option selected hidden value="" disabled></option>
+                                    <option *ngFor="let item of getDDOfComponent" [ngValue]="item.ComponentId"
+                                        [disabled]="isComponentDisabled('summary', item, i)">
+                                        {{ item.ComponentName }}
+                                    </option>
+                                </select>
+                                <label for="summaryCompId" class="floating-label" style="left: 20px;">Component*</label>
+                            </div>
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="number" class="form-control floating-input" formControlName="SequenceNo"
+                                    [readonly]="true" id="summarySeqId">
+                                <label for="summarySeqId" class="floating-label" style="left: 20px;">Sequence
+                                    No*</label>
+                            </div>
+                            <div class="col-md-1 d-flex align-items-center"
+                                *ngIf="i === getComponents('summary').controls.length - 1">
+                                <button type="button" class="btn btn-danger btn-sm" (click)="removeRow('summary', i)">
+                                    <i class="feather icon-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <button class="HRMS_secondary_button me-2 " (click)="prevStep()">
+                    <i class="feather icon-arrow-left"></i>&nbsp;Back</button>
+                <button class="HRMS_primary_button mt-2" [disabled]="summaryForm.invalid" (click)="submitFinalForm()"
+                    *ngIf="!isEdited"><i class="feather icon-check"></i>&nbsp;Submit</button>
+                <button type="submit" class="HRMS_primary_button" *ngIf="isEdited" (click)="updateAddForm()">
+                    <span><i class="feather icon-check"></i>&nbsp;Update</span>
+                </button>
+            </div>
+        </fieldset>
+    </div>
+</app-card>
+
+<app-card [options]="false">
+    <div class="container-fluid p-1">
+        <!-- LOOP PAYOUTS -->
+        <div *ngFor="let payout of getRowsTableData">
+            <fieldset class="border p-3 mb-4 custom-fieldset">
+                <legend class="w-auto px-2 custom-legend">
+                    {{ payout.PayoutTypeName }}
+
+                    <span *ngIf="hasComponents(payout)">
+                        <i class="action-icon action-edit feather icon-edit-2" (click)="editPayout(payout,true)"
+                            *ngIf="controlAccessPage?.UpdateAccess === true"></i>
+
+                        <i class="action-icon action-delete feather icon-trash-2" (click)="deletePayout(payout)"
+                            *ngIf="controlAccessPage?.DeleteAccess === true" data-bs-toggle="modal"
+                            data-bs-target="#deleteModal"></i>
+                    </span>
+                </legend>
+
+
+                <div *ngIf="payout.Sections.length === 0" class="text-muted ps-2">
+                    <i>No data found for this record</i>
+                </div>
+
+                <div class="row" *ngIf="payout.Sections.length > 0">
+                    <div class="col-md-6 mb-4" *ngFor="let sec of payout.Sections">
+                        <h6 class="fw-bold mb-2">{{ sec.SectionName }}</h6>
+                        <div class="table-wrapper mt-3">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light sticky-header">
+                                    <tr class="inner-shadow">
+                                        <th>Component</th>
+                                        <th>Code</th>
+                                        <th>Sequence</th>
+                                        <!-- <th>Status</th> -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let comp of sec.Components;let i = index">
+                                        <td>{{ comp.ComponentName }}</td>
+                                        <td>{{ comp.ComponentCode }}</td>
+                                        <td>{{ comp.SequenceNo }}</td>
+                                        <!-- <td>{{ comp.RecordStatus ? 'Active' : 'Inactive' }}</td> -->
+                                    </tr>
+                                    <tr *ngIf="sec.Components.length === 0">
+                                        <td colspan="4" class="text-center text-muted text-danger">No components
+                                            available</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div *ngIf="isTableData" class="text-center p-3 text-danger">
+            {{ errorMessage }}
+        </div>
+    </div>
+</app-card>
+
+<!-- this is delete modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-confirm">
+        <div class="modal-content">
+            <div class="text-end">
+                <button type="reset" class="btn-close" data-bs-dismiss="modal" aria-label="Close" #closeModalDelete
+                    style="background-color: rgb(228, 208, 208);"></button>
+            </div>
+            <div class="modal-header flex-column py-0 ">
+                <div class="icon-box" *ngIf="!isRecordDeletedCommon">
+                    <i class="fas fa-times checkmark_check"></i>
+                </div>
+                <div class="modal-wrapper" *ngIf="isRecordDeletedCommon"> <svg class="checkmark"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                </div>
+                <h4 class="modal-title w-100 text-center">Are you sure?</h4>
+            </div>
+            <div class="modal-body py-0 text-center">
+                <div class="divSpinner1" *ngIf="isSpinner1">
+                    <div class="spinner1"></div>
+                </div>
+                <p>Do you really want to <strong>delete </strong>these records?. This process cannot be undone.</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger" (click)="deleteRecord()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- this is end of delete modal -->

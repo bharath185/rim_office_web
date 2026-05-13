@@ -1,0 +1,782 @@
+<app-toast-message></app-toast-message>
+
+<div class="dis-fl-end">
+  <div class="heading-dash-sub">
+    <span>Leave Card</span>
+    <ol class="breadcrumb fade-left">
+      <li class="breadcrumb-item active dis-fl" aria-current="page">
+        <span class="breadC">Leaves</span><span class="breadC"><i class="feather icon-chevron-right"></i></span><span
+          class="breadC col-act">Leave Card</span>
+      </li>
+    </ol>
+  </div>
+
+  <div class="top-nav d-flex gap-2 mt-2">
+    <button style="height:32px" *ngFor="let tab of tabs; let i = index" class="nav-btn"
+      [class.active]="selectedTab === i" [class.active]="selectedTab === i" (click)="selectTab(i)"
+      [routerLink]="tab.url">
+      <i [class]="tab.icon"></i> {{ tab.title }}
+    </button>
+  </div>
+
+</div>
+
+<div class="row">
+  <div class="col-md-2 col-sm-4 col-6" *ngFor="let leave of leavesCard">
+    <div class="leave-card-modern shadow-sm">
+      <div class="d-flex align-items-center justify-content-between flex-wrap" style="min-height: 80px;">
+        <div class="text-left">
+          <div class="leave-type-text fw-semibold mb-2">
+            {{ leave.type }}
+          </div>
+          <div class="remaining-label">
+            Remaining&nbsp;:&nbsp;
+          </div>
+        </div>
+        <div class="circular-progress" [ngStyle]="{
+          '--progress': (leave.remaining / leave.total) * 100,
+          '--progress-color': leave.cardColor
+        }">
+          <div class="circle">
+            <div class="value">{{ leave.remaining }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="leave-info text-center mt-2 d-flex justify-content-around">
+        <div class="total-used">Total&nbsp;:&nbsp;{{ leave.total }}</div>
+        <div class="total-used">Used&nbsp;:&nbsp;{{ leave.used }}</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<div class="divSpinner" *ngIf="isSpinner">
+  <div class="spinner"></div>
+</div>
+
+<div class="leave-list-container card p-3 shadow-sm mt-3">
+  <div class="row g-2">
+
+    <div class="col-12 d-flex justify-content-end align-items-center gap-2 mb-2">
+      <div class="small-calendar-card shadow-sm" data-bs-toggle="modal" data-bs-target="#calendarModal"
+        style="width: 40px; height: 30px; background: rgb(218, 214, 214); border-radius: 2px; display: flex; align-items: center; justify-content: center; cursor: pointer;"
+        placement="left" ngbTooltip="Calendar">
+        <i class="feather icon-calendar"></i>
+      </div>
+
+      <button class="btn btn-primary btn-sm-custom" *ngIf="employeeDetails[0].Authorised == true"
+        (click)="navigateViewLeaveEmp()">
+        <i class="feather icon-eye"></i>&nbsp;Team's Leave
+      </button>
+
+      <button class="btn btn-primary btn-sm-custom" *ngIf="employeeDetails[0].Authorised == true"
+        (click)="viewCompOffRequest()">
+        <i class="feather icon-eye"></i>&nbsp;CompOff Request
+      </button>
+
+      <button class="btn btn-primary btn-sm-custom" (click)="openModal();" *ngIf="controlAccessPage?.AddAccess == true">
+        <i class="feather icon-plus"></i>&nbsp;Apply
+      </button>
+
+      <div class="export-container">
+        <button class="export-button " (click)="toggleDropdownExport()">
+          <i class="feather icon-upload me-1"></i>Export
+        </button>
+        <div class="dropdown-content" *ngIf="dropdownVisible">
+          <div class="dropdown-item" (click)="exportFile('pdf')">
+            <i class="fas fa-file-pdf"></i>PDF
+          </div>
+          <div class="dropdown-item" (click)="exportFile('excel')">
+            <i class="fas fa-file-excel"></i>Excel
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive table-wrapper">
+      <table class="table table-hover align-middle">
+        <thead class="sticky-header table-light">
+          <tr class="inner-shadow ">
+            <th class="position-relative" style="white-space: nowrap;">
+              Status
+              <span (click)="toggleStatusDropdown()" style="cursor: pointer;" class="ms-1"><i
+                  class="fas fa-chevron-down"></i></span>
+
+              <ul *ngIf="showStatusDropdown" class="custom-dropdown status-dropdown">
+                <li (click)="setFilterStatus('')" class="dropdown-item">All</li>
+                <li *ngFor="let status of statusOptions" (click)="setFilterStatus(status)" class="dropdown-item">
+                  {{ status }}
+                </li>
+              </ul>
+            </th>
+            <th class="">From</th>
+            <th class="">To</th>
+            <th class="">Applied Date</th>
+            <th class="position-relative" style="white-space: nowrap;">
+              Leave Type
+              <span (click)="toggleLeaveTypeMenu()" style="cursor: pointer;" class="ms-1"><i
+                  class="fas fa-chevron-down"></i></span>
+              <ul *ngIf="showLeaveTypeMenu" class="leave-type-dropdown">
+                <li (click)="setFilterLeaveType('')" class="dropdown-item">All</li>
+                <li *ngFor="let leaveType of dropdownLeaveType" (click)="setFilterLeaveType(leaveType.LeaveTypeId)"
+                  class="dropdown-item">
+                  {{ leaveType.LeaveType }}
+                </li>
+              </ul>
+            </th>
+            <th class="">Days Off</th>
+            <th class="">Approver</th>
+            <th class="">Reason</th>
+            <th class="">Manage</th>
+          </tr>
+        </thead>
+        <tbody *ngIf="isTableData == false">
+          <tr *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+            <td class="">
+              <span class="status-pill" [ngClass]="{
+            'status-cancelled': row.Status === 'CANCELLED',
+            'status-applied': row.Status === 'APPLIED',
+            'status-approved-hr': row.Status === 'APPROVED',
+            'status-rejected-mgr': row.Status === 'REJECTED',
+            'status-draft': row.Status === 'DRAFT',
+            'status-withdraw': row.Status === 'WITHDRAWN'
+          }">
+                {{ row.Status }}
+              </span>
+            </td>
+            <td class="">
+              <span>{{row.StartDate }}</span>
+            </td>
+            <td class="">
+              <span>{{row.EndDate}}</span>
+            </td>
+            <td class="">
+              <span>{{row.CreatedDate}}</span>
+            </td>
+            <td class="">
+              <span class="fw-bold">
+                <!-- [ngStyle]="{'color': getCardColor(row.LeaveType)}" -->
+                {{ row.LeaveType }}
+              </span>
+            </td>
+            <td class="">
+              <span>{{row.Duration}}</span>
+            </td>
+            <td class="">
+              <span>{{row.Approver}}</span>
+            </td>
+            <td class="">
+              <span>{{row.Reason}}</span>
+            </td>
+            <td class=" align-middle" *ngIf="controlAccessPage?.UpdateAccess == true">
+              <!-- Edit icon: Only when DRAFT -->
+              <i class="action-icon action-edit feather icon-edit-2" *ngIf="row.Status === 'DRAFT'"
+                style="cursor: pointer;" title="Edit" (click)="editData(row, true)">
+              </i>
+              <!-- Delete icon: Only when DRAFT -->
+              <i class="action-icon action-delete feather icon-trash-2" *ngIf="row.Status === 'DRAFT'"
+                style="cursor: pointer;" title="Delete" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                (click)="deleteData(row)">
+              </i>
+              <!-- Cancel icon: Only when APPLIED -->
+              <i class="fas fa-times fa-md mx-1 action-icon action-cancel" *ngIf="row.Status === 'APPLIED'" [ngClass]="{
+     'text-danger': row.Status === 'APPLIED',
+     'disabled-icon text-muted': row.Status !== 'APPLIED'
+   }" [style.cursor]="row.Status === 'APPLIED' ? 'pointer' : 'default'" title="Cancel"
+                [attr.data-bs-toggle]="row.Status === 'APPLIED' ? 'modal' : null"
+                [attr.data-bs-target]="row.Status === 'APPLIED' ? '#exampleModal' : null"
+                (click)="row.Status === 'APPLIED' && onViewCancel(row)">
+              </i>
+              <!-- Withdraw icon: Only when APPROVED -->
+              <i class="fas fa-undo-alt fa-md text-warning mx-1 action-icon action-withdraw"
+                *ngIf="row.Status === 'APPROVED'" style="cursor: pointer;" title="Withdraw" data-bs-toggle="modal"
+                data-bs-target="#withdrwan" (click)="onWithdraw(row)">
+              </i>
+            </td>
+          </tr>
+        </tbody>
+        <tbody *ngIf="isTableData === true || (rows && rows.length === 0)">
+          <tr>
+            <td colspan="8" class="text-center text-danger py-4">
+              {{ errorMessage || 'No data found.' }}
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <div class="pagination-controls-wrapper">
+      <div class="row align-items-center">
+        <div class="col-auto">
+          <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+          <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+            <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+          </select>
+        </div>
+        <div class="col">
+        </div>
+        <div class="col-auto">
+          <pagination-controls (pageChange)="page = $event"></pagination-controls>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- This is for apply leave modal -->
+  <div class="modal fade" id="modal-right" tabindex="-1" aria-labelledby="modal-right-label" data-bs-backdrop="static"
+    aria-hidden="false">
+    <div class="modal-dialog modal-md modal-end">
+      <div class="modal-content vh-100 no-radius">
+        <div class="modal-header d-flex justify-content-between align-items-center">
+          <h5 class="modal-title" id="modal-right-label">Apply Leave</h5>
+          <div class="d-flex align-items-center gap-2">
+            <button type="button" class="nav-btn" style="background-color: #072F5F;color: white;" data-bs-toggle="modal"
+              data-bs-target="#compOffModal" (click)="callApiList()">CompOff</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" #closeModal
+              (click)="resetData()"></button>
+          </div>
+        </div>
+        <div class="modal-body">
+          <div class="col-md-12">
+            <div class="row">
+
+              <div class="com-md-8">
+                <form [formGroup]="applyLeaveForm">
+                  <div class="row">
+
+                    <div class="custom-date-input ">
+                      <input type="date" placeholder=" " id="addStartDateId" formControlName="date_from"
+                        class="form-control floating-input" (ngModelChange)="onFromDate()" [min]="minStartDate"
+                        [max]="maxStartDate" [ngClass]="{'is-invalid': isFromDateInvalid()}" />
+                      <label for="addStartDateId" class="floating-label"
+                        [ngClass]="{'text-danger': (isFormSubmitted || applyLeaveForm.get('date_from')?.touched) && (applyLeaveForm.get('date_from')?.invalid)}">Start
+                        Date*</label>
+                      <div *ngIf="isFromDateInvalid()" class="invalid-feedback m-0">
+                        <span *ngIf="applyLeaveForm.get('date_from')?.errors?.required">Start
+                          Date is
+                          required.</span>
+                        <span *ngIf="applyLeaveForm.get('date_from')?.errors?.sundayNotAllowed">Sundays are not
+                          allowed.</span>
+                      </div>
+                    </div>
+
+                    <div class="custom-date-input mt-3">
+                      <input type="date" placeholder=" " id="addEndDateId" formControlName="date_to"
+                        class="form-control floating-input" (ngModelChange)="onToDate()" [min]="minDate"
+                        [ngClass]="{'is-invalid': isToDateInvalid() || dateRangeError}" />
+                      <label for="addEndDateId" class="floating-label"
+                        [ngClass]="{'text-danger': (isFormSubmitted || applyLeaveForm.get('date_to')?.touched) && (applyLeaveForm.get('date_to')?.invalid)}">End
+                        Date*</label>
+                      <div *ngIf="isToDateInvalid() || dateRangeError" class="invalid-feedback m-0">
+                        <span *ngIf="applyLeaveForm.get('date_to')?.errors?.required">End Date is
+                          required.</span>
+                        <span *ngIf="dateRangeError">End Date must be after Start
+                          Date.</span>
+                        <span *ngIf="applyLeaveForm.get('date_to')?.errors?.sundayNotAllowed">Sundays are not
+                          allowed.</span>
+                      </div>
+                    </div>
+
+                    <div class="form-group floating-label-group  mt-3">
+                      <select class="form-control floating-input" formControlName="leaveDay" id="leaveDayId"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || applyLeaveForm.get('leaveDay')?.touched) && (applyLeaveForm.get('leaveDay')?.invalid)}">
+                        <option selected hidden value=""></option>
+                        <option *ngFor="let option of filteredDurationOptions" [value]="option">{{ option }}</option>
+                      </select>
+                      <label for="leaveDayId" class="floating-label m-0" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || applyLeaveForm.get('leaveDay')?.touched) && applyLeaveForm.get('leaveDay')?.invalid}">
+                        Period*</label>
+                      <div
+                        *ngIf="(isFormSubmitted || applyLeaveForm.get('leaveDay')?.touched) && applyLeaveForm.get('leaveDay')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="applyLeaveForm.get('leaveDay')?.errors?.required">Period is required.</span>
+                      </div>
+                    </div>
+
+
+                    <div class="form-group floating-label-group">
+                      <input type="number" class="form-control floating-input" id="noOfDays" placeholder=" "
+                        formControlName="noOfDays" readonly
+                        [ngClass]="{'is-invalid': (isFormSubmitted || applyLeaveForm.get('noOfDays')?.touched) && applyLeaveForm.get('noOfDays')?.invalid}">
+                      <label for="noOfDaysId" class="floating-label" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || applyLeaveForm.get('noOfDays')?.touched) && applyLeaveForm.get('noOfDays')?.invalid}">
+                        No. of Days *</label>
+                      <div
+                        *ngIf="(isFormSubmitted || applyLeaveForm.get('noOfDays')?.touched) && applyLeaveForm.get('noOfDays')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="applyLeaveForm?.get('noOfDays')?.errors?.required">No. of Days is
+                          required.</span>
+                        <span
+                          *ngIf="(applyLeaveForm.get('noOfDays')?.errors?.minlength || applyLeaveForm.get('noOfDays')?.errors?.maxlength)">1
+                          to 3 Number are allowed.</span>
+                      </div>
+                    </div>
+
+                    <div class="form-group floating-label-group  ">
+                      <select class="form-control floating-input" formControlName="leaveType" id="leaveType"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || applyLeaveForm.get('leaveType')?.touched) && (applyLeaveForm.get('leaveType')?.invalid)}">
+                        <option value="" selected hidden></option>
+                        <option *ngFor="let leaveType of dropdownLeaveType" [ngValue]="leaveType.LeaveTypeId">
+                          {{leaveType.LeaveType}}
+                        </option>
+                      </select>
+
+                      <label for="leaveType" class="floating-label m-0" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || applyLeaveForm.get('leaveType')?.touched) && applyLeaveForm.get('leaveType')?.invalid}">Leave
+                        Type*</label>
+                      <div
+                        *ngIf="(isFormSubmitted || applyLeaveForm.get('leaveType')?.touched) && applyLeaveForm.get('leaveType')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="applyLeaveForm.get('leaveType')?.errors?.required">Leave Type is
+                          required.</span>
+                      </div>
+                    </div>
+
+                    <ng-container *ngIf="isCompOffSelected">
+                      <div class="custom-date-input ">
+                        <input type="date" placeholder=" " formControlName="compOffDate" id="compOffDateId"
+                          class="form-control floating-input"
+                          [ngClass]="{'is-invalid': (isFormSubmitted || applyLeaveForm.get('compOffDate')?.touched) && (applyLeaveForm.get('compOffDate')?.invalid)}" />
+                        <label for="compOffDateId"
+                          [ngClass]="{'text-danger': (isFormSubmitted || applyLeaveForm.get('compOffDate')?.touched) && applyLeaveForm.get('compOffDate')?.invalid}">
+                          CompOff Date*</label>
+                        <div
+                          *ngIf="(isFormSubmitted || applyLeaveForm.get('compOffDate')?.touched) && applyLeaveForm.get('compOffDate')?.invalid"
+                          class="invalid-feedback m-0">
+                          <span *ngIf="applyLeaveForm.get('compOffDate')?.errors?.required">compOff Date is
+                            required.</span>
+                        </div>
+                      </div>
+
+                      <div class="form-group floating-label-group ">
+                        <input type="text" class="form-control floating-input" id="compOffReasonId" placeholder=" "
+                          formControlName="compOffReason"
+                          [ngClass]="{'is-invalid': (isFormSubmitted || applyLeaveForm.get('compOffReason')?.touched) && applyLeaveForm.get('compOffReason')?.invalid}">
+                        <label for="compOffReasonId" class="floating-label" style="left: 20px;"
+                          [ngClass]="{'text-danger': (isFormSubmitted || applyLeaveForm.get('compOffReason')?.touched) && applyLeaveForm.get('compOffReason')?.invalid}">
+                          CompOff Reason*</label>
+                        <div
+                          *ngIf="(isFormSubmitted || applyLeaveForm.get('compOffReason')?.touched) && applyLeaveForm.get('compOffReason')?.invalid"
+                          class="invalid-feedback m-0">
+                          <span *ngIf="applyLeaveForm?.get('compOffReason')?.errors?.required"> CompOff Reason is
+                            required.</span>
+                          <span
+                            *ngIf="(applyLeaveForm.get('compOffReason')?.errors?.minlength || applyLeaveForm.get('compOffReason')?.errors?.maxlength)">1
+                            to 3 Number are allowed.</span>
+                        </div>
+                      </div>
+                    </ng-container>
+
+                    <div class="form-group floating-label-group ">
+                      <!-- <div class="form-floating"> -->
+                      <textarea class="form-control custom-textarea" id="leaveParticularsId"
+                        formControlName="leaveParticulars" style="height: 45px;"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || applyLeaveForm.get('leaveParticulars')?.touched) && (applyLeaveForm.get('leaveParticulars')?.invalid)}">
+                        </textarea>
+                      <label for="leaveParticularsId" class="floating-label">Leave Particulars*</label>
+                      <!-- </div> -->
+                    </div>
+
+                    <!-- This is for Uplaod File Pupose -->
+                    <div class="upload-container ">
+                      <label for="fileUpload" class="upload-box">
+                        <i class="fas fa-camera upload-icon"></i>
+                        <span>Upload</span>
+                        <input type="file" #fileInput id="fileUpload" (change)="onFileSelected($event)" multiple hidden
+                          accept=".pdf,image/*" />
+                      </label>
+
+                      <div *ngIf="applyLeaveForm.get('existingAttachments')?.value?.length > 0" class="existing-files">
+                        <div *ngFor="let file of applyLeaveForm.get('existingAttachments')?.value" class="file-item">
+                          <i class="fas fa-file"></i>
+                          <a [href]="file.url" target="_blank">{{ file.name }}</a>
+                          <i class="fas fa-trash delete-icon" (click)="removeExistingFile(file)"></i>
+                        </div>
+                      </div>
+                      <!-- File list with clickable file names -->
+                      <div class="file-list mt-2" *ngIf="selectedFiles.length > 0">
+                        <div *ngFor="let file of selectedFiles; let i = index" class="file-item">
+                          <i class="fas me-1"
+                            [ngClass]="{'fa-file-image': isImage(file),'fa-file-pdf': isPdf(file),'fa-file': !isImage(file) && !isPdf(file)}"></i>
+                          <span class="file-name" (click)="openFile(i)"
+                            style="cursor: pointer; text-decoration: underline;">
+                            {{ file.name }}
+                          </span>
+                          <i class="fas fa-trash delete-icon" (click)="removeFile(i)"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- This is for Uplaod File Pupose -->
+
+                  </div>
+                </form>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+        <div class="modal-footer" style="padding: 0.5rem 1rem;">
+          <button class="HRMS_secondary_button" type="button" (click)="resetData()"><i
+              class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+          <button class="HRMS_primary_button " type="submit" *ngIf="!isEdited" (click)="saveAsDraft()">
+            <span><i class="feather icon-check"></i>&nbsp;Save As Draft</span></button>
+          <button class="HRMS_primary_button " type="submit" (click)="applyLeave()" *ngIf="!isEdited">
+            <span><i class="feather icon-plus"></i>&nbsp;Apply</span></button>
+          <button class="HRMS_primary_button" type="submit" (click)="updateDraftSave()" *ngIf="isEdited"><i
+              class="feather icon-check"></i>&nbsp;Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- This is end side Modal -->
+
+  <!-- this is Cancel modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-confirm">
+      <div class="modal-content">
+        <div class="text-end">
+          <button type="reset" class="btn-close " data-bs-dismiss="modal" aria-label="Close" #closeModalDelete
+            style="background-color: rgb(228, 208, 208);"></button>
+        </div>
+        <div class="modal-header flex-column py-0">
+          <div class="icon-box" *ngIf="!isRecordDeleted">
+            <i class="fas fa-times checkmark_check"></i>
+          </div>
+          <div class="modal-wrapper" *ngIf="isRecordDeleted"> <svg class="checkmark" xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 52 52">
+              <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+              <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+            </svg>
+          </div>
+          <h4 class="modal-title w-100">Are you sure?</h4>
+        </div>
+        <div class="modal-body py-0">
+          <p>Do you really want to <strong>Cancel</strong> these records?</p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+          <button type="submit" class="btn btn-danger" (click)="cancleRecord()">Yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- this is end of Cancel modal -->
+
+  <!-- this is Withdrwan modal -->
+  <div class="modal fade" id="withdrwan" tabindex="-1" aria-labelledby="withdrwanLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-confirm">
+      <div class="modal-content">
+        <div class="text-end">
+          <button type="reset" class="btn-close " data-bs-dismiss="modal" aria-label="Close" #closeModalwithdraw
+            style="background-color: rgb(228, 208, 208);"></button>
+        </div>
+        <div class="modal-header flex-column py-0">
+          <div class="icon-box" *ngIf="!isRecordDeleted">
+            <i class="fas fa-undo-alt fa-md"></i>
+          </div>
+          <div class="modal-wrapper" *ngIf="isRecordDeleted"> <svg class="checkmark" xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 52 52">
+              <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+              <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+            </svg>
+          </div>
+          <h4 class="modal-title w-100">Are you sure?</h4>
+        </div>
+        <div class="modal-body py-0">
+          <p>Do you really want to <b>withdrwan</b> these records?</p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+          <button type="submit" class="btn btn-danger" (click)="withdrawYes()">Yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- this is end of Withdrwan modal -->
+
+  <!-- this is deleteModal modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-confirm">
+      <div class="modal-content">
+        <div class="text-end">
+          <button type="reset" class="btn-close " data-bs-dismiss="modal" aria-label="Close" #deleteModal
+            style="background-color: rgb(228, 208, 208);"></button>
+        </div>
+        <div class="modal-header flex-column py-0">
+          <div class="icon-box" *ngIf="!isRecordDeleted">
+            <i class="fas fa-trash text-danger fa-md"></i>
+          </div>
+          <div class="modal-wrapper" *ngIf="isRecordDeleted"> <svg class="checkmark" xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 52 52">
+              <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+              <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+            </svg>
+          </div>
+          <h4 class="modal-title w-100">Are you sure?</h4>
+        </div>
+        <div class="modal-body py-0">
+          <p>Do you really want to <b>Delete</b> these records?</p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+          <button type="submit" class="btn btn-danger" (click)="deleteLeave()">Yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- this is end of deleteModal modal -->
+
+  <!-- this is compOffModal modal -->
+  <div class="modal fade" id="compOffModal" tabindex="-1" aria-labelledby="compOffModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-confirm comp-off-modal">
+      <div class="modal-content">
+        <div class="text-end">
+          <button type="reset" class="btn-close " data-bs-dismiss="modal" aria-label="Close" #compOffModalClose
+            style="background-color: rgb(228, 208, 208);"></button>
+        </div>
+        <div class="modal-header flex-column py-0">
+          <h4 class="modal-title w-100">
+            Comp Off Request
+          </h4>
+        </div>
+        <div class="modal-body py-0">
+          <form [formGroup]="compOffForm">
+            <div class="row mt-2">
+              <div class="form-group floating-label-group col-md-3 ">
+                <input type="text" id="companyNameId" class="form-control floating-input" formControlName="projectName"
+                  [ngClass]="{'is-invalid': (isFormSubmitted || compOffForm?.get('projectName')?.touched) && compOffForm?.get('projectName')?.invalid}" />
+                <label for="ProjectNameId" class="floating-label"  style="left: 20px;"
+                  [ngClass]="{'text-danger': (isFormSubmitted || compOffForm?.get('projectName')?.touched) && compOffForm?.get('projectName')?.invalid}">
+                  Project Name*
+                </label>
+                <div
+                  *ngIf="(isFormSubmitted || compOffForm?.get('projectName')?.touched) && compOffForm?.get('projectName')?.invalid"
+                  class="invalid-feedback m-0 d-block text-start w-100">
+                  <span *ngIf="compOffForm?.get('projectName')?.errors?.required">
+                    Project Name is required.
+                  </span>
+                </div>
+              </div>
+
+              <div class="form-group floating-label-group col-md-3 ">
+                <input type="text" id="taskId" class="form-control floating-input" formControlName="task"
+                  [ngClass]="{'is-invalid': (isFormSubmitted || compOffForm?.get('task')?.touched) && compOffForm?.get('task')?.invalid}" />
+                <label for="taskId" class="floating-label"  style="left: 20px;"
+                  [ngClass]="{'text-danger': (isFormSubmitted || compOffForm?.get('task')?.touched) && compOffForm?.get('task')?.invalid}">
+                  Task*
+                </label>
+                <div *ngIf="(isFormSubmitted || compOffForm?.get('task')?.touched) &&compOffForm?.get('task')?.invalid "
+                  class="invalid-feedback m-0 d-block text-start w-100">
+                  <span *ngIf="compOffForm?.get('task')?.errors?.required">
+                    Task is required.
+                  </span>
+                </div>
+              </div>
+
+              <div class="custom-date-input col-md-3">
+                <input type="date" id="dateId" class="form-control floating-input" formControlName="date" [max]="today"
+                  (change)="onDateChange($event)"
+                  [ngClass]="{'is-invalid': (isFormSubmitted || compOffForm?.get('date')?.touched) && compOffForm?.get('date')?.invalid}" />
+                <label for="dateId" class="floating-label"
+                  [ngClass]="{'text-danger': (isFormSubmitted || compOffForm?.get('date')?.touched) && compOffForm?.get('date')?.invalid}">
+                  Date*
+                </label>
+                <div *ngIf="(isFormSubmitted || compOffForm?.get('date')?.touched) &&compOffForm?.get('date')?.invalid "
+                  class="invalid-feedback m-0 d-block text-start w-100">
+                  <span *ngIf="compOffForm?.get('date')?.errors?.required">
+                    Date is required.
+                  </span>
+                </div>
+              </div>
+
+              <div class="form-group floating-label-group col-md-3">
+                <div class="d-flex justify-content-between">
+
+                  <div>
+                    <label class="text-bold mb-0">Actual Hour</label>
+                    <div class="text-bold">
+                      {{ getCompOffAccutalHour?.ActualHrs }}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="text-bold mb-0">WorkMode</label>
+                    <div class="text-bold">
+                      {{ getCompOffAccutalHour?.WorkMode || '-' }}
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <div class="form-group floating-label-group col-md-3 ">
+                <input type="text" id="hourId" class="form-control floating-input" formControlName="hours" minlength="1"
+                  maxlength="5"
+                  [ngClass]="{'is-invalid': (isFormSubmitted || compOffForm?.get('hours')?.touched) && compOffForm?.get('hours')?.invalid}"
+                  (keypress)="allowOnlyNumberAndSymbols($event)" />
+                <label for="hourId" class="floating-label"  style="left: 20px;"
+                  [ngClass]="{'text-danger': (isFormSubmitted || compOffForm?.get('hours')?.touched) && compOffForm?.get('hours')?.invalid}">
+                  Hours*
+                </label>
+                <div
+                  *ngIf="(isFormSubmitted || compOffForm?.get('hours')?.touched) &&compOffForm?.get('hours')?.invalid "
+                  class="invalid-feedback m-0 d-block text-start w-100">
+                  <span *ngIf="compOffForm?.get('hours')?.errors?.required">
+                    Hours is required.
+                  </span>
+                </div>
+              </div>
+
+              <div class="form-group floating-label-group col-md-3 ">
+                <select class="form-control floating-input" formControlName="managerList" id="managerListId"
+                  [ngClass]="{'is-invalid': (isFormSubmitted || compOffForm.get('managerList')?.touched) && (compOffForm.get('managerList')?.invalid)}">
+                  <option value="" selected hidden></option>
+                  <option *ngFor="let approver of dropdownApproverList" [ngValue]="approver">
+                    {{approver.ManagerName}}
+                  </option>
+                </select>
+
+                <label for="managerListId" class="floating-label m-0" style="left: 20px;"
+                  [ngClass]="{'text-danger': (isFormSubmitted || compOffForm.get('managerList')?.touched) && compOffForm.get('managerList')?.invalid}">Approver*</label>
+                <div
+                  *ngIf="(isFormSubmitted || compOffForm.get('managerList')?.touched) && compOffForm.get('managerList')?.invalid"
+                  class="invalid-feedback m-0 d-block text-start w-100">
+                  <span *ngIf="compOffForm.get('managerList')?.errors?.required">Approver is required.</span>
+                </div>
+              </div>
+
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer justify-content-end">
+          <button class="HRMS_secondary_button" type="button" (click)="resetCompOffForm()"><i
+              class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+          <button class="HRMS_primary_button " type="submit" (click)="submitCompOffForm()">
+            <span><i class="feather icon-check"></i>&nbsp;Submit</span></button>
+        </div>
+
+        <div class="table-responsive table-wrapper">
+          <table class="table table-hover align-middle">
+            <thead class="sticky-header table-light">
+              <tr class="inner-shadow ">
+                <th>Project</th>
+                <th>Task</th>
+                <th>Date</th>
+                <th>Hrs</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="isTableDataCompOff == false">
+              <tr tr *ngFor="let row of compOffRequestData">
+                <td>{{row.Project}}</td>
+                <td>{{row.Task}}</td>
+                <td>{{ formatJsonDate(row.Date) }}</td>
+                <td>{{row.Hrs}}</td>
+                <td>
+                  <span class="status-pill" [ngClass]="{
+    'status-approved-hr': row.IsApproved,
+    'status-rejected-mgr': row.IsRejected,
+    'status-applied': !row.IsApproved && !row.IsRejected && row.IsRequested
+  }">
+                    {{ row.IsApproved ? 'APPROVED' : (row.IsRejected ? 'REJECTED' : (row.IsRequested ? 'APPLIED' :
+                    'UNKNOWN')) }}
+                  </span>
+                </td>
+
+              </tr>
+            </tbody>
+            <tbody *ngIf="isTableDataCompOff === true || (compOffRequestData && compOffRequestData?.length === 0)">
+              <tr>
+                <td colspan="8" class="text-center text-danger py-4">
+                  {{ errorMessageCompOff || 'No data found.' }}
+                </td>
+              </tr>
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- this is end of compOffModal modal -->
+
+  <!-- this is end of calendar modal -->
+  <div class="modal fade" id="calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel"
+    data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered calendar-modal custom-modal-width">
+      <div class="modal-content">
+        <div class="text-end p-2">
+          <button type="button" class="btn-close" (click)="onModalClose()" aria-label="Close"
+            style="background-color: rgb(228, 208, 208);" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="d-flex align-items-center justify-content-center gap-3 ">
+            <div class="d-flex align-items-center gap-1">
+              <span class="legend-dot-gh"></span> General Holiday
+            </div>
+            <div class="d-flex align-items-center gap-1">
+              <span class="legend-dot-rh"></span> RH Holiday
+            </div>
+          </div>
+          <div class="calendar-container w-100">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <button class=" btn-sm" (click)="prevMonth()" style="border: none;">&lt;</button>
+              <h5 class="mb-0">{{ currentDate | date: 'MMMM yyyy' }}</h5>
+              <button class=" btn-sm" (click)="nextMonth()" style="border: none;">&gt;</button>
+            </div>
+
+            <div class="table-responsive" style="overflow: hidden;">
+              <table class="table table-bordered calendar-table mb-0 text-center w-100">
+                <thead>
+                  <tr>
+                    <th *ngFor="let day of weekDays" class="day-header py-2">{{ day }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let week of weeks">
+                    <td *ngFor="let day of week" [ngClass]="getDayClass(day)" (click)="onCalendarDateClick(day)"
+                      [class.today-badge]="isToday(day)">
+                      <div class="day-cell">
+                        <div class="day-number">{{ day }}</div>
+                        <ng-container *ngIf="getLeaveInfo(day) as leave">
+                          <div class="leave-label" [attr.title]="leave.leaveType + ' - ' + leave.status">
+                            {{ getLeaveAbbr(day) }}
+                          </div>
+                          <div class="leave-status" style="font-size: 0.7rem;">
+                            {{ leave.status }}
+                          </div>
+                        </ng-container>
+
+                        <ng-container *ngIf="getHoliday(day) as holiday">
+                          <div class="holiday-cell event" [ngClass]="{
+             'event-general': holiday.HolidayType === 'General Holidays',
+             'event-rh': holiday.HolidayType === 'RH Holidays',
+             'event-other': holiday.HolidayType !== 'General Holidays' && holiday.HolidayType !== 'RH Holidays'
+           }" [attr.title]="holiday.Description">
+                            <div class="event-title">{{ holiday.Title }}</div>
+                            <!-- <div class="event-type">{{ holiday.HolidayType }}</div> -->
+                          </div>
+                        </ng-container>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- this is end of calendar modal -->

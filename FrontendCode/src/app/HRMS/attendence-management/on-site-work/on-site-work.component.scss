@@ -1,0 +1,219 @@
+::ng-deep .pcoded-content {
+  position: relative;
+  display: block;
+  padding: 0px !important;
+  padding-left: 25px !important;
+  padding-right: 25px !important;
+
+}
+
+.pcoded-header {
+  .card {
+    margin: 0px !important;
+  }
+}
+
+::ng-deep.ngx-pagination .current {
+  padding: .1875rem .625rem;
+  // background-color: #072f5f !important;
+  color: #fefefe;
+  cursor: default;
+}
+
+@media only screen and (max-width: 991px) {
+  ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+    margin-left: 0px;
+    margin-top: 57px !important;
+  }
+}
+
+.sticky-header{
+    position: sticky;  
+    top: 0;           
+    background-color: #E6E7EB; 
+    z-index: 2;
+}
+
+// ************this is for custome date*******
+.custom-date-input {
+  position: relative;
+}
+
+.custom-date-input input {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 3px 5px;
+  width: 100%;
+  outline: none;
+  font-size: 11px;
+  padding-top: 17px;
+  line-height: 1.6;
+}
+
+.custom-date-input input::placeholder {
+  font-size: 5px;
+  color: #aaa;
+}
+
+.custom-date-input label {
+  position: absolute;
+  color: #888;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.custom-date-input input:focus+label,
+.custom-date-input input:not(:placeholder-shown)+label {
+  top: 1px;
+  left: 5px;
+  font-size: 12px;
+}
+
+// ************this is for custome date*******
+
+// Example 2
+.custom-time-dropdown .dropdown-menu {
+  max-height: 200px;
+  overflow-y: auto;
+  width: auto;
+  min-width: fit-content;
+}
+
+.custom-time-dropdown .dropdown-item {
+  cursor: pointer;
+}
+
+.custom-time-dropdown .floating-input {
+  width: 100px;
+}
+.floating-input {
+  width: 95%;
+}
+
+.custom-time-dropdown .invalid-feedback {
+  display: block;
+}
+
+.button-valid {
+  background-color: #4caf50;
+  color: #fff;
+  text-decoration: none;
+  transition: all 0.4s;
+  border: none;
+  cursor: pointer;
+  /* Show pointer cursor when valid */
+}
+
+.button-invalid {
+  color: #fff;
+  background: #c1c1c1;
+  text-decoration: none;
+  transition: all 0.4s;
+  border: none;
+  cursor: not-allowed;
+  /* Show not-allowed cursor when invalid */
+}
+
+//This is for modal purpose
+.modal-content {
+  animation: fadeInUp 1.5s ease-in-out;
+}
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.btn-close {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.btn-close:hover {
+  transform: rotate(90deg);
+  opacity: 0.7;
+}
+.text-muted {
+  width: 110px;
+  text-align: right;
+  margin-right: 5px;
+  font-size: 12px;
+}
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.info-item {
+  display: flex;
+}
+.info-item span {
+  display: inline-block;
+}
+
+
+.wider-textarea {
+  width: 100%; 
+  max-width: 600px; 
+  height: 60px;
+  resize: vertical; 
+}
+.enabled-cell {
+  cursor: pointer;
+  color: #072f5f;
+  font-size: 20px;
+}
+
+.disabled-cell {
+  pointer-events: none;
+  color: #ccc;
+  font-size: 20px;
+}
+
+.disabled-cell span i {
+  color: rgb(86, 86, 86) !important;
+}
+
+.tooltip {
+  position: absolute;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  padding: 5px;
+  font-size: 12px;
+  color: #333;
+  border-radius: 3px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  // z-index: 1000;
+  display: block;
+}
+
+td {
+  position: relative;
+}
+
+.tooltip {
+  display: none;
+}
+
+td:hover .tooltip {
+  display: block;
+}
+// ************This is for Table Hover Things********
+.shift-name {
+  cursor: pointer;
+  text-decoration: underline;
+}
+::ng-deep .tooltip-inner {
+  color: rgb(231, 228, 228); /* Tooltip text color */
+  background-color: rgb(68, 68, 240) !important; /* Your desired background color */
+  text-align: center;
+  border-radius: 4px; /* Your desired border radius */
+  font-size: 13px;
+}
+
+// ************This is for Table Hover Things********

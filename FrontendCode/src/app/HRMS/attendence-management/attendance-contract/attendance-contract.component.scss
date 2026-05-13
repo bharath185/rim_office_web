@@ -1,0 +1,177 @@
+::ng-deep .pcoded-content {
+    position: relative;
+    display: block;
+    padding: 0px !important;
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+}
+
+@media only screen and (max-width: 991px) {
+    ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+        margin-left: 0px;
+        margin-top: 57px !important;
+    }
+}
+.modal-content {
+  animation: fadeInUp 1.5s ease-in-out;
+}
+
+
+.btn-close {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.btn-close:hover {
+  transform: rotate(90deg);
+  opacity: 0.7;
+}
+
+.text-muted {
+  width: 110px;
+  text-align: right;
+  margin-right: 5px;
+  font-size: 12px;
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.info-item {
+  display: flex;
+}
+
+.info-item span {
+  display: inline-block;
+}
+
+
+.logout-btn {
+  background: #fee2e2;              // very light red
+  color: #b91c1c;                   // soft red text
+  border: 1px solid #fecaca;        // light border
+  padding: 4px 8px;                 // smaller padding
+  border-radius: 6px;
+  font-size: 11px;                  // smaller text
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.logout-btn i {
+  font-size: 11px;
+}
+
+.logout-btn:hover {
+  background: #fecaca;
+  transform: translateY(-1px);
+}
+
+.logout-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.disabled-btn {
+  background: #e2e8f0;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+}
+
+.adjust-input {
+  width: 60px;
+  padding: 3px 0px;
+  font-size: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  outline: none;
+}
+
+.adjust-input:focus {
+  border-color: #2563eb;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 12px;
+  text-align: center;
+  min-width: 70px;
+}
+
+.status-badge.approved {
+  background-color: #d1fae5;   /* light green */
+  color: #065f46;              /* dark green */
+}
+
+.status-badge.pending {
+  background-color: #ffedd5;   /* light orange */
+  color: #b45309;              /* dark orange */
+}
+#searchInputId {
+  width: 180px;  /* adjust as needed */
+}
+.custom-button {
+  height: 38px;  /* match input height */
+}
+// this is for export dropdown
+.export-container {
+  position: relative;
+  display: inline-block;
+}
+
+.export-button {
+  background-color: #ffffff;
+  color: #072f5f;
+  border: 1px solid #072f5f;
+  font-size: 14px;
+  padding: 5px 6px;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+  border-radius: 5px;
+}
+
+.export-button:hover {
+  background-color: #e6f0ff;
+  border-color: #0056b3;
+}
+
+.export-button i {
+  margin-left: 2px;
+}
+
+.dropdown-item {
+  padding: 10px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s;
+}
+
+.dropdown-item i {
+  margin-right: 5px;
+}
+
+.dropdown-item:hover {
+  background-color: #072f5f;
+  color: white;
+}
+
+.dropdown-content {
+  position: absolute;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin-top: 5px;
+  z-index: 1;
+  width: 120px;
+  top: 84%;
+}
+
+// this is for export dropdown

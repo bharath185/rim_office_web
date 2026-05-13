@@ -1,0 +1,88 @@
+<app-toast-message></app-toast-message>
+<ol class="breadcrumb mx-1 p-1 mb-0 fade-left">
+    <li class="breadcrumb-item active" aria-current="page">
+        <button class="homeBackClass">Attendance</button><span>>&nbsp;</span>
+        <strong class="breadcrumb-sub-text">On Site</strong>
+    </li>
+</ol>
+<div class="container-fuild" *ngIf="!visibleForm">
+    <div class="card py-2 px-2">
+        <p class="text-center fw-bold">To Submit On Site Details Please Turn On Location And Click On Button</p>
+        <button (click)="getLocation()" type="button" class="btn btn-info">Get My Location</button>
+        <p class="text-danger text-center">{{ locationMessage }}</p>
+    </div>
+
+</div>
+<app-card [options]="false" *ngIf="visibleForm">
+    <div class="divSpinner" *ngIf="isSpinner">
+        <div class="spinner"></div>
+    </div>
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <h5 class="text-center py-1 addAccessHeading">Add Employee On Site Details</h5>
+
+            <form [formGroup]="addOnSiteForm">
+                <div class="row">
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <input type="text" class="form-control floating-input" formControlName="employee_name"
+                            id="employee_nameId" placeholder=" ">
+                        <label for="employee_nameId" class="floating-label" style="left: 20px;">Employee Name*</label>
+                    </div>
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <input type="text" class="form-control floating-input" formControlName="employee_code"
+                            id="nameInputEmpCode" placeholder=" ">
+                        <label for="nameInputEmpCode" class="floating-label" style="left: 20px;">Employee
+                            Code*</label>
+                    </div>
+                    <div class="form-group floating-label-group col-md-2">
+                        <div class="custom-date-input">
+                            <input type="date" formControlName="date" [min]="today" [max]="today"
+                                [ngClass]="{'is-invalid': (isFormSubmitted || addOnSiteForm.get('date')?.touched) && (addOnSiteForm.get('date')?.invalid)}"
+                                (keydown)="preventKeyboardInput($event)" (keypress)="preventKeyboardInput($event)"
+                                (paste)="preventPaste($event)" id="dateId">
+                            <label for="dateId" class="floating-label"
+                                [ngClass]="{'text-danger': (isFormSubmitted || addOnSiteForm.get('date')?.touched) && (addOnSiteForm.get('date')?.invalid)}">
+                                Date*
+                            </label>
+                            <div *ngIf="(isFormSubmitted || addOnSiteForm.get('date')?.touched) && addOnSiteForm.get('date')?.invalid"
+                                class="invalid-feedback m-0">
+                                <span *ngIf="addOnSiteForm.get('date')?.errors?.required" class="px-1">Date is
+                                    required.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <input type="text" class="form-control floating-input" formControlName="company" id="companyId"
+                            placeholder=" ">
+                        <label for="companyId" class="floating-label" style="left: 20px;">Company</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <select class="form-control floating-input" formControlName="workStatus" id="workStatusId"
+                            (focus)="onFocus($event)" (blur)="onBlur($event)"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || addOnSiteForm.get('workStatus')?.touched) && (addOnSiteForm.get('workStatus')?.invalid)}">
+                            <option value="Login">Login</option>
+                            <option value="Logout">Logout</option>
+                        </select>
+                        <label for="workStatusId" class="floating-label m-0" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || addOnSiteForm.get('workStatus')?.touched) && addOnSiteForm.get('workStatus')?.invalid}">User
+                            Status</label>
+                        <div *ngIf="(isFormSubmitted || addOnSiteForm.get('workStatus')?.touched) && addOnSiteForm.get('workStatus')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="addOnSiteForm.get('workStatus')?.errors?.required">Work Type is
+                                required.</span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: end;">
+                        <button type="submit" (click)="submitFormData()" class="py-1 px-2"
+                            [ngClass]="{ 'button-valid': addOnSiteForm.valid,'button-invalid': addOnSiteForm.invalid}"
+                            [disabled]="addOnSiteForm.invalid">Submit</button>
+                    </div>
+                </div>
+            </form>
+
+
+        </div>
+    </div>
+</app-card>

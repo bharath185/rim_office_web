@@ -1,0 +1,202 @@
+<app-toast-message></app-toast-message>
+<div class="dis-fl-end">
+    <div class="heading-dash-sub">
+        <span>Reports</span>
+        <ol class="breadcrumb fade-left">
+            <li class="breadcrumb-item active dis-fl" aria-current="page">
+                <span class="breadC" *ngIf="selectedTab === 0">Employee Master Report</span>
+                <span class="breadC" *ngIf="selectedTab === 1">Appraisal Report</span>
+                <span class="breadC" *ngIf="selectedTab === 2">Leave Report</span>
+                <span class="breadC" *ngIf="selectedTab === 3">Leave Balance</span>
+                <span class="breadC"><i class="feather icon-chevron-right"></i></span><span
+                    class="breadC col-act">Reports</span>
+            </li>
+        </ol>
+    </div>
+
+    <div class="top-nav d-flex gap-2 mt-2">
+        <button *ngFor="let tab of tabs; let i = index" class="nav-btn" [class.active]="selectedTab === i"
+            (click)="selectTab(i)">
+            <i [class]="tab.icon"></i> {{ tab.label }}
+        </button>
+    </div>
+
+</div>
+
+<div *ngIf="selectedTab === 0">
+    <app-card [options]="false">
+        <div class="container-fluid">
+            <div class="col-md-12">
+                <form [formGroup]="empMasterReportForm">
+                    <div class="row">
+                        <div class="form-group floating-label-group dropdown col-md-3 inputPadding mt-2">
+                            <input type="text" formControlName="emloyee" class="form-control floating-input"
+                                placeholder="Select Employee" [(ngModel)]="searchText" id="employeeNameId"
+                                (focus)="openDropdown()" (input)="filterEmployees()"
+                                (blur)="closeDropdown(); checkValidEmployee()" autocomplete="off"
+                                [ngClass]="{'is-invalid': isFormSubmitted && !isValidEmployee}" />
+                            <label class="floating-label m-0" style="left: 20px;" for="employeeNameId"
+                                [ngClass]="{'text-danger':(isFormSubmitted || empMasterReportForm.get('emloyee')?.touched) && empMasterReportForm.get('emloyee')?.invalid}">Employee*</label>
+                            <ul class="dropdown-menu" [class.show]="isDropdownOpen && filteredEmployees.length >= 0">
+                                <li *ngFor="let employee of filteredEmployees" (click)="selectEmployeee(employee)"
+                                    class="dropdown-item">
+                                    {{ employee.EmpName }} ({{ employee.EmpCode }})
+                                </li>
+                                <li *ngIf="filteredEmployees.length === 0" class="dropdown-item text-danger">No results
+                                    found
+                                </li>
+                            </ul>
+                            <div style="font-size: 10px;" class="text-danger"
+                                *ngIf="(isFormSubmitted || empMasterReportForm.get('emloyee')?.touched) && empMasterReportForm.get('emloyee')?.invalid">
+                                Invalid Employee</div>
+                            <div *ngIf="isFormSubmitted && !isValidEmployee" class="invalid-feedback m-0">Please select
+                                a
+                                valid
+                                Employee.</div>
+                            <div *ngIf="errorMessageEmpName" class="error-message">{{ errorMessageEmpName }}</div>
+                        </div>
+
+                        <div class="form-group floating-label-group col-md-3 inputPadding mt-2">
+                            <input type="text" formControlName="emloyeeCode" id="emloyeeCodeId"
+                                class="form-control floating-input" readonly>
+                            <label class="floating-label m-0" style="left: 20px;" for="emloyeeCodeId">Employee
+                                Code</label>
+                        </div>
+
+                        <div class="form-group floating-label-group col-md-3 inputPadding mt-2">
+                            <select class="form-control floating-input" formControlName="gender" id="genderId"
+                                class="form-control floating-input">
+                                <option value="" selected hidden></option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Transgender">Transgender</option>
+                                <option value="Others">Others</option>
+                            </select>
+                            <label class="floating-label m-0" style="left: 20px;" for="genderId">Gender</label>
+                        </div>
+
+                        <div class="form-group floating-label-group col-md-3 mt-2">
+                            <input type="text" class="form-control floating-input  " id="offEmailId" placeholder=" "
+                                formControlName="EmailId">
+                            <label for="offEmailId" class="floating-label" style="left: 20px;">Official Email Id</label>
+                        </div>
+
+                        <div class="form-group floating-label-group col-md-3 inputPadding">
+                            <div class="custom-date-input">
+                                <input type="date" placeholder=" " formControlName="DOJ"
+                                    class="form-control floating-input" [max]="today" id="dateOfJId" />
+                                <label for="dateOfJId" class="floating-label" style="left: 20px;">
+                                    Date Of Joining
+                                </label>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group floating-label-group col-md-3 inputPadding">
+                            <select class="form-control floating-input" formControlName="DeptName" id="depNameId"
+                                (change)="callDDDesignation()">
+                                <option value="" selected hidden></option>
+                                <option *ngFor="let option of getDepartementName" [value]="option['DeptId']">
+                                    {{ option['DeptName']['length'] > 20 ? (option['DeptName'] | slice: 0:20) + '...' :
+                                    option['DeptName'] }}
+                                </option>
+                            </select>
+                            <label for="depNameId" class="floating-label m-0" style="left: 20px;">Department</label>
+                        </div>
+
+                        <div class="form-group floating-label-group col-md-3 inputPadding">
+                            <select class="form-control floating-input" formControlName="Designation"
+                                id="designationId">
+                                <option value="" selected hidden></option>
+                                <option *ngFor="let option of getDepartementRole" [value]="option['DesignationId']">
+                                    {{ option.Designation.length > 17 ? (option.Designation | slice: 0:17) + '...' :
+                                    option.Designation }}
+                                </option>
+                            </select>
+                            <label for="designationId" class="floating-label m-0"
+                                style="left: 20px;">Designation</label>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div style="display: flex;justify-content: end;">
+                                <button class="HRMS_secondary_button" type="reset" (click)="resetData()">
+                                    <i class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+                                <button class="HRMS_primary_button" type="submit" (click)="submitFilterData()">
+                                    <i class="feather icon-filter"></i>&nbsp;Filter</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+
+            <div class="divSpinner" *ngIf="isSpinner">
+                <div class="spinner"></div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="row align-items-center my-2">
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 form-heading">List Of Employees</h5>
+
+                            <div class="d-flex align-items-center gap-2">
+
+                                <input type="text" class="form-control rad-50" [(ngModel)]="searchValue"
+                                    (keyup)="applyFilter()" placeholder="Search" id="serachInputId" />
+
+                                <div class="export-container position-relative">
+                                    <button class="export-button d-flex align-items-center"
+                                        (click)="toggleDropdownExport()">
+                                        <i class="feather icon-upload me-1"></i> Export
+                                    </button>
+
+                                    <div class="dropdown-content position-absolute end-0 mt-1" *ngIf="dropdownVisible"
+                                        style="z-index: 999;">
+                                        <div class="dropdown-item" (click)="exportFile('excel')">
+                                            <i class="fas fa-file-excel me-1"></i> Excel
+                                        </div>
+                                        <div class="dropdown-item" (click)="exportFile('pdf')">
+                                            <i class="fas fa-file-pdf me-1"></i> PDF
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="table-wrapper mt-3">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light sticky-header">
+                                <tr class="inner-shadow ">
+                                    <th class="">Name</th>
+                                    <th class="">Code</th>
+                                    <th class="">Gender</th>
+                                    <th class="">Email Id</th>
+                                    <th class="">DOJ</th>
+                                    <th class="">Department</th>
+                                    <th class="">Designation</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </app-card>
+
+</div>
+
+<div *ngIf="selectedTab === 1" class="my-3">
+    <app-appraisal-report></app-appraisal-report>
+</div>
+
+<div *ngIf="selectedTab === 2" class="my-3">
+    <app-leave-report></app-leave-report>
+</div>
+<!-- <div *ngIf="selectedTab === 3" class="my-3">
+    <app-leave-balance></app-leave-balance>
+</div> -->
+<!-- <div *ngIf="selectedTab === 4" class="my-3">
+    <app-working-days-reports></app-working-days-reports>
+</div> -->

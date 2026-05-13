@@ -1,0 +1,149 @@
+::ng-deep .pcoded-header {
+    .card {
+        margin: 0px !important;
+    }
+}
+
+::ng-deep .pcoded-content {
+    position: relative;
+    display: block;
+    padding: 0px !important;
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+}
+
+::ng-deep.ngx-pagination .current {
+    padding: .1875rem .625rem;
+    color: #fefefe;
+    cursor: default;
+}
+.table-wrapper {
+  max-height: 500px !important;
+}
+.table thead th {
+  padding: 4px 6px !important;
+  background-color: #4CAF50 !important;
+  color: #fff;
+  font-size: 13px;
+}
+.table tbody td {
+  padding: 0px 20px !important;
+}
+.sticky-column {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+}
+
+.sticky-row {
+    position: sticky;
+    left: 0;
+}
+
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+::ng-deep .tooltip-inner {
+    // text-align: center;
+    border-radius: 4px;
+    font-size: 13px;
+    // width: 500px !important; 
+    max-width: 500px !important;
+    background-color: rgb(68, 68, 240) !important;
+
+}
+
+.tooltip-chart-container {
+    position: absolute;
+    z-index: 1000;
+    background-color: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    height: 250px;
+}
+
+.current-month select {
+    width: 100px;
+    margin-left: 10px;
+}
+
+.current-month select:focus {
+    outline: none;
+    border: 1px solid #007bff;
+}
+
+@media only screen and (max-width: 991px) {
+    ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+        margin-left: 0px;
+        margin-top: 57px !important;
+    }
+}
+
+.bold-on-hover {
+    font-weight: bold;
+}
+
+.weekend {
+    color: red;
+    font-weight: bold;
+}
+// this is for export dropdown
+.export-container {
+    position: relative;
+    display: inline-block;
+}
+
+.export-button {
+    background-color: #ffffff;
+    color: #072f5f;
+    border: 1px solid #072f5f;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+    border-radius: 5px;
+    margin:0px 4px;
+}
+
+.export-button:hover {
+    background-color: #e6f0ff;
+    border-color: #0056b3;
+}
+
+.export-button i {
+    margin-left: 2px;
+}
+
+.dropdown-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s;
+}
+
+.dropdown-item i {
+    margin-right: 5px;
+}
+
+.dropdown-item:hover {
+    background-color: #072f5f;
+    color: white;
+}
+
+.dropdown-content {
+    position: absolute;
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin-top: 5px;
+    z-index: 1;
+    width: 120px;
+    top: 84%;
+}
+
+// this is for export dropdown
+

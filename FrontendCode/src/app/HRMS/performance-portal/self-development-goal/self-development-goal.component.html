@@ -1,0 +1,101 @@
+<ol class="breadcrumb mx-1 p-1 mb-0 fade-left">
+    <li class="breadcrumb-item active" aria-current="page">
+        <button class="homeBackClass">Performance Portal</button><span>>&nbsp;</span>
+        <strong class="breadcrumb-sub-text">Self Development Goal</strong>
+    </li>
+</ol>
+<app-card [options]="false">
+  <div class="text-end ms-3" style="white-space: nowrap;">
+      <span>Financial Details : </span>
+      <strong>{{ getFinancialYear[0]?.FinancialDetails }}</strong>
+    </div>
+    <div class="itdp-container">
+      <h5 class="itdp-title text-center" style="color: #072f5f;">Individual Training and Development Plan (ITDP)</h5>
+      <p class="itdp-intro" style="color: #072f5f;">
+        <b>We</b> at <b>3DCAD</b> believe that every team member has the chance to grow and explore new avenues, which in
+        turn enhances their individual capabilities and contributes to the organization's long-term success by stretching
+        in new directions.Managers and team members should meet to discuss expectations, development opportunities, and
+        the resources and support needed. 
+        New goals can be entered into the Form. Throughout the year, you can update your goal. Use the Comments box to
+        enter progress updates and relevant information. Comments are visible to both the employee and manager.Manager to
+        review goal progress regularly and provide continuous feedback.   Use the Comments box to enter progress updates
+        and relevant
+      </p>
+    </div>
+    <app-toast-message></app-toast-message>
+    <app-spinner *ngIf="loading"></app-spinner>
+    <div class="text-end">
+      <button type="button" class="btn " style=" border-color: #072f5f; color: #072f5f;  border-radius: 0%"
+        (click)="addRow()"><i class="fas fa-tag"></i> Add ITDP</button>
+    </div>
+    <div *ngIf="showWarning" class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+      <strong>Warning!</strong> {{errormessage}}
+      <!-- <span aria-hidden="true" (click)="dismiss()"><i class="fas fa-times"></i></span> -->
+    </div>
+    <div class="table-wrapper">
+      <table class="table table-bordered mt-2">
+        <thead>
+          <tr class="inner-shadow ">
+            <!-- <th class="goal-header">Learning Activities</th> -->
+            <th class="goal-header" style="width: 10%;">Activities</th>
+            <th class="weitage-header" style="width: 30%;"> Action Description</th>
+            <!-- <th class="weitage-header" style="width: 10%;">Action Type</th> -->
+            <th class="weitage-header">Status</th>
+            <th class="weitage-header">Start date</th>
+            <th class="weitage-header">Due date</th>
+            <th class="weitage-header">Completed Date</th>
+            <th class="actions-header" style="width: 10%;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of rows; let i = index">
+            <td>
+              <input *ngIf="row.isEditing" type="text" [(ngModel)]="row.Activity" class="form-control">
+              <span *ngIf="!row.isEditing">{{ row.Activity }}</span>
+            </td>
+            <td>
+              <input *ngIf="row.isEditing" type="text" [(ngModel)]="row.ActionDescription" class="form-control">
+              <span *ngIf="!row.isEditing">{{ row.ActionDescription }}</span>
+            </td>
+            <!-- <td>
+              <input *ngIf="row.isEditing" type="text" [(ngModel)]="row.ActionType" class="form-control">
+              <span *ngIf="!row.isEditing">{{ row.ActionType }}</span>
+            </td> -->
+            <td>
+              <select *ngIf="row.isEditing" [(ngModel)]="row.ActionType" class="form-select">
+                <option disabled selected>Status</option>
+                <option value="To Do">To Do</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
+              <span *ngIf="!row.isEditing">{{row.ActionType}}</span>
+            </td>
+            <td>
+              <input *ngIf="row.isEditing" type="date" class="form-control" [(ngModel)]="row.StartDate"  >
+              <span *ngIf="!row.isEditing">{{ row.StartDate }}</span>
+            </td>
+            <td>
+              <input *ngIf="row.isEditing" type="date" class="form-control" [(ngModel)]="row.DueDate" required>
+              <span *ngIf="!row.isEditing">{{ row.DueDate }}</span>
+            </td>
+            <td>
+              <input *ngIf="row.isEditing" type="date" class="form-control" [(ngModel)]="row.CompletedDate" required>
+              <span *ngIf="!row.isEditing">{{ row.CompletedDate }}</span>
+            </td>
+            <td>
+              <span  class="mx-2" *ngIf="row.isEditing" (click)="toggleEdit(row, i)" style="color:#072f5f"> <i class="fas fa-check fa-lg "></i></span>
+              <span  class="mx-2" *ngIf="!row.isEditing" (click)="toggleEdit(row, i)" style="color:rgb(86, 86, 86)"> <i class="fas fa-pen fa-lg "></i></span>
+              <span  class="mx-2" *ngIf="!row.isEditing" (click)="removeRow(i,row)" style="color:rgb(86, 86, 86)">  <i class="fas fa-trash fa-lg " style="color:#072f5f"></i></span>
+              <span class="mx-2" *ngIf="row.isEditing" (click)="cancelEdit(row)" style="color:rgb(86, 86, 86)">
+                <i class="fas fa-times fa-lg " style=" color:#072f5f"></i>
+            </span>
+            </td>
+          </tr>
+        </tbody>
+  
+      </table>
+    </div>
+    <!-- <div class="text-end">
+          <button type="button" class="btn " style=" background-color: #072f5f; color: #ffffff; border-radius: 0%; " ><i class="fas fa-check"></i>  Final Submit</button>
+      </div> -->
+  </app-card>

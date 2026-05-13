@@ -1,0 +1,207 @@
+<app-toast-message></app-toast-message>
+<app-card [options]="false">
+    <div class="divSpinner" *ngIf="isSpinner">
+        <div class="spinner"></div>
+    </div>
+    <div class="container-fluid p-0">
+        <div class="col-md-12">
+            <!-- <h5 class="text-center py-1 addAccessHeading">Add Shifts Groups</h5> -->
+            <form [formGroup]="shiftGroupingForm">
+                <div class="row pt-2">
+                    <!-- <div class="form-group floating-label-group col-md-3 inputPadding mt-2">
+                        <select class="form-control floating-input" formControlName="Company"
+                            (change)="calllegalEntity($event)" id="departmentSelect" (focus)="onFocus($event)"
+                            (blur)="onBlur($event)"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || shiftGroupingForm.get('Company')?.touched) && (shiftGroupingForm.get('Company')?.invalid)}">
+                            <option value="" selected hidden></option>
+                            <option *ngFor="let company of getDDCompany" [value]="company.CompId">
+                                {{company.Company}}</option>
+                        </select>
+
+                        <label for="departmentSelect" class="floating-label" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || shiftGroupingForm.get('Company')?.touched) && shiftGroupingForm.get('Company')?.invalid}">Company
+                            Name*</label>
+                        <div *ngIf="(isFormSubmitted || shiftGroupingForm.get('Company')?.touched) && shiftGroupingForm.get('Company')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="shiftGroupingForm.get('Company')?.errors?.required">Company is
+                                required.</span>
+                        </div>
+                    </div> -->
+
+                    <!-- <div class="form-group floating-label-group col-md-3 inputPadding mt-2">
+                        <select class="form-control floating-input" formControlName="LegalEntity" id="legalEntityId"
+                            (focus)="onFocus($event)" (blur)="onBlur($event)"
+                            (change)="getBusinessUnit();isEnableBusiness($event)"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || shiftGroupingForm.get('LegalEntity')?.touched) && (shiftGroupingForm.get('LegalEntity')?.invalid)}">
+                            <option selected hidden value=""></option>
+                            <option *ngFor="let entity of getLegalEntity" [value]="entity.LEId">
+                                {{entity.LegalEntity}}</option>
+                        </select>
+                        <label for="legalEntityId" class="floating-label " style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || shiftGroupingForm.get('LegalEntity')?.touched) && shiftGroupingForm.get('LegalEntity')?.invalid}">
+                            Entity*</label>
+                        <div *ngIf="(isFormSubmitted || shiftGroupingForm.get('LegalEntity')?.touched) && shiftGroupingForm.get('LegalEntity')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="shiftGroupingForm.get('LegalEntity')?.errors?.required">Entity
+                                is required.</span>
+                        </div>
+                    </div> -->
+
+                    <div class="form-group floating-label-group col-md-3 inputPadding mt-2">
+                        <select class="form-control floating-input" formControlName="BusinessUnit" style="left: 20px;"
+                            id="businessUinitId" (change)="callLocation()" (focus)="onFocus($event)"
+                            (blur)="onBlur($event)">
+                            <option disabled selected hidden value=""></option>
+                            <option *ngFor="let unitList of getBusinessUnitlist" [value]="unitList.BUId">
+                                {{unitList.BusinessUnit}}</option>
+                        </select>
+                        <label for="businessUinitId" class="floating-label ">Business Unit</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 mt-2">
+                        <select class="form-control floating-input" formControlName="Location" style="left: 20px;"
+                            id="locationId" (focus)="onFocus($event)" (blur)="onBlur($event)">
+                            <option disabled selected hidden value=""></option>
+                            <option *ngFor="let location of getLocations" [value]="location.LocationId">
+                                {{location.Location}}</option>
+                        </select>
+                        <label for="locationId" class="floating-label ">Location</label>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div style="display: flex;justify-content: end;" class="my-2">
+                            <button class="HRMS_secondary_button" type="button" (click)="resetData()"><i
+                                    class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+                            <button class="HRMS_primary_button" type="submit" (click)="openModal();"><i
+                                    class="feather icon-clock"></i>&nbsp;Get
+                                Shifts</button>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-9">
+                    <h5 class="mb-0 form-heading">Shift Details by Company and Location</h5>
+                </div>
+                <div class="table-wrapper mt-3">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light sticky-header">
+                            <tr class="inner-shadow">
+                                <th class="">Company</th>
+                                <th class="">Entity</th>
+                                <th class="">Business Unit</th>
+                                <th class="">Location</th>
+                                <th class="">Shift Name</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="isTableData == false">
+                            <tr
+                                *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                                <td class="">
+                                    <span>{{row.Company}}</span>
+                                </td>
+                                <td class="">
+                                    <span>{{row.LegalEntity}}</span>
+                                </td>
+                                <td class="">
+                                    <span>{{row.BusinessUnit}}</span>
+                                </td>
+                                <td class="">
+                                    <span>{{row.Location}}</span>
+                                </td>
+                                <td class="" style="font-weight: bold;">
+                                    <ng-container *ngFor="let shift of row.lstOfShift">
+                                        <span class="shift-name" #tooltip="ngbTooltip" [ngbTooltip]="tooltipTemplate"
+                                            tooltipClass="card-tooltip" container="body" placement="top"
+                                            (mouseenter)="setTooltipContent(shift)"
+                                            (mouseleave)="clearTooltipContent()">
+                                            <!-- triggers="mouseenter:blur" -->
+                                            {{ shift.ShiftName }}
+                                        </span> <br>
+                                        <ng-template #tooltipTemplate>
+                                            <div [innerHTML]="tooltipContent"></div>
+                                        </ng-template>
+                                    </ng-container>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="isTableData == true" class="text-center errorMassage">
+                        <span class="text-danger">{{errorMessage}}</span>
+                    </div>
+                </div>
+                <div class="pagination-controls-wrapper">
+                    <div class="row align-items-center" style="padding-top: 1rem;">
+                        <div class="col-auto">
+                            <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+                            <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+                                <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                        </div>
+                        <div class="col-auto">
+                            <pagination-controls (pageChange)="page = $event"></pagination-controls>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</app-card>
+
+<div class="modal fade" id="modal-right" tabindex="-1" aria-labelledby="modal-right-label" data-bs-backdrop="static"
+    aria-hidden="false">
+    <div class="modal-dialog modal-end w-xl">
+        <div class="modal-content vh-100 no-radius">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" #closeModal></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-hover ">
+                    <thead class="table-light sticky-header">
+                        <tr class="inner-shadow ">
+                            <th class="">
+                                <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll($event)" />
+                            </th>
+                            <th class="">Shift Name</th>
+                            <th class="">Start Time</th>
+                            <th class="">End Time</th>
+                        </tr>
+
+                    </thead>
+                    <tbody *ngIf="isTableDataGetShift == false">
+                        <tr *ngFor="let row of AllShiftsRows; let i = index">
+                            <td class="">
+                                <input type="checkbox" [(ngModel)]="row.selected" (change)="onRowSelectChange()" />
+                            </td>
+                            <td class="">
+                                <span>{{ row.ShiftName }}</span>
+                            </td>
+                            <td class="">
+                                <span>{{ row.StartTime?.Hours }}:{{ row.StartTime?.Minutes < 10 ? '0' +
+                                        row.StartTime?.Minutes : row.StartTime?.Minutes }}</span>
+                            </td>
+                            <td class="">
+                                <span>{{ row.EndTime?.Hours }}:{{ row.EndTime?.Minutes < 10 ? '0' + row.EndTime?.Minutes
+                                        : row.EndTime?.Minutes }}</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="HRMS_secondary_button" data-bs-dismiss="modal">
+                    <i class="action-icon feather icon-x"></i>Close</button>
+                <button type="submit" class="HRMS_primary_button" (click)="submitFormData()">
+                    <i class="feather icon-check"></i>&nbsp;Submit</button>
+            </div>
+        </div>
+    </div>
+</div>

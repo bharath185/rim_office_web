@@ -1,0 +1,87 @@
+/* Sidebar Background */
+.navbar-content {
+    background: white;
+    // padding: 16px;
+}
+
+/* Profile Card */
+.sidebar-profile {
+    margin: 5%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #eef2f7;
+    padding: 12px;
+    border-radius: 12px;
+    width: 90%;
+}
+
+.profile-img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1e293b;
+}
+
+.profile-role {
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* Section Title */
+.pcoded-inner-navbar>li.pcoded-menu-caption {
+    font-size: 12px;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    margin: 20px 0 8px 8px;
+}
+
+/* Menu Item */
+.pcoded-inner-navbar li>a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #334155;
+    transition: all 0.2s ease;
+}
+
+/* Icon */
+.pcoded-inner-navbar li>a i {
+    font-size: 18px;
+    color: #94a3b8;
+}
+
+/* Hover */
+.pcoded-inner-navbar li>a:hover {
+    background: #e2e8f0;
+}
+
+/* Active Item */
+.pcoded-inner-navbar li.active>a {
+    background: #dbeafe;
+    color: #2563eb;
+    font-weight: 600;
+    position: relative;
+}
+
+/* Right Blue Indicator */
+.pcoded-inner-navbar li.active>a::after {
+    content: '';
+    position: absolute;
+    right: -16px;
+    top: 8px;
+    bottom: 8px;
+    width: 4px;
+    background: #2563eb;
+    border-radius: 4px;
+}

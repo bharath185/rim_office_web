@@ -1,0 +1,149 @@
+::ng-deep .pcoded-content {
+  position: relative;
+  display: block;
+  padding: 0px !important;
+  padding-left: 25px !important;
+  padding-right: 25px !important;
+}
+
+.pcoded-header {
+  .card {
+    margin: 0px !important;
+  }
+}
+
+.invalid-feedback {
+  font-size: 10px;
+}
+
+.table-wrapper {
+  max-height: 420px !important;
+}
+
+.table thead th {
+  padding: 6px 6px !important;
+}
+
+.table tbody td {
+  padding: 4px 6px !important;
+}
+
+// ************this is for custome date*******
+.custom-date-input {
+  position: relative;
+}
+
+.custom-date-input input {
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 3px 5px;
+  width: 100%;
+  outline: none;
+  font-size: 11px;
+  padding-top: 16px;
+  line-height: 1.7;
+}
+
+.custom-date-input input::placeholder {
+  font-size: 5px;
+  color: #aaa;
+}
+
+.custom-date-input label {
+  position: absolute;
+  color: #888;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.custom-date-input input:focus+label,
+.custom-date-input input:not(:placeholder-shown)+label {
+  top: 1px;
+  left: 5px;
+  font-size: 12px;
+}
+
+// ************this is for custome date*******
+
+// search dropdown Input Field
+.floating-input {
+  position: relative;
+  padding-right: 30px;
+}
+
+.dropdown-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+
+.dropdown-item {
+  cursor: pointer;
+}
+
+.dropdown .dropdown-item {
+  padding: 5px 6px;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-content {
+  animation: fadeInUp 1.5s ease-in-out;
+}
+
+
+.btn-close {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.btn-close:hover {
+  transform: rotate(90deg);
+  opacity: 0.7;
+}
+
+.text-muted {
+  width: 110px;
+  text-align: right;
+  margin-right: 5px;
+  font-size: 12px;
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.info-item {
+  display: flex;
+}
+
+.info-item span {
+  display: inline-block;
+}
+
+@media only screen and (max-width: 991px) {
+  ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+    margin-left: 0px;
+    margin-top: 57px !important;
+  }
+}

@@ -1,0 +1,272 @@
+::ng-deep .pcoded-header {
+    .card {
+        margin: 0px !important;
+    }
+}
+
+::ng-deep .pcoded-content {
+    position: relative;
+    display: block;
+    padding: 0px !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+}
+
+// ::ng-deep .pcoded-main-container {
+//     background-color: white !important;
+// }
+
+@media only screen and (max-width: 991px) {
+    ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+        margin-left: 0px;
+        margin-top: 57px !important;
+    }
+}
+
+// ************this is for custome date*******
+.custom-date-input {
+    position: relative;
+}
+
+.custom-date-input input {
+    // border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 3px 5px;
+    width: 100%;
+    outline: none;
+    font-size: 11px;
+    padding-top: 16px;
+    line-height: 1.9;
+}
+
+.custom-date-input input::placeholder {
+    font-size: 5px;
+    color: #aaa;
+}
+
+.custom-date-input label {
+    position: absolute;
+    color: #888;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.custom-date-input input:focus+label,
+.custom-date-input input:not(:placeholder-shown)+label {
+    top: 1px;
+    left: 5px;
+    font-size: 12px;
+}
+
+.text-muted {
+    width: 110px;
+    text-align: right;
+    margin-right: 5px;
+    font-size: 12px;
+  }
+  .text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .info-item {
+    display: flex;
+  }
+  .info-item span {
+    display: inline-block;
+    font-size: 11px;
+  }
+  .card {
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+// ************this is for custome date*******
+
+// search Input Field
+.dropdown-icon {
+    position: absolute;
+    right: 10px;
+    top: 23%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.dropdown {
+    font-size: 12px;
+}
+
+.dropdown-menu {
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.dropdown-item {
+    cursor: pointer;
+}
+
+.dropdown .dropdown-item {
+    padding: 5px 6px;
+}
+
+// search Input Field
+
+#attendanceSource {
+    // background-color: #f0f3fb;
+    border-radius: 5px;
+
+    .card {
+        padding: 4px;
+    }
+}
+
+.error-message {
+    font-size: 8px;
+}
+
+.btn-success {
+    border-radius: none !important;
+    background-color: #23BD9E;
+    margin-top: 14px;
+    border: none;
+}
+
+.btn-success:hover {
+    background-color: rgb(20, 138, 20);
+}
+
+.btn-secondary {
+    background-color: #f0ad4e;
+    color: white;
+    border: none;
+    font-size: 13px;
+    padding: 1px 4px;
+}
+
+.btn-secondary:hover {
+    background-color: #d18418;
+}
+
+.error-message {
+    color: red;
+    font-size: 10px;
+}
+
+.cardText {
+    font-size: 12px;
+
+    .secondCardIcons {
+        font-size: 14px;
+        margin-left: 5px;
+    }
+}
+
+.chart-card {
+    background-color: #c6cbdb !important;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    height: auto;
+    min-height: 200px;
+}
+
+@media (max-width: 768px) {
+    .chart-card {
+        min-height: 200px;
+        box-shadow: none;
+    }
+
+    .inputPadding {
+        padding: 0px 14px 0px 14px;
+    }
+
+    .btn-success,
+    .btn-secondary {
+        margin-bottom: 5px;
+    }
+}
+
+.chart-container {
+    // background: #f9f9f9;
+    background-color: rgb(245, 239, 239);
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    width: 100%;
+    // overflow-x: auto;  
+    // -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 600px) {
+    .chart-container {
+        //   overflow-x: auto;
+        width: 100%;
+        white-space: nowrap;
+    }
+}
+
+
+.chart-container h4 {
+    text-align: center;
+    color: #333;
+}
+
+.hrms-legend {
+    width: auto;
+    color: black;
+    font-size: 16px;
+    white-space: nowrap;
+    font-weight: bold;
+    padding: 0px;
+}
+
+.hrms-outline-fieldset {
+    // padding: 7px 10px;
+    border-radius: 2px;
+}
+
+.toggle-container {
+    display: inline-flex;
+    position: relative;
+    background: #2d2d2d;
+    overflow: hidden;
+  }
+  
+  .toggle-btn {
+    flex: 1;
+    padding: 5px 40px;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 2;
+    position: relative;
+    border: none;
+    background: none;
+  }
+  
+  .toggle-btn:focus {
+    outline: none;
+  }
+  
+  
+  .toggle-slider {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    background: #8bc34a;
+    transition: 0.3s ease;
+    z-index: 1;
+    border: 1.5px solid black;
+  }
+  
+  .toggle-slider.move-right {
+    transform: translateX(100%);
+  }
+  
+
+
+
+

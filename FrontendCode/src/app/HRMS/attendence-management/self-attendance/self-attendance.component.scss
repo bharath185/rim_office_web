@@ -1,0 +1,310 @@
+::ng-deep .pcoded-header {
+    .card {
+        margin: 0px !important;
+    }
+}
+
+::ng-deep .pcoded-content {
+    position: relative;
+    display: block;
+    padding: 0px !important;
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+}
+
+::ng-deep.ngx-pagination .current {
+    padding: .1875rem .625rem;
+    // background-color: #072f5f !important;
+    color: #fefefe;
+    cursor: default;
+}
+
+
+.table thead th {
+    padding: 4px 6px !important;
+    background-color: #4CAF50 !important;
+    color: #fff;
+    font-size: 13px;
+}
+
+.table tbody td {
+    padding: 7px 20px !important;
+}
+
+.sticky-header {
+    position: sticky;
+    top: 0;
+    background-color: #E6E7EB;
+    z-index: 2;
+}
+
+.table-wrapper {
+    width: 100%;
+    max-height: 470px;
+    overflow: auto;
+}
+
+.card-text {
+    font-size: 12px;
+}
+
+.card-text .col-6 {
+    padding: 0px;
+}
+
+@media (min-width: 768px) and (max-width: 1200px) {
+    .card-text .col-6 {
+        padding: 0px !important;
+    }
+}
+
+.infoButton {
+    background: white;
+    color: #072f5f;
+    padding: 3px;
+    border: 1px solid #072f5f;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+// .green-circle {
+//     color: #3ec13e;
+//     font-size: 10px; 
+//     margin-right: 5px;
+// }
+
+// .red-circle {
+//     color: #f34a4a;
+//     font-size: 10px; 
+//     margin-right: 5px;
+// }
+// .blue-circle{
+//     color: #072F5F;
+//     font-size: 10px; 
+//     margin-right: 5px; 
+// }
+.fa-coffee {
+    font-size: 10px;
+    margin-right: 5px;
+}
+
+.headerIcon {
+    font-size: 12px;
+    margin-right: 3px;
+}
+
+.weekend {
+    color: red;
+    font-weight: bold;
+}
+
+@media only screen and (max-width: 991px) {
+    ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+        margin-left: 0px;
+        margin-top: 57px !important;
+    }
+}
+
+// this is for export dropdown
+.export-container {
+    position: relative;
+    display: inline-block;
+}
+
+.export-button {
+    background-color: #ffffff;
+    color: #072f5f;
+    border: 1px solid #072f5f;
+    font-size: 14px;
+    padding: 5px 6px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+    border-radius: 5px;
+}
+
+.export-button:hover {
+    background-color: #e6f0ff;
+    border-color: #0056b3;
+}
+
+.export-button i {
+    margin-left: 2px;
+}
+
+.dropdown-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s;
+}
+
+.dropdown-item i {
+    margin-right: 5px;
+}
+
+.dropdown-item:hover {
+    background-color: #072f5f;
+    color: white;
+}
+
+.dropdown-content {
+    position: absolute;
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin-top: 5px;
+    z-index: 1;
+    width: 120px;
+    top: 84%;
+}
+
+// this is for export dropdown
+
+/*  color for worktype and leave type */
+.wfh-type {
+    color: black;
+    background-color: #FFA500;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.combine-type {
+    color: black;
+    background-color: #b1b1e7ff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.onsite-type {
+    color: black;
+    background-color: #b3a426;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.manual-type {
+    color: black;
+    background-color: #c79670;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.EL {
+    color: black;
+    background-color: #A3C6FF;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.CL {
+    color: black;
+    background-color: #b883db;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+.RH {
+    color: black;
+    background-color: #FFE7E9;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.LOP {
+    color: black;
+    background-color: red;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.holiday {
+    color: black;
+    background-color: #9edbcf;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.dayspresent {
+    color: black;
+    background-color: #84994F;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.bold-on-hover {
+    font-weight: bold;
+    background-color: #072f5f;
+    color: white;
+}
+
+::ng-deep .tooltip-inner {
+    color: white;
+    background-color: rgb(68, 68, 240) !important;
+    text-align: center;
+    border-radius: 4px;
+    font-size: 11px;
+}
+
+
+
+::ng-deep.card-tooltip .essl-title {
+    color: rgb(226, 156, 226);
+    font-weight: 900;
+}
+
+::ng-deep.card-tooltip .wfh-title {
+    color: #fd7e14;
+    font-weight: 700;
+
+}
+
+::ng-deep.card-tooltip .onsite-title {
+    color: yellow;
+    font-weight: 700;
+
+}
+
+
+.card {
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background-color: #f5f5f5;
+    font-weight: bold;
+}
+
+.badge {
+    font-size: 14px;
+    padding: 5px 10px;
+}
+
+.badge-success {
+    background-color: #28a745;
+}
+
+.badge-primary {
+    background-color: #007bff;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+}
+
+.badge-info {
+    background-color: #17a2b8;
+}
+
+.badge-danger {
+    background-color: #dc3545;
+}

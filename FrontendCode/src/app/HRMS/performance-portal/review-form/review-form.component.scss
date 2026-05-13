@@ -1,0 +1,109 @@
+::ng-deep .pcoded-header {
+    .card {
+        margin: 0px !important;
+    }
+}
+
+::ng-deep .pcoded-content {
+    position: relative;
+    display: block;
+    padding: 0px !important;
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+    padding-top: 5px !important;
+}
+
+@media only screen and (max-width: 991px) {
+    ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+        margin-left: 0px;
+        margin-top: 57px !important;
+    }
+}
+
+
+.selected-row {
+    background-color: lightblue; /* Change the background color for the selected row */
+  }
+  
+  .details {
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+
+
+
+  .rating-card {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+// table {
+//     width: 100%;
+//     border-collapse: collapse;
+// }
+
+// th, td {
+//     padding: 10px;
+//     text-align: left;
+//     border-bottom: 1px solid #ddd;
+// }
+
+// th {
+//     background-color: #f2f2f2;
+// }
+
+.rating-badge {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    border-radius: 50%;
+    font-weight: bold;
+}
+
+.unsatisfactory { background-color: #e74c3c; color: #fff; }
+.needs-improvement { background-color: #f39c12; color: #fff; }
+.meets-expectation { background-color: #3498db; color: #fff; }
+.exceeds-expectation { background-color: #2ecc71; color: #fff; }
+.outstanding { background-color: #9b59b6; color: #fff; }
+
+.info-tooltip {
+    position: flex;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    top: 100%;
+    left: 0;
+    transform: translateY(10px);
+    z-index: 999;
+  }
+
+
+  .sticky-popup {
+    position: absolute;
+    top: 20px; /* Initial position */
+    left: 20px; /* Initial position */
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    z-index: 1050;
+    cursor: move;
+  }
+  
+  .sticky-popup.dragging {
+    cursor: grabbing; /* Change cursor while dragging */
+  }
+  
+  .close-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+  }
+  
+//   .popup-content {
+//   }
+  

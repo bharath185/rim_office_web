@@ -1,0 +1,173 @@
+<app-toast-message></app-toast-message>
+
+<div class="divSpinner" *ngIf="isSpinner">
+    <div class="spinner"></div>
+</div>
+
+<div class="text-end mb-2">
+    <button class="HRMS_Create_Close text-end" type="button" (click)="toggleButton()">
+        <i class="feather" [ngClass]="isCardOpen ? 'icon-x' : 'icon-plus'"></i>&nbsp;
+        {{ isCardOpen ? 'Close' : 'Create' }}
+    </button>
+</div>
+
+<fieldset class="border p-3 mb-3 custom-fieldset" *ngIf="isCardOpen">
+    <legend class="w-auto px-2 custom-legend"></legend>
+    <div class="container-fluid ">
+        <div class="col-md-12">
+            <form [formGroup]="mappingForm">
+                <div class="row">
+
+                    <div class="form-group floating-label-group col-md-3 inputPadding mt-2">
+                        <select class="form-control floating-input" aria-label="Default select example"
+                            formControlName="grade" id="roleGrade"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || mappingForm.get('grade')?.touched) && mappingForm.get('grade')?.invalid}">
+                            <option value="" disabled hidden></option>
+                            <option *ngFor="let option of getDD_grade" [ngValue]="option">
+                                {{ option.Grade}}
+                            </option>
+                        </select>
+                        <label for="roleGrade" class="floating-label" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || mappingForm.get('grade')?.touched) && mappingForm.get('grade')?.invalid}">
+                            Grade*
+                        </label>
+                        <div *ngIf="(isFormSubmitted || mappingForm.get('grade')?.touched) && mappingForm.get('grade')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="mappingForm.get('grade')?.errors?.required">Grade is required.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 inputPadding mt-2">
+                        <select class="form-control floating-input" id="PayoutTypeId" formControlName="payoutType"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || mappingForm.get('payoutType')?.touched) && mappingForm.get('payoutType')?.invalid}">
+                            <option selected hidden value="" disabled></option>
+                            <option *ngFor="let type of getDDOfPayoutType" [ngValue]="type">
+                                {{type.PayoutTypeName }}</option>
+                        </select>
+                        <label for="PayoutTypeId" class="floating-label" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || mappingForm.get('payoutType')?.touched) && mappingForm.get('payoutType')?.invalid}">Payout
+                            Type*</label>
+                        <div *ngIf="(isFormSubmitted || mappingForm.get('payoutType')?.touched) && mappingForm.get('payoutType')?.invalid "
+                            class="invalid-feedback m-0">
+                            <span *ngIf="mappingForm.get('payoutType')?.errors?.required">
+                                Payout Type is required.
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="text-end">
+                    <button class="HRMS_secondary_button" type="button" (click)="resetData()"> <i
+                            class="feather icon-rotate-ccw"></i> Reset</button>
+                    <button class="HRMS_primary_button" type="submit"
+                        *ngIf="!isEdited && controlAccessPage?.AddAccess === true" (click)="submitForm()">
+                        <i class="feather icon-check"></i>&nbsp;Submit
+                    </button>
+                    <button type="submit" class="HRMS_primary_button" *ngIf="isEdited" (click)="updateForm()">
+                        <span><i class="feather icon-check"></i>&nbsp;Update</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</fieldset>
+
+<!-- </app-card> -->
+
+<app-card [options]="false">
+    <div class="col-md-12 d-flex flex-column">
+
+        <div class="row">
+            <div class="col-md-9">
+                <h5 class="mb-0 form-heading">List Of Mapping</h5>
+            </div>
+            <div class="col-md-3 text-end pb-2">
+                <input type="text" class="form-control rad-50" [(ngModel)]="searchValue" (keyup)="applyFilter()"
+                    placeholder="Search" id="serachInputId" />
+            </div>
+        </div>
+
+        <div class="table-responsive table-wrapper flex-grow-1" style="overflow-y: auto;">
+            <table class="table table-hover align-middle">
+                <thead class="sticky-header table-light">
+                    <tr class="inner-shadow">
+                        <th class="">Grade</th>
+                        <th class="">Payout Type</th>
+                        <th class="">Manage</th>
+                    </tr>
+                </thead>
+                <tbody *ngIf="isTableData == false && getAllPayoutMasterList.length > 0">
+                    <tr
+                        *ngFor="let row of getAllPayoutMasterList | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                        <td>{{row.Grade}}</td>
+                        <td>{{row.PayoutTypeName}}</td>
+                        <td style="cursor: pointer;" class="">
+                            <i class="action-icon action-edit feather icon-edit-2" title="Edit"
+                                (click)="patchVlaues(row,true)" *ngIf="controlAccessPage?.UpdateAccess === true"></i>
+                            <i class="action-icon action-delete feather icon-trash-2"
+                                *ngIf="controlAccessPage?.DeleteAccess === true" data-bs-toggle="modal"
+                                data-bs-target="#deleteModal" title="Delete" (click)="confirmDelete(row)"></i>
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
+            <div *ngIf="isTableData == true" class="text-center errorMassage">
+                <span class="text-danger text-center">{{errorMessage}}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="pagination-controls-wrapper">
+        <div class="row align-items-center" style="padding-top: 1rem;">
+            <div class="col-auto">
+                <label for="pageSizeSelect" style="font-size: smaller;">Records per
+                    page:</label>
+                <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+                    <option *ngFor="let size of pageSizes" [value]="size">{{ size }}
+                    </option>
+                </select>
+            </div>
+            <div class="col">
+            </div>
+            <div class="col-auto">
+                <pagination-controls (pageChange)="page = $event"></pagination-controls>
+            </div>
+        </div>
+    </div>
+</app-card>
+<!-- this is delete modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-confirm">
+        <div class="modal-content">
+            <div class="text-end">
+                <button type="reset" class="btn-close" data-bs-dismiss="modal" aria-label="Close" #closeModalDelete
+                    style="background-color: rgb(228, 208, 208);"></button>
+            </div>
+            <div class="modal-header flex-column py-0 ">
+                <div class="icon-box" *ngIf="!isRecordDeletedCommon">
+                    <i class="fas fa-times checkmark_check"></i>
+                </div>
+                <div class="modal-wrapper" *ngIf="isRecordDeletedCommon"> <svg class="checkmark"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                </div>
+                <h4 class="modal-title w-100 text-center">Are you sure?</h4>
+            </div>
+            <div class="modal-body py-0 text-center">
+                <div class="divSpinner1" *ngIf="isSpinner1">
+                    <div class="spinner1"></div>
+                </div>
+                <p>Do you really want to <strong>delete </strong>these records?. This process cannot be undone.</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger" (click)="deleteRecord()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- this is end of delete modal -->

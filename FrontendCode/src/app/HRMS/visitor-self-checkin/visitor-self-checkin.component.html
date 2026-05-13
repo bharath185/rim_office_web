@@ -1,0 +1,321 @@
+<app-toast-message></app-toast-message>
+<app-card [options]="false">
+  <div class="col-md-12">
+    <div class="divSpinner" *ngIf="isSpinner">
+      <div class="spinner"></div>
+    </div>
+    <h5 class="text-center py-1 addAccessHeading">Visitor Self CheckIn</h5>
+
+    <div class="col-md-12 text-center fade-bottom" *ngIf="isInvitedCode">
+      <p><strong>Do You Have Any Invitation Code?</strong></p>
+      <button class="HRMS_primary_button" type="button" (click)="showForm = 'no'; yesValue()">YES</button>
+      <button class="HRMS_secondary_button mx-2 " type="button" (click)="showForm = 'yes' ; noValue()"
+        style="background-color: cadetblue;">No</button>
+    </div>
+
+    <form [formGroup]="visitorSelfCheckInForm" *ngIf="showForm === 'yes'">
+
+      <div class="d-flex align-items-center justify-content-end" *ngIf="isValidPhoto">
+        <img [src]="patchPhotoUrl" class="img-fluid" style="height: 50px;" alt="">
+      </div>
+
+      <div class="col-md-12 d-flex justify-content-end align-items-center" *ngIf="!isValidPhoto">
+        <label for="fileInput" class="fileInput" style="cursor: pointer;">Choose Photo</label>&nbsp;OR&nbsp;
+        <input type="file" id="fileInput" (change)="onFileChange($event)" accept=".jpg" class="form-control"
+          formControlName="uploadImage" [attr.disabled]="showCamera ? true : null" />
+
+          <label for="takeCameraPhoto"><i class="fas fa-camera fa-lg ml-2" style="cursor: pointer;"></i></label>
+          <input 
+            type="file" 
+            accept="image/*;capture=camera" 
+            capture="environment" 
+            (change)="onCapture($event)" 
+            id="takeCameraPhoto"
+          />
+          
+        <!-- <i class="fas fa-camera fa-lg ml-2" style="cursor: pointer;" (click)="toggleCamera()"
+          [class.disabled]="isPhotoChosen" id="cameraToggleFor"></i>
+        <img *ngIf="imageSrc" [src]="imageSrc" class="uploaded-image-preview" alt="Uploaded Preview" /> -->
+      </div>
+
+      <!-- <ng-container *ngIf="!isValidPhoto">
+        <app-camera *ngIf="showCamera" (pictureTaken)="handleImage($event)" [videoHeight]="videoHeight"
+          [videoWidth]="videoWidth"></app-camera>
+        <div *ngIf="webcamImage" class="d-flex align-items-center justify-content-end">
+          <img [src]="webcamImage.imageAsDataUrl" [style.height.px]="imageHeight" [style.width.px]="imageWidth"
+            class="uploaded-image-preview" alt="" />
+        </div>
+      </ng-container> -->
+
+      <div *ngIf="imageSrc" class="d-flex align-items-center justify-content-end">
+        <img [src]="imageSrc"  class="uploaded-image-preview" alt="Uploaded Preview"/>
+      </div>
+
+      <div class="row mt-2">
+        <div class="form-group floating-label-group col-md-3 ">
+          <input type="text" class="form-control floating-input  " (focus)="onFocus($event)" (blur)="onBlur($event)"
+            formControlName="contact_name" id="nameInputId" placeholder=" "
+            [ngClass]="{'is-invalid': (isFormSubmitted || visitorSelfCheckInForm.get('contact_name')?.touched) && (visitorSelfCheckInForm.get('contact_name')?.invalid)}">
+          <label for="nameInputId" class="floating-label" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || visitorSelfCheckInForm.get('contact_name')?.touched) && visitorSelfCheckInForm.get('contact_name')?.invalid}">
+            Name*</label>
+          <div
+            *ngIf="(isFormSubmitted || visitorSelfCheckInForm.get('contact_name')?.touched) && visitorSelfCheckInForm.get('contact_name')?.invalid"
+            class="invalid-feedback m-0">
+            <span *ngIf="visitorSelfCheckInForm.get('contact_name')?.errors?.required" class="px-1 ">Name is
+              required.</span>
+            <span *ngIf="visitorSelfCheckInForm.get('contact_name')?.errors?.pattern">Only alphabets
+              and
+              spaces are allowed.</span>
+            <span
+              *ngIf="(visitorSelfCheckInForm.get('contact_name')?.errors?.minlength || visitorSelfCheckInForm.get('contact_name')?.errors?.maxlength)">2
+              to 50 Charater are allowed.</span>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 ">
+          <input type="text" class="form-control floating-input  " (focus)="onFocus($event)" (blur)="onBlur($event)"
+            formControlName="designation" id="designationId" placeholder=" "
+            [ngClass]="{'is-invalid': (isFormSubmitted || visitorSelfCheckInForm.get('designation')?.touched) && (visitorSelfCheckInForm.get('designation')?.invalid)}">
+          <label for="designationId" class="floating-label" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || visitorSelfCheckInForm.get('designation')?.touched) && visitorSelfCheckInForm.get('designation')?.invalid}">Designation*
+          </label>
+          <div class="invalid-feedback m-0">
+            <span *ngIf="visitorSelfCheckInForm?.get('designation')?.errors?.required">Designation is
+              required.</span>
+            <span *ngIf="visitorSelfCheckInForm?.get('designation')?.errors?.pattern">Invalid Designation.</span>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 ">
+          <input type="text" class="form-control floating-input  " (focus)="onFocus($event)" (blur)="onBlur($event)"
+            formControlName="company" id="companyId" placeholder=" "
+            [ngClass]="{'is-invalid': (isFormSubmitted || visitorSelfCheckInForm.get('company')?.touched) && (visitorSelfCheckInForm.get('company')?.invalid)}">
+          <label for="companyId" class="floating-label" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || visitorSelfCheckInForm.get('company')?.touched) && visitorSelfCheckInForm.get('company')?.invalid}">Company*
+          </label>
+          <div class="invalid-feedback m-0">
+            <span *ngIf="visitorSelfCheckInForm?.get('company')?.errors?.required">Company is
+              required.</span>
+            <span *ngIf="visitorSelfCheckInForm?.get('company')?.errors?.pattern">Invalid Company Name.</span>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 ">
+          <input type="text" class="form-control floating-input  " (focus)="onFocus($event)" (blur)="onBlur($event)"
+            formControlName="purpose" id="purposeId" placeholder=" "
+            [ngClass]="{'is-invalid': (isFormSubmitted || visitorSelfCheckInForm.get('purpose')?.touched) && (visitorSelfCheckInForm.get('purpose')?.invalid)}">
+          <label for="purposeId" class="floating-label" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || visitorSelfCheckInForm.get('purpose')?.touched) && visitorSelfCheckInForm.get('purpose')?.invalid}">Purpose*
+          </label>
+          <div class="invalid-feedback">
+            <span *ngIf="visitorSelfCheckInForm?.get('purpose')?.errors?.required">Purpose of Visit is
+              required.</span>
+            <span *ngIf="visitorSelfCheckInForm?.get('purpose')?.errors?.pattern">Invalid Purpose</span>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 ">
+          <input type="text" class="form-control floating-input  " id="emailId" placeholder=" "
+            (focus)="onFocus($event)" (blur)="onBlur($event)" formControlName="official_email"
+            [ngClass]="{'is-invalid': (isFormSubmitted || visitorSelfCheckInForm.get('official_email')?.touched) && (visitorSelfCheckInForm.get('official_email')?.invalid)}">
+          <label for="emailId" class="floating-label" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || visitorSelfCheckInForm.get('official_email')?.touched) && (visitorSelfCheckInForm.get('official_email')?.invalid)}">
+            Email Id*</label>
+          <div
+            *ngIf="(isFormSubmitted || visitorSelfCheckInForm.get('official_email')?.touched) && visitorSelfCheckInForm.get('official_email')?.invalid"
+            class="invalid-feedback m-0">
+            <span *ngIf="visitorSelfCheckInForm?.get('official_email')?.errors?.required">Email
+              ID is required.</span>
+            <span *ngIf="visitorSelfCheckInForm?.get('official_email')?.errors?.pattern">Invalid Email
+              ID</span>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 ">
+          <input type="text" class="form-control floating-input  " id="mobileNoId" placeholder=" "
+            (focus)="onFocus($event)" (blur)="onBlur($event)" formControlName="mobile_number"
+            (keypress)="handleAlphaChar($event)" minlength="10" maxlength="10"
+            [ngClass]="{'is-invalid': (isFormSubmitted || visitorSelfCheckInForm.get('mobile_number')?.touched) && (visitorSelfCheckInForm.get('mobile_number')?.invalid)}">
+          <label for="mobileNoId" class="floating-label" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || visitorSelfCheckInForm.get('mobile_number')?.touched) && (visitorSelfCheckInForm.get('mobile_number')?.invalid)}">Mobile
+            Number*</label>
+          <div
+            *ngIf="(isFormSubmitted || visitorSelfCheckInForm.get('mobile_number')?.touched) && visitorSelfCheckInForm.get('mobile_number')?.invalid"
+            class="invalid-feedback m-0">
+            <span *ngIf="visitorSelfCheckInForm?.get('mobile_number')?.errors?.required">Mobile Number is
+              required.</span>
+            <span *ngIf="visitorSelfCheckInForm?.get('mobile_number')?.errors?.pattern">Invalid Mobile
+              Number.</span>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 ">
+          <input type="text" class="form-control floating-input  " (focus)="onFocus($event)" (blur)="onBlur($event)"
+            formControlName="alter_mobile_number" id="nameInput" placeholder=" " (keypress)="handleAlphaChar($event)"
+            minlength="10" maxlength="10"
+            [ngClass]="{'is-invalid': (visitorSelfCheckInForm.get('alter_mobile_number')?.invalid) && (visitorSelfCheckInForm.get('alter_mobile_number')?.hasError('pattern'))}">
+          <label for="nameInput" class="floating-label" style="left: 20px;">Alternate Mobile
+            Number</label>
+          <div
+            *ngIf="(visitorSelfCheckInForm.get('alter_mobile_number')?.invalid) && (visitorSelfCheckInForm.get('alter_mobile_number')?.hasError('pattern'))"
+            class="invalid-feedback m-0">
+            <span *ngIf="visitorSelfCheckInForm.get('alter_mobile_number')?.hasError('pattern')" class="px-1">Enter
+              Valid Phone Number.</span>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 ">
+          <select class="form-control floating-input" formControlName="facilities" id="facilitySelectId"
+            (focus)="onFocus($event)" (blur)="onBlur($event)"
+            [ngClass]="{'is-invalid': (isFormSubmitted || visitorSelfCheckInForm.get('facilities')?.touched) && (visitorSelfCheckInForm.get('facilities')?.invalid)}">
+            <option value="" selected hidden></option>
+            <option *ngFor="let option of getFacalities" [value]="option.CompName">{{option.CompName}}</option>
+
+          </select>
+          <label for="facilitySelectId" class="floating-label m-0" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || visitorSelfCheckInForm.get('facilities')?.touched) && visitorSelfCheckInForm.get('facilities')?.invalid}">Facilities*</label>
+          <div
+            *ngIf="(isFormSubmitted || visitorSelfCheckInForm.get('facilities')?.touched) && visitorSelfCheckInForm.get('facilities')?.invalid"
+            class="invalid-feedback m-0">
+            <span *ngIf="visitorSelfCheckInForm.get('facilities')?.errors?.required">Facilities is
+              required.</span>
+          </div>
+          <div *ngIf="errorMessageFacility" class="error-message">
+            {{ errorMessageFacility }}
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3">
+          <div class="dropdown">
+            <input type="text" formControlName="meet_to" class="form-control floating-input"
+              placeholder="Select Employee" [(ngModel)]="searchText" id="employeeNameId" (focus)="openDropdown()"
+              (input)="filterEmployees()" (blur)="closeDropdown(); checkValidEmployee()" autocomplete="off" [ngClass]="{'is-invalid': isFormSubmitted && !isValidEmployee}" />
+            <label class="floating-label m-0" style="left: 10px;" for="employeeNameId"
+              [ngClass]="{'text-danger':(isFormSubmitted || visitorSelfCheckInForm.get('meet_to')?.touched) && visitorSelfCheckInForm.get('meet_to')?.invalid}">Contact
+              Person*</label>
+            <i class="fas fa-chevron-down dropdown-icon"></i>
+            <ul class="dropdown-menu" [class.show]="isDropdownOpen && filteredEmployees.length >= 0">
+              <li *ngFor="let employee of filteredEmployees" (click)="selectEmployee(employee)" class="dropdown-item">
+                {{ employee.EmpName }} ({{ employee.EmpCode }})
+              </li>
+              <li *ngIf="filteredEmployees.length === 0" class="dropdown-item text-danger">
+                No results found
+              </li>
+            </ul>
+            <div *ngIf="isFormSubmitted && !isValidEmployee" class="invalid-feedback m-0">
+              Please select a valid contact person.
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 ">
+          <div class="custom-date-input">
+            <input type="date" formControlName="date" [min]="today" [max]="today"
+              [ngClass]="{'is-invalid': (isFormSubmitted || visitorSelfCheckInForm.get('date')?.touched) && (visitorSelfCheckInForm.get('date')?.invalid)}"
+              (keydown)="preventKeyboardInput($event)" (keypress)="preventKeyboardInput($event)"
+              (paste)="preventPaste($event)" id="dateId">
+            <label for="dateId" class="floating-label"
+              [ngClass]="{'text-danger': (isFormSubmitted || visitorSelfCheckInForm.get('date')?.touched) && (visitorSelfCheckInForm.get('date')?.invalid)}">
+              Date*
+            </label>
+            <div
+              *ngIf="(isFormSubmitted || visitorSelfCheckInForm.get('date')?.touched) && visitorSelfCheckInForm.get('date')?.invalid"
+              class="invalid-feedback m-0">
+              <span *ngIf="visitorSelfCheckInForm.get('date')?.errors?.required" class="px-1">Date is required.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3">
+          <input type="time" #timeInput class="form-control floating-input" (focus)="onFocus($event)" triggers="mouseenter:blur"
+            (blur)="onBlur($event)" (input)="onTimeInputChange()" placeholder=" " formControlName="Time" id="timeInput"
+            [ngClass]="{'is-invalid': (isFormSubmitted || visitorSelfCheckInForm.get('Time')?.touched) && (visitorSelfCheckInForm.get('Time')?.invalid)}"
+            [ngStyle]="{
+            'padding-right': (isFormSubmitted || visitorSelfCheckInForm.get('Time')?.touched) &&
+                     visitorSelfCheckInForm.get('Time')?.invalid ? '0' : ''
+        }">
+          <label for="timeInput" class="floating-label" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || visitorSelfCheckInForm.get('Time')?.touched) && (visitorSelfCheckInForm.get('Time')?.invalid)}">Time*</label>
+          <div
+            *ngIf="(isFormSubmitted || visitorSelfCheckInForm.get('Time')?.touched) && visitorSelfCheckInForm.get('Time')?.invalid"
+            class="invalid-feedback m-0">
+            <span *ngIf="visitorSelfCheckInForm.get('Time')?.errors?.required" class="px-1">Time is required.</span>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3">
+          <input type="text" type="text" class="form-control floating-input" (focus)="onFocus($event)"
+            (blur)="onBlur($event)" formControlName="IdCard" id="cardId"
+            [ngClass]="{'is-invalid': (isFormSubmitted || visitorSelfCheckInForm.get('IdCard')?.touched) && (visitorSelfCheckInForm.get('IdCard')?.invalid)}">
+          <label for="cardId" class="floating-label" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || visitorSelfCheckInForm.get('IdCard')?.touched) && (visitorSelfCheckInForm.get('IdCard')?.invalid)}">ID
+            Card*</label>
+          <div
+            *ngIf="(isFormSubmitted || visitorSelfCheckInForm.get('IdCard')?.touched) && visitorSelfCheckInForm.get('IdCard')?.invalid"
+            class="invalid-feedback">
+            <span *ngIf="visitorSelfCheckInForm?.get('IdCard')?.errors?.required">Id Card is required.</span>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 ">
+          <textarea type="text" class="form-control floating-input  " (focus)="onFocus($event)" (blur)="onBlur($event)"
+            formControlName="description" id="AccessoriesId" placeholder=" "> </textarea>
+          <label for="AccessoriesId" class="floating-label" style="left: 23px;">Accessories</label>
+        </div>
+
+        <div style="display: flex;justify-content: end;">
+          <button class="HRMS_primary_button" type="submit" (click)="checkInSubmitForm()">Check In</button>
+          <button class="HRMS_secondary_button mx-2" type="button" (click)="resetFormData()"
+            *ngIf="isRestButtonShow">Reset</button>
+        </div>
+
+      </div>
+    </form>
+
+    <div *ngIf="locationError" class="alert alert-danger">
+      You are not on office premises!
+    </div>
+
+    <div class="container" *ngIf="showForm === 'no'">
+      <div class="col-md-12">
+        <div class="text-center" style="display: flex; justify-content: center;">
+          <form [formGroup]="otpForm">
+            <label for=""><strong>OTP</strong></label>
+            <ng-otp-input [formCtrl]="otp" [config]="config" (onInputChange)="checkOtpValidity($event)"></ng-otp-input>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exampkle 2 -->
+    <!-- <div class="form-group floating-label-group col-md-3 custom-time-dropdown">
+      <div class="d-inline-block">
+        <label class="floating-label m-0" for="timeSelect" style="left: 10px;">Time*</label>
+        <input type="text" class="form-control " placeholder="Hour" [(ngModel)]="selectedHour"
+               (focus)="openHourDropdown()" readonly style="width: 65px;" (blur)="onBlur($event)"/>
+        <ul class="dropdown-menu" [class.show]="isHourDropdownOpen">
+          <li *ngFor="let hour of hours" (click)="selectHour(hour)" class="dropdown-item">
+            {{ hour }}
+          </li>
+        </ul>
+      </div> <span>:</span>
+      <div class="d-inline-block">
+        <input type="text" class="form-control " placeholder="Minute" [(ngModel)]="selectedMinute"
+               (focus)="openMinuteDropdown()" readonly style="width: 65px;" (blur)="onBlur($event)"/>
+        <ul class="dropdown-menu" [class.show]="isMinuteDropdownOpen">
+          <li *ngFor="let minute of minutes" (click)="selectMinute(minute)" class="dropdown-item">
+            {{ minute }}
+          </li>
+        </ul>
+      </div>
+    
+      <div *ngIf="isFormSubmitted && (!selectedHour || !selectedMinute)" class="invalid-feedback m-0">
+        Please select a valid time.
+      </div>
+    </div> -->
+
+    
+
+  </div>
+</app-card>

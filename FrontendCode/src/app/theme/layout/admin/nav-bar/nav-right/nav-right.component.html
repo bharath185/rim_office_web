@@ -1,0 +1,172 @@
+<div class="nav-right-section">
+
+  <div class="nav-right-custom">
+    <button class="login-toggle-btn-custom" [class.logged-in]="isLoggedIn"
+      (click)="isLoggedIn ? onLogoutClick() : onLoginClick()">
+      <i class="fas" [ngClass]="isLoggedIn ? 'fa-sign-out-alt' : 'fa-sign-in-alt'"></i>
+      <span>{{ isLoggedIn ? 'Onsite Logout' : 'Onsite Login' }}</span>
+    </button>
+
+    <div class="user-status-custom">
+      <span class="status-indicator-custom" [class.online]="isLoggedIn"></span>
+      <span class="status-text-custom">
+        {{ isLoggedIn ? 'Logged-In' : 'Logged-Out' }}
+      </span>
+    </div>
+  </div>
+
+  <div class="entity-selector"
+    *ngIf="this.employeeDetails[0].AuthorisedEntity !== '' && this.employeeDetails[0].AuthorisedEntity !== null">
+
+    <div class="selector-container">
+      <i class="fas fa-building selector-icon"></i>
+      <select class="entity-select" [(ngModel)]="selectedEntityId" (ngModelChange)="onEntityChange($event)">
+        <option value="" selected hidden>Legal Entity</option>
+        <option *ngFor="let entity of getLegalEntity" [value]="entity.LEId">
+          {{ entity.LegalEntity }}
+        </option>
+      </select>
+      <!-- <label class="floating-label m-0">Entity*</label> -->
+      <i class="fas fa-chevron-down dropdown-arrow"></i>
+    </div>
+  </div>
+
+
+  <!-- User Profile Dropdown - Modern Glass Effect -->
+  <div class="user-profile" ngbDropdown placement="bottom-right" #userDropdown="ngbDropdown">
+    <div class="profile-trigger" ngbDropdownToggle>
+      <div class="avatar-container">
+        <img *ngIf="employeeDetails[0].Gender === 'Female'" src="assets/8077066.jpg" alt="Profile">
+        <img *ngIf="employeeDetails[0].Gender === 'Male'" src="assets/3135715.png" alt="Profile">
+        <span class="status-indicator online"></span>
+      </div>
+      <div class="user-info">
+        <span class="user-name">{{userDet1}}</span>
+        <span class="user-role">{{designation}}</span>
+      </div>
+      <i class="fas fa-chevron-down dropdown-icon"></i>
+    </div>
+
+    <!-- Modern Dropdown Menu -->
+    <div class="dropdown-menu dropdown-menu-end profile-dropdown" ngbDropdownMenu>
+      <!-- User Header -->
+      <div class="dropdown-header">
+        <div class="header-avatar">
+          <img *ngIf="employeeDetails[0].Gender === 'Female'" src="assets/8077066.jpg" alt="Profile">
+          <img *ngIf="employeeDetails[0].Gender === 'Male'" src="assets/3135715.png" alt="Profile">
+        </div>
+        <div class="header-info">
+          <h4>{{userDet1}}</h4>
+          <p>{{designation}}</p>
+          <span class="badge-active">
+            <span class="dot"></span>
+            Active
+          </span>
+        </div>
+      </div>
+
+      <!-- Menu Items -->
+      <div class="dropdown-items">
+        <a class="dropdown-item" [routerLink]="['/profile']">
+          <div class="item-icon profile-icon">
+            <i class="feather icon-user"></i>
+          </div>
+          <span>My Profile</span>
+          <i class="fas fa-chevron-right arrow"></i>
+        </a>
+
+        <a class="dropdown-item" [routerLink]="['/change_password']">
+          <div class="item-icon password-icon">
+            <i class="feather icon-lock"></i>
+          </div>
+          <span>Change Password</span>
+          <i class="fas fa-chevron-right arrow"></i>
+        </a>
+
+        <div class="dropdown-divider"></div>
+
+        <a class="dropdown-item logout-item" (click)="logout()">
+          <div class="item-icon logout-icon">
+            <i class="feather icon-log-out"></i>
+          </div>
+          <span>Sign Out</span>
+          <i class="fas fa-chevron-right arrow"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="changePassword" tabindex="-1" aria-labelledby="changePasswordLabel" aria-hidden="true"
+  data-bs-backdrop="false" (hidden.bs.modal)="onModalClose()">
+  <div class="modal-dialog modal-md modal-dialog-centered">
+    <div class="modal-content" style="background: linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6));">
+      <div class="modal-body pt-2">
+        <div class="text-right">
+          <button style="background-color: white;" type="reset" class="btn-close " data-bs-dismiss="modal"
+            aria-label="Close"></button>
+        </div>
+        <div class="form-container">
+          <div class="form-box">
+            <p>Change Password</p>
+            <form [formGroup]="changePasswordForm" (ngSubmit)="submitForm()">
+              <div class="input-field">
+                <input type="password" placeholder="Old Password" formControlName="oldPassword" id="oldPasswordId"
+                  name="oldPasswordName"
+                  [ngClass]="{ 'is-invalid': (isFormSubmitted || changePasswordForm.get('oldPassword')?.touched) && changePasswordForm.get('oldPassword')?.invalid }" />
+                <div
+                  *ngIf="(isFormSubmitted || changePasswordForm.get('oldPassword')?.touched) && changePasswordForm.get('oldPassword')?.invalid"
+                  class="invalid-feedback m-0" style="right: 97px;">
+                  <span *ngIf="changePasswordForm.get('oldPassword')?.errors?.required" class="p-0 m-0">Old Password is
+                    required.</span>
+                </div>
+              </div>
+
+              <div class="input-field">
+                <input [type]="newPasswordFieldType" placeholder="New Password" formControlName="newPassword"
+                  maxlength="25" id="newPasswordId" name="newPasswordName"
+                  [ngClass]="{ 'is-invalid': (isFormSubmitted || changePasswordForm.get('newPassword')?.touched) && changePasswordForm.get('newPassword')?.invalid }">
+                <div
+                  *ngIf="(isFormSubmitted || changePasswordForm.get('newPassword')?.touched) && changePasswordForm.get('newPassword')?.invalid"
+                  class="invalid-feedback m-0" style="right: 91px;">
+                  <span *ngIf="changePasswordForm.get('newPassword')?.errors?.required" class="p-0 m-0">New Password is
+                    required.</span>
+                  <span *ngIf="changePasswordForm.get('newPassword')?.errors?.pattern">Enter Strong Password</span>
+                </div>
+                <i (click)="toggleNewPasswordVisibility()" class="view-icon"
+                  [ngClass]="newPasswordFieldType === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash'"></i>
+              </div>
+
+              <div class="input-field">
+                <input [type]="confirmPasswordFieldType" placeholder="Confirm Password"
+                  formControlName="confirmPassword" maxlength="25" id="confirmPasswordId" name="confirmPasswordName"
+                  [ngClass]="{ 
+                    'is-invalid': 
+                      (isFormSubmitted || changePasswordForm.get('confirmPassword')?.touched) 
+                      && (changePasswordForm.get('confirmPassword')?.invalid || changePasswordForm.errors?.mismatch) 
+                  }">
+                <div
+                  *ngIf="(isFormSubmitted || changePasswordForm.get('confirmPassword')?.touched) && changePasswordForm.get('confirmPassword')?.invalid"
+                  class="invalid-feedback m-0" style="right: 67px;">
+                  <span *ngIf="changePasswordForm.get('confirmPassword')?.errors?.required" class="p-0 m-0">Confirm
+                    Password is required.</span>
+                </div>
+                <div
+                  *ngIf="changePasswordForm.get('newPassword')?.value && changePasswordForm.get('confirmPassword')?.value && changePasswordForm.errors?.mismatch"
+                  class="invalid-feedback m-0" style="right: 67px;">
+                  <span class="p-0 m-0">Passwords do not match.</span>
+                </div>
+
+                <i (click)="toggleConfirmPasswordVisibility()" class="view-icon"
+                  [ngClass]="confirmPasswordFieldType === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash'"></i>
+              </div>
+              <button type="submit" class="next-button">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

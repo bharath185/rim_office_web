@@ -1,0 +1,2262 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="StoreContainer" CdmEntityContainer="DB_Offc_ConEntities">
+    <FunctionImportMapping FunctionImportName="sp_InsertAttendanceData1" FunctionName="Store.sp_InsertAttendanceData" />
+    <FunctionImportMapping FunctionImportName="GetAttendanceExceptions" FunctionName="Store.GetAttendanceExceptions">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="DB_Offc_ConModel.GetAttendanceExceptions_Result">
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="Date" ColumnName="Date" />
+          <ScalarProperty Name="Time" ColumnName="Time" />
+          <ScalarProperty Name="Reason" ColumnName="Reason" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="InsertValidAttendance" FunctionName="Store.InsertValidAttendance" />
+    <FunctionImportMapping FunctionImportName="sp_GetAttendanceReport" FunctionName="Store.sp_GetAttendanceReport" />
+    <FunctionImportMapping FunctionImportName="sp_GetDepartmentDailyAttendanceReport" FunctionName="Store.sp_GetDepartmentDailyAttendanceReport" />
+    <FunctionImportMapping FunctionImportName="sp_ProcessLeaveCredits" FunctionName="Store.sp_ProcessLeaveCredits" />
+    <FunctionImportMapping FunctionImportName="sp_ProcessDailyAttendanceRecords" FunctionName="Store.sp_ProcessDailyAttendanceRecords" />
+    <FunctionImportMapping FunctionImportName="sp_InsertAttendanceDataManual" FunctionName="Store.sp_InsertAttendanceDataManual" />
+    <FunctionImportMapping FunctionImportName="sp_GetReporteesAttendanceReport" FunctionName="Store.sp_GetReporteesAttendanceReport" />
+    <EntitySetMapping Name="AccessPolicies">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.AccessPolicy">
+        <MappingFragment StoreEntitySet="AccessPolicy">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="ViewAccess" ColumnName="ViewAccess" />
+          <ScalarProperty Name="DeleteAccess" ColumnName="DeleteAccess" />
+          <ScalarProperty Name="UpdateAccess" ColumnName="UpdateAccess" />
+          <ScalarProperty Name="AddAccess" ColumnName="AddAccess" />
+          <ScalarProperty Name="AccessName" ColumnName="AccessName" />
+          <ScalarProperty Name="PageModuleId" ColumnName="PageModuleId" />
+          <ScalarProperty Name="SubModuleId" ColumnName="SubModuleId" />
+          <ScalarProperty Name="ModuleId" ColumnName="ModuleId" />
+          <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+          <ScalarProperty Name="DeptId" ColumnName="DeptId" />
+          <ScalarProperty Name="AccessId" ColumnName="AccessId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Attendances">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.Attendance">
+        <MappingFragment StoreEntitySet="Attendance">
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="Type" ColumnName="Type" />
+          <ScalarProperty Name="LogTime" ColumnName="LogTime" />
+          <ScalarProperty Name="LogDate" ColumnName="LogDate" />
+          <ScalarProperty Name="LogID" ColumnName="LogID" />
+          <ScalarProperty Name="SrNo" ColumnName="SrNo" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="AttendanceProcessingLogs">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.AttendanceProcessingLog">
+        <MappingFragment StoreEntitySet="AttendanceProcessingLog">
+          <ScalarProperty Name="ErrorMessage" ColumnName="ErrorMessage" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="EndTime" ColumnName="EndTime" />
+          <ScalarProperty Name="StartTime" ColumnName="StartTime" />
+          <ScalarProperty Name="RecordsProcessed" ColumnName="RecordsProcessed" />
+          <ScalarProperty Name="ProcessDate" ColumnName="ProcessDate" />
+          <ScalarProperty Name="LogId" ColumnName="LogId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="BannerMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.BannerMaster">
+        <MappingFragment StoreEntitySet="BannerMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Collection" ColumnName="Collection" />
+          <ScalarProperty Name="BannerPath" ColumnName="BannerPath" />
+          <ScalarProperty Name="BannerName" ColumnName="BannerName" />
+          <ScalarProperty Name="BannerId" ColumnName="BannerId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="BusinessUnitMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.BusinessUnitMaster">
+        <MappingFragment StoreEntitySet="BusinessUnitMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="BusinessUnit" ColumnName="BusinessUnit" />
+          <ScalarProperty Name="LEId" ColumnName="LEId" />
+          <ScalarProperty Name="CompId" ColumnName="CompId" />
+          <ScalarProperty Name="BUId" ColumnName="BUId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CareerMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.CareerMaster">
+        <MappingFragment StoreEntitySet="CareerMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="CId" ColumnName="CId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CategoryMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.CategoryMaster">
+        <MappingFragment StoreEntitySet="CategoryMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="Category" ColumnName="Category" />
+          <ScalarProperty Name="CompId" ColumnName="CompId" />
+          <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CompanyMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.CompanyMaster">
+        <MappingFragment StoreEntitySet="CompanyMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Address" ColumnName="Address" />
+          <ScalarProperty Name="LocationMap" ColumnName="LocationMap" />
+          <ScalarProperty Name="CompanyCode" ColumnName="CompanyCode" />
+          <ScalarProperty Name="Company" ColumnName="Company" />
+          <ScalarProperty Name="CompId" ColumnName="CompId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CompanySettingMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.CompanySettingMaster">
+        <MappingFragment StoreEntitySet="CompanySettingMaster">
+          <ScalarProperty Name="WeeklyWorkingHours" ColumnName="WeeklyWorkingHours" />
+          <ScalarProperty Name="WorkingHoursPerDay" ColumnName="WorkingHoursPerDay" />
+          <ScalarProperty Name="WeeklyHolidays" ColumnName="WeeklyHolidays" />
+          <ScalarProperty Name="ShiftId" ColumnName="ShiftId" />
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="CompWrkHrs" ColumnName="CompWrkHrs" />
+          <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+          <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="HalfDayLossHours" ColumnName="HalfDayLossHours" />
+          <ScalarProperty Name="PayDay" ColumnName="PayDay" />
+          <ScalarProperty Name="MinWorkHoursWeek" ColumnName="MinWorkHoursWeek" />
+          <ScalarProperty Name="MinWorkHoursDay" ColumnName="MinWorkHoursDay" />
+          <ScalarProperty Name="ShiftEnd" ColumnName="ShiftEnd" />
+          <ScalarProperty Name="ShiftStart" ColumnName="ShiftStart" />
+          <ScalarProperty Name="Shift" ColumnName="Shift" />
+          <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+          <ScalarProperty Name="LEId" ColumnName="LEId" />
+          <ScalarProperty Name="BusinessUnitId" ColumnName="BusinessUnitId" />
+          <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+          <ScalarProperty Name="SettingId" ColumnName="SettingId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CompOffRequests">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.CompOffRequest">
+        <MappingFragment StoreEntitySet="CompOffRequest">
+          <ScalarProperty Name="IsUsed" ColumnName="IsUsed" />
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Reason" ColumnName="Reason" />
+          <ScalarProperty Name="IsRejected" ColumnName="IsRejected" />
+          <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
+          <ScalarProperty Name="IsRequested" ColumnName="IsRequested" />
+          <ScalarProperty Name="WorkMode" ColumnName="WorkMode" />
+          <ScalarProperty Name="Hrs" ColumnName="Hrs" />
+          <ScalarProperty Name="ActualHrs" ColumnName="ActualHrs" />
+          <ScalarProperty Name="Task" ColumnName="Task" />
+          <ScalarProperty Name="TaskId" ColumnName="TaskId" />
+          <ScalarProperty Name="Project" ColumnName="Project" />
+          <ScalarProperty Name="ProjectId" ColumnName="ProjectId" />
+          <ScalarProperty Name="Date" ColumnName="Date" />
+          <ScalarProperty Name="ManagerCode" ColumnName="ManagerCode" />
+          <ScalarProperty Name="ManagerId" ColumnName="ManagerId" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="CompOffReqId" ColumnName="CompOffReqId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ConfigMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.ConfigMaster">
+        <MappingFragment StoreEntitySet="ConfigMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+          <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+          <ScalarProperty Name="QId" ColumnName="QId" />
+          <ScalarProperty Name="FYearId" ColumnName="FYearId" />
+          <ScalarProperty Name="ConfigId" ColumnName="ConfigId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ConfigSetups">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.ConfigSetup">
+        <MappingFragment StoreEntitySet="ConfigSetup">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdateBy" ColumnName="LastUpdateBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="ExtendSubmitDate" ColumnName="ExtendSubmitDate" />
+          <ScalarProperty Name="SubmitDate" ColumnName="SubmitDate" />
+          <ScalarProperty Name="ExtendCreationDate" ColumnName="ExtendCreationDate" />
+          <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+          <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+          <ScalarProperty Name="QId" ColumnName="QId" />
+          <ScalarProperty Name="Type" ColumnName="Type" />
+          <ScalarProperty Name="FYearId" ColumnName="FYearId" />
+          <ScalarProperty Name="ConfigSetupId" ColumnName="ConfigSetupId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ContractAttendances">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.ContractAttendance">
+        <MappingFragment StoreEntitySet="ContractAttendance">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="ManPowerApproval" ColumnName="ManPowerApproval" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
+          <ScalarProperty Name="IsLogoutManager" ColumnName="IsLogoutManager" />
+          <ScalarProperty Name="LogoutLatitude" ColumnName="LogoutLatitude" />
+          <ScalarProperty Name="LogoutLonqitude" ColumnName="LogoutLonqitude" />
+          <ScalarProperty Name="LogoutAddress" ColumnName="LogoutAddress" />
+          <ScalarProperty Name="LoginLatitude" ColumnName="LoginLatitude" />
+          <ScalarProperty Name="LoginLonqitude" ColumnName="LoginLonqitude" />
+          <ScalarProperty Name="LoginAddress" ColumnName="LoginAddress" />
+          <ScalarProperty Name="Approvedhrs" ColumnName="Approvedhrs" />
+          <ScalarProperty Name="Activehrs" ColumnName="Activehrs" />
+          <ScalarProperty Name="LogoutTime" ColumnName="LogoutTime" />
+          <ScalarProperty Name="LoginTime" ColumnName="LoginTime" />
+          <ScalarProperty Name="IsLogout" ColumnName="IsLogout" />
+          <ScalarProperty Name="IsLogin" ColumnName="IsLogin" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="ManagerName" ColumnName="ManagerName" />
+          <ScalarProperty Name="ManagerEmpCode" ColumnName="ManagerEmpCode" />
+          <ScalarProperty Name="ManagerId" ColumnName="ManagerId" />
+          <ScalarProperty Name="SiteDetails" ColumnName="SiteDetails" />
+          <ScalarProperty Name="Site" ColumnName="Site" />
+          <ScalarProperty Name="SiteId" ColumnName="SiteId" />
+          <ScalarProperty Name="Project" ColumnName="Project" />
+          <ScalarProperty Name="ProjectCode" ColumnName="ProjectCode" />
+          <ScalarProperty Name="ERPProjectId" ColumnName="ERPProjectId" />
+          <ScalarProperty Name="ProjectId" ColumnName="ProjectId" />
+          <ScalarProperty Name="Vendor" ColumnName="Vendor" />
+          <ScalarProperty Name="VendorCode" ColumnName="VendorCode" />
+          <ScalarProperty Name="ERPVendorId" ColumnName="ERPVendorId" />
+          <ScalarProperty Name="VendorId" ColumnName="VendorId" />
+          <ScalarProperty Name="Skill" ColumnName="Skill" />
+          <ScalarProperty Name="EmpName" ColumnName="EmpName" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="Mail" ColumnName="Mail" />
+          <ScalarProperty Name="Mobile" ColumnName="Mobile" />
+          <ScalarProperty Name="Date" ColumnName="Date" />
+          <ScalarProperty Name="CId" ColumnName="CId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CPwdManagements">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.CPwdManagement">
+        <MappingFragment StoreEntitySet="CPwdManagement">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Expired" ColumnName="Expired" />
+          <ScalarProperty Name="CPwd" ColumnName="CPwd" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="DailyAttendanceRecords">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.DailyAttendanceRecord">
+        <MappingFragment StoreEntitySet="DailyAttendanceRecords">
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="BreakTime" ColumnName="BreakTime" />
+          <ScalarProperty Name="ShiftName" ColumnName="ShiftName" />
+          <ScalarProperty Name="MANUALActiveHours" ColumnName="MANUALActiveHours" />
+          <ScalarProperty Name="ONSITEActiveHours" ColumnName="ONSITEActiveHours" />
+          <ScalarProperty Name="WFHActiveHours" ColumnName="WFHActiveHours" />
+          <ScalarProperty Name="ESSLActiveHours" ColumnName="ESSLActiveHours" />
+          <ScalarProperty Name="ActiveHours" ColumnName="ActiveHours" />
+          <ScalarProperty Name="PayDays" ColumnName="PayDays" />
+          <ScalarProperty Name="DaysPresent" ColumnName="DaysPresent" />
+          <ScalarProperty Name="WorkType" ColumnName="WorkType" />
+          <ScalarProperty Name="LeaveType" ColumnName="LeaveType" />
+          <ScalarProperty Name="DailyPay" ColumnName="DailyPay" />
+          <ScalarProperty Name="DesignationId" ColumnName="DesignationId" />
+          <ScalarProperty Name="DeptId" ColumnName="DeptId" />
+          <ScalarProperty Name="DeptName" ColumnName="DeptName" />
+          <ScalarProperty Name="Designation" ColumnName="Designation" />
+          <ScalarProperty Name="CompName" ColumnName="CompName" />
+          <ScalarProperty Name="CompId" ColumnName="CompId" />
+          <ScalarProperty Name="WorkingHoursDecimal" ColumnName="WorkingHoursDecimal" />
+          <ScalarProperty Name="WorkingHours" ColumnName="WorkingHours" />
+          <ScalarProperty Name="ONSITELogOutTime" ColumnName="ONSITELogOutTime" />
+          <ScalarProperty Name="ONSITELogInTime" ColumnName="ONSITELogInTime" />
+          <ScalarProperty Name="WFHLogOutTime" ColumnName="WFHLogOutTime" />
+          <ScalarProperty Name="WFHLogInTime" ColumnName="WFHLogInTime" />
+          <ScalarProperty Name="ESSLLogOutTime" ColumnName="ESSLLogOutTime" />
+          <ScalarProperty Name="ESSLLogInTime" ColumnName="ESSLLogInTime" />
+          <ScalarProperty Name="LogOutTime" ColumnName="LogOutTime" />
+          <ScalarProperty Name="LogInTime" ColumnName="LogInTime" />
+          <ScalarProperty Name="IsHoliday" ColumnName="IsHoliday" />
+          <ScalarProperty Name="IsWeekend" ColumnName="IsWeekend" />
+          <ScalarProperty Name="DayName" ColumnName="DayName" />
+          <ScalarProperty Name="LogDate" ColumnName="LogDate" />
+          <ScalarProperty Name="EmpName" ColumnName="EmpName" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="RecordDate" ColumnName="RecordDate" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="DeptMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.DeptMaster">
+        <MappingFragment StoreEntitySet="DeptMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="DeptName" ColumnName="DeptName" />
+          <ScalarProperty Name="DeptShortName" ColumnName="DeptShortName" />
+          <ScalarProperty Name="DeptId" ColumnName="DeptId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="DesignationMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.DesignationMaster">
+        <MappingFragment StoreEntitySet="DesignationMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Grade" ColumnName="Grade" />
+          <ScalarProperty Name="GradeId" ColumnName="GradeId" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="HierarchyLevel" ColumnName="HierarchyLevel" />
+          <ScalarProperty Name="Designation" ColumnName="Designation" />
+          <ScalarProperty Name="DesignationShortName" ColumnName="DesignationShortName" />
+          <ScalarProperty Name="DeptId" ColumnName="DeptId" />
+          <ScalarProperty Name="DesignationId" ColumnName="DesignationId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="DocumentMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.DocumentMaster">
+        <MappingFragment StoreEntitySet="DocumentMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="DocName" ColumnName="DocName" />
+          <ScalarProperty Name="EduId" ColumnName="EduId" />
+          <ScalarProperty Name="DocId" ColumnName="DocId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EducationMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EducationMaster">
+        <MappingFragment StoreEntitySet="EducationMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="EductionName" ColumnName="EductionName" />
+          <ScalarProperty Name="EId" ColumnName="EId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmailConfigMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmailConfigMaster">
+        <MappingFragment StoreEntitySet="EmailConfigMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="EmailId" ColumnName="EmailId" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="HrId" ColumnName="HrId" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="LocId" ColumnName="LocId" />
+          <ScalarProperty Name="BUId" ColumnName="BUId" />
+          <ScalarProperty Name="LEId" ColumnName="LEId" />
+          <ScalarProperty Name="CompId" ColumnName="CompId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmailSetUps">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmailSetUp">
+        <MappingFragment StoreEntitySet="EmailSetUp">
+          <ScalarProperty Name="SMTPPassword" ColumnName="SMTPPassword" />
+          <ScalarProperty Name="SMTPMailId" ColumnName="SMTPMailId" />
+          <ScalarProperty Name="SMTPPort" ColumnName="SMTPPort" />
+          <ScalarProperty Name="SMTPServer" ColumnName="SMTPServer" />
+          <ScalarProperty Name="EmailId" ColumnName="EmailId" />
+          <ScalarProperty Name="CompId" ColumnName="CompId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Emp_AttendanceTime">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.Emp_AttendanceTime">
+        <MappingFragment StoreEntitySet="Emp_AttendanceTime">
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="SalType" ColumnName="SalType" />
+          <ScalarProperty Name="AttendSec" ColumnName="AttendSec" />
+          <ScalarProperty Name="AttendMins" ColumnName="AttendMins" />
+          <ScalarProperty Name="AttendHours" ColumnName="AttendHours" />
+          <ScalarProperty Name="Duration" ColumnName="Duration" />
+          <ScalarProperty Name="LogDate" ColumnName="LogDate" />
+          <ScalarProperty Name="LogId" ColumnName="LogId" />
+          <ScalarProperty Name="EmpAttendance" ColumnName="EmpAttendance" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmpEmailTrackingLogs">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmpEmailTrackingLog">
+        <MappingFragment StoreEntitySet="EmpEmailTrackingLog">
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="ProbationEndDate" ColumnName="ProbationEndDate" />
+          <ScalarProperty Name="SentDate" ColumnName="SentDate" />
+          <ScalarProperty Name="EmailType" ColumnName="EmailType" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="LogId" ColumnName="LogId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmpLeaveApplications">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmpLeaveApplication">
+        <MappingFragment StoreEntitySet="EmpLeaveApplication">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="Createdby" ColumnName="Createdby" />
+          <ScalarProperty Name="Remarks" ColumnName="Remarks" />
+          <ScalarProperty Name="HRApprovedDate" ColumnName="HRApprovedDate" />
+          <ScalarProperty Name="HRApproved" ColumnName="HRApproved" />
+          <ScalarProperty Name="ApprovedDate" ColumnName="ApprovedDate" />
+          <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
+          <ScalarProperty Name="DocName" ColumnName="DocName" />
+          <ScalarProperty Name="CompOffReason" ColumnName="CompOffReason" />
+          <ScalarProperty Name="CompOffDate" ColumnName="CompOffDate" />
+          <ScalarProperty Name="AppliedDate" ColumnName="AppliedDate" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="Reason" ColumnName="Reason" />
+          <ScalarProperty Name="Duration" ColumnName="Duration" />
+          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+          <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+          <ScalarProperty Name="LeaveTypeId" ColumnName="LeaveTypeId" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="LeaveAppId" ColumnName="LeaveAppId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeeAccDetails">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmployeeAccDetail">
+        <MappingFragment StoreEntitySet="EmployeeAccDetails">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="MobileNo" ColumnName="MobileNo" />
+          <ScalarProperty Name="AadharNo" ColumnName="AadharNo" />
+          <ScalarProperty Name="UANNo" ColumnName="UANNo" />
+          <ScalarProperty Name="PANNo" ColumnName="PANNo" />
+          <ScalarProperty Name="HealthInsuranceNo" ColumnName="HealthInsuranceNo" />
+          <ScalarProperty Name="ESIInsuranceNo" ColumnName="ESIInsuranceNo" />
+          <ScalarProperty Name="PFNo" ColumnName="PFNo" />
+          <ScalarProperty Name="AccNo" ColumnName="AccNo" />
+          <ScalarProperty Name="AccHolderName" ColumnName="AccHolderName" />
+          <ScalarProperty Name="IFSCCode" ColumnName="IFSCCode" />
+          <ScalarProperty Name="BranchName" ColumnName="BranchName" />
+          <ScalarProperty Name="BankName" ColumnName="BankName" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="AccId" ColumnName="AccId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeeCareers">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmployeeCareer">
+        <MappingFragment StoreEntitySet="EmployeeCareer">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Path" ColumnName="Path" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+          <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+          <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+          <ScalarProperty Name="CId" ColumnName="CId" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeeCareerDetails">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmployeeCareerDetail">
+        <MappingFragment StoreEntitySet="EmployeeCareerDetails">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Reason" ColumnName="Reason" />
+          <ScalarProperty Name="CTC" ColumnName="CTC" />
+          <ScalarProperty Name="ContactMobile" ColumnName="ContactMobile" />
+          <ScalarProperty Name="ContactEmail" ColumnName="ContactEmail" />
+          <ScalarProperty Name="ContactDesignation" ColumnName="ContactDesignation" />
+          <ScalarProperty Name="ContactName" ColumnName="ContactName" />
+          <ScalarProperty Name="RelievingLetter" ColumnName="RelievingLetter" />
+          <ScalarProperty Name="ExperienceLetter" ColumnName="ExperienceLetter" />
+          <ScalarProperty Name="SalaryLetter" ColumnName="SalaryLetter" />
+          <ScalarProperty Name="OfferLetter" ColumnName="OfferLetter" />
+          <ScalarProperty Name="PaySlip3" ColumnName="PaySlip3" />
+          <ScalarProperty Name="PMonth3" ColumnName="PMonth3" />
+          <ScalarProperty Name="PaySlip2" ColumnName="PaySlip2" />
+          <ScalarProperty Name="PMonth2" ColumnName="PMonth2" />
+          <ScalarProperty Name="PaySlip1" ColumnName="PaySlip1" />
+          <ScalarProperty Name="PMonth1" ColumnName="PMonth1" />
+          <ScalarProperty Name="Experience" ColumnName="Experience" />
+          <ScalarProperty Name="ToDate" ColumnName="ToDate" />
+          <ScalarProperty Name="FromDate" ColumnName="FromDate" />
+          <ScalarProperty Name="Designation" ColumnName="Designation" />
+          <ScalarProperty Name="Company" ColumnName="Company" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="CareerId" ColumnName="CareerId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeeDetails">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmployeeDetail">
+        <MappingFragment StoreEntitySet="EmployeeDetails">
+          <ScalarProperty Name="EContactRelationship2" ColumnName="EContactRelationship2" />
+          <ScalarProperty Name="EContactName2" ColumnName="EContactName2" />
+          <ScalarProperty Name="EContactNo2" ColumnName="EContactNo2" />
+          <ScalarProperty Name="EContactRelationship1" ColumnName="EContactRelationship1" />
+          <ScalarProperty Name="EContactName1" ColumnName="EContactName1" />
+          <ScalarProperty Name="EContactNo1" ColumnName="EContactNo1" />
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CurrentPinCode" ColumnName="CurrentPinCode" />
+          <ScalarProperty Name="CurrentCountry" ColumnName="CurrentCountry" />
+          <ScalarProperty Name="CurrentState" ColumnName="CurrentState" />
+          <ScalarProperty Name="CurrentCity" ColumnName="CurrentCity" />
+          <ScalarProperty Name="CurrentLocation" ColumnName="CurrentLocation" />
+          <ScalarProperty Name="CurrentStreet" ColumnName="CurrentStreet" />
+          <ScalarProperty Name="CurrentBuildingName" ColumnName="CurrentBuildingName" />
+          <ScalarProperty Name="CurrentDoorNumber" ColumnName="CurrentDoorNumber" />
+          <ScalarProperty Name="PermanentPinCode" ColumnName="PermanentPinCode" />
+          <ScalarProperty Name="PermanentCountry" ColumnName="PermanentCountry" />
+          <ScalarProperty Name="PermanentState" ColumnName="PermanentState" />
+          <ScalarProperty Name="PermanentCity" ColumnName="PermanentCity" />
+          <ScalarProperty Name="PermanentLocation" ColumnName="PermanentLocation" />
+          <ScalarProperty Name="PermanentStreet" ColumnName="PermanentStreet" />
+          <ScalarProperty Name="PermanentBuildingName" ColumnName="PermanentBuildingName" />
+          <ScalarProperty Name="PermanentDoorNumber" ColumnName="PermanentDoorNumber" />
+          <ScalarProperty Name="RelevantExperience" ColumnName="RelevantExperience" />
+          <ScalarProperty Name="TotalExperience" ColumnName="TotalExperience" />
+          <ScalarProperty Name="Nationality" ColumnName="Nationality" />
+          <ScalarProperty Name="Country" ColumnName="Country" />
+          <ScalarProperty Name="Region" ColumnName="Region" />
+          <ScalarProperty Name="Caste" ColumnName="Caste" />
+          <ScalarProperty Name="Sports" ColumnName="Sports" />
+          <ScalarProperty Name="ECActivities" ColumnName="ECActivities" />
+          <ScalarProperty Name="Disability" ColumnName="Disability" />
+          <ScalarProperty Name="DateOfAnniversary" ColumnName="DateOfAnniversary" />
+          <ScalarProperty Name="Weight" ColumnName="Weight" />
+          <ScalarProperty Name="Height" ColumnName="Height" />
+          <ScalarProperty Name="EContactRelationship" ColumnName="EContactRelationship" />
+          <ScalarProperty Name="EContactName" ColumnName="EContactName" />
+          <ScalarProperty Name="EContactNo" ColumnName="EContactNo" />
+          <ScalarProperty Name="HContactNo" ColumnName="HContactNo" />
+          <ScalarProperty Name="MContactNo" ColumnName="MContactNo" />
+          <ScalarProperty Name="FContactNo" ColumnName="FContactNo" />
+          <ScalarProperty Name="HusbandName" ColumnName="HusbandName" />
+          <ScalarProperty Name="MotherName" ColumnName="MotherName" />
+          <ScalarProperty Name="FatherName" ColumnName="FatherName" />
+          <ScalarProperty Name="PMailId" ColumnName="PMailId" />
+          <ScalarProperty Name="AMobileNo" ColumnName="AMobileNo" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeeDocs">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmployeeDoc">
+        <MappingFragment StoreEntitySet="EmployeeDoc">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Path" ColumnName="Path" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="DocId" ColumnName="DocId" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeeEducations">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmployeeEducation">
+        <MappingFragment StoreEntitySet="EmployeeEducation">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Path" ColumnName="Path" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="Grade" ColumnName="Grade" />
+          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+          <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+          <ScalarProperty Name="Filed" ColumnName="Filed" />
+          <ScalarProperty Name="DegreeId" ColumnName="DegreeId" />
+          <ScalarProperty Name="School" ColumnName="School" />
+          <ScalarProperty Name="Others" ColumnName="Others" />
+          <ScalarProperty Name="DocId" ColumnName="DocId" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeeGovtDocs">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmployeeGovtDoc">
+        <MappingFragment StoreEntitySet="EmployeeGovtDoc">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Path" ColumnName="Path" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="ExpiredDate" ColumnName="ExpiredDate" />
+          <ScalarProperty Name="IssuedDate" ColumnName="IssuedDate" />
+          <ScalarProperty Name="DocNo" ColumnName="DocNo" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="Others" ColumnName="Others" />
+          <ScalarProperty Name="DocName" ColumnName="DocName" />
+          <ScalarProperty Name="DocId" ColumnName="DocId" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="GovId" ColumnName="GovId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeeMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmployeeMaster">
+        <MappingFragment StoreEntitySet="EmployeeMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="IsRelieved" ColumnName="IsRelieved" />
+          <ScalarProperty Name="RelievedEffectiveDate" ColumnName="RelievedEffectiveDate" />
+          <ScalarProperty Name="RelievedDate" ColumnName="RelievedDate" />
+          <ScalarProperty Name="RelievedReason" ColumnName="RelievedReason" />
+          <ScalarProperty Name="AuthorisedEntity" ColumnName="AuthorisedEntity" />
+          <ScalarProperty Name="CEndDate" ColumnName="CEndDate" />
+          <ScalarProperty Name="EmpType" ColumnName="EmpType" />
+          <ScalarProperty Name="Reason" ColumnName="Reason" />
+          <ScalarProperty Name="EmpStatus" ColumnName="EmpStatus" />
+          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+          <ScalarProperty Name="JoiningDate" ColumnName="JoiningDate" />
+          <ScalarProperty Name="InterviewDate" ColumnName="InterviewDate" />
+          <ScalarProperty Name="Gender" ColumnName="Gender" />
+          <ScalarProperty Name="MaritalStatus" ColumnName="MaritalStatus" />
+          <ScalarProperty Name="BloodGroup" ColumnName="BloodGroup" />
+          <ScalarProperty Name="EmailId" ColumnName="EmailId" />
+          <ScalarProperty Name="MobileNo" ColumnName="MobileNo" />
+          <ScalarProperty Name="DOB" ColumnName="DOB" />
+          <ScalarProperty Name="LastName" ColumnName="LastName" />
+          <ScalarProperty Name="MiddleName" ColumnName="MiddleName" />
+          <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+          <ScalarProperty Name="Salutation" ColumnName="Salutation" />
+          <ScalarProperty Name="Photo" ColumnName="Photo" />
+          <ScalarProperty Name="Password" ColumnName="Password" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="ReportName" ColumnName="ReportName" />
+          <ScalarProperty Name="ReportId" ColumnName="ReportId" />
+          <ScalarProperty Name="DesignationName" ColumnName="DesignationName" />
+          <ScalarProperty Name="DesignationId" ColumnName="DesignationId" />
+          <ScalarProperty Name="DeptName" ColumnName="DeptName" />
+          <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
+          <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+          <ScalarProperty Name="BUId" ColumnName="BUId" />
+          <ScalarProperty Name="LEId" ColumnName="LEId" />
+          <ScalarProperty Name="CompId" ColumnName="CompId" />
+          <ScalarProperty Name="OldEmp_ID" ColumnName="OldEmp_ID" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeeMaster0312">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmployeeMaster0312">
+        <MappingFragment StoreEntitySet="EmployeeMaster0312">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Reason" ColumnName="Reason" />
+          <ScalarProperty Name="EmpStatus" ColumnName="EmpStatus" />
+          <ScalarProperty Name="CEndDate" ColumnName="CEndDate" />
+          <ScalarProperty Name="EmpType" ColumnName="EmpType" />
+          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+          <ScalarProperty Name="JoiningDate" ColumnName="JoiningDate" />
+          <ScalarProperty Name="Gender" ColumnName="Gender" />
+          <ScalarProperty Name="MaritalStatus" ColumnName="MaritalStatus" />
+          <ScalarProperty Name="BloodGroup" ColumnName="BloodGroup" />
+          <ScalarProperty Name="EmailId" ColumnName="EmailId" />
+          <ScalarProperty Name="MobileNo" ColumnName="MobileNo" />
+          <ScalarProperty Name="DOB" ColumnName="DOB" />
+          <ScalarProperty Name="LastName" ColumnName="LastName" />
+          <ScalarProperty Name="MiddleName" ColumnName="MiddleName" />
+          <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+          <ScalarProperty Name="Salutation" ColumnName="Salutation" />
+          <ScalarProperty Name="Photo" ColumnName="Photo" />
+          <ScalarProperty Name="Password" ColumnName="Password" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="ReportName" ColumnName="ReportName" />
+          <ScalarProperty Name="ReportId" ColumnName="ReportId" />
+          <ScalarProperty Name="DesignationName" ColumnName="DesignationName" />
+          <ScalarProperty Name="DesignationId" ColumnName="DesignationId" />
+          <ScalarProperty Name="DeptName" ColumnName="DeptName" />
+          <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
+          <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+          <ScalarProperty Name="BUId" ColumnName="BUId" />
+          <ScalarProperty Name="LEId" ColumnName="LEId" />
+          <ScalarProperty Name="CompId" ColumnName="CompId" />
+          <ScalarProperty Name="OldEmp_ID" ColumnName="OldEmp_ID" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeeMaster1">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmployeeMaster1">
+        <MappingFragment StoreEntitySet="EmployeeMaster1">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Reason" ColumnName="Reason" />
+          <ScalarProperty Name="EmpStatus" ColumnName="EmpStatus" />
+          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+          <ScalarProperty Name="JoiningDate" ColumnName="JoiningDate" />
+          <ScalarProperty Name="Gender" ColumnName="Gender" />
+          <ScalarProperty Name="MaritalStatus" ColumnName="MaritalStatus" />
+          <ScalarProperty Name="BloodGroup" ColumnName="BloodGroup" />
+          <ScalarProperty Name="EmailId" ColumnName="EmailId" />
+          <ScalarProperty Name="MobileNo" ColumnName="MobileNo" />
+          <ScalarProperty Name="DOB" ColumnName="DOB" />
+          <ScalarProperty Name="LastName" ColumnName="LastName" />
+          <ScalarProperty Name="MiddleName" ColumnName="MiddleName" />
+          <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+          <ScalarProperty Name="Salutation" ColumnName="Salutation" />
+          <ScalarProperty Name="Photo" ColumnName="Photo" />
+          <ScalarProperty Name="Password" ColumnName="Password" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="DesignationId" ColumnName="DesignationId" />
+          <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
+          <ScalarProperty Name="CompId" ColumnName="CompId" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeeMaster2">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmployeeMaster2">
+        <MappingFragment StoreEntitySet="EmployeeMaster2">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Reason" ColumnName="Reason" />
+          <ScalarProperty Name="EmpStatus" ColumnName="EmpStatus" />
+          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+          <ScalarProperty Name="JoiningDate" ColumnName="JoiningDate" />
+          <ScalarProperty Name="Gender" ColumnName="Gender" />
+          <ScalarProperty Name="MaritalStatus" ColumnName="MaritalStatus" />
+          <ScalarProperty Name="BloodGroup" ColumnName="BloodGroup" />
+          <ScalarProperty Name="EmailId" ColumnName="EmailId" />
+          <ScalarProperty Name="MobileNo" ColumnName="MobileNo" />
+          <ScalarProperty Name="DOB" ColumnName="DOB" />
+          <ScalarProperty Name="LastName" ColumnName="LastName" />
+          <ScalarProperty Name="MiddleName" ColumnName="MiddleName" />
+          <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+          <ScalarProperty Name="Salutation" ColumnName="Salutation" />
+          <ScalarProperty Name="Photo" ColumnName="Photo" />
+          <ScalarProperty Name="Password" ColumnName="Password" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="DesignationId" ColumnName="DesignationId" />
+          <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
+          <ScalarProperty Name="CompId" ColumnName="CompId" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeeMasterLogs">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmployeeMasterLog">
+        <MappingFragment StoreEntitySet="EmployeeMasterLogs">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="UpdatedEmpCode" ColumnName="UpdatedEmpCode" />
+          <ScalarProperty Name="IPAddress" ColumnName="IPAddress" />
+          <ScalarProperty Name="IsRelieved" ColumnName="IsRelieved" />
+          <ScalarProperty Name="RelievedEffectiveDate" ColumnName="RelievedEffectiveDate" />
+          <ScalarProperty Name="RelievedDate" ColumnName="RelievedDate" />
+          <ScalarProperty Name="RelievedReason" ColumnName="RelievedReason" />
+          <ScalarProperty Name="AuthorisedEntity" ColumnName="AuthorisedEntity" />
+          <ScalarProperty Name="CEndDate" ColumnName="CEndDate" />
+          <ScalarProperty Name="EmpType" ColumnName="EmpType" />
+          <ScalarProperty Name="Reason" ColumnName="Reason" />
+          <ScalarProperty Name="EmpStatus" ColumnName="EmpStatus" />
+          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+          <ScalarProperty Name="JoiningDate" ColumnName="JoiningDate" />
+          <ScalarProperty Name="Gender" ColumnName="Gender" />
+          <ScalarProperty Name="MaritalStatus" ColumnName="MaritalStatus" />
+          <ScalarProperty Name="BloodGroup" ColumnName="BloodGroup" />
+          <ScalarProperty Name="EmailId" ColumnName="EmailId" />
+          <ScalarProperty Name="MobileNo" ColumnName="MobileNo" />
+          <ScalarProperty Name="DOB" ColumnName="DOB" />
+          <ScalarProperty Name="LastName" ColumnName="LastName" />
+          <ScalarProperty Name="MiddleName" ColumnName="MiddleName" />
+          <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+          <ScalarProperty Name="Salutation" ColumnName="Salutation" />
+          <ScalarProperty Name="Photo" ColumnName="Photo" />
+          <ScalarProperty Name="Password" ColumnName="Password" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="ReportName" ColumnName="ReportName" />
+          <ScalarProperty Name="ReportId" ColumnName="ReportId" />
+          <ScalarProperty Name="DesignationName" ColumnName="DesignationName" />
+          <ScalarProperty Name="DesignationId" ColumnName="DesignationId" />
+          <ScalarProperty Name="DeptName" ColumnName="DeptName" />
+          <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
+          <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+          <ScalarProperty Name="BUId" ColumnName="BUId" />
+          <ScalarProperty Name="LEId" ColumnName="LEId" />
+          <ScalarProperty Name="CompId" ColumnName="CompId" />
+          <ScalarProperty Name="OldEmp_ID" ColumnName="OldEmp_ID" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="EMlogId" ColumnName="EMlogId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeeMasterNews">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmployeeMasterNew">
+        <MappingFragment StoreEntitySet="EmployeeMasterNew">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Reason" ColumnName="Reason" />
+          <ScalarProperty Name="EmpStatus" ColumnName="EmpStatus" />
+          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+          <ScalarProperty Name="JoiningDate" ColumnName="JoiningDate" />
+          <ScalarProperty Name="Gender" ColumnName="Gender" />
+          <ScalarProperty Name="MaritalStatus" ColumnName="MaritalStatus" />
+          <ScalarProperty Name="BloodGroup" ColumnName="BloodGroup" />
+          <ScalarProperty Name="EmailId" ColumnName="EmailId" />
+          <ScalarProperty Name="MobileNo" ColumnName="MobileNo" />
+          <ScalarProperty Name="DOB" ColumnName="DOB" />
+          <ScalarProperty Name="LastName" ColumnName="LastName" />
+          <ScalarProperty Name="MiddleName" ColumnName="MiddleName" />
+          <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+          <ScalarProperty Name="Salutation" ColumnName="Salutation" />
+          <ScalarProperty Name="Photo" ColumnName="Photo" />
+          <ScalarProperty Name="Password" ColumnName="Password" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="ReportId" ColumnName="ReportId" />
+          <ScalarProperty Name="DesignationId" ColumnName="DesignationId" />
+          <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
+          <ScalarProperty Name="CompId" ColumnName="CompId" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeeNomineeMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmployeeNomineeMaster">
+        <MappingFragment StoreEntitySet="EmployeeNomineeMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Address" ColumnName="Address" />
+          <ScalarProperty Name="DocNo" ColumnName="DocNo" />
+          <ScalarProperty Name="DocId" ColumnName="DocId" />
+          <ScalarProperty Name="Percentage" ColumnName="Percentage" />
+          <ScalarProperty Name="Email" ColumnName="Email" />
+          <ScalarProperty Name="ContactNo" ColumnName="ContactNo" />
+          <ScalarProperty Name="Gender" ColumnName="Gender" />
+          <ScalarProperty Name="Age" ColumnName="Age" />
+          <ScalarProperty Name="DOB" ColumnName="DOB" />
+          <ScalarProperty Name="Relationship" ColumnName="Relationship" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="NId" ColumnName="NId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeeSalaryDetails">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmployeeSalaryDetail">
+        <MappingFragment StoreEntitySet="EmployeeSalaryDetails">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="DescriptionforArrear" ColumnName="DescriptionforArrear" />
+          <ScalarProperty Name="ArrearMonth" ColumnName="ArrearMonth" />
+          <ScalarProperty Name="ArrearYear" ColumnName="ArrearYear" />
+          <ScalarProperty Name="PendingMonth" ColumnName="PendingMonth" />
+          <ScalarProperty Name="IsClearArrear" ColumnName="IsClearArrear" />
+          <ScalarProperty Name="ArrearAmt" ColumnName="ArrearAmt" />
+          <ScalarProperty Name="IsArrear" ColumnName="IsArrear" />
+          <ScalarProperty Name="VariableAmt" ColumnName="VariableAmt" />
+          <ScalarProperty Name="VariableCode" ColumnName="VariableCode" />
+          <ScalarProperty Name="VariableName" ColumnName="VariableName" />
+          <ScalarProperty Name="VariableId" ColumnName="VariableId" />
+          <ScalarProperty Name="Period" ColumnName="Period" />
+          <ScalarProperty Name="IsVariable" ColumnName="IsVariable" />
+          <ScalarProperty Name="IsFixed" ColumnName="IsFixed" />
+          <ScalarProperty Name="RecordStatus" ColumnName="RecordStatus" />
+          <ScalarProperty Name="IsAppraised" ColumnName="IsAppraised" />
+          <ScalarProperty Name="EffectiveToDate" ColumnName="EffectiveToDate" />
+          <ScalarProperty Name="EffectiveFromDate" ColumnName="EffectiveFromDate" />
+          <ScalarProperty Name="IncrementPercent" ColumnName="IncrementPercent" />
+          <ScalarProperty Name="PerviousCTC" ColumnName="PerviousCTC" />
+          <ScalarProperty Name="MCTC" ColumnName="MCTC" />
+          <ScalarProperty Name="CTC" ColumnName="CTC" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="SalaryId" ColumnName="SalaryId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmpProbationTrackingHistories">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmpProbationTrackingHistory">
+        <MappingFragment StoreEntitySet="EmpProbationTrackingHistory">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastupdatedBy" ColumnName="LastupdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Remarks" ColumnName="Remarks" />
+          <ScalarProperty Name="ConfirmBy" ColumnName="ConfirmBy" />
+          <ScalarProperty Name="ConfirmDate" ColumnName="ConfirmDate" />
+          <ScalarProperty Name="IsConsultant" ColumnName="IsConsultant" />
+          <ScalarProperty Name="IsContract" ColumnName="IsContract" />
+          <ScalarProperty Name="IsPermanent" ColumnName="IsPermanent" />
+          <ScalarProperty Name="IsProbation" ColumnName="IsProbation" />
+          <ScalarProperty Name="ReportCode" ColumnName="ReportCode" />
+          <ScalarProperty Name="ReportId" ColumnName="ReportId" />
+          <ScalarProperty Name="ProbationEndDate" ColumnName="ProbationEndDate" />
+          <ScalarProperty Name="ProbationDays" ColumnName="ProbationDays" />
+          <ScalarProperty Name="JoiningDate" ColumnName="JoiningDate" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="EmpProbationId" ColumnName="EmpProbationId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmpShiftDetails">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmpShiftDetail">
+        <MappingFragment StoreEntitySet="EmpShiftDetails">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+          <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="ShiftStatus" ColumnName="ShiftStatus" />
+          <ScalarProperty Name="ShiftName" ColumnName="ShiftName" />
+          <ScalarProperty Name="ShiftId" ColumnName="ShiftId" />
+          <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+          <ScalarProperty Name="BUId" ColumnName="BUId" />
+          <ScalarProperty Name="LEId" ColumnName="LEId" />
+          <ScalarProperty Name="CompId" ColumnName="CompId" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="SEId" ColumnName="SEId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmpTypeMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.EmpTypeMaster">
+        <MappingFragment StoreEntitySet="EmpTypeMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="EmpType" ColumnName="EmpType" />
+          <ScalarProperty Name="EmpTypId" ColumnName="EmpTypId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="FinanceMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.FinanceMaster">
+        <MappingFragment StoreEntitySet="FinanceMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="Year" ColumnName="Year" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="FinancialYearMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.FinancialYearMaster">
+        <MappingFragment StoreEntitySet="FinancialYearMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="FinancialYear" ColumnName="FinancialYear" />
+          <ScalarProperty Name="YearId" ColumnName="YearId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="FPwdManagements">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.FPwdManagement">
+        <MappingFragment StoreEntitySet="FPwdManagement">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Expired" ColumnName="Expired" />
+          <ScalarProperty Name="Otp" ColumnName="Otp" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="GenderMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.GenderMaster">
+        <MappingFragment StoreEntitySet="GenderMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Gender" ColumnName="Gender" />
+          <ScalarProperty Name="GenderId" ColumnName="GenderId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="GradeMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.GradeMaster">
+        <MappingFragment StoreEntitySet="GradeMaster">
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="Grade" ColumnName="Grade" />
+          <ScalarProperty Name="GradeId" ColumnName="GradeId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="HolidayMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.HolidayMaster">
+        <MappingFragment StoreEntitySet="HolidayMaster">
+          <ScalarProperty Name="Holiday_Type_Name" ColumnName="Holiday_Type_Name" />
+          <ScalarProperty Name="Holiday_Type_Id" ColumnName="Holiday_Type_Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Holidays">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.Holiday">
+        <MappingFragment StoreEntitySet="Holidays">
+          <ScalarProperty Name="Location" ColumnName="Location" />
+          <ScalarProperty Name="HolidayType" ColumnName="HolidayType" />
+          <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+          <ScalarProperty Name="Year" ColumnName="Year" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="Modify_Date" ColumnName="Modify_Date" />
+          <ScalarProperty Name="Modify_By" ColumnName="Modify_By" />
+          <ScalarProperty Name="Created_Date" ColumnName="Created_Date" />
+          <ScalarProperty Name="Created_By" ColumnName="Created_By" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="Date" ColumnName="Date" />
+          <ScalarProperty Name="Title" ColumnName="Title" />
+          <ScalarProperty Name="Holiday_Id" ColumnName="Holiday_Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="LeaveCarryForwardMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.LeaveCarryForwardMaster">
+        <MappingFragment StoreEntitySet="LeaveCarryForwardMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="ClosingBalance" ColumnName="ClosingBalance" />
+          <ScalarProperty Name="Encashment" ColumnName="Encashment" />
+          <ScalarProperty Name="CarryForward" ColumnName="CarryForward" />
+          <ScalarProperty Name="Availed" ColumnName="Availed" />
+          <ScalarProperty Name="OpeningBalance" ColumnName="OpeningBalance" />
+          <ScalarProperty Name="LeaveMonth" ColumnName="LeaveMonth" />
+          <ScalarProperty Name="LeaveYear" ColumnName="LeaveYear" />
+          <ScalarProperty Name="LeaveTypeId" ColumnName="LeaveTypeId" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="CFId" ColumnName="CFId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="LeaveTypeMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.LeaveTypeMaster">
+        <MappingFragment StoreEntitySet="LeaveTypeMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="ResetYear" ColumnName="ResetYear" />
+          <ScalarProperty Name="WeekEndInclusive" ColumnName="WeekEndInclusive" />
+          <ScalarProperty Name="MaxAllowedEvents" ColumnName="MaxAllowedEvents" />
+          <ScalarProperty Name="IsSingleApplication" ColumnName="IsSingleApplication" />
+          <ScalarProperty Name="ApplicableDuration" ColumnName="ApplicableDuration" />
+          <ScalarProperty Name="IsPaid" ColumnName="IsPaid" />
+          <ScalarProperty Name="MaxPerYear" ColumnName="MaxPerYear" />
+          <ScalarProperty Name="MaxPerMonth" ColumnName="MaxPerMonth" />
+          <ScalarProperty Name="MaxApply" ColumnName="MaxApply" />
+          <ScalarProperty Name="Encashable" ColumnName="Encashable" />
+          <ScalarProperty Name="MaxCarryForward" ColumnName="MaxCarryForward" />
+          <ScalarProperty Name="IsYear" ColumnName="IsYear" />
+          <ScalarProperty Name="IsMonth" ColumnName="IsMonth" />
+          <ScalarProperty Name="Credit" ColumnName="Credit" />
+          <ScalarProperty Name="CarryForward" ColumnName="CarryForward" />
+          <ScalarProperty Name="EmpLevel" ColumnName="EmpLevel" />
+          <ScalarProperty Name="EmpTypeId" ColumnName="EmpTypeId" />
+          <ScalarProperty Name="ApplicableTo" ColumnName="ApplicableTo" />
+          <ScalarProperty Name="DurationType" ColumnName="DurationType" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="ShortName" ColumnName="ShortName" />
+          <ScalarProperty Name="LeaveName" ColumnName="LeaveName" />
+          <ScalarProperty Name="YearType" ColumnName="YearType" />
+          <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+          <ScalarProperty Name="LeaveTypeId" ColumnName="LeaveTypeId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="LegalEntityMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.LegalEntityMaster">
+        <MappingFragment StoreEntitySet="LegalEntityMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Website" ColumnName="Website" />
+          <ScalarProperty Name="WebAppLogo" ColumnName="WebAppLogo" />
+          <ScalarProperty Name="LogoWithAddress" ColumnName="LogoWithAddress" />
+          <ScalarProperty Name="Logo" ColumnName="Logo" />
+          <ScalarProperty Name="CompanyType" ColumnName="CompanyType" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="LegalEntity" ColumnName="LegalEntity" />
+          <ScalarProperty Name="CompId" ColumnName="CompId" />
+          <ScalarProperty Name="LEId" ColumnName="LEId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="LocationMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.LocationMaster">
+        <MappingFragment StoreEntitySet="LocationMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="GSTNo" ColumnName="GSTNo" />
+          <ScalarProperty Name="ServiceTaxNo" ColumnName="ServiceTaxNo" />
+          <ScalarProperty Name="PANNo" ColumnName="PANNo" />
+          <ScalarProperty Name="VATNo" ColumnName="VATNo" />
+          <ScalarProperty Name="TANNo" ColumnName="TANNo" />
+          <ScalarProperty Name="ESINo" ColumnName="ESINo" />
+          <ScalarProperty Name="PFNo" ColumnName="PFNo" />
+          <ScalarProperty Name="DateofReg" ColumnName="DateofReg" />
+          <ScalarProperty Name="CompanyRegNo" ColumnName="CompanyRegNo" />
+          <ScalarProperty Name="WeeklyHoliday" ColumnName="WeeklyHoliday" />
+          <ScalarProperty Name="ProbationPeriod" ColumnName="ProbationPeriod" />
+          <ScalarProperty Name="TimeZone" ColumnName="TimeZone" />
+          <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
+          <ScalarProperty Name="Country" ColumnName="Country" />
+          <ScalarProperty Name="State" ColumnName="State" />
+          <ScalarProperty Name="City" ColumnName="City" />
+          <ScalarProperty Name="Address" ColumnName="Address" />
+          <ScalarProperty Name="LocationMap" ColumnName="LocationMap" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="Location" ColumnName="Location" />
+          <ScalarProperty Name="BUId" ColumnName="BUId" />
+          <ScalarProperty Name="LEId" ColumnName="LEId" />
+          <ScalarProperty Name="CompId" ColumnName="CompId" />
+          <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Loginlogs">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.Loginlog">
+        <MappingFragment StoreEntitySet="Loginlog">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="ActionType" ColumnName="ActionType" />
+          <ScalarProperty Name="LogOutTime" ColumnName="LogOutTime" />
+          <ScalarProperty Name="LogoutLatitude" ColumnName="LogoutLatitude" />
+          <ScalarProperty Name="LogoutLongitude" ColumnName="LogoutLongitude" />
+          <ScalarProperty Name="LogoutDate" ColumnName="LogoutDate" />
+          <ScalarProperty Name="LogoutCity" ColumnName="LogoutCity" />
+          <ScalarProperty Name="LogoutAddress" ColumnName="LogoutAddress" />
+          <ScalarProperty Name="LogInTime" ColumnName="LogInTime" />
+          <ScalarProperty Name="LoginLatitude" ColumnName="LoginLatitude" />
+          <ScalarProperty Name="LoginLongitude" ColumnName="LoginLongitude" />
+          <ScalarProperty Name="LoginDate" ColumnName="LoginDate" />
+          <ScalarProperty Name="LoginCity" ColumnName="LoginCity" />
+          <ScalarProperty Name="LoginAddress" ColumnName="LoginAddress" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ManualAttendances">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.ManualAttendance">
+        <MappingFragment StoreEntitySet="ManualAttendance">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="RecordStatus" ColumnName="RecordStatus" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="Time" ColumnName="Time" />
+          <ScalarProperty Name="Date" ColumnName="Date" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ModuleMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.ModuleMaster">
+        <MappingFragment StoreEntitySet="ModuleMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="ModuleName" ColumnName="ModuleName" />
+          <ScalarProperty Name="ModuleId" ColumnName="ModuleId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Notifications">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.Notification">
+        <MappingFragment StoreEntitySet="Notifications">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="CreatedByName" ColumnName="CreatedByName" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="NotificationColor" ColumnName="NotificationColor" />
+          <ScalarProperty Name="NotificationIcon" ColumnName="NotificationIcon" />
+          <ScalarProperty Name="ActionText" ColumnName="ActionText" />
+          <ScalarProperty Name="ActionUrl" ColumnName="ActionUrl" />
+          <ScalarProperty Name="ReferenceGuid" ColumnName="ReferenceGuid" />
+          <ScalarProperty Name="ReferenceId" ColumnName="ReferenceId" />
+          <ScalarProperty Name="NotificationSubType" ColumnName="NotificationSubType" />
+          <ScalarProperty Name="NotificationType" ColumnName="NotificationType" />
+          <ScalarProperty Name="ShortDescription" ColumnName="ShortDescription" />
+          <ScalarProperty Name="Message" ColumnName="Message" />
+          <ScalarProperty Name="Title" ColumnName="Title" />
+          <ScalarProperty Name="NotificationGuid" ColumnName="NotificationGuid" />
+          <ScalarProperty Name="NotificationId" ColumnName="NotificationId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="NotificationTemplates">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.NotificationTemplate">
+        <MappingFragment StoreEntitySet="NotificationTemplates">
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="ActionUrlTemplate" ColumnName="ActionUrlTemplate" />
+          <ScalarProperty Name="DefaultColor" ColumnName="DefaultColor" />
+          <ScalarProperty Name="DefaultIcon" ColumnName="DefaultIcon" />
+          <ScalarProperty Name="TargetRoles" ColumnName="TargetRoles" />
+          <ScalarProperty Name="MessageTemplate" ColumnName="MessageTemplate" />
+          <ScalarProperty Name="TitleTemplate" ColumnName="TitleTemplate" />
+          <ScalarProperty Name="NotificationSubType" ColumnName="NotificationSubType" />
+          <ScalarProperty Name="NotificationType" ColumnName="NotificationType" />
+          <ScalarProperty Name="TemplateName" ColumnName="TemplateName" />
+          <ScalarProperty Name="TemplateId" ColumnName="TemplateId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="OnSiteLoginlogs">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.OnSiteLoginlog">
+        <MappingFragment StoreEntitySet="OnSiteLoginlog">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="ActiveHrs" ColumnName="ActiveHrs" />
+          <ScalarProperty Name="LogOutTime" ColumnName="LogOutTime" />
+          <ScalarProperty Name="LogoutLatitude" ColumnName="LogoutLatitude" />
+          <ScalarProperty Name="LogoutLongitude" ColumnName="LogoutLongitude" />
+          <ScalarProperty Name="LogoutDate" ColumnName="LogoutDate" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="Purpose" ColumnName="Purpose" />
+          <ScalarProperty Name="LogoutCity" ColumnName="LogoutCity" />
+          <ScalarProperty Name="LogoutAddress" ColumnName="LogoutAddress" />
+          <ScalarProperty Name="LogInTime" ColumnName="LogInTime" />
+          <ScalarProperty Name="LoginLatitude" ColumnName="LoginLatitude" />
+          <ScalarProperty Name="LoginLongitude" ColumnName="LoginLongitude" />
+          <ScalarProperty Name="LoginDate" ColumnName="LoginDate" />
+          <ScalarProperty Name="LoginCity" ColumnName="LoginCity" />
+          <ScalarProperty Name="LoginAddress" ColumnName="LoginAddress" />
+          <ScalarProperty Name="Company" ColumnName="Company" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PageModuleMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.PageModuleMaster">
+        <MappingFragment StoreEntitySet="PageModuleMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="PageName" ColumnName="PageName" />
+          <ScalarProperty Name="SubModuleId" ColumnName="SubModuleId" />
+          <ScalarProperty Name="ModuleId" ColumnName="ModuleId" />
+          <ScalarProperty Name="PageModuleId" ColumnName="PageModuleId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PassHistoryManagements">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.PassHistoryManagement">
+        <MappingFragment StoreEntitySet="PassHistoryManagement">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Expired" ColumnName="Expired" />
+          <ScalarProperty Name="CPwd" ColumnName="CPwd" />
+          <ScalarProperty Name="FPwd" ColumnName="FPwd" />
+          <ScalarProperty Name="NewPassword" ColumnName="NewPassword" />
+          <ScalarProperty Name="OldPassword" ColumnName="OldPassword" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PayoutMappingMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.PayoutMappingMaster">
+        <MappingFragment StoreEntitySet="PayoutMappingMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="PayoutTypeName" ColumnName="PayoutTypeName" />
+          <ScalarProperty Name="PayoutTypeId" ColumnName="PayoutTypeId" />
+          <ScalarProperty Name="Grade" ColumnName="Grade" />
+          <ScalarProperty Name="GradeId" ColumnName="GradeId" />
+          <ScalarProperty Name="MapId" ColumnName="MapId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PayrollComponents">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.PayrollComponent">
+        <MappingFragment StoreEntitySet="PayrollComponent">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="ComponentCode" ColumnName="ComponentCode" />
+          <ScalarProperty Name="ComponentName" ColumnName="ComponentName" />
+          <ScalarProperty Name="SegmentId" ColumnName="SegmentId" />
+          <ScalarProperty Name="PayoutTypeId" ColumnName="PayoutTypeId" />
+          <ScalarProperty Name="ComponentId" ColumnName="ComponentId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PayrollComponentConditions">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.PayrollComponentCondition">
+        <MappingFragment StoreEntitySet="PayrollComponentCondition">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="ConditionResultPFESI" ColumnName="ConditionResultPFESI" />
+          <ScalarProperty Name="ConditionExpression" ColumnName="ConditionExpression" />
+          <ScalarProperty Name="SNo" ColumnName="SNo" />
+          <ScalarProperty Name="ComponentId" ColumnName="ComponentId" />
+          <ScalarProperty Name="ConditionId" ColumnName="ConditionId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PayrollComponentLogics">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.PayrollComponentLogic">
+        <MappingFragment StoreEntitySet="PayrollComponentLogic">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="EffectiveTo" ColumnName="EffectiveTo" />
+          <ScalarProperty Name="EffectiveFrom" ColumnName="EffectiveFrom" />
+          <ScalarProperty Name="ComponentName1" ColumnName="ComponentName1" />
+          <ScalarProperty Name="ComponentId1" ColumnName="ComponentId1" />
+          <ScalarProperty Name="Value" ColumnName="Value" />
+          <ScalarProperty Name="Percentage" ColumnName="Percentage" />
+          <ScalarProperty Name="SNo" ColumnName="SNo" />
+          <ScalarProperty Name="ComponentId" ColumnName="ComponentId" />
+          <ScalarProperty Name="LogicId" ColumnName="LogicId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PayrollFrequencyMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.PayrollFrequencyMaster">
+        <MappingFragment StoreEntitySet="PayrollFrequencyMaster">
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="Frequency" ColumnName="Frequency" />
+          <ScalarProperty Name="FrequencyId" ColumnName="FrequencyId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PayrollPayoutTypes">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.PayrollPayoutType">
+        <MappingFragment StoreEntitySet="PayrollPayoutType">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Frequency" ColumnName="Frequency" />
+          <ScalarProperty Name="PayoutTypeName" ColumnName="PayoutTypeName" />
+          <ScalarProperty Name="PayoutTypeId" ColumnName="PayoutTypeId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PayrollSegments">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.PayrollSegment">
+        <MappingFragment StoreEntitySet="PayrollSegment">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="PayoutTypeId" ColumnName="PayoutTypeId" />
+          <ScalarProperty Name="SegmentName" ColumnName="SegmentName" />
+          <ScalarProperty Name="SegmentId" ColumnName="SegmentId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PayrollSymbolMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.PayrollSymbolMaster">
+        <MappingFragment StoreEntitySet="PayrollSymbolMaster">
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="Symbol" ColumnName="Symbol" />
+          <ScalarProperty Name="SymbolId" ColumnName="SymbolId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PayrollVariables">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.PayrollVariable">
+        <MappingFragment StoreEntitySet="PayrollVariable">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="VariableCode" ColumnName="VariableCode" />
+          <ScalarProperty Name="VariableName" ColumnName="VariableName" />
+          <ScalarProperty Name="VariableId" ColumnName="VariableId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PayslipSections">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.PayslipSection">
+        <MappingFragment StoreEntitySet="PayslipSection">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="SequenceNo" ColumnName="SequenceNo" />
+          <ScalarProperty Name="SectionName" ColumnName="SectionName" />
+          <ScalarProperty Name="SectionId" ColumnName="SectionId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PayslipSectionComponents">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.PayslipSectionComponent">
+        <MappingFragment StoreEntitySet="PayslipSectionComponents">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="RecordStatus" ColumnName="RecordStatus" />
+          <ScalarProperty Name="EffectiveTo" ColumnName="EffectiveTo" />
+          <ScalarProperty Name="EffectiveFrom" ColumnName="EffectiveFrom" />
+          <ScalarProperty Name="SequenceNo" ColumnName="SequenceNo" />
+          <ScalarProperty Name="ComponentId" ColumnName="ComponentId" />
+          <ScalarProperty Name="SectionId" ColumnName="SectionId" />
+          <ScalarProperty Name="PayoutTypeId" ColumnName="PayoutTypeId" />
+          <ScalarProperty Name="SectionComponentId" ColumnName="SectionComponentId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Per_BehaviourDetail">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.Per_BehaviourDetail">
+        <MappingFragment StoreEntitySet="Per_BehaviourDetail">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="ReviewedByManager" ColumnName="ReviewedByManager" />
+          <ScalarProperty Name="ReviewedByEmp" ColumnName="ReviewedByEmp" />
+          <ScalarProperty Name="MDescription" ColumnName="MDescription" />
+          <ScalarProperty Name="EDescription" ColumnName="EDescription" />
+          <ScalarProperty Name="ManagerReview" ColumnName="ManagerReview" />
+          <ScalarProperty Name="EmpReview" ColumnName="EmpReview" />
+          <ScalarProperty Name="Weightage" ColumnName="Weightage" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="Behaviour" ColumnName="Behaviour" />
+          <ScalarProperty Name="BehaviourId" ColumnName="BehaviourId" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="PeriodId" ColumnName="PeriodId" />
+          <ScalarProperty Name="QId" ColumnName="QId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Per_BehaviourMaster">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.Per_BehaviourMaster">
+        <MappingFragment StoreEntitySet="Per_BehaviourMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="Weightage" ColumnName="Weightage" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="Behaviour" ColumnName="Behaviour" />
+          <ScalarProperty Name="PeriodId" ColumnName="PeriodId" />
+          <ScalarProperty Name="QId" ColumnName="QId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Per_Goal">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.Per_Goal">
+        <MappingFragment StoreEntitySet="Per_Goal">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="ReviewedByManager" ColumnName="ReviewedByManager" />
+          <ScalarProperty Name="ReviewedByEmp" ColumnName="ReviewedByEmp" />
+          <ScalarProperty Name="FinalSubmit" ColumnName="FinalSubmit" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="MDescription" ColumnName="MDescription" />
+          <ScalarProperty Name="EDescription" ColumnName="EDescription" />
+          <ScalarProperty Name="ManagerReview" ColumnName="ManagerReview" />
+          <ScalarProperty Name="EmpReview" ColumnName="EmpReview" />
+          <ScalarProperty Name="Weightage" ColumnName="Weightage" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="Goal" ColumnName="Goal" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="PeriodId" ColumnName="PeriodId" />
+          <ScalarProperty Name="QId" ColumnName="QId" />
+          <ScalarProperty Name="GoalId" ColumnName="GoalId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Per_SelfDevelopment">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.Per_SelfDevelopment">
+        <MappingFragment StoreEntitySet="Per_SelfDevelopment">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="ReviewedByManager" ColumnName="ReviewedByManager" />
+          <ScalarProperty Name="ReviewedByEmp" ColumnName="ReviewedByEmp" />
+          <ScalarProperty Name="MDescription" ColumnName="MDescription" />
+          <ScalarProperty Name="EDescription" ColumnName="EDescription" />
+          <ScalarProperty Name="CompletedDate" ColumnName="CompletedDate" />
+          <ScalarProperty Name="DueDate" ColumnName="DueDate" />
+          <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="ActionType" ColumnName="ActionType" />
+          <ScalarProperty Name="ActionDescription" ColumnName="ActionDescription" />
+          <ScalarProperty Name="Activity" ColumnName="Activity" />
+          <ScalarProperty Name="PeriodId" ColumnName="PeriodId" />
+          <ScalarProperty Name="QId" ColumnName="QId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Per_Task">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.Per_Task">
+        <MappingFragment StoreEntitySet="Per_Task">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="Task" ColumnName="Task" />
+          <ScalarProperty Name="QId" ColumnName="QId" />
+          <ScalarProperty Name="GoalId" ColumnName="GoalId" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="PeriodId" ColumnName="PeriodId" />
+          <ScalarProperty Name="QId1" ColumnName="QId1" />
+          <ScalarProperty Name="TaskId" ColumnName="TaskId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ProjectConnectUsers">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.ProjectConnectUser">
+        <MappingFragment StoreEntitySet="ProjectConnectUsers">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="IsTransffered" ColumnName="IsTransffered" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ProjectMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.ProjectMaster">
+        <MappingFragment StoreEntitySet="ProjectMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="ManagerName" ColumnName="ManagerName" />
+          <ScalarProperty Name="ManagerCode" ColumnName="ManagerCode" />
+          <ScalarProperty Name="Site" ColumnName="Site" />
+          <ScalarProperty Name="SiteId" ColumnName="SiteId" />
+          <ScalarProperty Name="ProjectManagerId" ColumnName="ProjectManagerId" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="Project" ColumnName="Project" />
+          <ScalarProperty Name="ProjectCode" ColumnName="ProjectCode" />
+          <ScalarProperty Name="ERPProjectId" ColumnName="ERPProjectId" />
+          <ScalarProperty Name="ProjectId" ColumnName="ProjectId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="QuaterMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.QuaterMaster">
+        <MappingFragment StoreEntitySet="QuaterMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+          <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="Type" ColumnName="Type" />
+          <ScalarProperty Name="QId" ColumnName="QId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ReviewLists">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.ReviewList">
+        <MappingFragment StoreEntitySet="ReviewList">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Completed" ColumnName="Completed" />
+          <ScalarProperty Name="ReviewedByManager" ColumnName="ReviewedByManager" />
+          <ScalarProperty Name="ReviewedByEmp" ColumnName="ReviewedByEmp" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="QType" ColumnName="QType" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="QId" ColumnName="QId" />
+          <ScalarProperty Name="FYearId" ColumnName="FYearId" />
+          <ScalarProperty Name="ReviewId" ColumnName="ReviewId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="RoleMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.RoleMaster">
+        <MappingFragment StoreEntitySet="RoleMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+          <ScalarProperty Name="DeptId" ColumnName="DeptId" />
+          <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SalutationMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.SalutationMaster">
+        <MappingFragment StoreEntitySet="SalutationMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Salutation" ColumnName="Salutation" />
+          <ScalarProperty Name="SalutationId" ColumnName="SalutationId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ServiceMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.ServiceMaster">
+        <MappingFragment StoreEntitySet="ServiceMaster">
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="ServiceLink" ColumnName="ServiceLink" />
+          <ScalarProperty Name="ServiceName" ColumnName="ServiceName" />
+          <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ServiceProviders">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.ServiceProvider">
+        <MappingFragment StoreEntitySet="ServiceProvider">
+          <ScalarProperty Name="Output" ColumnName="Output" />
+          <ScalarProperty Name="Archieve" ColumnName="Archieve" />
+          <ScalarProperty Name="Error" ColumnName="Error" />
+          <ScalarProperty Name="URL" ColumnName="URL" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SessionMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.SessionMaster">
+        <MappingFragment StoreEntitySet="SessionMaster">
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="WFH" ColumnName="WFH" />
+          <ScalarProperty Name="Expired" ColumnName="Expired" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+          <ScalarProperty Name="AuthKey" ColumnName="AuthKey" />
+          <ScalarProperty Name="TockenId" ColumnName="TockenId" />
+          <ScalarProperty Name="Username" ColumnName="Username" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ShiftGroupingMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.ShiftGroupingMaster">
+        <MappingFragment StoreEntitySet="ShiftGroupingMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="ShiftId" ColumnName="ShiftId" />
+          <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+          <ScalarProperty Name="BUId" ColumnName="BUId" />
+          <ScalarProperty Name="LEId" ColumnName="LEId" />
+          <ScalarProperty Name="CompId" ColumnName="CompId" />
+          <ScalarProperty Name="SGId" ColumnName="SGId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ShiftMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.ShiftMaster">
+        <MappingFragment StoreEntitySet="ShiftMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="Days" ColumnName="Days" />
+          <ScalarProperty Name="ClkHrs" ColumnName="ClkHrs" />
+          <ScalarProperty Name="EndTime" ColumnName="EndTime" />
+          <ScalarProperty Name="StartTime" ColumnName="StartTime" />
+          <ScalarProperty Name="ShiftName" ColumnName="ShiftName" />
+          <ScalarProperty Name="ShiftId" ColumnName="ShiftId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SiteMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.SiteMaster">
+        <MappingFragment StoreEntitySet="SiteMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="Site" ColumnName="Site" />
+          <ScalarProperty Name="SiteId" ColumnName="SiteId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SubModuleMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.SubModuleMaster">
+        <MappingFragment StoreEntitySet="SubModuleMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="SubModuleName" ColumnName="SubModuleName" />
+          <ScalarProperty Name="ModuleId" ColumnName="ModuleId" />
+          <ScalarProperty Name="SubModuleId" ColumnName="SubModuleId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="TempManualAttendances">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.TempManualAttendance">
+        <MappingFragment StoreEntitySet="TempManualAttendance">
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="Time" ColumnName="Time" />
+          <ScalarProperty Name="Date" ColumnName="Date" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="UserNotifications">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.UserNotification">
+        <MappingFragment StoreEntitySet="UserNotifications">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="ActionTakenDate" ColumnName="ActionTakenDate" />
+          <ScalarProperty Name="IsActionTaken" ColumnName="IsActionTaken" />
+          <ScalarProperty Name="DeliveredDate" ColumnName="DeliveredDate" />
+          <ScalarProperty Name="IsDelivered" ColumnName="IsDelivered" />
+          <ScalarProperty Name="IsStarred" ColumnName="IsStarred" />
+          <ScalarProperty Name="ReadDate" ColumnName="ReadDate" />
+          <ScalarProperty Name="IsRead" ColumnName="IsRead" />
+          <ScalarProperty Name="UserRole" ColumnName="UserRole" />
+          <ScalarProperty Name="UserId" ColumnName="UserId" />
+          <ScalarProperty Name="NotificationId" ColumnName="NotificationId" />
+          <ScalarProperty Name="UserNotificationId" ColumnName="UserNotificationId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="VariableHistories">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.VariableHistory">
+        <MappingFragment StoreEntitySet="VariableHistory">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="Month" ColumnName="Month" />
+          <ScalarProperty Name="Year" ColumnName="Year" />
+          <ScalarProperty Name="VariableAmt" ColumnName="VariableAmt" />
+          <ScalarProperty Name="VariableCode" ColumnName="VariableCode" />
+          <ScalarProperty Name="VariableName" ColumnName="VariableName" />
+          <ScalarProperty Name="VariableId" ColumnName="VariableId" />
+          <ScalarProperty Name="EmpCTC" ColumnName="EmpCTC" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="VariableHistoryId" ColumnName="VariableHistoryId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="VendorMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.VendorMaster">
+        <MappingFragment StoreEntitySet="VendorMaster">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="Vendor" ColumnName="Vendor" />
+          <ScalarProperty Name="VendorCode" ColumnName="VendorCode" />
+          <ScalarProperty Name="ERPVendorId" ColumnName="ERPVendorId" />
+          <ScalarProperty Name="VendorId" ColumnName="VendorId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="VisitorInviteHistories">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.VisitorInviteHistory">
+        <MappingFragment StoreEntitySet="VisitorInviteHistory">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CheckOut" ColumnName="CheckOut" />
+          <ScalarProperty Name="CheckIn" ColumnName="CheckIn" />
+          <ScalarProperty Name="Mobile" ColumnName="Mobile" />
+          <ScalarProperty Name="Mail" ColumnName="Mail" />
+          <ScalarProperty Name="CheckInCode" ColumnName="CheckInCode" />
+          <ScalarProperty Name="InviteCode" ColumnName="InviteCode" />
+          <ScalarProperty Name="VisitorId" ColumnName="VisitorId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="VisitorManagements">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.VisitorManagement">
+        <MappingFragment StoreEntitySet="VisitorManagement">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="IdCard" ColumnName="IdCard" />
+          <ScalarProperty Name="CheckOut" ColumnName="CheckOut" />
+          <ScalarProperty Name="CheckIn" ColumnName="CheckIn" />
+          <ScalarProperty Name="DirectCheckIn" ColumnName="DirectCheckIn" />
+          <ScalarProperty Name="Accessories" ColumnName="Accessories" />
+          <ScalarProperty Name="Expired" ColumnName="Expired" />
+          <ScalarProperty Name="Approved" ColumnName="Approved" />
+          <ScalarProperty Name="Accept" ColumnName="Accept" />
+          <ScalarProperty Name="Invited" ColumnName="Invited" />
+          <ScalarProperty Name="Time" ColumnName="Time" />
+          <ScalarProperty Name="Date" ColumnName="Date" />
+          <ScalarProperty Name="WhomtoMeet" ColumnName="WhomtoMeet" />
+          <ScalarProperty Name="CompId" ColumnName="CompId" />
+          <ScalarProperty Name="Photo" ColumnName="Photo" />
+          <ScalarProperty Name="AMobile" ColumnName="AMobile" />
+          <ScalarProperty Name="Mobile" ColumnName="Mobile" />
+          <ScalarProperty Name="OMail" ColumnName="OMail" />
+          <ScalarProperty Name="PMail" ColumnName="PMail" />
+          <ScalarProperty Name="Purpose" ColumnName="Purpose" />
+          <ScalarProperty Name="Company" ColumnName="Company" />
+          <ScalarProperty Name="Designation" ColumnName="Designation" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="QR" ColumnName="QR" />
+          <ScalarProperty Name="RegNo" ColumnName="RegNo" />
+          <ScalarProperty Name="VisitId" ColumnName="VisitId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="WeekHolidays">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.WeekHoliday">
+        <MappingFragment StoreEntitySet="WeekHoliday">
+          <ScalarProperty Name="Year" ColumnName="Year" />
+          <ScalarProperty Name="HolidayType" ColumnName="HolidayType" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="Location" ColumnName="Location" />
+          <ScalarProperty Name="Title" ColumnName="Title" />
+          <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="Modified_Date" ColumnName="Modified_Date" />
+          <ScalarProperty Name="Modified_By" ColumnName="Modified_By" />
+          <ScalarProperty Name="Created_Date" ColumnName="Created_Date" />
+          <ScalarProperty Name="Created_By" ColumnName="Created_By" />
+          <ScalarProperty Name="Day" ColumnName="Day" />
+          <ScalarProperty Name="WeekDay_ID" ColumnName="WeekDay_ID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="WFHLoginlogs">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.WFHLoginlog">
+        <MappingFragment StoreEntitySet="WFHLoginlog">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="IsLoggedOut" ColumnName="IsLoggedOut" />
+          <ScalarProperty Name="IsLoggedIn" ColumnName="IsLoggedIn" />
+          <ScalarProperty Name="AnalysisHr" ColumnName="AnalysisHr" />
+          <ScalarProperty Name="Activehrs" ColumnName="Activehrs" />
+          <ScalarProperty Name="LogOutTime" ColumnName="LogOutTime" />
+          <ScalarProperty Name="LoginTime" ColumnName="LoginTime" />
+          <ScalarProperty Name="Date" ColumnName="Date" />
+          <ScalarProperty Name="IPAddress" ColumnName="IPAddress" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="WFHId" ColumnName="WFHId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="WorkTypeMasters">
+      <EntityTypeMapping TypeName="DB_Offc_ConModel.WorkTypeMaster">
+        <MappingFragment StoreEntitySet="WorkTypeMaster">
+          <ScalarProperty Name="LastupdatedDate" ColumnName="LastupdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsUpdated" ColumnName="IsUpdated" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="IsEnd" ColumnName="IsEnd" />
+          <ScalarProperty Name="IsRejectedBy" ColumnName="IsRejectedBy" />
+          <ScalarProperty Name="IsRejected" ColumnName="IsRejected" />
+          <ScalarProperty Name="IsApprovedBy" ColumnName="IsApprovedBy" />
+          <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
+          <ScalarProperty Name="ApproverDescription" ColumnName="ApproverDescription" />
+          <ScalarProperty Name="Reason" ColumnName="Reason" />
+          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+          <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+          <ScalarProperty Name="EmpCode" ColumnName="EmpCode" />
+          <ScalarProperty Name="EmpId" ColumnName="EmpId" />
+          <ScalarProperty Name="WorkType" ColumnName="WorkType" />
+          <ScalarProperty Name="WorkTypeId" ColumnName="WorkTypeId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

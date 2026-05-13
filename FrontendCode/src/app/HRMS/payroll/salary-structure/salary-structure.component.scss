@@ -1,0 +1,138 @@
+fieldset {
+    border: 1px solid #ddd !important;
+    border-radius: 6px;
+}
+
+legend {
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+}
+
+.custom-fieldset {
+    position: relative;
+    border: 1px solid #072f5f;
+    border-radius: 5px;
+    padding-top: 1.5em;
+}
+
+.custom-fieldset-second {
+    position: relative;
+    border: 1px solid #072f5f;
+    border-radius: 5px;
+    padding-top: 1.5em;
+
+    .custom-legend {
+        font-weight: bold;
+        color: #072f5f;
+        padding: 0 10px;
+        text-align: left;
+        width: auto;
+        margin: 0;
+        position: absolute;
+        top: -0.7em;
+        left: 11%;
+        transform: translateX(-50%);
+        background: white;
+    }
+}
+
+.custom-legend {
+    font-weight: bold;
+    color: #072f5f;
+    padding: 0 10px;
+    text-align: left;
+    width: auto;
+    margin: 0;
+    position: absolute;
+    top: -0.7em;
+    left: 8%;
+    transform: translateX(-50%);
+    background: white;
+}
+.table thead th {
+  padding: 10px 10px !important;
+}
+
+.table tbody td {
+  padding: 5px 10px !important;
+}
+@media (max-width: 768px) {
+    .custom-legend,
+    .custom-fieldset-second .custom-legend {
+        left: 30% !important;        
+        transform: translateX(-50%); 
+        font-size: 0.9rem;           
+    }
+}
+
+.spinner1 {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 9px solid;
+    border-color: #dbdcef;
+    border-right-color: #072f5f;
+    animation: spinner-d3wgkg 1s infinite linear;
+}
+
+.divSpinner1 {
+    position: relative;
+
+    .spinner1 {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-top: 10rem;
+        z-index: 9999;
+    }
+}
+
+@keyframes spinner-d3wgkg {
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+/// ////toggle-switch /////////////
+.toggle-switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    width: auto;
+    cursor: pointer;
+}
+
+.toggle-switch input {
+    display: none;
+}
+
+.slider-content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e9ecef;
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    white-space: nowrap;
+}
+
+.toggle-switch input:checked+.slider-content {
+    background-color: #d1e7dd;
+    /* Light green for active */
+}
+
+.status-icon {
+    font-size: 14px;
+}
+
+.status-text {
+    line-height: 1;
+    font-weight: 500;
+}
+
+////toggle-switch /////////////

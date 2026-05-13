@@ -1,0 +1,1469 @@
+// ============================================
+// OfficeConnect Mobile Responsive Design
+// Modern, Professional Mobile UI
+// ============================================
+
+// Mobile breakpoints
+$mobile-sm: 480px;
+$mobile-md: 576px;
+$tablet: 768px;
+$tablet-lg: 992px;
+$desktop: 1200px;
+
+// ============================================
+// 1. MOBILE BOTTOM NAVIGATION
+// ============================================
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: #ffffff;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+  display: none;
+  z-index: 1050;
+  border-top: 1px solid #e5e7eb;
+  padding-bottom: env(safe-area-inset-bottom);
+
+  .nav-items {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 100%;
+    padding: 0 8px;
+    margin: 0;
+    list-style: none;
+
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 4px;
+      text-decoration: none;
+      color: #6b7280;
+      font-size: 10px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      border-radius: 8px;
+      position: relative;
+      cursor: pointer;
+
+      i {
+        font-size: 20px;
+        margin-bottom: 2px;
+        transition: all 0.2s ease;
+      }
+
+      span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 60px;
+      }
+
+      &.active {
+        color: #072F5F;
+
+        i {
+          transform: scale(1.1);
+        }
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 24px;
+          height: 3px;
+          background: #072F5F;
+          border-radius: 0 0 3px 3px;
+        }
+      }
+
+      &:active {
+        background: #f3f4f6;
+        transform: scale(0.95);
+      }
+
+      .badge {
+        position: absolute;
+        top: 4px;
+        right: 50%;
+        transform: translateX(12px);
+        background: #ef4444;
+        color: white;
+        font-size: 9px;
+        font-weight: 600;
+        padding: 1px 5px;
+        border-radius: 10px;
+        min-width: 16px;
+        text-align: center;
+      }
+    }
+  }
+}
+
+// Show mobile bottom nav on small screens
+@media (max-width: $tablet) {
+  .mobile-bottom-nav {
+    display: block;
+  }
+
+  .pcoded-main-container {
+    padding-bottom: 64px !important;
+  }
+}
+
+// ============================================
+// 2. MOBILE HEADER IMPROVEMENTS
+// ============================================
+@media (max-width: $tablet) {
+  .pcoded-header {
+    .m-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      height: 56px;
+
+      .menu {
+        display: flex;
+        order: 1;
+      }
+
+      .b-brand {
+        order: 2;
+        margin: 0 auto;
+
+        #main-logo {
+          width: 160px !important;
+          height: 40px !important;
+        }
+      }
+
+      .header-mobile-collapse {
+        display: none;
+      }
+
+      .mob-toggler {
+        order: 3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        transition: background 0.2s ease;
+
+        &:hover {
+          background: rgba(0, 0, 0, 0.05);
+        }
+      }
+
+      .header-search {
+        order: 4;
+        width: 100%;
+        margin: 8px 0 0 0;
+        max-width: 100%;
+
+        .search-container {
+          .search-input {
+            height: 40px;
+            font-size: 14px;
+            padding-left: 40px;
+          }
+        }
+
+        .search-results {
+          width: 100%;
+          left: 0;
+          right: 0;
+          max-height: 250px;
+        }
+      }
+    }
+
+    .collapse.navbar-collapse {
+      padding: 0 12px 8px;
+    }
+  }
+}
+
+// ============================================
+// 3. MOBILE SIDEBAR OVERLAY
+// ============================================
+@media (max-width: $tablet) {
+  .pcoded-navbar {
+    &.mob-open {
+      transform: translateX(0);
+      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+
+      &::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: -1;
+      }
+    }
+
+    .navbar-wrapper {
+      .nav-content {
+        .pcoded-inner-navbar {
+          li {
+            a {
+              padding: 12px 16px;
+              font-size: 14px;
+
+              i {
+                font-size: 18px;
+                margin-right: 12px;
+              }
+            }
+
+            &.pcoded-menu-caption {
+              font-size: 11px;
+              padding: 12px 16px 4px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// 4. MAIN CONTENT RESPONSIVE
+// ============================================
+@media (max-width: $tablet) {
+  .pcoded-main-container {
+    min-height: calc(100vh - 56px - 64px);
+    margin-top: 56px;
+  }
+
+  .pcoded-content {
+    padding: 12px;
+  }
+
+  .pcoded-inner-content {
+    padding: 0;
+  }
+
+  .main-body {
+    padding: 0;
+  }
+
+  .page-wrapper {
+    padding: 0;
+  }
+}
+
+// ============================================
+// 5. RESPONSIVE CARDS
+// ============================================
+@media (max-width: $tablet) {
+  .card {
+    margin-bottom: 12px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+    .card-header {
+      padding: 12px 16px;
+
+      h5 {
+        font-size: 15px;
+      }
+    }
+
+    .card-body {
+      padding: 16px;
+    }
+  }
+
+  .glass-card {
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+  }
+}
+
+// ============================================
+// 6. KPI CARDS MOBILE
+// ============================================
+@media (max-width: $tablet) {
+  .kpi-section {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin: 12px 0;
+
+    .kpi-card {
+      padding: 14px;
+      border-radius: 12px;
+
+      .kpi-icon-wrapper {
+        width: 40px;
+        height: 40px;
+
+        i {
+          font-size: 18px;
+        }
+      }
+
+      .kpi-stats {
+        .kpi-value {
+          font-size: 20px;
+        }
+
+        .kpi-title {
+          font-size: 11px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $mobile-sm) {
+  .kpi-section {
+    grid-template-columns: 1fr;
+    gap: 8px;
+
+    .kpi-card {
+      flex-direction: row;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .kpi-icon-wrapper {
+        margin-bottom: 0;
+      }
+
+      .kpi-stats {
+        text-align: left;
+      }
+    }
+  }
+}
+
+// ============================================
+// 7. TABLE TO CARDS ON MOBILE
+// ============================================
+@media (max-width: $tablet) {
+  .table-wrapper {
+    border-radius: 12px;
+    overflow: visible;
+    max-height: none;
+
+    .table-responsive {
+      display: none;
+    }
+
+    .mobile-cards {
+      display: block;
+
+      .mobile-card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e5e7eb;
+        transition: all 0.2s ease;
+
+        &:active {
+          transform: scale(0.99);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-bottom: 12px;
+          margin-bottom: 12px;
+          border-bottom: 1px solid #e5e7eb;
+
+          .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+          }
+
+          .card-badge {
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+          }
+        }
+
+        .card-body {
+          .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+
+            .label {
+              color: #6b7280;
+              font-weight: 500;
+            }
+
+            .value {
+              color: #111827;
+              font-weight: 500;
+              text-align: right;
+              max-width: 60%;
+            }
+          }
+        }
+
+        .card-footer {
+          display: flex;
+          justify-content: flex-end;
+          gap: 8px;
+          padding-top: 12px;
+          margin-top: 12px;
+          border-top: 1px solid #e5e7eb;
+
+          .action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &.edit {
+              background: #dbeafe;
+              color: #1e40af;
+
+              &:hover {
+                background: #bfdbfe;
+              }
+            }
+
+            &.delete {
+              background: #fee2e2;
+              color: #b91c1c;
+
+              &:hover {
+                background: #fecaca;
+              }
+            }
+
+            &.view {
+              background: #d1fae5;
+              color: #065f46;
+
+              &:hover {
+                background: #a7f3d0;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Hide desktop table, show mobile cards
+  .table-responsive {
+    display: none !important;
+  }
+
+  .mobile-cards {
+    display: block !important;
+  }
+}
+
+// Desktop: show table, hide mobile cards
+@media (min-width: calc($tablet + 1px)) {
+  .mobile-cards {
+    display: none !important;
+  }
+}
+
+// ============================================
+// 8. FORM RESPONSIVE
+// ============================================
+@media (max-width: $tablet) {
+  .filter-panel {
+    padding: 16px;
+    border-radius: 12px;
+
+    .filter-form {
+      .filter-body {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+
+        .filter-item {
+          width: 100%;
+
+          .filter-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+          }
+
+          input,
+          select {
+            height: 44px;
+            font-size: 14px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            padding: 0 12px;
+            width: 100%;
+
+            &:focus {
+              border-color: #072F5F;
+              box-shadow: 0 0 0 3px rgba(7, 47, 95, 0.1);
+              outline: none;
+            }
+          }
+
+          .date-field {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            i {
+              color: #6b7280;
+              font-size: 16px;
+            }
+
+            input {
+              flex: 1;
+            }
+          }
+        }
+      }
+
+      .filter-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+
+        button {
+          flex: 1;
+          height: 44px;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+
+    label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    input,
+    select,
+    textarea {
+      height: 44px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      padding: 0 12px;
+      width: 100%;
+
+      &:focus {
+        border-color: #072F5F;
+        box-shadow: 0 0 0 3px rgba(7, 47, 95, 0.1);
+        outline: none;
+      }
+    }
+
+    textarea {
+      height: auto;
+      min-height: 100px;
+      padding: 12px;
+    }
+
+    .invalid-feedback {
+      font-size: 11px;
+      margin-top: 4px;
+    }
+  }
+
+  .row {
+    margin: 0 -8px;
+
+    [class*="col-"] {
+      padding: 0 8px;
+    }
+  }
+}
+
+// ============================================
+// 9. BUTTON RESPONSIVE
+// ============================================
+@media (max-width: $tablet) {
+  .HRMS_primary_button,
+  .HRMS_secondary_button,
+  .HRMS_Create_Close {
+    min-height: 44px;
+    min-width: 100px;
+    font-size: 14px;
+    border-radius: 8px;
+    padding: 0 16px;
+
+    i {
+      font-size: 16px;
+    }
+  }
+
+  .nav-btn {
+    height: 40px;
+    font-size: 13px;
+    border-radius: 8px;
+    padding: 8px 12px;
+
+    i {
+      font-size: 14px;
+    }
+  }
+}
+
+// ============================================
+// 10. BREADCRUMB RESPONSIVE
+// ============================================
+@media (max-width: $tablet) {
+  .dis-fl-end {
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px 0;
+
+    .heading-dash-sub {
+      span {
+        font-size: 1.25rem;
+      }
+
+      .breadcrumb {
+        font-size: 12px;
+      }
+    }
+
+    .top-nav {
+      flex-wrap: wrap;
+      gap: 6px;
+
+      .nav-btn {
+        flex: 1 1 calc(50% - 6px);
+      }
+    }
+  }
+}
+
+// ============================================
+// 11. MODAL RESPONSIVE
+// ============================================
+@media (max-width: $tablet) {
+  .modal-overlay {
+    padding: 16px;
+    align-items: flex-end;
+
+    .modal-box {
+      width: 100%;
+      max-width: 100%;
+      max-height: 85vh;
+      border-radius: 16px 16px 0 0;
+      padding: 20px;
+      animation: slideUp 0.3s ease-out;
+
+      .modal-header {
+        padding-bottom: 16px;
+
+        h3 {
+          font-size: 18px;
+        }
+
+        button {
+          font-size: 20px;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          background: #f3f4f6;
+
+          &:hover {
+            background: #e5e7eb;
+          }
+        }
+      }
+
+      .modal-body {
+        .info-grid {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+      }
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .modal-confirm {
+    width: 90%;
+    max-width: 320px;
+
+    .modal-content {
+      padding: 24px;
+      border-radius: 16px;
+    }
+
+    .icon-box {
+      width: 64px;
+      height: 64px;
+
+      i {
+        font-size: 32px;
+        margin-top: 8px;
+      }
+    }
+
+    .btn {
+      min-height: 44px;
+      font-size: 14px;
+      border-radius: 8px;
+      padding: 0 20px;
+    }
+  }
+}
+
+// ============================================
+// 12. DASHBOARD SPECIFIC
+// ============================================
+@media (max-width: $tablet) {
+  .dashboard-wrapper {
+    padding: 12px;
+
+    .bg-animation {
+      .gradient-sphere {
+        &.sphere-1 {
+          width: 150px;
+          height: 150px;
+        }
+
+        &.sphere-2 {
+          width: 100px;
+          height: 100px;
+        }
+
+        &.sphere-3 {
+          width: 80px;
+          height: 80px;
+        }
+      }
+    }
+
+    .main-content {
+      .view-toggle {
+        display: flex;
+        gap: 8px;
+
+        .toggle-btn {
+          flex: 1;
+          height: 40px;
+          border-radius: 8px;
+          font-size: 13px;
+
+          i {
+            font-size: 14px;
+          }
+        }
+      }
+
+      .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .attendance-section {
+        .attendance-card {
+          padding: 14px;
+          border-radius: 12px;
+
+          .card-header {
+            margin-bottom: 12px;
+
+            h6 {
+              font-size: 13px;
+            }
+          }
+        }
+      }
+
+      .team-section {
+        .team-member {
+          padding: 12px;
+          border-radius: 10px;
+
+          .member-avatar {
+            width: 36px;
+            height: 36px;
+
+            img {
+              width: 100%;
+              height: 100%;
+            }
+          }
+
+          .member-info {
+            .member-name {
+              font-size: 13px;
+            }
+
+            .member-role {
+              font-size: 11px;
+            }
+          }
+        }
+      }
+
+      .celebrations-section {
+        .celebration-item {
+          padding: 12px;
+          border-radius: 10px;
+
+          .celebration-avatar {
+            width: 40px;
+            height: 40px;
+          }
+        }
+      }
+    }
+  }
+
+  .loading-overlay {
+    .loading-spinner {
+      .spinner-circle {
+        width: 48px;
+        height: 48px;
+        border-width: 3px;
+      }
+
+      .spinner-text {
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+// ============================================
+// 13. LOGIN PAGE MOBILE
+// ============================================
+@media (max-width: $tablet) {
+  .login-page {
+    .row {
+      flex-direction: column;
+
+      .left-side {
+        display: none;
+      }
+
+      .login-form {
+        padding: 24px 20px;
+        width: 100%;
+
+        h2 {
+          font-size: 24px;
+          margin-bottom: 24px;
+        }
+
+        .form-group {
+          margin-bottom: 20px;
+
+          input {
+            height: 48px;
+            font-size: 16px;
+            border-radius: 10px;
+            padding: 0 16px;
+          }
+        }
+
+        button[type="submit"] {
+          height: 48px;
+          font-size: 16px;
+          border-radius: 10px;
+          width: 100%;
+        }
+
+        .password-wrapper {
+          input {
+            padding-right: 48px;
+          }
+
+          .password-toggle {
+            right: 16px;
+            width: 24px;
+            height: 24px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// 14. LEAVE CARDS MOBILE
+// ============================================
+@media (max-width: $tablet) {
+  .leave-card-modern {
+    padding: 16px;
+    border-radius: 12px;
+
+    .circular-progress {
+      width: 60px;
+      height: 60px;
+
+      .circle {
+        .value {
+          font-size: 16px;
+        }
+      }
+    }
+
+    .leave-info {
+      .total-used {
+        font-size: 11px;
+      }
+    }
+  }
+
+  .row {
+    .col-md-2 {
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
+  }
+}
+
+@media (max-width: $mobile-sm) {
+  .row {
+    .col-md-2 {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  }
+}
+
+// ============================================
+// 15. PAGINATION MOBILE
+// ============================================
+@media (max-width: $tablet) {
+  .ngx-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+    padding: 12px 0;
+
+    li {
+      a,
+      button {
+        padding: 8px 12px;
+        font-size: 13px;
+        border-radius: 6px;
+        min-width: 36px;
+        min-height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      &.current {
+        background: #072F5F;
+        color: white;
+        border-radius: 6px;
+      }
+    }
+  }
+}
+
+// ============================================
+// 16. TOAST MOBILE
+// ============================================
+@media (max-width: $tablet) {
+  .toast-container {
+    top: 70px;
+    right: 12px;
+    left: 12px;
+
+    .toast {
+      max-width: 100%;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 13px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+}
+
+// ============================================
+// 17. FLOATING ACTION BUTTON MOBILE
+// ============================================
+@media (max-width: $tablet) {
+  .fab-container {
+    bottom: 80px;
+    right: 16px;
+
+    .fab-button {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+      i {
+        font-size: 22px;
+      }
+    }
+
+    .fab-menu {
+      bottom: 64px;
+
+      .fab-item {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+
+        i {
+          font-size: 18px;
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// 18. CHART RESPONSIVE
+// ============================================
+@media (max-width: $tablet) {
+  .chart-container {
+    padding: 12px;
+
+    echarts,
+    .apexcharts-canvas {
+      width: 100% !important;
+    }
+  }
+
+  .work-hours-chart {
+    height: 200px !important;
+  }
+}
+
+// ============================================
+// 19. LOADING SPINNER MOBILE
+// ============================================
+@media (max-width: $tablet) {
+  .divSpinner {
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border-width: 4px;
+      margin-top: 6rem;
+    }
+  }
+}
+
+// ============================================
+// 20. SUMMARY CARDS MOBILE
+// ============================================
+@media (max-width: $tablet) {
+  .card-empalt {
+    .col-12 {
+      margin-bottom: 8px;
+
+      .card {
+        padding: 14px;
+        border-radius: 10px;
+
+        .tot {
+          font-size: 20px;
+          font-weight: 700;
+        }
+
+        .card_header {
+          font-size: 12px;
+          margin-top: 4px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $mobile-sm) {
+  .card-empalt {
+    .col-sm-6 {
+      margin-bottom: 8px;
+    }
+  }
+}
+
+// ============================================
+// 21. DROPDOWN MOBILE
+// ============================================
+@media (max-width: $tablet) {
+  .dropdown-menu {
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    padding: 8px;
+
+    .dropdown-item {
+      padding: 10px 12px;
+      font-size: 14px;
+      border-radius: 6px;
+
+      &:hover {
+        background: #f3f4f6;
+      }
+    }
+  }
+
+  .custom-dropdown {
+    &.status-dropdown,
+    &.leave-type-dropdown {
+      width: 200px;
+      max-height: 250px;
+      border-radius: 10px;
+      padding: 8px;
+
+      li {
+        padding: 10px 12px;
+        font-size: 13px;
+        border-radius: 6px;
+
+        &:hover {
+          background: #f3f4f6;
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// 22. STATUS PILLS MOBILE
+// ============================================
+@media (max-width: $tablet) {
+  .status-pill {
+    padding: 4px 10px;
+    font-size: 11px;
+    border-radius: 12px;
+    font-weight: 600;
+
+    &.applied {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    &.approved {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    &.rejected {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    &.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+  }
+}
+
+// ============================================
+// 23. ORG CHART MOBILE
+// ============================================
+@media (max-width: $tablet) {
+  .org-chart-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    .org-node {
+      min-width: 180px;
+      padding: 12px;
+      border-radius: 10px;
+
+      .org-name {
+        font-size: 13px;
+      }
+
+      .org-title {
+        font-size: 11px;
+      }
+    }
+  }
+}
+
+// ============================================
+// 24. ACCESS POLICY MOBILE
+// ============================================
+@media (max-width: $tablet) {
+  .access-policy-container {
+    .policy-card {
+      padding: 16px;
+      border-radius: 12px;
+
+      .policy-header {
+        .policy-title {
+          font-size: 14px;
+        }
+      }
+
+      .policy-body {
+        .policy-item {
+          padding: 10px;
+          border-radius: 8px;
+
+          .policy-label {
+            font-size: 12px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// 25. PAYROLL MOBILE
+// ============================================
+@media (max-width: $tablet) {
+  .payslip-container {
+    .payslip-card {
+      padding: 16px;
+      border-radius: 12px;
+
+      .payslip-header {
+        .employee-name {
+          font-size: 16px;
+        }
+
+        .employee-id {
+          font-size: 12px;
+        }
+      }
+
+      .payslip-body {
+        .earning-section,
+        .deduction-section {
+          .section-title {
+            font-size: 14px;
+          }
+
+          .item {
+            padding: 8px 0;
+
+            .label {
+              font-size: 12px;
+            }
+
+            .value {
+              font-size: 13px;
+              font-weight: 600;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// 26. VISITOR MANAGEMENT MOBILE
+// ============================================
+@media (max-width: $tablet) {
+  .visitor-container {
+    .visitor-card {
+      padding: 16px;
+      border-radius: 12px;
+
+      .visitor-avatar {
+        width: 48px;
+        height: 48px;
+      }
+
+      .visitor-info {
+        .visitor-name {
+          font-size: 14px;
+        }
+
+        .visitor-company {
+          font-size: 12px;
+        }
+      }
+
+      .visitor-status {
+        padding: 4px 10px;
+        font-size: 11px;
+        border-radius: 12px;
+      }
+    }
+  }
+}
+
+// ============================================
+// 27. PERFORMANCE PORTAL MOBILE
+// ============================================
+@media (max-width: $tablet) {
+  .performance-container {
+    .goal-card {
+      padding: 16px;
+      border-radius: 12px;
+
+      .goal-title {
+        font-size: 14px;
+      }
+
+      .goal-progress {
+        .progress-bar {
+          height: 8px;
+          border-radius: 4px;
+        }
+
+        .progress-text {
+          font-size: 12px;
+        }
+      }
+    }
+
+    .review-card {
+      padding: 16px;
+      border-radius: 12px;
+
+      .review-header {
+        .review-title {
+          font-size: 14px;
+        }
+
+        .review-date {
+          font-size: 12px;
+        }
+      }
+
+      .review-body {
+        .rating {
+          font-size: 18px;
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// 28. SETTINGS MOBILE
+// ============================================
+@media (max-width: $tablet) {
+  .settings-container {
+    .settings-card {
+      padding: 16px;
+      border-radius: 12px;
+
+      .settings-title {
+        font-size: 14px;
+      }
+
+      .settings-item {
+        padding: 12px;
+        border-radius: 8px;
+
+        .item-label {
+          font-size: 13px;
+        }
+
+        .item-value {
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// 29. PRINT STYLES
+// ============================================
+@media print {
+  .mobile-bottom-nav,
+  .pcoded-header,
+  .pcoded-navbar,
+  .fab-container {
+    display: none !important;
+  }
+
+  .pcoded-main-container {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .page-wrapper {
+    padding: 0 !important;
+  }
+}
+
+// ============================================
+// 30. ACCESSIBILITY IMPROVEMENTS
+// ============================================
+@media (max-width: $tablet) {
+  // Larger touch targets
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+  }
+
+  // Better focus states
+  *:focus {
+    outline: 2px solid #072F5F;
+    outline-offset: 2px;
+  }
+
+  // Better contrast
+  .text-muted {
+    color: #6b7280 !important;
+  }
+
+  // Reduce animations for users who prefer reduced motion
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

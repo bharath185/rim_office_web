@@ -1,0 +1,540 @@
+<app-toast-message></app-toast-message>
+<div class="dis-fl-end">
+    <div class="heading-dash-sub">
+        <span>Team's Leave</span>
+        <ol class="breadcrumb fade-left">
+            <li class="breadcrumb-item active dis-fl" aria-current="page">
+                <span class="breadC">Leaves</span>
+                <span class="breadC" [routerLink]="['/leave']" style="color:rgb(127, 186, 235);cursor: pointer"> <i
+                        class="feather icon-chevron-right"></i>&nbsp;Leave Card</span>
+                <span class="breadC"><i class="feather icon-chevron-right"></i></span><span
+                    class="breadC col-act">Team's Leave</span>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="divSpinner" *ngIf="isSpinner">
+    <div class="spinner"></div>
+</div>
+
+<!-- //**************************This is for HR*************************// -->
+<ng-container *ngIf="employeeDetails[0].Authorised == true && employeeDetails[0].DeptName === ('Human Resource')">
+    <div class="row align-items-stretch">
+        <div class="col-md-2" *ngFor="let card of statCards">
+            <div class="card stat-card shadow-sm h-100" (click)="onStatCardClick(card.title)">
+                <div class="card-body d-flex align-items-center" style="padding: 0px;">
+                    <div class="shape" [ngStyle]="{'background': card.bgGradient}">
+                        <i [ngClass]="card.icon.split(' ')" style="color:white; font-size:18px"></i>
+                    </div>
+                    <div class="ms-1">
+                        <h6 class="mb-1">{{ card.title }}</h6>
+                        <h5 class="fw-bold" style="font-size:18px; position: relative;">
+                            <span class="blinking-circle-wrapper" [ngClass]="getCircleClass(card.title)">
+                                <span class="blinking-circle"></span>
+                                <span class="count-text">{{ card.value }}</span>
+                            </span>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Small Calendar Card aligned at the end -->
+        <div class="col-auto ms-auto">
+            <div class="small-calendar-card shadow-sm" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                style="width: 40px; height: 40px; background: white; border-radius: 2px; display: flex; align-items: center; justify-content: center; cursor: pointer;"
+                placement="left" ngbTooltip="Team's Calendar">
+                <i class="fas fa-calendar-alt" style="color: #072F5F; font-size: 20px;"></i>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="card mt-2 p-2">
+        <div class="row g-2 align-items-center flex-wrap">
+
+            <ul class="nav custom-clean-tabs mb-4 w-100 align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link" [class.active]="!showAllFiltersHR" (click)="showAllFiltersHR = false">
+                        <i class="fas fa-hourglass-half me-2"></i> Pending
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" [class.active]="showAllFiltersHR" (click)="showAllFiltersHR = true">
+                        <i class="fas fa-list me-2"></i> All
+                    </a>
+                </li>
+
+                <li class="nav-item ms-auto d-flex gap-2" *ngIf="!showAllFiltersHR">
+
+                    <input type="text" class="form-control rad-50" #inputValuePending
+                        (keyup)="applyFilterPending($event)" placeholder="Search" id="serachInputId"
+                        style="max-width: 200px;" />
+
+                    <button class="btn btn-sm btn-outline-success custom-button" data-bs-toggle="modal"
+                        data-bs-target="#approveModal">
+                        <i class="fas fa-check"></i> Approve
+                    </button>
+
+                    <button class="btn btn-sm btn-outline-danger custom-button" data-bs-toggle="modal"
+                        data-bs-target="#rejectModal"> 
+                        <i class="fas fa-times me-1"></i> Reject
+                    </button>
+
+
+                </li>
+
+                <div class="export-container col-auto ms-auto d-flex align-items-center gap-2" *ngIf="showAllFiltersHR"
+                    style="position: relative;">
+
+                    <input type="text" class="form-control rad-50" #inputValueAll (keyup)="applyFilterAll($event)"
+                        placeholder="Search" id="serachInputId" style="max-width: 200px;" />
+
+                    <button class="export-button" (click)="toggleDropdownExport()">
+                        <i class="fas fa-download me-1"></i>Export
+                        <i class="fas fa-chevron-down ms-1"></i>
+                    </button>
+
+                    <div class="dropdown-content" *ngIf="dropdownVisible"
+                        style="position: absolute; right: 0; top: 100%; z-index: 10;">
+                        <div class="dropdown-item" (click)="exportFile('pdf')">
+                            <i class="fas fa-file-pdf me-1"></i>PDF
+                        </div>
+                        <div class="dropdown-item" (click)="exportFile('excel')">
+                            <i class="fas fa-file-excel me-1"></i>Excel
+                        </div>
+                    </div>
+
+                </div>
+
+            </ul>
+
+        </div>
+
+        <div class="col-md-12 d-flex flex-column pending-table-section mt-2" *ngIf="!showAllFiltersHR">
+            <div class="table-responsive table-wrapper flex-grow-1" style="overflow-y: auto;">
+                <table class="table table-hover align-middle">
+                    <thead class="sticky-header table-light">
+                        <tr class="inner-shadow">
+                            <th class="text-center">
+                                <input type="checkbox" [(ngModel)]="selectAllHR" (change)="toggleAllSelectionHR()" />
+                            </th>
+                            <th class="">ID</th>
+                            <th class="">Name</th>
+                            <th class="">Leave Type</th>
+                            <th class="">Start</th>
+                            <th class="">End</th>
+                            <th class="">Days Off</th>
+                            <th class="">Approver</th>
+                            <th class="">Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody *ngIf="!isTableDataAppliedHR && rowsAppliedHR.length > 0">
+                        <tr
+                            *ngFor="let row of rowsAppliedHR | paginate: { id: 'appliedHR1', itemsPerPage: pageSizeAppliedHR1, currentPage: pageAppliedHR1 }">
+                            <td class="">
+                                <input type="checkbox" [(ngModel)]="row.selected" (change)="updateSelection()" />
+                            </td>
+                            <td class="">{{ row.EmpCode }}</td>
+                            <td class="">{{ row.EmpName }}</td>
+                            <td class="">{{ row.LeaveType }}</td>
+                            <td class="">{{ row.StartDate }}</td>
+                            <td class="">{{ row.EndDate }}</td>
+                            <td class="">{{ row.Duration }}</td>
+                            <td class="">{{ row.Approver }}</td>
+                            <td class="">
+                                <span class="status-pill" [ngClass]="{
+                                                 'status-applied': row.Status === 'APPLIED',
+                                            }">
+                                    {{ row.Status }}
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div *ngIf="isTableDataAppliedHR == true" class="text-center errorMassage">
+                    <span class="text-danger">{{errorMessageAppliedHR}}</span>
+                </div>
+
+                <div class="pagination-controls-wrapper">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+                            <select id="pageSizeSelect" [(ngModel)]="pageSizeAppliedHR1"
+                                class="form-control form-control-sm">
+                                <option *ngFor="let size of pageSizesAppliedHR1" [value]="size">{{ size }}</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                        </div>
+                        <div class="col-auto">
+                            <pagination-controls id="appliedHR1"
+                                (pageChange)="pageAppliedHR1 = $event"></pagination-controls>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12 d-flex flex-column mt-2" *ngIf="showAllFiltersHR">
+            <div class="table-responsive table-wrapper flex-grow-1" style="overflow-y: auto;">
+                <table class="table table-hover align-middle">
+                    <thead class="sticky-header table-light">
+                        <tr class="inner-shadow">
+                            <th class="">ID</th>
+                            <th class="">Name</th>
+                            <th class="">Leave Type</th>
+                            <th class="position-relative " style="white-space: nowrap; min-width: 130px;">
+                                Start
+                                <span (click)="toggleStartDateInput()" style="cursor: pointer;"
+                                    class="ms-1">&#x25BC;</span>
+                                <div *ngIf="showStartDateInput" class="date-dropdown-container"
+                                    (click)="$event.stopPropagation()">
+                                    <input type="date" id="filterStartDateId" class="form-control form-control-sm"
+                                        [(ngModel)]="fromDate" (change)="filterAllListHR()" />
+                                    <button class="btn btn-sm btn-link mt-1 p-0"
+                                        (click)="clearStartDateFilter()">Clear</button>
+                                </div>
+                            </th>
+
+
+                            <th class="position-relative " style="white-space: nowrap; min-width: 130px;">
+                                End
+                                <span (click)="toggleEndDateInput()" style="cursor: pointer;"
+                                    class="ms-1">&#x25BC;</span>
+                                <div *ngIf="showEndDateInput" class="date-dropdown-container"
+                                    (click)="$event.stopPropagation()">
+                                    <input type="date" id="filterEndDateId" class="form-control form-control-sm"
+                                        [(ngModel)]="toDate" (change)="filterAllListHR()" />
+                                    <button class="btn btn-sm btn-link mt-1 p-0"
+                                        (click)="clearEndDateFilter()">Clear</button>
+                                </div>
+                            </th>
+
+
+                            <th class="">Days Off</th>
+                            <th class="">Approver</th>
+                            <th class="position-relative " style="white-space: nowrap;">
+                                Status
+                                <span (click)="toggleStatusDropdown()" style="cursor: pointer;"
+                                    class="ms-1">&#x25BC;</span>
+                                <ul *ngIf="showStatusDropdown" class="custom-dropdown status-dropdown"
+                                    (click)="$event.stopPropagation()">
+                                    <li (click)="setFilterStatus('')" class="dropdown-item">All</li>
+                                    <li *ngFor="let status of statusOptions" (click)="setFilterStatus(status)"
+                                        class="dropdown-item">
+                                        {{ status }}
+                                    </li>
+                                </ul>
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody *ngIf="!isTableDataAllListHR && rowsAllListHR.length > 0">
+                        <tr
+                            *ngFor="let row of rowsAllListHR | paginate: { id: 'allListHR', itemsPerPage: pageSizeAllListHR, currentPage: pageAllListHR }">
+                            <td class="">{{ row.EmpCode }}</td>
+                            <td class="">{{ row.EmpName }}</td>
+                            <td class="">{{ row.LeaveType }}</td>
+                            <td class="">{{ row.StartDate }}</td>
+                            <td class="">{{ row.EndDate }}</td>
+                            <td class="">{{ row.Duration }}</td>
+                            <td class="">{{ row.Approver }}</td>
+
+                            <td>
+                                <span class="status-pill" [ngClass]="{
+          'status-approved': row.Status?.toUpperCase()?.includes('APPROVED'),
+          'status-rejected': row.Status?.toUpperCase()?.includes('REJECTED'),
+          'status-cancelled': row.Status?.toUpperCase() === 'CANCELLED',
+          'status-withdraw': row.Status?.toUpperCase() === 'WITHDRAWN'
+        }">
+                                    {{
+                                    row.Status?.toUpperCase()?.includes('APPROVED') ? 'APPROVED' :
+                                    row.Status?.toUpperCase()?.includes('REJECTED') ? 'REJECTED' :
+                                    row.Status?.toUpperCase()
+                                    }}
+
+                                </span>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                    <tbody *ngIf="isTableDataAllListHR === true || rowsAllListHR.length === 0">
+                        <tr>
+                            <td colspan="8" class="text-center text-danger py-4">
+                                {{ errorMessageAllListHR || 'No data found.' }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+            <div class="pagination-controls-wrapper">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+                        <select id="pageSizeSelect" [(ngModel)]="pageSizeAllListHR"
+                            class="form-control form-control-sm">
+                            <option *ngFor="let size of pageSizesAllListHR" [value]="size">{{ size }}</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                    </div>
+                    <div class="col-auto">
+                        <pagination-controls id="allListHR" (pageChange)="pageAllListHR = $event"></pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- this is calendar modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+        data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered modal-confirm modal-xl custom-modal-width">
+            <div class="modal-content">
+                <div class="text-end p-2">
+                    <button type="button" class="btn-close" (click)="onModalClose()" aria-label="Close"
+                        style="background-color: rgb(228, 208, 208);" data-bs-dismiss="modal">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 col-md-7 mb-md-0" style="overflow-x: auto;font-size: 12px;">
+                            <div class="d-flex align-items-center justify-content-center gap-3 mb-3">
+                                <div class="d-flex align-items-center justify-content-center gap-3 mb-2">
+                                    <div class="d-flex align-items-center gap-1">
+                                        <span class="legend-dot legend-dot-gh"></span> General Holiday
+                                    </div>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <span class="legend-dot legend-dot-rh"></span> RH Holiday
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="calendar-container">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <button class="btn-sm" (click)="prevMonth()" style="border: none;">&lt;</button>
+                                    <h5 class="mb-0">{{ currentDate | date: 'MMMM yyyy' }}</h5>
+                                    <button class="btn-sm" (click)="nextMonth()" style="border: none;">&gt;</button>
+                                </div>
+
+                                <table class="table table-bordered text-center">
+                                    <thead class="sticky-header table-light">
+                                        <tr>
+                                            <th *ngFor="let day of weekDays" class="day-header">{{ day }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let week of weeks">
+                                            <td *ngFor="let day of week" [class.text-muted]="day === ''"
+                                                [class.marked-date]="day && combinedLeaveDates.has(formatCalendarDate(getDateObject(day)))"
+                                                [class.holiday-cell]="day && holidayDates.has(formatCalendarDate(getDateObject(day)))"
+                                                (click)="onCalendarDateClick(day)" [class.today-badge]="isToday(day)">
+                                                <div>
+                                                    {{ day }}
+                                                </div>
+                                                <div *ngIf="day && combinedLeaveDates.has(formatCalendarDate(getDateObject(day)))"
+                                                    class="leave-count-container">
+                                                    <ng-container
+                                                        *ngIf="getLeaveStatusCountForDate(formatCalendarDate(getDateObject(day))) as counts">
+
+                                                        <span *ngIf="counts.approved > 0" class="dot-label">
+                                                            <span class="status-dot approved-dot"></span>
+                                                            {{ counts.approved }}
+                                                        </span>
+
+                                                        <span *ngIf="counts.applied > 0" class="dot-label">
+                                                            <span class="status-dot applied-dot"></span>
+                                                            {{ counts.applied }}
+                                                        </span>
+
+                                                        <div *ngIf="counts.total > 0" class="total-label me-1">
+                                                            Total&nbsp;:&nbsp;{{ counts.total }}
+                                                        </div>
+
+                                                    </ng-container>
+
+                                                </div>
+
+                                                <div *ngIf="holidayDates.has(formatCalendarDate(getDateObject(day)))"
+                                                    [ngClass]="{
+                                                'event': true,
+                                                'event-general': holidayDetailsMap.get(formatCalendarDate(getDateObject(day)))?.type === 'General Holidays',
+                                                'event-rh': holidayDetailsMap.get(formatCalendarDate(getDateObject(day)))?.type === 'RH Holidays',
+                                                'event-other': holidayDetailsMap.get(formatCalendarDate(getDateObject(day)))?.type !== 'General Holidays' &&
+                                                               holidayDetailsMap.get(formatCalendarDate(getDateObject(day)))?.type !== 'RH Holidays'
+                                            }">
+                                                    <div class="event-title">
+                                                        {{
+                                                        holidayDetailsMap.get(formatCalendarDate(getDateObject(day)))?.title
+                                                        }}
+                                                    </div>
+                                                    <!-- <div class="event-type">
+                                                        {{
+                                                        holidayDetailsMap.get(formatCalendarDate(getDateObject(day)))?.type
+                                                        }}
+                                                    </div> -->
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5" style="overflow-x: auto;font-size: 12px">
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <div class="d-flex align-items-center gap-1">
+                                    <span class="legend-dot legend-dot-applied"></span>Applied
+                                </div>
+                                <div class="d-flex align-items-center gap-1">
+                                    <span class="legend-dot legend-dot-approved"></span>Approved
+                                </div>
+                                <div class="d-flex align-items-center gap-1">
+                                    <span class="legend-dot legend-dot-draft"></span>Draft
+                                </div>
+                                <div class="d-flex align-items-center gap-1">
+                                    <span class="legend-dot legend-dot-rejected"></span>Rejected
+                                </div>
+                                <div class="d-flex align-items-center gap-1">
+                                    <span class="legend-dot legend-dot-withdrawn"></span>Withdrawn
+                                </div>
+                                <div class="d-flex align-items-center gap-1">
+                                    <span class="legend-dot legend-dot-cancelled"></span>Cancelled
+                                </div>
+                            </div>
+
+                            <div class="table-wrapper">
+                                <table class="table table-hover " *ngIf="selectedDate">
+                                    <thead class="sticky-header table-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Leave Type</th>
+                                            <th>Start</th>
+                                            <th>End</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let leave of selectedDateLeaves">
+                                            <td>{{ leave.EmpCode }}</td>
+                                            <td>{{ leave.EmpName }}</td>
+                                            <td>{{ leave.LeaveType }}</td>
+                                            <td>{{ leave.StartDate }}</td>
+                                            <td>{{ leave.EndDate }}</td>
+                                            <td class="text-center">
+                                                <span class="status-pill" [ngClass]="{
+          'status-approved': leave.Status?.toUpperCase()?.includes('APPROVED'),
+          'status-rejected': leave.Status?.toUpperCase()?.includes('REJECTED'),
+          'status-cancelled': leave.Status?.toUpperCase() === 'CANCELLED',
+          'status-applied': leave.Status?.toUpperCase() === 'APPLIED',
+          'status-withdraw': leave.Status?.toUpperCase() === 'WITHDRAWN'
+        }">
+
+                                                    {{
+                                                    leave.Status?.toUpperCase()?.includes('APPROVED') ? 'APPROVED' :
+                                                    leave.Status?.toUpperCase()?.includes('REJECTED') ? 'REJECTED' :
+                                                    leave.Status?.toUpperCase()
+                                                    }}
+
+                                                </span>
+                                            </td>
+
+                                        </tr>
+                                        <tr *ngIf="selectedDateLeaves.length === 0">
+                                            <td colspan="6" class="text-center">No leaves found for this date.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- this is end of calendar modal -->
+</ng-container>
+
+<!-- this is Approve modal -->
+<div class="modal fade" id="approveModal" tabindex="-1" aria-labelledby="approveModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-confirm">
+        <div class="modal-content">
+            <div class="text-end">
+                <button type="reset" class="btn-close " data-bs-dismiss="modal" aria-label="Close" #closeModalApprove
+                    style="background-color: rgb(228, 208, 208);" (click)="resetRemarksApprove()"></button>
+            </div>
+            <div class="modal-header flex-column py-0">
+                <div class="icon-box-approve" *ngIf="!isRecordDeleted">
+                    <i class="fas fa-check-circle fa-md text-success"></i>
+                </div>
+                <div class="modal-wrapper" *ngIf="isRecordDeleted"> <svg class="checkmark"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                </div>
+                <h4 class="modal-title w-100">Are you sure?</h4>
+            </div>
+            <div class="modal-body py-0">
+                <p>Do you really want to <b>Approve</b> these records?This process cannot be undone.</p>
+                <div class="mb-3 px-3">
+                    <label for="remarks" class="form-label">Remarks</label>
+                    <textarea type="text" id="remarks" class="form-control" [(ngModel)]="approvalRemarks"
+                        name="approvalRemarks" placeholder="Enter remarks for approval"></textarea>
+                </div>
+
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetRemarksApprove()">No</button>
+                <button type="submit" class="btn btn-danger" (click)="approveSelectedByHR()">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- this is end of Approve modal -->
+
+<!-- this is Reject modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-confirm">
+        <div class="modal-content">
+            <div class="text-end">
+                <button type="reset" class="btn-close " data-bs-dismiss="modal" aria-label="Close" #closeModalReject
+                    style="background-color: rgb(228, 208, 208);" (click)="resetRemarksReject()"></button>
+            </div>
+            <div class="modal-header flex-column py-0">
+                <div class="icon-box" *ngIf="!isRecordDeleted">
+                    <i class="fas fa-times checkmark_check"></i>
+                </div>
+                <div class="modal-wrapper" *ngIf="isRecordDeleted"> <svg class="checkmark"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                </div>
+                <h4 class="modal-title w-100">Are you sure?</h4>
+            </div>
+            <div class="modal-body py-0">
+                <p>Do you really want to <strong>Reject</strong> these records?This process cannot be undone.</p>
+                <div class="mb-3 px-3">
+                    <label for="remarks" class="form-label">Remarks</label>
+                    <textarea type="text" id="remarks" class="form-control" [(ngModel)]="rejectRemarks"
+                        name="rejectRemarks" placeholder="Enter remarks for Reject"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetRemarksReject()">No</button>
+                <button type="submit" class="btn btn-danger" (click)="rejectSelectedByHR()">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- this is end of Reject modal -->

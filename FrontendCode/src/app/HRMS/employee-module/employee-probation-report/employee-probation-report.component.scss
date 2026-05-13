@@ -1,0 +1,116 @@
+::ng-deep.pcoded-content {
+  position: relative;
+  display: block;
+  padding: 0px !important;
+  padding-left: 25px !important;
+  padding-right: 25px !important;
+}
+/* Title */
+.table-title {
+  margin-bottom: 15px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tab {
+  padding: 10px 18px;
+  border: none;
+  background: #eef1f6;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: 500;
+}
+
+.tab.active {
+  background: #4a90e2;
+  color: white;
+}
+
+/* Card */
+.table-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+}
+
+/* Table */
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.styled-table th {
+  text-align: left;
+  padding: 12px;
+  background: #f8fafc;
+  color: #555;
+}
+
+.styled-table td {
+  padding: 12px;
+  border-top: 1px solid #eee;
+}
+
+/* Hover */
+.styled-table tbody tr:hover {
+  background: #f4f8ff;
+}
+
+/* Badges */
+.badge {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge.pending {
+  background: #fff4e5;
+  color: #ff9800;
+}
+
+.badge.completed {
+  background: #e6f7ee;
+  color: #28a745;
+}
+
+/* Empty */
+.empty-state {
+  text-align: center;
+  color: #999;
+  padding: 20px;
+}
+
+/* Header bar */
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* Confirm Button */
+.confirm-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.confirm-btn:hover {
+  background: #218838;
+}

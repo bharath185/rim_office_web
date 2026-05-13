@@ -1,0 +1,187 @@
+
+::ng-deep.pcoded-content {
+    position: relative;
+    display: block;
+    padding: 0px !important;
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+}
+
+.pcoded-header {
+    .card {
+        margin: 0px !important;
+    }
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 7px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+
+}
+
+th {
+    background-color: #072f5f;
+    color: #ffffff;
+
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.table-wrapper {
+    max-height: 600px !important;
+    overflow-y: auto;
+    position: relative;
+  }
+
+::ng-deep.ngx-pagination .current {
+    padding: .1875rem .625rem;
+    background-color: #072f5f !important;
+    color: #fefefe;
+    cursor: default;
+}
+::ng-deep.ngx-pagination a, .ngx-pagination button {
+    color: #0a0a0a;
+    display: block;
+    padding: .1875rem .525rem;
+    border-radius: 0;
+}
+
+
+::ng-deep input[type="text"]::-webkit-clear-button,
+input[type="text"]::-webkit-inner-spin-button,
+input[type="text"]::-webkit-outer-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+}
+
+/* For Mozilla Firefox */
+::ng-deep input[type="text"]::-moz-clear-button {
+  display: none;
+}
+
+/* For Internet Explorer and Edge */
+::ng-deep input[type="text"]::-ms-clear {
+  display: none;
+}
+.text-muted{
+  font-size: 12px;
+}
+
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.modal-header {
+  position: relative;
+  background-color: #072f5f;
+  h1{
+    color: white;
+  }
+  button{
+    color: white;
+  }
+}
+
+.modal-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.btn-close {
+  position: absolute;
+  left: 92%;
+}
+
+.modal-header{
+  padding: 2rem !important;
+}
+
+// ************This is for Floating********
+.form-group {
+  position: relative;
+}
+
+.floating-label-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.floating-input {
+  border-radius: 0.25rem;
+  padding: 1rem 0rem 0rem 0.3rem;
+  font-size: 0.875rem;
+  width: 100%;
+  line-height: 2;
+
+}
+
+.floating-label {
+  position: absolute;
+  top: 23%;
+  left: 1.2rem;
+  transform: translateY(-50%);
+  color: #999;
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.floating-input:focus+.floating-label,
+.floating-label.floating {
+  font-size: 0.75rem;
+  color: #020d1b;
+}
+
+.floating-input::placeholder {
+  color: transparent;
+}
+
+.floating-input:focus {
+  outline: none !important;
+  box-shadow: none;
+  border-color: initial;
+}
+
+.floating-input:focus-visible {
+  outline: none !important;
+  box-shadow: none;
+  border-color: initial;
+}
+
+// ************This is for Floating********
+
+/* toggle-button.component.css */
+.toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 2px 3px;
+  border-radius: 3px;
+  background-color: #e9ecef;
+  transition: background-color 0.3s;
+}
+
+.toggle-btn.active {
+  background-color: #072f5f; /* Color for Active */
+  color: white;
+}
+
+.toggle-btn.inactive {
+  background-color: gray; /* Color for Inactive */
+  color: white;
+}
+
+.toggle-btn span {
+  margin-right: 3px;
+}
+
+/* toggle-button.component.css */

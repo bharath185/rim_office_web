@@ -1,0 +1,807 @@
+::ng-deep .pcoded-content {
+  position: relative;
+  display: block;
+  padding: 0px !important;
+  padding-left: 25px !important;
+  padding-right: 25px !important;
+  padding-top: 5px !important;
+}
+
+@media only screen and (max-width: 991px) {
+  ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+    margin-left: 0px;
+    margin-top: 57px !important;
+  }
+}
+
+.btn-sm-custom {
+  padding: 2px 6px;
+  font-size: 0.75rem;
+  height: auto;
+  border-radius: 2px;
+}
+
+// This is for leave Cards
+.leave-card-modern {
+  background: #fff;
+  border-radius: 5px;
+  padding: 10px;
+  text-align: center;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.leave-card-modern:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.leave-type-text {
+  font-size: 16px;
+  color: #1f1f1f;
+  line-height: 1.2;
+}
+
+.remaining-label {
+  font-size: 14px;
+}
+
+/* Circular progress base */
+.circular-progress {
+  --size: 50px;
+  --progress: 75;
+  --track-color: #e9ecef;
+  --progress-color: #4fb3ff;
+
+  width: var(--size);
+  height: var(--size);
+  max-width: 100%;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: conic-gradient(var(--progress-color) calc(var(--progress) * 1%),
+      var(--track-color) 0);
+  margin-left: 8px;
+  flex-shrink: 0;
+  position: relative; // Add this to avoid layout issues
+}
+
+
+.circular-progress .circle {
+  background: #fff;
+  border-radius: 50%;
+  width: calc(var(--size) - 8px);
+  height: calc(var(--size) - 8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.circular-progress .value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #212529;
+}
+
+.circular-progress .label {
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.total-used {
+  font-size: 12px;
+}
+
+.leave-info .leave-type {
+  font-size: 16px;
+  color: #1f1f1f;
+}
+
+.leave-info .text-muted {
+  color: #6c757d !important;
+  font-size: 13px;
+}
+
+@media (max-width: 576px) {
+  .circular-progress {
+    --size: 40px;
+    margin-left: 4px;
+  }
+
+  .circular-progress .value {
+    font-size: 14px;
+  }
+
+  .leave-type-text {
+    font-size: 14px;
+  }
+
+  .total-used {
+    font-size: 11px;
+  }
+
+  .remaining-label {
+    font-size: 12px;
+  }
+
+  .leave-info .leave-type {
+    font-size: 14px;
+  }
+}
+
+// This is for leave Cards
+
+// this is for table things
+.card {
+  border: none !important;
+}
+
+.table-wrapper {
+  max-height: 450px !important;
+  min-height: 200px;
+  overflow-y: auto;
+  position: relative;
+  overflow-x: auto !important;
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 2px 0;
+  width: 80px;
+  text-align: center;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 500;
+  color: white;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.status-applied {
+  background-color: #0d6efd;
+}
+
+.status-cancelled {
+  background-color: #6c757d;
+}
+
+.status-approved-hr {
+  background-color: #198754;
+}
+
+.status-withdraw {
+  background-color: #8b5e3c;
+  color: #fff;
+}
+
+.status-rejected-mgr {
+  background-color: #f0270d;
+}
+
+.status-draft {
+  background-color: rgb(189, 170, 134)
+}
+
+.disabled-icon {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed !important;
+}
+
+.action-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+  font-size: 14px;
+  margin: 0 4px;
+  cursor: pointer;
+}
+
+/* Blue for Edit */
+.action-edit {
+  background-color: #cce5ff;
+  color: #004085;
+}
+
+
+.action-delete {
+  background-color: #f8d7da;
+  color: #842029;
+}
+
+.action-cancel {
+  background-color: #f8d7da;
+  color: #842029;
+}
+
+.action-withdraw {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.table-wrapper table,
+.table-wrapper table th,
+.table-wrapper table td {
+  font-weight: unset;
+}
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  z-index: 1000;
+}
+
+.table thead th {
+  padding: 10px 10px !important;
+}
+
+.table tbody td {
+  padding: 4px 10px !important;
+}
+
+// this is for table things
+
+
+// this is for export dropdown.
+.export-container {
+  position: relative;
+  display: inline-block;
+}
+
+.export-button {
+  background-color: #ffffff;
+  color: #072f5f;
+  border: 1px solid #072f5f;
+  font-size: 14px;
+  padding: 5px 6px;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 5px;
+}
+
+.export-button,
+.btn {
+  height: 30px;
+}
+
+.export-button:hover {
+  background-color: #e6f0ff;
+  border-color: #0056b3;
+}
+
+.export-button i {
+  margin-left: 2px;
+}
+
+.dropdown-item {
+  padding: 10px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s;
+}
+
+.dropdown-item i {
+  margin-right: 5px;
+}
+
+.dropdown-item:hover {
+  background-color: #072f5f;
+  color: white;
+}
+
+.dropdown-content {
+  position: absolute;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin-top: 5px;
+  z-index: 9999; // << important!
+  width: 100px;
+}
+
+// this is for export dropdown
+
+
+// this is for th leave type dropdown
+.leave-type-dropdown {
+  position: absolute;
+  z-index: 9999;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  list-style: none;
+  padding: 4px 0;
+  margin: 4px 0 0;
+  width: max-content;
+  min-width: 150px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  /* Higher than table and scroll */
+}
+
+.leave-type-dropdown .dropdown-item {
+  padding: 4px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.leave-type-dropdown .dropdown-item:hover {
+  background-color: #f1f1f1;
+}
+
+// this is for th leave type dropdown
+
+// this is for th status dropdown
+.custom-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  list-style: none;
+  padding: 4px 0;
+  margin: 4px 0 0;
+  width: max-content;
+  min-width: 150px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+}
+
+.custom-dropdown .dropdown-item {
+  padding: 4px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.custom-dropdown .dropdown-item:hover {
+  background-color: #f1f1f1;
+}
+
+// this is for th status dropdown
+
+
+/* Right Modal Slide-In */
+.modal.fade .modal-end {
+  position: fixed;
+  z-index: 1055;
+  top: 0;
+  right: 0;
+  margin: 0;
+  width: 100%;
+  transform: translate3d(100%, 0, 0);
+  transition: transform .3s cubic-bezier(.25, .8, .25, 1);
+}
+
+.modal.fade.show .modal-end {
+  transform: translate3d(0, 0, 0);
+}
+
+.modal-content,
+.modal-footer,
+.modal-header {
+  border: none;
+}
+
+.modal-body {
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+}
+
+/* Right Modal Slide-In */
+
+// ************this is for custome date*******
+.custom-date-input {
+  position: relative;
+}
+
+.custom-date-input input {
+  border-radius: 4px;
+  padding: 3px 5px;
+  width: 100%;
+  outline: none;
+  font-size: 11px;
+  padding-top: 16px;
+  line-height: 1.9;
+}
+
+.custom-date-input input::placeholder {
+  font-size: 5px;
+  color: #aaa;
+}
+
+.custom-date-input label {
+  position: absolute;
+  color: #888;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.custom-date-input input:focus+label,
+.custom-date-input input:not(:placeholder-shown)+label {
+  top: 1px;
+  left: 20px;
+  font-size: 12px;
+}
+// ************this is for custome date*******
+
+
+
+
+//this is for upload file
+.upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.upload-box:hover {
+  background: #eef0ff;
+}
+
+.upload-icon {
+  font-size: 20px;
+  color: #6c63ff;
+}
+
+.file-list {
+  width: 150px;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f1f3f5;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.file-item i {
+  font-size: 14px;
+  color: #6c63ff;
+}
+
+.delete-icon {
+  cursor: pointer;
+  color: #dc3545;
+}
+
+.delete-icon:hover {
+  color: #a71d2a;
+}
+
+.preview-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+}
+
+.pdf-preview .pdf-name {
+  color: #6c63ff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.pdf-preview .pdf-name:hover {
+  color: #4838d1;
+}
+
+.file-preview {
+  margin-bottom: 15px;
+}
+
+.upload-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 25px;
+  background: #f1f3f5;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+  font-size: 14px;
+}
+
+.upload-box:hover {
+  background: #eef0ff;
+} 
+
+.upload-icon {
+  font-size: 16px;
+  color: #6c63ff;
+}
+
+//this is for upload file
+
+// this is for calendar purpose
+.calendar-container {
+  width: 100%;
+}
+
+.calendar-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.calendar-table th,
+.calendar-table td {
+  width: 14.28%;
+  vertical-align: top;
+  padding: 0;
+}
+
+.applied-leave {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.leave-type-sick {
+  background-color: #f3c1c1;
+}
+
+.leave-type-casual {
+  background-color: #c1e2f3;
+}
+
+.leave-type-earned {
+  background-color: #d1f3c1;
+}
+
+.leave-type-medical {
+  background-color: #f3e6c1;
+}
+
+.leave-type-rh {
+  background-color: #e0c1f3;
+}
+
+.leave-type-co {
+  background-color: #f3c1ec;
+}
+
+.calendar-modal {
+  max-width: 1000px; // or 1140px for xl-style width
+  width: 100%;
+}
+
+#calendarModal .modal-content {
+  width: 100%;
+}
+
+#calendarModal .modal-body {
+  overflow-x: auto;
+  max-height: 90vh;
+}
+
+.calendar-table {
+  table-layout: fixed;
+}
+
+.calendar-table th,
+.calendar-table td {
+  width: 14.28%; // evenly divide 100% over 7 days
+  padding: 0;
+}
+
+.day-header {
+  background-color: #cce5ff;
+  color: #004085;
+  font-weight: 600;
+}
+
+.day-cell {
+  position: relative;
+  padding: 4px;
+  height: 60px;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.day-number {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.leave-label {
+  font-size: 11px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  color: black;
+  font-weight: 500;
+  background-color: aliceblue;
+}
+
+@media (max-width: 768px) {
+
+  .custom-modal-width {
+    width: 100% !important;
+  }
+
+  .calendar-table th,
+  .calendar-table td {
+    font-size: 12px;
+  }
+
+  .day-cell {
+    height: 50px;
+    font-size: 12px;
+    padding: 4px;
+  }
+
+  .calendar-container {
+    overflow-x: auto;
+  }
+}
+
+.holiday-cell {
+  background-color: #fef5e7 !important;
+  color: #7e5109 !important;
+  font-weight: normal;
+  font-size: 11px;
+  padding: 4px;
+}
+
+.event {
+  background: #e6f0ff;
+  border-left: 3px solid #0d6efd;
+  padding: 4px 6px;
+  border-radius: 3px;
+  white-space: normal;
+  /* Change from nowrap */
+  overflow: visible;
+  /* Change from hidden */
+  text-overflow: clip;
+  /* Change from ellipsis */
+  font-size: 12px;
+  line-height: 1;
+  max-height: 3em;
+  /* Optional: limits height for neatness */
+}
+
+.event-general {
+  background: #ffe6e6;
+  border-left: 3px solid red;
+  color: red;
+}
+
+.event-rh {
+  background: #e6f0ff;
+  border-left: 3px solid #007bff;
+  color: #007bff;
+}
+
+.status-applied-calendar {
+  background-color: #7baaf1;
+}
+
+.status-cancelled-calendar {
+  background-color: #9aa6b1;
+}
+
+.status-approved-hr-calendar {
+  background-color: #81e4b6;
+}
+
+.status-withdraw-calendar {
+  background-color: #f0c09b;
+}
+
+.status-rejected-mgr-calendar {
+  background-color: #f77665;
+}
+
+.status-draft {
+  background-color: rgb(240, 211, 158)
+}
+
+.event-title {
+  font-weight: bold;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  margin-bottom: 2px;
+}
+
+.event-type {
+  font-size: 11px;
+  color: #666;
+  white-space: normal;
+}
+
+.today-badge {
+  border: 2px solid #0d6efd !important;
+  border-radius: 4px;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+}
+
+.legend-dot-gh {
+  width: 12px;
+  height: 12px;
+  background-color: red;
+  border-radius: 50%;
+}
+
+.legend-dot-rh {
+  width: 12px;
+  height: 12px;
+  background-color: #007bff;
+  border-radius: 50%;
+
+}
+
+::ng-deep .custom-modal-width {
+  max-width: 80% !important;
+  width: 80% !important;
+  // height: 100vh !important;
+}
+
+::ng-deep .comp-off-modal {
+  max-width: 70% !important;
+  width: 70% !important;
+}
+
+.invalid-feedback {
+  span {
+    font-size: 10px;
+    margin: 0px;
+  }
+}
+
+.text-bold{
+  color: black;
+}
+
+// this is for calendar purpose
+
+@media (max-width: 768px) {
+  .col-12.d-flex.justify-content-end.align-items-center.gap-2.mb-2 {
+    flex-wrap: wrap;
+    justify-content: center !important;
+    gap: 3px;
+  }
+
+  .col-12.d-flex.justify-content-end.align-items-center.gap-2.mb-2 > * {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+
+  .export-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .export-button {
+    width: auto;
+    font-size: 13px;
+    padding: 4px 8px;
+  }
+
+  .small-calendar-card {
+    width: 35px !important;
+    height: 28px !important;
+  }
+
+  .btn-sm-custom {
+    font-size: 12px !important;
+    padding: 4px 8px !important;
+  }
+}

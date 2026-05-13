@@ -1,0 +1,108 @@
+.table-wrapper {
+  max-height: calc(6 * 3em);
+  overflow-y: auto;
+  margin-top: 10px;
+}
+
+
+::ng-deep .pcoded-content {
+  position: relative;
+  display: block;
+  padding: 0px !important;
+  padding-left: 25px !important;
+  padding-right: 25px !important;
+
+}
+
+.pcoded-header {
+  .card {
+    margin: 0px !important;
+  }
+}
+
+.HRMS_Create_Close {
+  background-color: red !important;
+}
+.table thead th {
+  padding: 10px 10px !important;
+}
+
+.table tbody td {
+  padding: 5px 10px !important;
+}
+
+// ************This is for view Modal********
+.text-muted {
+  font-size: 12px;
+}
+
+.modal-header {
+  position: relative;
+  background-color: #F8F9FA;
+
+  h1 {
+    color: rgb(37, 37, 37);
+  }
+
+  button {
+    color: red($color: #000000);
+    background: white;
+  }
+}
+
+.modal-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.btn-close {
+  position: absolute;
+  left: 92%;
+}
+
+.info-item {
+  display: flex;
+
+}
+
+.info-item span {
+  display: inline-block;
+}
+
+.text-muted {
+  width: 110px;
+  text-align: right;
+  margin-right: 5px;
+}
+
+.fw-bold {
+  font-weight: bold;
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ************This is for view Modal********
+
+.sort-icon {
+  font-size: 12px;
+  /* Adjust size as needed */
+  color: white;
+  /* Example color */
+  cursor: pointer;
+}
+
+.hrms_search_field {
+  padding: 0px !important;
+}
+
+@media only screen and (max-width: 991px) {
+  ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+    margin-left: 0px;
+    margin-top: 57px !important;
+  }
+}

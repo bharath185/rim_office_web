@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="003f037ef11f45f4ba27add5f0dd67ac" Name="Diagram1">
+        <EntityTypeShape EntityType="DB_Offc_ConModel.AccessPolicy" Width="1.5" PointX="0.75" PointY="8.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.Attendance" Width="1.5" PointX="2.75" PointY="10.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.AttendanceProcessingLog" Width="1.5" PointX="4.75" PointY="10.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.BannerMaster" Width="1.5" PointX="6.75" PointY="11.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.BusinessUnitMaster" Width="1.5" PointX="12.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.CareerMaster" Width="1.5" PointX="12.75" PointY="5.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.CategoryMaster" Width="1.5" PointX="8.75" PointY="12.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.CompanyMaster" Width="1.5" PointX="12.75" PointY="9.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.CompanySettingMaster" Width="1.5" PointX="14.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.CompOffRequest" Width="1.5" PointX="0.75" PointY="14.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.ConfigMaster" Width="1.5" PointX="2.75" PointY="14.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.ConfigSetup" Width="1.5" PointX="14.75" PointY="7.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.ContractAttendance" Width="1.5" PointX="10.75" PointY="14.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.CPwdManagement" Width="1.5" PointX="12.75" PointY="14.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.DailyAttendanceRecord" Width="1.5" PointX="14.75" PointY="13.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.DeptMaster" Width="1.5" PointX="4.75" PointY="15.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.DesignationMaster" Width="1.5" PointX="16.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.DocumentMaster" Width="1.5" PointX="16.75" PointY="5.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EducationMaster" Width="1.5" PointX="6.75" PointY="16.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmailConfigMaster" Width="1.5" PointX="16.75" PointY="9.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmailSetUp" Width="1.5" PointX="16.75" PointY="15.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.Emp_AttendanceTime" Width="1.5" PointX="18.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmpEmailTrackingLog" Width="1.5" PointX="18.75" PointY="4.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmpLeaveApplication" Width="1.5" PointX="18.75" PointY="7.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmployeeAccDetail" Width="1.5" PointX="18.75" PointY="14.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmployeeCareer" Width="1.5" PointX="2.75" PointY="19.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmployeeCareerDetail" Width="1.5" PointX="20.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmployeeDetail" Width="1.5" PointX="4.75" PointY="20.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmployeeDoc" Width="1.5" PointX="6.75" PointY="20.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmployeeEducation" Width="1.5" PointX="20.75" PointY="8.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmployeeGovtDoc" Width="1.5" PointX="20.75" PointY="14.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmployeeMaster" Width="1.5" PointX="16.75" PointY="20.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmployeeMaster0312" Width="1.5" PointX="18.75" PointY="20.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmployeeMaster1" Width="1.5" PointX="20.75" PointY="20.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmployeeMaster2" Width="1.5" PointX="22.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmployeeMasterLog" Width="1.5" PointX="22.75" PointY="8.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmployeeMasterNew" Width="1.5" PointX="22.75" PointY="19.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmployeeNomineeMaster" Width="1.5" PointX="12.75" PointY="23.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmployeeSalaryDetail" Width="1.5" PointX="24.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmpProbationTrackingHistory" Width="1.5" PointX="0.75" PointY="24.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmpShiftDetail" Width="1.5" PointX="24.75" PointY="8.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.EmpTypeMaster" Width="1.5" PointX="24.75" PointY="14.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.FinanceMaster" Width="1.5" PointX="24.75" PointY="18.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.FinancialYearMaster" Width="1.5" PointX="24.75" PointY="22.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.FPwdManagement" Width="1.5" PointX="6.75" PointY="25.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.GenderMaster" Width="1.5" PointX="8.75" PointY="25.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.GradeMaster" Width="1.5" PointX="0.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.HolidayMaster" Width="1.5" PointX="26.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.Holiday" Width="1.5" PointX="26.75" PointY="3.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.LeaveCarryForwardMaster" Width="1.5" PointX="26.75" PointY="8.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.LeaveTypeMaster" Width="1.5" PointX="26.75" PointY="14.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.LegalEntityMaster" Width="1.5" PointX="26.75" PointY="22.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.LocationMaster" Width="1.5" PointX="22.75" PointY="27.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.Loginlog" Width="1.5" PointX="24.75" PointY="27.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.ManualAttendance" Width="1.5" PointX="26.75" PointY="27.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.ModuleMaster" Width="1.5" PointX="28.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.Notification" Width="1.5" PointX="7.75" PointY="1.125" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.NotificationTemplate" Width="1.5" PointX="28.75" PointY="4.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.OnSiteLoginlog" Width="1.5" PointX="28.75" PointY="9.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.PageModuleMaster" Width="1.5" PointX="28.75" PointY="16.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.PassHistoryManagement" Width="1.5" PointX="28.75" PointY="20.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.PayoutMappingMaster" Width="1.5" PointX="28.75" PointY="25.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.PayrollComponent" Width="1.5" PointX="3" PointY="3.625" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.PayrollComponentCondition" Width="1.5" PointX="5.25" PointY="1.25" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.PayrollComponentLogic" Width="1.5" PointX="5.25" PointY="5.5" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.PayrollFrequencyMaster" Width="1.5" PointX="8.75" PointY="29.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.PayrollPayoutType" Width="1.5" PointX="0.75" PointY="4" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.PayrollSegment" Width="1.5" PointX="10.75" PointY="29.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.PayrollSymbolMaster" Width="1.5" PointX="12.75" PointY="29.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.PayrollVariable" Width="1.5" PointX="30.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.PayslipSection" Width="1.5" PointX="7.75" PointY="7.5" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.PayslipSectionComponent" Width="1.5" PointX="10" PointY="7" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.Per_BehaviourDetail" Width="1.5" PointX="0.75" PointY="30.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.Per_BehaviourMaster" Width="1.5" PointX="30.75" PointY="4.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.Per_Goal" Width="1.5" PointX="30.75" PointY="9.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.Per_SelfDevelopment" Width="1.5" PointX="30.75" PointY="15.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.Per_Task" Width="1.5" PointX="18.75" PointY="30.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.ProjectConnectUser" Width="1.5" PointX="30.75" PointY="21.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.ProjectMaster" Width="1.5" PointX="30.75" PointY="25.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.QuaterMaster" Width="1.5" PointX="14.75" PointY="31.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.ReviewList" Width="1.5" PointX="28.75" PointY="31.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.RoleMaster" Width="1.5" PointX="30.75" PointY="31.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.SalutationMaster" Width="1.5" PointX="32.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.ServiceMaster" Width="1.5" PointX="32.75" PointY="4.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.ServiceProvider" Width="1.5" PointX="6.75" PointY="32.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.SessionMaster" Width="1.5" PointX="32.75" PointY="7.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.ShiftGroupingMaster" Width="1.5" PointX="32.75" PointY="12.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.ShiftMaster" Width="1.5" PointX="32.75" PointY="17.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.SiteMaster" Width="1.5" PointX="32.75" PointY="22.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.SubModuleMaster" Width="1.5" PointX="32.75" PointY="26.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.TempManualAttendance" Width="1.5" PointX="32.75" PointY="30.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.UserNotification" Width="1.5" PointX="10" PointY="1.625" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.VariableHistory" Width="1.5" PointX="2.75" PointY="33.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.VendorMaster" Width="1.5" PointX="8.75" PointY="33.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.VisitorInviteHistory" Width="1.5" PointX="10.75" PointY="33.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.VisitorManagement" Width="1.5" PointX="32.75" PointY="33.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.WeekHoliday" Width="1.5" PointX="34.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.WFHLoginlog" Width="1.5" PointX="34.75" PointY="5.75" />
+        <EntityTypeShape EntityType="DB_Offc_ConModel.WorkTypeMaster" Width="1.5" PointX="34.75" PointY="11.75" />
+        <AssociationConnector Association="DB_Offc_ConModel.FK__UserNotif__Notif__457442E6" />
+        <AssociationConnector Association="DB_Offc_ConModel.FK_PayrollComponent_PayrollPayoutType" />
+        <AssociationConnector Association="DB_Offc_ConModel.FK_PayrollComponentCondition_PayrollComponent" />
+        <AssociationConnector Association="DB_Offc_ConModel.FK_PayrollComponentLogic_PayrollComponent" />
+        <AssociationConnector Association="DB_Offc_ConModel.FK_PayslipSectionComponents_PayslipSection" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

@@ -1,0 +1,489 @@
+<app-toast-message></app-toast-message>
+<div class="dis-fl-end">
+    <div class="heading-dash-sub">
+        <span>Employee Attendance</span>
+
+        <ol class="breadcrumb fade-left">
+            <li class="breadcrumb-item active dis-fl" aria-current="page">
+                <span class="breadC">Attendance</span>
+                <span class="breadC" [routerLink]="['/employee_self_attendance']"
+                    style="color:rgb(127, 186, 235);cursor: pointer">
+                    <i class="feather icon-chevron-right"></i>&nbsp;Self Attendance
+                </span>
+                <span class="breadC">
+                    <i class="feather icon-chevron-right"></i>
+                </span>
+                <span class="breadC col-act">Employee Attendance</span>
+            </li>
+        </ol>
+    </div>
+
+    <div class="top-nav d-flex gap-2 mt-2">
+        <button style="height:32px" *ngFor="let tab of tabs; let i = index" class="nav-btn"
+            [class.active]="selectedTab === i" [class.active]="selectedTab === i" (click)="selectTab(i)"
+            [routerLink]="tab.url">
+            <i [class]="tab.icon"></i> {{ tab.title }}
+        </button>
+    </div>
+
+    <div class="top-nav-wrapper mobile-actions">
+        <button class="upload-btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Load Attendance
+        </button>
+        <button class="upload-btn" [routerLink]="['/upload_attendance_file']">
+            Upload Attendance
+        </button>
+    </div>
+</div>
+
+<div class="divSpinner" *ngIf="isSpinner">
+    <div class="spinner"></div>
+</div>
+
+<app-card [options]="false">
+    <div class="container-fluid p-0">
+
+        <div class="col-md-12">
+            <form [formGroup]="employeeAttendanceForm" class="pt-2">
+                <div class="row ">
+                    <!-- <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <select class="form-control floating-input" formControlName="company" id="companyId"
+                            (focus)="onFocus($event)" (blur)="onBlur($event)" (change)="calllegalEntity($event)">
+                            <option value="" selected hidden></option>
+                            <option *ngFor="let company of getDDCompany" [value]="company.CompId">
+                                {{company.Company}}</option>
+                        </select>
+                        <label for="companyId" class="floating-label m-0" style="left: 20px;">Company</label>
+                    </div> -->
+
+                    <!-- <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <select class="form-control floating-input" formControlName="LegalEntity" id="entityId"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || employeeAttendanceForm.get('LegalEntity')?.touched) && (employeeAttendanceForm.get('LegalEntity')?.invalid)}"
+                            (change)="getBusinessUnit()" (change)="callLocation()">
+                            <option selected hidden value=""></option>
+                            <option *ngFor="let entity of getLegalEntity" [value]="entity.LEId">
+                                {{entity.LegalEntity}}</option>
+                        </select>
+                        <label for="entityId" class="floating-label m-0" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || employeeAttendanceForm.get('LegalEntity')?.touched) && employeeAttendanceForm.get('LegalEntity')?.invalid}">
+                            Entity*</label>
+                        <div *ngIf="(isFormSubmitted || employeeAttendanceForm.get('LegalEntity')?.touched) && employeeAttendanceForm.get('LegalEntity')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="employeeAttendanceForm.get('LegalEntity')?.errors?.required">Entity
+                                is required.</span>
+                        </div>
+                    </div> -->
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <select class="form-control floating-input" formControlName="BusinessUnit" id="businessId">
+                            <!-- (change)="callLocation()" -->
+                            <option disabled selected hidden value=""></option>
+                            <option *ngFor="let unitList of getBusinessUnitlist" [value]="unitList.BUId">
+                                {{unitList.BusinessUnit}}</option>
+                        </select>
+                        <label for="businessId" class="floating-label m-0" style="left: 20px;">Business Unit</label>
+                    </div>
+
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <select class="form-control floating-input" formControlName="Location" id="locationId">
+                            <option disabled selected hidden value=""></option>
+                            <option *ngFor="let location of getLocations" [value]="location.LocationId">
+                                {{location.Location}}</option>
+                        </select>
+                        <label for="locationId" class="floating-label m-0" style="left: 20px;">Location</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <select class="form-control floating-input" formControlName="DeptName" id="depNameId"
+                            (focus)="onFocus($event)" (blur)="onBlur($event)" (change)="callDDDesignation($event)">
+                            <option value="" selected hidden></option>
+                            <option *ngFor="let option of getDepartementName" [value]="option['DeptId']">
+                                {{ option['DeptName']['length'] > 20 ? (option['DeptName'] | slice: 0:20) + '...' :
+                                option['DeptName'] }}
+                            </option>
+                        </select>
+                        <label for="depNameId" class="floating-label m-0" style="left: 20px;">Department</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-2">
+                        <select class="form-control floating-input" formControlName="Designation" id="designationId"
+                            (focus)="onFocus($event)" (blur)="onBlur($event)" (change)="callEmplyee()">
+                            <option value="" selected hidden></option>
+                            <option *ngFor="let option of getDepartementRole" [value]="option['DesignationId']">
+                                {{ option.Designation.length > 17 ? (option.Designation | slice: 0:17) + '...' :
+                                option.Designation }}
+                            </option>
+                        </select>
+                        <label for="designationId" class="floating-label m-0" style="left: 20px;">Designation</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <div class="custom-date-input">
+                            <input class="form-control floating-input" type="date" placeholder=" "
+                                formControlName="date_from" id="startDataId" [max]="today"
+                                (ngModelChange)="onFromDate()" />
+                            <label for="startDataId" class="floating-label">Start Date</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <div class="custom-date-input">
+                            <input class="form-control floating-input" type="date" placeholder=" "
+                                formControlName="date_to" id="endDataId" [min]="minDate" [max]="yesterday"
+                                [ngClass]="{'is-invalid': dateRangeError}" />
+                            <label for="endDataId" class="floating-label">End Date</label>
+                            <div *ngIf="dateRangeError" class="invalid-feedback m-0">
+                                <span *ngIf="dateRangeError">End Date must be after Start
+                                    Date.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <select class="form-control floating-input" formControlName="employeeType" id="employeeTypeId">
+                            <option value="" selected disabled hidden></option>
+                            <option *ngFor="let employeeType of getEmployeeTypeList" [value]="employeeType.EmpTypeId">
+                                {{employeeType.EmpType}}</option>
+                        </select>
+                        <label for="employeeTypeId" class="floating-label" style="left: 20px;">Employee
+                            Type</label>
+
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <div class="dropdown">
+                            <input type="text" formControlName="employee" class="form-control floating-input"
+                                placeholder="Select Employee" [(ngModel)]="searchText" id="employeeNameId"
+                                autocomplete="off" (focus)="openDropdown()" (input)="filterEmployees()"
+                                (blur)="closeDropdown();checkValidEmployee()" aria-haspopup="true"
+                                [ngClass]="{'is-invalid': !isValidEmployee}" style="line-height: 1.7 !important;">
+                            <label class="floating-label" for="employeeNameId" style="left: 0.7rem !important"
+                                [ngClass]="{'text-danger': !isValidEmployee}">Employee</label>
+                            <span class="dropdown-icon">&#x25BC;</span>
+                            <ul class="dropdown-menu" [class.show]="isDropdownOpen && filteredEmployees.length >= 0">
+                                <li *ngFor="let employee of filteredEmployees" (click)="selectEmployee(employee)"
+                                    class="dropdown-item">
+                                    {{ employee.EmpName }} ({{ employee.EmpCode }})
+                                </li>
+                                <li *ngIf="filteredEmployees.length === 0" class="dropdown-item text-danger">
+                                    No results found
+                                </li>
+                            </ul>
+                            <div *ngIf="isFormSubmitted && !isValidEmployee" class="invalid-feedback m-0">
+                                No valid employee selected.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div style="display: flex;justify-content: end;">
+                            <button class="HRMS_secondary_button" type="reset" (click)="resetData()">
+                                <!-- [disabled]="isSpinner1" -->
+                                <i class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+                            <button class="HRMS_primary_button" type="button" (click)="submitFilterData()"
+                                [class.disabled-btn]="isSpinner1">
+
+                                <span *ngIf="!isSpinner1">
+                                    <i class="feather icon-filter"></i>&nbsp;Filter
+                                </span>
+
+                                <span *ngIf="isSpinner1">
+                                    <i class="fa fa-spinner fa-spin"></i>&nbsp;Filtering...
+                                </span>
+
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-12">
+            <div class="row align-items-center my-2">
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 form-heading">List Of Employees</h5>
+
+                        <div class="top-nav-wrapper">
+
+                            <div class="attendance-legend mb-2">
+
+                                <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                                    <span class="circle"
+                                        style="width: 12px; height: 12px; border-radius: 50%; background-color: yellow; display: inline-block;">
+                                    </span>
+                                    Onsite
+                                </div>
+
+                                <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                                    <span class="circle"
+                                        style="width: 12px; height: 12px; border-radius: 50%; background-color: orange; display: inline-block;">
+                                    </span>
+                                    WFH
+                                </div>
+                                <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                                    <span class="circle"
+                                        style="width: 12px; height: 12px; border-radius: 50%; background-color: #c79670;"></span>
+                                    Manual
+                                </div>
+
+                                <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                                    <span class="circle"
+                                        style="width: 12px; height: 12px; border-radius: 50%; background-color: #63e5e5;"></span>
+                                    Comp Off
+                                </div>
+
+                                <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                                    <span class="circle"
+                                        style="width: 12px; height: 12px; border-radius: 50%; background-color: rgb(201 233 119); display: inline-block;">
+                                    </span>
+                                    Half Day
+                                </div>
+
+
+                                <!-- Leave Type -->
+                                <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                                    <span class="circle"
+                                        style="width: 12px; height: 12px; border-radius: 50%; background-color: red; display: inline-block;">
+                                    </span>
+                                    LOP
+                                </div>
+
+                                <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                                    <span class="circle"
+                                        style="width: 12px; height: 12px; border-radius: 50%; background-color: #A3C6FF; display: inline-block;">
+                                    </span>
+                                    EL
+                                </div>
+
+                                <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                                    <span class="circle"
+                                        style="width: 12px; height: 12px; border-radius: 50%; background-color: #B172DB; display: inline-block;">
+                                    </span>
+                                    CL
+                                </div>
+
+                                <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                                    <span class="circle"
+                                        style="width: 12px; height: 12px; border-radius: 50%; background-color: #FFE7E9; display: inline-block;">
+                                    </span>
+                                    RH
+                                </div>
+
+                                <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                                    <span class="circle"
+                                        style="width: 12px; height: 12px; border-radius: 50%; background-color: #9edbcf;"></span>
+                                    Holiday
+                                </div>
+                            </div>
+
+                            <input type="text" class="form-control rad-50" [(ngModel)]="searchValue"
+                                (keyup)="applyFilter()" placeholder="Search" id="serachInputId" />
+
+                            <div class="export-container position-relative">
+                                <button class="export-button d-flex align-items-center"
+                                    (click)="toggleDropdownExport()">
+                                    <i class="feather icon-upload me-1"></i> Export
+                                </button>
+
+                                <div class="dropdown-content position-absolute end-0 mt-1" *ngIf="dropdownVisible"
+                                    style="z-index: 999;">
+                                    <div class="dropdown-item" (click)="exportFile('excel')">
+                                        <i class="fas fa-file-excel me-1"></i> Excel
+                                    </div>
+                                    <div class="dropdown-item" (click)="exportFile('pdf')">
+                                        <i class="fas fa-file-pdf me-1"></i> PDF
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn saveButton" *ngIf="controlAccessPage?.UpdateAccess === true"
+                                (click)="submitEditedAttendance()" [disabled]="!hasEditedData()"
+                                [ngClass]="{'save-enabled': hasEditedData(),'save-disabled': !hasEditedData()}"
+                                style="border: 0.5px solid black;">
+                                Save
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="divSpinner" *ngIf="isSpinner1">
+                <div class="spinner"></div>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="table table-hover align-middle ">
+                    <thead class="table-light sticky-header">
+                        <tr class="inner-shadow">
+                            <th class="sticky-col slno-col">Sl No.</th>
+                            <th class="sticky-col name-col">Name</th>
+                            <th class="sticky-col code-col">Code</th>
+                            <th class="sticky-col paydays-col">Pay Days</th>
+
+                            <ng-container *ngFor="let date of dates">
+                                <th>
+                                    {{ date | date:'dd-MM-yy' }}
+                                    <br>
+                                    <small
+                                        [ngClass]="{'weekend': (date | date:'EEE') === 'Sat' || (date | date:'EEE') === 'Sun' }">
+                                        {{ date | date:'EEE' }}
+                                    </small>
+                                </th>
+                            </ng-container>
+                        </tr>
+                    </thead>
+                    <tbody *ngIf="isTableData === false">
+                        <ng-container *ngIf="employees">
+                            <tr *ngFor="let employee of employees ; let i = index">
+                                <td class="sticky-col slno-col"
+                                    style="background-color:#f0f0f0; font-size:12px; color:black;">
+                                    {{ i + 1 }}
+                                </td>
+                                <td class="sticky-col name-col"
+                                    style="background-color:#f3da75; font-size:12px;color:black;">
+                                    {{ employee.EmpName }}
+                                </td>
+
+                                <td class="sticky-col code-col"
+                                    style="background-color:#f7e49b; font-size:12px;color:black;">
+                                    {{ employee.EmpCode }}
+                                </td>
+
+                                <td class="sticky-col paydays-col"
+                                    style="background-color:#f1e4b0; font-size:12px;color:black;">
+                                    {{ employee.PayDays }}
+                                </td>
+
+                                <td *ngFor="let date of dates; let j = index"
+                                    [ngStyle]="{'background-color': getCellColor(employee.EmpName, date)}"
+                                    [class.cursor-not-allowed]="!isCellEditable(employee, date, j)"
+                                    (dblclick)="isCellEditable(employee, date, j) && enableEdit(employee, date, j)">
+                                    <span *ngIf="!isEditing(employee, date)" [ngbTooltip]="tooltipTemplate"
+                                        tooltipClass="card-tooltip" container="body" placement="left"
+                                        (mouseenter)="setTooltipContent(employee, dates[j])"
+                                        (mouseleave)="clearTooltipContent()"
+                                        [class.text-muted]="!isCellEditable(employee, date, j)">
+                                        <!-- Check if LeaveType exists, if yes show it, otherwise show WorkingHours -->
+                                        {{ getAttendanceDisplay(employee, date) }}
+                                    </span>
+                                    <input *ngIf="isEditing(employee, date) && isCellEditable(employee, date, j)"
+                                        type="text" [(ngModel)]="employee.attendance[j].WorkingHours"
+                                        (ngModelChange)="onWorkingHoursChange($event, employee, date, j)"
+                                        (blur)="disableEdit()" />
+                                </td>
+
+                            </tr>
+                        </ng-container>
+                    </tbody>
+
+                </table>
+
+                <div *ngIf="isTableData && errorMessage" class="text-center errorMassage">
+                    <span class="text-danger">{{ errorMessage }}</span>
+                </div>
+                <ng-template #tooltipTemplate>
+                    <div [innerHTML]="tooltipContent"></div>
+                </ng-template>
+
+            </div>
+
+            <div class="pagination-controls-wrapper" *ngIf="isPagination">
+                <div class="row align-items-center" style="padding-top: 1rem;">
+                    <div class="col-auto">
+                        <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+                        <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control"
+                            (change)="onPageSizeChange()">
+                            <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                    </div>
+                    <div class="col-auto">
+                        <div class="pagination">
+                            <button (click)="onPageChange('prev')" [disabled]="pageNumber <= 1" lass="page-btn"
+                                style="border: none;margin-right: 4px;">Previous</button>
+                            <span>Page {{ pageNumber }} of {{ totalPages }}</span>
+                            <button (click)="onPageChange('next')" lass="page-btn"
+                                style="border: none;margin-left: 4px;"
+                                [disabled]="pageNumber * pageSize >= totalRecords">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</app-card>
+
+<!-- <td *ngFor="let date of dates; let j = index"
+                                    [ngStyle]="{'background-color': getCellColor(employee.EmpName, date)}"
+                                    [class.cursor-not-allowed]="!isCellEditable(employee, date, j)"
+                                    (dblclick)="isCellEditable(employee, date, j) && enableEdit(employee, date, j)">
+                                    <span *ngIf="!isEditing(employee, date)" [ngbTooltip]="tooltipTemplate"
+                                        tooltipClass="card-tooltip" container="body" placement="left"
+                                        (mouseenter)="setTooltipContent(employee, dates[j])"
+                                        (mouseleave)="clearTooltipContent()"
+                                        [class.text-muted]="!isCellEditable(employee, date, j)">
+                                        {{ employee.attendance[j]?.WorkingHours | slice:0:5 }}
+                                    </span>
+                                    <input *ngIf="isEditing(employee, date) && isCellEditable(employee, date, j)"
+                                        type="text" [(ngModel)]="employee.attendance[j].WorkingHours"
+                                        (ngModelChange)="onWorkingHoursChange($event, employee, date, j)"
+                                        (blur)="disableEdit()" />
+                                </td> -->
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+            <div class="divSpinner2" *ngIf="isSpinner2">
+                <div class="spinner2"></div>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    <div class="text-end">
+                        <button type="reset" class="btn-close " data-bs-dismiss="modal" #closeModal aria-label="Close"
+                            (click)="resetModalData()"></button>
+                    </div>
+                    <form [formGroup]="loadAttendanceForm">
+                        <div class="row">
+
+                            <div class="form-group floating-label-group col-md-6 inputPadding">
+                                <div class="custom-date-input">
+                                    <input class="form-control floating-input" type="date" placeholder=" "
+                                        formControlName="attendance_date_from" id="attendanceDateFromId"
+                                        [max]="yesterday" (ngModelChange)="onFromDate()"
+                                        [ngClass]="{'is-invalid': isFromDateInvalid()}" />
+                                    <label for="attendanceDateFromId" class="floating-label" style="left: 20px;"
+                                        [ngClass]="{'text-danger': (isFormSubmittedModal || loadAttendanceForm.get('attendance_date_from')?.touched) && (loadAttendanceForm.get('attendance_date_from')?.invalid)}">Attendance
+                                        Date*</label>
+                                    <div *ngIf="isFromDateInvalid()" class="invalid-feedback m-0">
+                                        <span
+                                            *ngIf="loadAttendanceForm.get('attendance_date_from')?.errors?.required">Attendance
+                                            Date is required.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </form>
+
+                </div>
+
+
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="HRMS_secondary_button" data-bs-dismiss="modal"
+                    (click)="resetModalData()">Cancel</button>
+                <button type="submit" class="HRMS_primary_button" (click)="submitModalForm()"><i
+                        class="feather icon-check"></i>&nbsp;Submit</button>
+            </div>
+        </div>
+    </div>
+</div>

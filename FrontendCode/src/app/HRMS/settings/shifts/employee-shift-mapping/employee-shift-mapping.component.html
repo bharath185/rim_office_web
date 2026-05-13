@@ -1,0 +1,340 @@
+<app-toast-message></app-toast-message>
+
+<app-card [options]="false">
+    <div class="divSpinner" *ngIf="isSpinner">
+        <div class="spinner"></div>
+    </div>
+    <div class="container-fluid p-0">
+        <div class="col-md-12">
+            <h5 class="mb-3 form-heading text-start">Change Employee Shifts</h5>
+            <form [formGroup]="employeeShiftMappingForm">
+                <div class="row">
+                    <!-- <div class="form-group floating-label-group col-md-2 inputPadding" style="padding-right: 1px;">
+                        <select class="form-control floating-input" formControlName="Company"
+                            (change)="calllegalEntity($event)" id="departmentSelect" (focus)="onFocus($event)"
+                            (blur)="onBlur($event)"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || employeeShiftMappingForm.get('Company')?.touched) && (employeeShiftMappingForm.get('Company')?.invalid)}">
+                            <option value="" selected hidden></option>
+                            <option *ngFor="let company of getDDCompany" [value]="company.CompId">
+                                {{company.Company}}</option>
+                        </select>
+
+                        <label for="departmentSelect" class="floating-label m-0" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || employeeShiftMappingForm.get('Company')?.touched) && employeeShiftMappingForm.get('Company')?.invalid}">Company
+                            Name*</label>
+                        <div *ngIf="(isFormSubmitted || employeeShiftMappingForm.get('Company')?.touched) && employeeShiftMappingForm.get('Company')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="employeeShiftMappingForm.get('Company')?.errors?.required">Company is
+                                required.</span>
+                        </div>
+                    </div> -->
+
+                    <!-- <div class="form-group floating-label-group col-md-2 inputPadding" style="padding-right: 1px;">
+                        <select class="form-control floating-input" formControlName="LegalEntity" id="legalEntityId"
+                            (focus)="onFocus($event)" (blur)="onBlur($event)"
+                            (change)="getBusinessUnit();callDDShifts();isEnableBusiness($event)"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || employeeShiftMappingForm.get('LegalEntity')?.touched) && (employeeShiftMappingForm.get('LegalEntity')?.invalid)}">
+                            <option selected hidden value=""></option>
+                            <option *ngFor="let entity of getLegalEntity" [value]="entity.LEId">
+                                {{entity.LegalEntity}}</option>
+                        </select>
+                        <label for="legalEntityId" class="floating-label m-0" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || employeeShiftMappingForm.get('LegalEntity')?.touched) && employeeShiftMappingForm.get('LegalEntity')?.invalid}">
+                            Entity*</label>
+                        <div *ngIf="(isFormSubmitted || employeeShiftMappingForm.get('LegalEntity')?.touched) && employeeShiftMappingForm.get('LegalEntity')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="employeeShiftMappingForm.get('LegalEntity')?.errors?.required">Entity
+                                is required.</span>
+                        </div>
+                    </div> -->
+
+                    <div class="form-group floating-label-group col-md-3 inputPadding" style="padding-right: 1px;">
+                        <select class="form-control floating-input" formControlName="BusinessUnit" style="left: 20px;"
+                            id="businessUinitId" (change)="callLocation()" (focus)="onFocus($event)"
+                            (blur)="onBlur($event)">
+                            <option disabled selected hidden value=""></option>
+                            <option *ngFor="let unitList of getBusinessUnitlist" [value]="unitList.BUId">
+                                {{unitList.BusinessUnit}}</option>
+                        </select>
+                        <label for="businessUinitId" class="floating-label m-0">Business Unit</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 inputPadding" style="padding-right: 1px;">
+                        <select class="form-control floating-input" formControlName="Location" style="left: 20px;"
+                            id="locationId" (focus)="onFocus($event)" (blur)="onBlur($event)" (change)="callDDShifts()">
+                            <option disabled selected hidden value=""></option>
+                            <option *ngFor="let location of getLocations" [value]="location.LocationId">
+                                {{location.Location}}</option>
+                        </select>
+                        <label for="locationId" class="floating-label m-0">Location</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 inputPadding" style="padding-right: 1px;">
+                        <select class="form-control floating-input" formControlName="shifts" style="left: 20px;"
+                            id="shiftsId" (focus)="onFocus($event)" (blur)="onBlur($event)"
+                            (change)="callEmployeeShifts()"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || employeeShiftMappingForm.get('shifts')?.touched) && employeeShiftMappingForm.get('shifts')?.invalid}">
+                            <option disabled selected hidden value=""></option>
+                            <option *ngFor="let shift of getShifts" [ngValue]="shift">
+                                {{shift.ShiftName}}</option>
+                        </select>
+
+                        <label for="locationId" class="floating-label m-0"
+                            [ngClass]="{'text-danger': (isFormSubmitted || employeeShiftMappingForm.get('shifts')?.touched) && employeeShiftMappingForm.get('shifts')?.invalid}">Shifts*</label>
+                        <div *ngIf="(isFormSubmitted || employeeShiftMappingForm.get('shifts')?.touched) && employeeShiftMappingForm.get('shifts')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="employeeShiftMappingForm.get('shifts')?.errors?.required">Shifts
+                                is required.</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div style="display: flex;justify-content: end;" >
+                            <button class="HRMS_secondary_button " type="reset" (click)="resetData()"><i
+                                    class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+                        </div>
+                    </div>
+
+
+                </div>
+            </form>
+        </div>
+    </div>
+</app-card>
+
+<app-card [options]="false">
+
+    <!-- Search and Table for ShiftEmployee -->
+    <div class="shiftsTable">
+        <div class="d-flex justify-content-between align-items-center hrms_search_field" style="width: 100%;">
+            <span *ngIf="selectedShiftName" class="mr-2">
+                Selected Shift : <strong>{{ selectedShiftName }}</strong>
+            </span>
+            <div class="search-and-button d-flex align-items-center">
+
+                <input placeholder="Search" type="text" class="form-control rad-50" [(ngModel)]="shiftEmployeeSearch"
+                    (input)="filterShiftEmployees()" />
+
+
+                <button class="HRMS_Create_Close" type="submit" style="padding:1px 5px" (click)="removeShifts()"><i
+                        class="feather icon-trash-2"></i>&nbsp;Remove</button>
+            </div>
+        </div>
+
+        <div class="table-wrapper mt-3">
+            <table class="table table-hover align-middle">
+
+                <thead class="table-light sticky-header">
+                    <tr class="inner-shadow">
+                        <th class="">
+                            <input type="checkbox" (change)="selectAllShiftEmployees($event)" />
+                        </th>
+                        <th class="" (click)="sortShift('ShiftName')">
+                            Shift Name
+                            <span *ngIf="sortDirectionShift" class="sort-icon">▲</span>
+                            <span *ngIf="!sortDirectionShift" class="sort-icon">▼</span>
+                        </th>
+                        <th class="" (click)="sortShift('EmpCode')">
+                            Employee Code
+                            <span *ngIf="sortDirectionShift" class="sort-icon">▲</span>
+                            <span *ngIf="!sortDirectionShift" class="sort-icon">▼</span>
+                        </th>
+                        <th class="" (click)="sortShift('FirstName')">
+                            Employee Name
+                            <span *ngIf="sortDirectionShift" class="sort-icon">▲</span>
+                            <span *ngIf="!sortDirectionShift" class="sort-icon">▼</span>
+                        </th>
+                        <th class="" (click)="sortShift('DeptName')">
+                            Dept. Name
+                            <span *ngIf="sortDirectionShift" class="sort-icon">▲</span>
+                            <span *ngIf="!sortDirectionShift" class="sort-icon">▼</span>
+                        </th>
+                        <th class="">
+                            View
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody *ngIf="isTableData == false">
+                    <tr *ngFor="let row of filteredShiftEmployees">
+                        <td class="">
+                            <input type="checkbox" [(ngModel)]="row.selected" (change)="onRowShiftSelectChange()" />
+                        </td>
+                        <td class="">{{row.ShiftName}}</td>
+                        <td class="">{{row.EmpCode}}</td>
+                        <td class="">{{row.FirstName}}</td>
+                        <td class="">{{row.DeptName}}</td>
+                        <td class=""><span><i class="action-icon action-edit feather icon-eye" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal" (click)="onView(row)"></i></span></td>
+
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="isTableData == true" class="text-center errorMassage">
+                <span class="text-danger">{{errorMessage}}</span>
+            </div>
+            <div *ngIf="filteredShiftEmployees.length === 0" class="text-center">
+                <span class="text-danger">{{errorMessageShiftEmployees}}</span>
+            </div>
+        </div>
+
+    </div> <br>
+
+    <!-- Search and Table for NonShiftEmployee -->
+    <div class="nonShiftsTable">
+        <div class="d-flex justify-content-between align-items-center hrms_search_field" style="width: 100%;">
+            <span *ngIf="selectedShiftName" class="mr-2">
+                Shift : <strong>Others Shifts</strong>
+            </span>
+            <div class="search-and-button d-flex align-items-center">
+                <input placeholder="Search" type="text" class="form-control rad-50" [(ngModel)]="nonShiftEmployeeSearch"
+                    (input)="filterNonShiftEmployees()" />
+                <button class="HRMS_primary_button" type="submit" (click)="addShifts()"><i
+                        class="feather icon-plus-circle"></i>&nbsp;Add</button>
+            </div>
+        </div>
+        <div class="table-wrapper mt-3">
+            <table class="table table-hover align-middle">
+                <thead class="table-light sticky-header">
+                    <tr class="inner-shadow">
+                        <th class="">
+                            <input type="checkbox" (change)="selectAllNonShiftEmployees($event)" />
+                        </th>
+                        <th class="" (click)="sortNonShift('ShiftName')">
+                            Shift Name
+                            <span *ngIf="sortDirectionNonShift" class="sort-icon">▲</span>
+                            <span *ngIf="!sortDirectionNonShift" class="sort-icon">▼</span>
+                        </th>
+                        <th class="" (click)="sortNonShift('EmpCode')">
+                            Employee Code
+                            <span *ngIf="sortDirectionNonShift" class="sort-icon">▲</span>
+                            <span *ngIf="!sortDirectionNonShift" class="sort-icon">▼</span>
+                        </th>
+                        <th class="" (click)="sortNonShift('FirstName')">
+                            Employee Name
+                            <span *ngIf="sortDirectionNonShift" class="sort-icon">▲</span>
+                            <span *ngIf="!sortDirectionNonShift" class="sort-icon">▼</span>
+                        </th>
+                        <th class="" (click)="sortNonShift('DeptName')">
+                            Dept. Name
+                            <span *ngIf="sortDirectionNonShift" class="sort-icon">▲</span>
+                            <span *ngIf="!sortDirectionNonShift" class="sort-icon">▼</span>
+                        </th>
+                        <th class="">
+                            View
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody *ngIf="isTableData == false">
+                    <tr *ngFor="let row of filteredNonShiftEmployees">
+                        <td class="">
+                            <input type="checkbox" [(ngModel)]="row.selected" (change)="onRowNonShiftSelectChange()" />
+                        </td>
+                        <td class="" style="font-weight: bold;">{{row.ShiftName}}</td>
+                        <td class="">{{row.EmpCode}}</td>
+                        <td class="">{{row.FirstName}}</td>
+                        <td class="">{{row.DeptName}}</td>
+                        <td class=""><span><i class="action-icon action-edit feather icon-eye" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal" (click)="onView(row)"></i></span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="isTableData == true" class="text-center errorMassage">
+                <span class="text-danger">{{errorMessage}}</span>
+            </div>
+            <div *ngIf="filteredNonShiftEmployees.length === 0" class="text-center">
+                <span class="text-danger">{{errorMessageNonShiftEmployees}}</span>
+            </div>
+        </div>
+
+    </div>
+
+</app-card>
+
+<!-- Modal Shift-->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header d-flex align-items-center justify-content-between">
+                <h1 class="modal-title fs-5 mx-auto" id="exampleModalLabel">View Shifts Details</h1>
+                <button type="reset" class="btn-close " data-bs-dismiss="modal" aria-label="Close" #closeModal><i
+                        class="fa fa-times lg"></i></button>
+            </div>
+            <div class="modal-body pt-2">
+                <div class="container">
+                    <div class="divSpinner" *ngIf="isSpinner">
+                        <div class="spinner"></div>
+                    </div>
+                    <div class="row mb-1">
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">First Name :</span>
+                                <span class="fw-bold text-truncate">{{onViewShiftData?.FirstName}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Middle Name :</span>
+                                <span class="fw-bold text-truncate">{{onViewShiftData?.MiddleName}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Last Name :</span>
+                                <span class="fw-bold text-truncate">{{onViewShiftData?.LastName}}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Company :</span>
+                                <span class="fw-bold text-truncate">{{onViewShiftData?.Company}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate"> Department :</span>
+                                <span class="fw-bold text-truncate">{{onViewShiftData?.DeptName}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Designation :</span>
+                                <span class="fw-bold text-truncate">{{onViewShiftData?.Designation}}</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Employee Code :</span>
+                                <span class="fw-bold text-truncate">{{onViewShiftData?.EmpCode}}</span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Shift Name :</span>
+                                <span class="fw-bold text-truncate">{{onViewShiftData?.ShiftName}}</span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Approver :</span>
+                                <span class="fw-bold text-truncate">{{onViewShiftData?.Approver}}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

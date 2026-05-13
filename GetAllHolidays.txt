@@ -1,0 +1,1088 @@
+[
+    {
+        "Holiday_Id": [
+            80
+        ],
+        "Title": "only Test",
+        "Day": null,
+        "Date": "\/Date(1774549800000)\/",
+        "Description": "only Test",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1774850367583)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            4
+        ],
+        "HolidayLocationId": [
+            4
+        ],
+        "HolidayType": "RH Holidays",
+        "Year": 2026,
+        "Location": [
+            "BENGALURU"
+        ],
+        "HolidayLocation": [
+            "BENGALURU"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            79,
+            78,
+            77,
+            76,
+            75
+        ],
+        "Title": "testing",
+        "Day": null,
+        "Date": "\/Date(1774809000000)\/",
+        "Description": "Test",
+        "Created_By": 603,
+        "Created_Date": "\/Date(1774844833243)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            5,
+            3,
+            2,
+            1,
+            4
+        ],
+        "HolidayLocationId": [
+            5,
+            3,
+            2,
+            1,
+            4
+        ],
+        "HolidayType": "RH Holidays",
+        "Year": 2026,
+        "Location": [
+            "CHENNAI",
+            "PEENYA STAGE 2",
+            "PEENYA STAGE 1",
+            "PUNE",
+            "BENGALURU"
+        ],
+        "HolidayLocation": [
+            "CHENNAI",
+            "PEENYA STAGE 2",
+            "PEENYA STAGE 1",
+            "PUNE",
+            "BENGALURU"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            74,
+            73,
+            72,
+            71,
+            70
+        ],
+        "Title": "New RH Testing",
+        "Day": null,
+        "Date": "\/Date(1774290600000)\/",
+        "Description": "New RH Testing",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1774578334173)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            5,
+            4,
+            3,
+            1,
+            2
+        ],
+        "HolidayLocationId": [
+            5,
+            4,
+            3,
+            1,
+            2
+        ],
+        "HolidayType": "RH Holidays",
+        "Year": 2026,
+        "Location": [
+            "CHENNAI",
+            "BENGALURU",
+            "PEENYA STAGE 2",
+            "PUNE",
+            "PEENYA STAGE 1"
+        ],
+        "HolidayLocation": [
+            "CHENNAI",
+            "BENGALURU",
+            "PEENYA STAGE 2",
+            "PUNE",
+            "PEENYA STAGE 1"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            64
+        ],
+        "Title": "Moharam",
+        "Day": null,
+        "Date": "\/Date(1782412200000)\/",
+        "Description": "RH",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768885327057)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            5
+        ],
+        "HolidayLocationId": [
+            5
+        ],
+        "HolidayType": "RH Holidays",
+        "Year": 2026,
+        "Location": [
+            "Chennai"
+        ],
+        "HolidayLocation": [
+            "Chennai"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            63,
+            51,
+            38,
+            26,
+            25
+        ],
+        "Title": "Christmas",
+        "Day": null,
+        "Date": "\/Date(1798137000000)\/",
+        "Description": "RH",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768885217557)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            5,
+            1,
+            3,
+            4,
+            2
+        ],
+        "HolidayLocationId": [
+            5,
+            1,
+            3,
+            4,
+            2
+        ],
+        "HolidayType": "RH Holidays",
+        "Year": 2026,
+        "Location": [
+            "Chennai",
+            "PUNE",
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "HolidayLocation": [
+            "Chennai",
+            "PUNE",
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            62
+        ],
+        "Title": "Deepavali",
+        "Day": null,
+        "Date": "\/Date(1794162600000)\/",
+        "Description": "Festivals",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768885176603)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            5
+        ],
+        "HolidayLocationId": [
+            5
+        ],
+        "HolidayType": "General Holidays",
+        "Year": 2026,
+        "Location": [
+            "Chennai"
+        ],
+        "HolidayLocation": [
+            "Chennai"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            61,
+            34,
+            16,
+            15
+        ],
+        "Title": "Vijayadashami",
+        "Day": null,
+        "Date": "\/Date(1792521000000)\/",
+        "Description": "Festivals",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768885110477)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            5,
+            3,
+            4,
+            2
+        ],
+        "HolidayLocationId": [
+            5,
+            3,
+            4,
+            2
+        ],
+        "HolidayType": "General Holidays",
+        "Year": 2026,
+        "Location": [
+            "Chennai",
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "HolidayLocation": [
+            "Chennai",
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            60,
+            45,
+            33,
+            14,
+            13
+        ],
+        "Title": "Ganesha Chathurthi",
+        "Day": null,
+        "Date": "\/Date(1789324200000)\/",
+        "Description": "Festivals",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768885089320)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            5,
+            1,
+            3,
+            4,
+            2
+        ],
+        "HolidayLocationId": [
+            5,
+            1,
+            3,
+            4,
+            2
+        ],
+        "HolidayType": "General Holidays",
+        "Year": 2026,
+        "Location": [
+            "Chennai",
+            "PUNE",
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "HolidayLocation": [
+            "Chennai",
+            "PUNE",
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            59
+        ],
+        "Title": "Tamil New Year",
+        "Day": null,
+        "Date": "\/Date(1776105000000)\/",
+        "Description": "Festivals",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768885068803)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            5
+        ],
+        "HolidayLocationId": [
+            5
+        ],
+        "HolidayType": "General Holidays",
+        "Year": 2026,
+        "Location": [
+            "Chennai"
+        ],
+        "HolidayLocation": [
+            "Chennai"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            58
+        ],
+        "Title": "Uzhavar Thirunal",
+        "Day": null,
+        "Date": "\/Date(1768501800000)\/",
+        "Description": "Festivals",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768885021350)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            5
+        ],
+        "HolidayLocationId": [
+            5
+        ],
+        "HolidayType": "General Holidays",
+        "Year": 2026,
+        "Location": [
+            "Chennai"
+        ],
+        "HolidayLocation": [
+            "Chennai"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            57
+        ],
+        "Title": "Pongal",
+        "Day": null,
+        "Date": "\/Date(1768415400000)\/",
+        "Description": "Festivals",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768884935460)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            5
+        ],
+        "HolidayLocationId": [
+            5
+        ],
+        "HolidayType": "General Holidays",
+        "Year": 2026,
+        "Location": [
+            "Chennai"
+        ],
+        "HolidayLocation": [
+            "Chennai"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            56,
+            40,
+            29,
+            8,
+            7
+        ],
+        "Title": "Gandhi Jayanthi",
+        "Day": null,
+        "Date": "\/Date(1790879400000)\/",
+        "Description": "National Holidays",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768884893520)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            5,
+            1,
+            3,
+            4,
+            2
+        ],
+        "HolidayLocationId": [
+            5,
+            1,
+            3,
+            4,
+            2
+        ],
+        "HolidayType": "General Holidays",
+        "Year": 2026,
+        "Location": [
+            "Chennai",
+            "PUNE",
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "HolidayLocation": [
+            "Chennai",
+            "PUNE",
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            55,
+            28,
+            6,
+            5
+        ],
+        "Title": "May Day",
+        "Day": null,
+        "Date": "\/Date(1777573800000)\/",
+        "Description": "National Holidays",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768884881020)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            5,
+            3,
+            4,
+            2
+        ],
+        "HolidayLocationId": [
+            5,
+            3,
+            4,
+            2
+        ],
+        "HolidayType": "General Holidays",
+        "Year": 2026,
+        "Location": [
+            "Chennai",
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "HolidayLocation": [
+            "Chennai",
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            54,
+            39,
+            27,
+            2,
+            1
+        ],
+        "Title": "Republic Day",
+        "Day": null,
+        "Date": "\/Date(1769365800000)\/",
+        "Description": "National Holidays",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768884865100)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            5,
+            1,
+            3,
+            4,
+            2
+        ],
+        "HolidayLocationId": [
+            5,
+            1,
+            3,
+            4,
+            2
+        ],
+        "HolidayType": "General Holidays",
+        "Year": 2026,
+        "Location": [
+            "Chennai",
+            "PUNE",
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "HolidayLocation": [
+            "Chennai",
+            "PUNE",
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            53
+        ],
+        "Title": "Dhanteras",
+        "Day": null,
+        "Date": "\/Date(1793903400000)\/",
+        "Description": "RH",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768884694847)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            1
+        ],
+        "HolidayLocationId": [
+            1
+        ],
+        "HolidayType": "RH Holidays",
+        "Year": 2026,
+        "Location": [
+            "PUNE"
+        ],
+        "HolidayLocation": [
+            "PUNE"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            52
+        ],
+        "Title": "Dhulivandan",
+        "Day": null,
+        "Date": "\/Date(1772476200000)\/",
+        "Description": "RH",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768884602080)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            1
+        ],
+        "HolidayLocationId": [
+            1
+        ],
+        "HolidayType": "RH Holidays",
+        "Year": 2026,
+        "Location": [
+            "PUNE"
+        ],
+        "HolidayLocation": [
+            "PUNE"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            50,
+            36,
+            20,
+            19
+        ],
+        "Title": "Eid-Milad",
+        "Day": null,
+        "Date": "\/Date(1787682600000)\/",
+        "Description": "RH",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768884473843)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            1,
+            3,
+            4,
+            2
+        ],
+        "HolidayLocationId": [
+            1,
+            3,
+            4,
+            2
+        ],
+        "HolidayType": "RH Holidays",
+        "Year": 2026,
+        "Location": [
+            "PUNE",
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "HolidayLocation": [
+            "PUNE",
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            49
+        ],
+        "Title": "Bhaubeej\t",
+        "Day": null,
+        "Date": "\/Date(1794335400000)\/",
+        "Description": "Festivals",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768884442470)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            1
+        ],
+        "HolidayLocationId": [
+            1
+        ],
+        "HolidayType": "General Holidays",
+        "Year": 2026,
+        "Location": [
+            "PUNE"
+        ],
+        "HolidayLocation": [
+            "PUNE"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            48,
+            35,
+            18,
+            17
+        ],
+        "Title": "Balipadyami, Deepavali\t",
+        "Day": null,
+        "Date": "\/Date(1794249000000)\/",
+        "Description": "Festivals",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768884386307)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            1,
+            3,
+            4,
+            2
+        ],
+        "HolidayLocationId": [
+            1,
+            3,
+            4,
+            2
+        ],
+        "HolidayType": "General Holidays",
+        "Year": 2026,
+        "Location": [
+            "PUNE",
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "HolidayLocation": [
+            "PUNE",
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            47
+        ],
+        "Title": "Vijayadashami",
+        "Day": null,
+        "Date": "\/Date(1792434600000)\/",
+        "Description": "Festivals",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768884368610)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            1
+        ],
+        "HolidayLocationId": [
+            1
+        ],
+        "HolidayType": "General Holidays",
+        "Year": 2026,
+        "Location": [
+            "PUNE"
+        ],
+        "HolidayLocation": [
+            "PUNE"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            44
+        ],
+        "Title": "Gudi Padwa ",
+        "Day": null,
+        "Date": "\/Date(1773858600000)\/",
+        "Description": "Festivals",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768884183513)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            1
+        ],
+        "HolidayLocationId": [
+            1
+        ],
+        "HolidayType": "General Holidays",
+        "Year": 2026,
+        "Location": [
+            "PUNE"
+        ],
+        "HolidayLocation": [
+            "PUNE"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            43
+        ],
+        "Title": "Makara Sankranti",
+        "Day": null,
+        "Date": "\/Date(1768329000000)\/",
+        "Description": "Festivals",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768884131387)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            1
+        ],
+        "HolidayLocationId": [
+            1
+        ],
+        "HolidayType": "General Holidays",
+        "Year": 2026,
+        "Location": [
+            "PUNE"
+        ],
+        "HolidayLocation": [
+            "PUNE"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            41
+        ],
+        "Title": "Maharashtra Day ",
+        "Day": null,
+        "Date": "\/Date(1777573800000)\/",
+        "Description": "State Holidays",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768884071963)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            1
+        ],
+        "HolidayLocationId": [
+            1
+        ],
+        "HolidayType": "General Holidays",
+        "Year": 2026,
+        "Location": [
+            "PUNE"
+        ],
+        "HolidayLocation": [
+            "PUNE"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            37,
+            22,
+            21
+        ],
+        "Title": "Onam",
+        "Day": null,
+        "Date": "\/Date(1787769000000)\/",
+        "Description": "RH",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768883867867)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            3,
+            4,
+            2
+        ],
+        "HolidayLocationId": [
+            3,
+            4,
+            2
+        ],
+        "HolidayType": "RH Holidays",
+        "Year": 2026,
+        "Location": [
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "HolidayLocation": [
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            32
+        ],
+        "Title": "Independence day",
+        "Day": null,
+        "Date": "\/Date(1786732200000)\/",
+        "Description": "Festival",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768883750193)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            3
+        ],
+        "HolidayLocationId": [
+            3
+        ],
+        "HolidayType": "General Holidays",
+        "Year": 2026,
+        "Location": [
+            "PEENYA STAGE 2"
+        ],
+        "HolidayLocation": [
+            "PEENYA STAGE 2"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            31,
+            12,
+            11
+        ],
+        "Title": "Ugadi",
+        "Day": null,
+        "Date": "\/Date(1773858600000)\/",
+        "Description": "Festivals",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768883485740)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            3,
+            4,
+            2
+        ],
+        "HolidayLocationId": [
+            3,
+            4,
+            2
+        ],
+        "HolidayType": "General Holidays",
+        "Year": 2026,
+        "Location": [
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "HolidayLocation": [
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            30,
+            10,
+            9
+        ],
+        "Title": "Makara Sankranti",
+        "Day": null,
+        "Date": "\/Date(1768415400000)\/",
+        "Description": "Festivals",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768883473410)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            3,
+            4,
+            2
+        ],
+        "HolidayLocationId": [
+            3,
+            4,
+            2
+        ],
+        "HolidayType": "General Holidays",
+        "Year": 2026,
+        "Location": [
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "HolidayLocation": [
+            "PEENYA STAGE 2",
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "UpdatedHolidays": null
+    },
+    {
+        "Holiday_Id": [
+            24,
+            23
+        ],
+        "Title": "Varamahalakshmi ",
+        "Day": null,
+        "Date": "\/Date(1787855400000)\/",
+        "Description": "RH",
+        "Created_By": 149,
+        "Created_Date": "\/Date(1768883291017)\/",
+        "Modify_By": null,
+        "Modify_Date": null,
+        "Status": "Active",
+        "msg": null,
+        "LoginId": 0,
+        "LocationId": [
+            4,
+            2
+        ],
+        "HolidayLocationId": [
+            4,
+            2
+        ],
+        "HolidayType": "RH Holidays",
+        "Year": 2026,
+        "Location": [
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "HolidayLocation": [
+            "BENGALORE",
+            "PEENYA STAGE 1"
+        ],
+        "UpdatedHolidays": null
+    }
+]
+
+
+Employee/GetAllHolidays

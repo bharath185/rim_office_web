@@ -1,0 +1,215 @@
+<ol class="breadcrumb mx-1 p-1 mb-0 fade-left">
+    <li class="breadcrumb-item active" aria-current="page">
+        <button class="homeBackClass">Performance Portal</button><span>>&nbsp;</span>
+        <strong class="breadcrumb-sub-text">Goals</strong>
+    </li>
+</ol>
+<app-card [options]="false">
+    <div class="text-start">
+        <button *ngIf="GoalButton " type="button" class="btn "
+            [ngStyle]="{ 'background-color': showCard1 ? '#072f5f' : 'white' }" [ngClass]="{ 'text-white': showCard1 }"
+            style="border-color: #072f5f; color: #072f5f; border-radius: 0%" (click)="toggleCard1()"><i
+                class="fas fa-trophy"></i> Goals Setup</button>
+        <button *ngIf="ReturnButton" class="btn btn-primary  mx-2"
+            style="background-color: #072f5f; color: white; border-radius: 0%; border: none;" (click)="returnPage()"><i
+                class="fas fa-undo"></i> Return</button>
+        <!-- <button (click)="triggerToast()">Show Toast</button> -->
+    </div>
+    <div class="d-flex justify-content-end align-items-center gap-2">
+        <div>
+            <span>Financial Details : </span>
+            <!-- <strong>{{getFinancialYear[0].FinancialDetails}}</strong> -->
+        </div>
+    </div>
+    <app-toast-message></app-toast-message>
+    <app-spinner *ngIf="loading"></app-spinner>
+
+    <div class="mt-2" *ngIf="showCard1">
+        <div class="text-end">
+            <button type="button" class="btn " style=" border-color: #072f5f; color: #072f5f;  border-radius: 0%"
+                (click)="addRow()"><i class="fas fa-plus"></i> Add Goal</button>
+        </div>
+        <div *ngIf="showWarning" class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+            <strong>Warning!</strong> {{errormessage}}
+            <!-- <span aria-hidden="true" (click)="dismiss()"><i class="fas fa-times"></i></span> -->
+        </div>
+
+        <div class="table-wrapper mt-3">
+            <table class="table table-hover align-middle">
+                <thead class="table-light sticky-header">
+                    <tr class="inner-shadow ">
+                        <th class="goal-header">Goal for the year</th>
+                        <th class="weitage-header">Weightage {{Weightage}}%</th>
+                        <th class="actions-header">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let row of rows; let i = index">
+                        <td>
+                            <!-- // <input *ngIf="row.isEditing" type="text" [(ngModel)]="row.index" value="{{i}}" class="form-control " hidden> -->
+                            <input *ngIf="row.isEditing" type="text" [(ngModel)]="row.Goal" class="form-control">
+                            <span *ngIf="!row.isEditing">{{ row.Goal }}</span>
+                        </td>
+                        <!-- <td>
+                            <input *ngIf="row.isEditing" type="number" [(ngModel)]="row.Weightage" class="form-control"
+                                min="0" max="80" (input)="validateWeightage(row)">
+                            <span *ngIf="!row.isEditing">{{ row.Weightage }}</span>
+                        </td> -->
+                        <td>
+                            <input *ngIf="row.isEditing" type="text" [(ngModel)]="row.Weightage" class="form-control"
+                                min="0" max="80" (input)="validateWeightage(row)" (paste)="onPaste($event)">
+                            <span *ngIf="!row.isEditing">{{ row.Weightage }}</span>
+                        </td>
+
+                        <td>
+                            <!-- <button class="btn btn-sm " > -->
+                            <span class="mx-2 " *ngIf="row.isEditing" (click)="toggleEdit(row, i)"
+                                style="color:#072f5f">
+                                <i class="fas fa-check fa-lg cursor_pointer"></i></span>
+                            <span class="mx-2" *ngIf="!row.isEditing" (click)="toggleEdit(row, i)"
+                                style="color:rgb(86, 86, 86)"> <i class="action-icon action-edit feather icon-edit-2 cursor_pointer"></i></span>
+                            <span class="mx-2" *ngIf="!row.isEditing" (click)="removeRow(i,row)"
+                                style="color:rgb(86, 86, 86)"> <i class="action-icon action-delete feather icon-trash-2 cursor_pointer"
+                                    style="color:#072f5f"></i></span>
+                            <span class="mx-2" *ngIf="row.isEditing" (click)="cancelEdit(row)"
+                                style="color:rgb(86, 86, 86)">
+                                <i class="fas fa-times fa-lg cursor_pointer" style=" color:#072f5f"></i>
+                            </span>
+
+                            <!-- </button> -->
+                            <!-- <button class="btn btn-sm " (click)="removeRow(i,row)">
+                  <i class="fas fa-trash" style="color:#072f5f"></i>
+                </button> -->
+                            <!-- <button *ngIf="!row.isEditing" class="btn btn-sm" style="color: red" (click)="cancelEdit(row)">
+                  <i class="fas fa-times"></i>
+              </button> -->
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
+        </div>
+        <div class="text-end">
+            <!-- <button type="button" class="btn " style=" background-color: #072f5f; color: #ffffff; border-radius: 0%; "
+                [disabled]="isButtonDisabled" (click)="finalSubmitGoal()"><i class="fas fa-check"></i> Final
+                Submit</button> -->
+            <button type="button" class="btn" style="background-color: #072f5f; color: #ffffff; border-radius: 0%;"
+                (click)="finalSubmitGoal()"
+                [disabled]="!(getAllRecordLength >= 3 && getAllRecordLength <= 5 && Weightage === 80)">
+                <i class="fas fa-check"></i> Final Submit
+            </button>
+
+        </div>
+    </div>
+    <div class="mt-2" *ngIf="showCard">
+        <div class="container mt-4">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <select [(ngModel)]="selectedGoal" class="form-select">
+                                <option disabled selected>Select Name</option>
+                                <!-- Use *ngFor to iterate over names and generate options dynamically -->
+                                <option *ngFor="let name of names" [value]="name.GoalId">{{ name.Goal }}</option>
+                            </select>
+                        </div>
+                        <!-- <div class="col-md-2">
+                <select [(ngModel)]="selectedQuarter" class="form-select">
+                  <option disabled selected>Select Quarter</option>
+                  <option value="Q1">Q1</option>
+                  <option value="Q2">Q2</option>
+                  <option value="Q3">Q3</option>
+                  <option value="Q4">Q4</option>
+                </select>
+              </div> -->
+                        <div class="col-md-3">
+                            <input [(ngModel)]="taskName" type="text" class="form-control" placeholder="Task Name">
+                        </div>
+                        <div class="col-md-2">
+                            <select [(ngModel)]="selectedStatus" class="form-select">
+                                <option disabled selected>Status</option>
+                                <option value="To Do">To Do</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button (click)="addTask()" class="btn"
+                                style=" background-color: #072f5f; color: #ffffff;  border-radius: 0%"> <i
+                                    class="fas fa-plus"></i> ADD</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-12 table-wrapper ">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light sticky-header">
+                            <tr class="inner-shadow">
+                                <th style="width: 40%">Goal</th>
+                                <th style="width: 40%">Task Name</th>
+                                <th style="width: 10%">Quarter</th>
+                                <th style="width: 10%">Status</th>
+                                <th style="width:10%">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let task of tasks">
+                                <td>{{ task.Goal }} </td>
+                                <td>{{ task.Task }}</td>
+                                <td>{{ task.QId }}</td>
+                                <td>{{ task.status }}</td>
+                                <td><i class="fas fa-pen mx-2"></i> <i class="fas fa-trash"></i></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="mt-2" *ngIf="!showCard && !showCard1">
+        <h5 class="text-center mb-4" style="color: #072f5f;">EMPLOYEE GOAL LIST</h5>
+        <div class="row">
+            <div class="col">
+                <div class="table-wrapper mt-3">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light sticky-header">
+                            <tr class="inner-shadow">
+                                <th style="width: 20%;">Goal Period</th>
+                                <th style="width: 60%;">Goal Name</th>
+                                <th style="width: 20%;">Review Status</th>
+
+                                <!-- <th class="text-center">Action</th> -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of tableData">
+                                <td>{{ item.FYear }}</td>
+                                <td>
+                                    <!-- <span (click)="toggleCard()" class="tooltip-container"
+                                        style="border: none; color: #072f5f;">
+                                        <i class="fas fa-tasks mx-2"></i>
+                                        <span class="custom-tooltip">ADD Task</span>
+                                    </span> -->
+
+                                    <!-- <span  class="tooltip-container" style="border: none; color: #072f5f;">
+                    <i class="fas fa-paperclip mx-2"></i>
+                    <span class="custom-tooltip">File</span>
+                  </span> -->
+                                    {{ item.Goal }}
+                                </td>
+                                <td><span
+                                        [ngClass]="{'badge bg-success': item.Status === 'Approved', 'badge bg-warning': item.Status === 'Pending'}">{{
+                                        item.Status }}</span></td>
+                                <!-- <td class="text-center"><button class="btn btn-sm" style="background-color: #072f5f; border-radius: 5px; color: #ffffff; outline: #072f5f;"><i class="fas fa-eye"></i></button></td> -->
+                            </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-card>

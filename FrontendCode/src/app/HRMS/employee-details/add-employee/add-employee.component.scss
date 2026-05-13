@@ -1,0 +1,352 @@
+// **********This is for Pannel***********
+.expansion-panel {
+    border: 1px solid #ddd;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+.panel-header {
+    background-color: #072f5f;
+    padding: 4px 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-title {
+    flex-grow: 1;
+
+    h5 {
+        color: white;
+        font-size: medium;
+        font-weight: 500;
+    }
+}
+
+.panel-controls {
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.panel-controls span {
+    margin-left: 10px;
+}
+
+.panel-body {
+    padding: 15px;
+    border-top: 1px solid #ddd;
+}
+
+// .panel-header:hover {
+//   background-color: #e0e0e0;
+// }
+
+// **********This is for Pannel***********
+
+
+// .employeeInputField {
+//   border-top: none;
+//   border-left: none;
+//   border-right: none;
+//   width: 100%;
+//   padding: 3px;
+//   box-sizing: border-box;
+// }
+
+// ************This is for Floating********
+.form-group {
+    position: relative;
+}
+
+.floating-label-group {
+    position: relative;
+    // margin-bottom: 1.5rem;
+}
+
+.floating-input {
+    border-radius: 0.25rem;
+    padding: 1rem 0rem 0rem 0.3rem;
+    font-size: 0.875rem;
+    width: 100%;
+    line-height: 2;
+    // padding: 0.375rem 0.75rem;
+    // height: calc(1.5em + 0.75rem + 2px);
+    // border-left: none;
+    // border-top: none;
+    // border-right: none;
+
+}
+
+.floating-label {
+    position: absolute;
+    top: 23%;
+    left: 1.2rem;
+    transform: translateY(-50%);
+    color: #999;
+    transition: all 0.2s ease;
+    pointer-events: none;
+}
+
+.floating-input:focus+.floating-label,
+.floating-label.floating {
+    // top: -0.75rem;
+    // left: 0.75rem;
+    font-size: 0.75rem;
+    color: #020d1b;
+}
+
+.floating-input::placeholder {
+    color: transparent;
+}
+
+.floating-input:focus {
+    outline: none !important;
+    box-shadow: none;
+    border-color: initial;
+}
+
+.floating-input:focus-visible {
+    outline: none !important;
+    box-shadow: none;
+    border-color: initial;
+}
+
+// ************This is for Floating********
+
+
+// ************This is for Photo show*********
+.custom-file-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.custom-file-upload label {
+    // display: inline-block;
+    // padding: 2px;
+    // border-radius: 3px;
+    // background-color: #072f5f;
+    // cursor: pointer;
+    // text-align: center;
+    // color: white;
+    // white-space: nowrap;
+    background: white;
+    color: #072f5f;
+    padding: 3px;
+    border: 1px solid #072f5f;
+    cursor: pointer;
+}
+
+.custom-file-upload input[type="file"] {
+    display: none;
+}
+
+.preview-img {
+    max-width: 64px;
+    max-height: 73px;
+    border-radius: 10%;
+    margin-top: 2px;
+}
+
+// ************This is for Photo show*********
+
+// ************this is for custome date*******
+.custom-date-input {
+    position: relative;
+}
+
+.custom-date-input input {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 3px 5px;
+    width: 100%;
+    outline: none;
+    font-size: 11px;
+    padding-top: 17px;
+    line-height: 1.9;
+}
+
+.custom-date-input input::placeholder {
+    font-size: 5px;
+    color: #aaa;
+}
+
+.custom-date-input label {
+    position: absolute;
+    color: #888;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.custom-date-input input:focus+label,
+.custom-date-input input:not(:placeholder-shown)+label {
+    // top: -2px;
+    // left: 5px;
+    // font-size: 10px;
+    top: 1px;
+    left: 5px;
+    font-size: 12px;
+}
+
+// ************this is for custome date*******
+
+
+// **********This is for table things********
+.inner-shadow {
+    .employeeId {
+        width: 15%;
+    }
+
+    .companyName {
+        width: 20%;
+    }
+
+    .startDate {
+        width: 15%;
+    }
+
+    .endDate {
+        width: 15%;
+    }
+
+    .description {
+        width: 20%;
+    }
+
+    .path {
+        width: 15%;
+    }
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 7px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    font-size: 13px;
+
+}
+
+th {
+    // background-color: #072f5f;
+    background-color: #2d5483;
+    color: #ffffff;
+
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+// **********This is for table things********
+.error-message {
+    font-size: 10px;
+    margin: 0px;
+}
+
+::ng-deep.pcoded-content {
+    position: relative;
+    display: block;
+    padding: 0px !important;
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+}
+
+.pcoded-header {
+    .card {
+        margin: 0px !important;
+    }
+}
+
+.uplaodIcon {
+    color: #072f5f;
+    background: none;
+    border: none;
+    margin: 2px;
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+}
+
+/* image-upload.component.css */
+.img-thumbnail {
+    max-width: 50%;
+    height: auto;
+    // margin-top: 10px;
+}
+
+.fileInput {
+    // background: #072f5f;
+    // color: white;
+    // border-radius: 3px;
+    // padding: 3px
+    background: white;
+    color: #072f5f;
+    padding: 3px;
+    border: 1px solid #072f5f;
+    cursor: pointer;
+    // margin-top: 10px;
+}
+
+.uploadIcon {
+    text-align: center;
+    margin: 0px;
+    margin-top: 7px;
+    margin-left: 8px;
+    color: #072f5f;
+    font-size: 1.1rem;
+}
+
+.disabled-icon {
+    opacity: 0.5;
+    pointer-events: none;
+    /* Prevents clicks */
+    cursor: not-allowed;
+    /* Change cursor to indicate disabled state */
+}
+
+input[type="file"] {
+    display: none;
+}
+
+input[type="file"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    /* Prevents interaction with the input */
+}
+
+.underlined {
+    border-bottom: 2px solid black;
+    padding-bottom: 2px;
+    font-weight: bold;
+}
+.payslipButton {
+    border-color: #072f5f;
+    color: #072f5f;
+    border-radius: 0px;
+    padding: 3px 7px 3px 7px;
+  }
+  .payslipCrossButton{
+    border-color: #072f5f;
+    color: #072f5f;
+    border-radius: 0px;
+    padding: 0px 4px 0px 4px;
+    margin-left: 12px;
+  }
+
+  .invalid-feedback{
+    span{
+      font-size: 10px;
+    }
+  }
+  

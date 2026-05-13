@@ -1,0 +1,2122 @@
+<app-toast-message></app-toast-message>
+<ol class="breadcrumb mx-1 p-1 mb-0 fade-left">
+    <li class="breadcrumb-item active" aria-current="page">
+        <button class="homeBackClass">Profile</button><span>>&nbsp;</span>
+        <strong class="breadcrumb-sub-text">Employee Profile</strong>
+    </li>
+</ol>
+<app-card [options]="false">
+    <div class="divSpinner" *ngIf="isSpinner">
+        <div class="spinner"></div>
+    </div>
+    <!-- This is for Basic Details -->
+    <div class="expansion-panel">
+        <div class="panel-header py-2" (click)="togglePanel(0)">
+
+            <div class="panel-title">
+                <h5 class="m-0">Basic Details</h5>
+            </div>
+            <div class="panel-controls">
+                <span>
+                    <i class="fas" [ngClass]="isOpen[0] ? 'fa-minus' : 'fa-plus'"></i>
+                </span>
+                <span (click)="onEditBasicDetails($event)"><i class="fas fa-pen fa-md"></i></span>
+            </div>
+        </div>
+        <div class="panel-body" *ngIf="isOpen[0]" @slideToggle>
+            <div class="container-fluid">
+                <div class="col-md-12">
+                    <form [formGroup]="basicDetailsForm">
+                        <!-- ../../../assets/employee.png -->
+                        <div class="row">
+                            <div class="col-md-12 d-flex justify-content-end position-relative">
+                                <div class="image-container" *ngIf="!isValidPhoto">
+                                    <img [src]="basicDetailsUploadedImg || '../../../../assets/visitorLogo.jfif'"
+                                        alt="Uploaded" class="preview-img"  />
+                                </div>
+                                <div class="image-container" *ngIf="isValidPhoto && !isProfilePhotoUploded">
+                                    <img [src]="patchPhotoUrl " alt="Uploaded" class="preview-img" />
+                                </div>
+
+                                <div class="image-container" *ngIf="isValidPhoto && isProfilePhotoUploded">
+                                    <img [src]="basicDetailsUploadedImg" alt="Uploaded" class="preview-img" />
+                                </div>
+
+                                <i class="fas fa-plus plus-icon" (click)="triggerFileUpload()"></i>
+                                <input type="file" id="basicDetailsImage" (change)="basicDetailsImage($event)"
+                                    accept=".jpg" style="display: none;" />
+                            </div>
+
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control form-control-sm floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Company" id="basicComId" placeholder=" ">
+                                <label for="basicComId" class="floating-label" style="left: 20px;">Company
+                                    Name*</label>
+                            </div>
+                            
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " formControlName="LegalEntity"
+                                    id="nameInputEntity" placeholder=" ">
+                                <label for="nameInputEntity" class="floating-label" style="left: 20px;">Entity*</label>
+                            </div>
+                           
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="BusinessUnit" id="nameInputBusiness"
+                                    placeholder=" ">
+                                <label for="nameInputBusiness" class="floating-label" style="left: 20px;">Business Unit</label>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Location" id="nameInputLocation" placeholder=" ">
+                                <label for="nameInputLocation" class="floating-label" style="left: 20px;">Location</label>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <select class="form-control floating-input" formControlName="basic_salutation"
+                                    style="left: 20px;" id="basicSalutaionId" (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)">
+                                    <option disabled selected hidden value=""></option>
+                                    <option *ngFor="let salutation of getSalutationList"
+                                        [value]="salutation.SalutationId">
+                                        {{salutation.Salutation}}</option>
+                                </select>
+                                <label for="basicSalutaionId" class="floating-label m-0">Select</label>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="FirstName" id="nameInputFirst" placeholder=" "
+                                    (input)="convertToUppercase($event,'FirstName')"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || basicDetailsForm.get('FirstName')?.touched) && (basicDetailsForm.get('FirstName')?.invalid)}">
+                                <label for="nameInputFirst" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || basicDetailsForm.get('FirstName')?.touched) && basicDetailsForm.get('FirstName')?.invalid}">First
+                                    Name*</label>
+                                <div *ngIf="(isFormSubmitted || basicDetailsForm.get('FirstName')?.touched) && basicDetailsForm.get('FirstName')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="basicDetailsForm.get('FirstName')?.errors?.required"
+                                        class="px-1 ">First Name is required.</span>
+                                    <span *ngIf="basicDetailsForm.get('FirstName')?.errors?.pattern">Only alphabets
+                                        and
+                                        spaces are allowed.</span>
+                                    <span
+                                        *ngIf="(basicDetailsForm.get('FirstName')?.errors?.minlength || basicDetailsForm.get('FirstName')?.errors?.maxlength)">2
+                                        to 50 Charater are allowed.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="MiddleName" id="nameInputMiddle" placeholder=" "
+                                    (input)="convertToUppercase($event,'MiddleName')"
+                                    [ngClass]="{'is-invalid': (basicDetailsForm.get('MiddleName')?.touched) && (basicDetailsForm.get('MiddleName')?.invalid)}">
+                                <label for="nameInputMiddle" class="floating-label" style="left: 20px;">Middle Name</label>
+                                <div *ngIf="basicDetailsForm.get('MiddleName')?.touched && basicDetailsForm.get('MiddleName')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="basicDetailsForm.get('MiddleName')?.errors?.pattern">Only alphabets and
+                                        spaces are allowed.</span>
+                                    <span
+                                        *ngIf="basicDetailsForm.get('MiddleName')?.errors?.minlength || basicDetailsForm.get('MiddleName')?.errors?.maxlength">
+                                        2 to 50 characters are allowed.
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="LastName" id="nameInputLast" placeholder=" "
+                                    (input)="convertToUppercase($event,'LastName')"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || basicDetailsForm.get('LastName')?.touched) && (basicDetailsForm.get('LastName')?.invalid)}">
+                                <label for="nameInputLast" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || basicDetailsForm.get('LastName')?.touched) && (basicDetailsForm.get('LastName')?.invalid)}">Last
+                                    Name*</label>
+                                <div *ngIf="(isFormSubmitted || basicDetailsForm.get('LastName')?.touched) && basicDetailsForm.get('LastName')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="basicDetailsForm.get('LastName')?.errors?.required" class="px-1 ">Last
+                                        Name is required.</span>
+                                    <span *ngIf="basicDetailsForm.get('LastName')?.errors?.pattern">Only alphabets
+                                        and
+                                        spaces are allowed.</span>
+                                    <span
+                                        *ngIf="(basicDetailsForm.get('LastName')?.errors?.minlength || basicDetailsForm.get('LastName')?.errors?.maxlength)">2
+                                        to 50 Charater are allowed.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="DeptName" id="nameInputDepart" placeholder=" ">
+                                <label for="nameInputDepart" class="floating-label" style="left: 20px;">Department
+                                    Name*</label>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Designation" id="nameInputDesignation"
+                                    placeholder=" ">
+                                <label for="nameInputDesignation" class="floating-label" style="left: 20px;">Designation*</label>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " id="nameInputEmpCode" placeholder=" "
+                                    (focus)="onFocus($event)" (blur)="onBlur($event)" formControlName="EmpCode"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || basicDetailsForm.get('EmpCode')?.touched) && (basicDetailsForm.get('EmpCode')?.invalid)}">
+                                <label for="nameInputEmpCode" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || basicDetailsForm.get('EmpCode')?.touched) && (basicDetailsForm.get('EmpCode')?.invalid)}">Employee
+                                    Code*</label>
+                                <div *ngIf="(isFormSubmitted || basicDetailsForm.get('EmpCode')?.touched) && basicDetailsForm.get('EmpCode')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="basicDetailsForm.get('EmpCode')?.errors?.required"
+                                        class="px-1 ">Employee Code is required.</span>
+                                </div>
+                            </div>
+                            <!-- (keydown)="preventKeyboardInput($event)" (keypress)="preventKeyboardInput($event)" (paste)="preventPaste($event)" -->
+                            <div class="form-group floating-label-group col-md-3">
+                                <div class="custom-date-input">
+                                    <input type="date" placeholder=" " formControlName="DOB" class="form-control floating-input"
+                                         [max]="today" [ngClass]="{'is-invalid': (isFormSubmitted || basicDetailsForm.get('DOB')?.touched) && (basicDetailsForm.get('DOB')?.invalid)}" 
+                                        id="bacicDOBId"/>
+                                    <label for="bacicDOBId" class="floating-label"
+                                        [ngClass]="{'text-danger': (isFormSubmitted || basicDetailsForm.get('DOB')?.touched) && (basicDetailsForm.get('DOB')?.invalid)}">
+                                        Date Of Birth*
+                                    </label>
+                                    <div *ngIf="(isFormSubmitted || basicDetailsForm.get('DOB')?.touched) && basicDetailsForm.get('DOB')?.invalid"
+                                        class="invalid-feedback m-0">
+                                        <span *ngIf="basicDetailsForm.get('DOB')?.errors?.required" class="px-1">Date Of
+                                            Birth is required.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " id="nameInputMobileNo" placeholder=" "
+                                    (focus)="onFocus($event)" (blur)="onBlur($event)" formControlName="MobileNo"
+                                    (keypress)="handleAlphaChar($event)" minlength="10" maxlength="10"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || basicDetailsForm.get('MobileNo')?.touched) && (basicDetailsForm.get('MobileNo')?.invalid)}">
+                                <label for="nameInputMobileNo" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || basicDetailsForm.get('MobileNo')?.touched) && (basicDetailsForm.get('MobileNo')?.invalid)}">Mobile
+                                    Number*</label>
+                                <div *ngIf="(isFormSubmitted || basicDetailsForm.get('MobileNo')?.touched) && basicDetailsForm.get('MobileNo')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="basicDetailsForm?.get('MobileNo')?.errors?.required">Mobile Number is
+                                        required.</span>
+                                    <span *ngIf="basicDetailsForm?.get('MobileNo')?.errors?.pattern">Invalid Mobile
+                                        Number.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " id="nameInputEmail" placeholder=" "
+                                    (focus)="onFocus($event)" (blur)="onBlur($event)" formControlName="EmailId"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || basicDetailsForm.get('EmailId')?.touched) && (basicDetailsForm.get('EmailId')?.invalid)}">
+                                <label for="nameInputEmail" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || basicDetailsForm.get('EmailId')?.touched) && (basicDetailsForm.get('EmailId')?.invalid)}">Official
+                                    Email
+                                    Id*</label>
+                                <div *ngIf="(isFormSubmitted || basicDetailsForm.get('EmailId')?.touched) && basicDetailsForm.get('EmailId')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="basicDetailsForm?.get('EmailId')?.errors?.required">Official Email
+                                        ID is required.</span>
+                                    <span *ngIf="basicDetailsForm?.get('EmailId')?.errors?.pattern">Invalid Email
+                                        ID</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <select class="form-control floating-input" formControlName="BloodGroup"
+                                    (focus)="onFocus($event)" (blur)="onBlur($event)" id="nameInputblood"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || basicDetailsForm.get('BloodGroup')?.touched) && (basicDetailsForm.get('BloodGroup')?.invalid)}">
+                                    <option selected hidden value="" disabled></option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                </select>
+                                <label for="nameInputblood" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || basicDetailsForm.get('BloodGroup')?.touched) && (basicDetailsForm.get('BloodGroup')?.invalid)}">Blood
+                                    Group*</label>
+                                <div *ngIf="(isFormSubmitted || basicDetailsForm.get('BloodGroup')?.touched) && basicDetailsForm.get('BloodGroup')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="basicDetailsForm.get('BloodGroup')?.errors?.required"
+                                        class="px-1 ">Blood Group is required.</span>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group floating-label-group col-md-3 ">
+                                <select class="form-control floating-input" formControlName="Gender"
+                                    (focus)="onFocus($event)" (blur)="onBlur($event)" id="genderSelect"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || basicDetailsForm.get('Gender')?.touched) && (basicDetailsForm.get('Gender')?.invalid)}">
+                                    <option selected hidden value="" disabled></option>
+                                    <option *ngFor="let gender of getGenderList" [value]="gender.Gender">
+                                        {{gender.Gender}}</option>
+                                </select>
+                                <label for="genderSelect" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || basicDetailsForm.get('Gender')?.touched) && (basicDetailsForm.get('Gender')?.invalid)}">Gender*</label>
+                                <div *ngIf="(isFormSubmitted || basicDetailsForm.get('Gender')?.touched) && basicDetailsForm.get('Gender')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="basicDetailsForm.get('Gender')?.errors?.required" class="px-1 ">Gender
+                                        is required.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <select class="form-control floating-input" formControlName="MaritalStatus"
+                                    (focus)="onFocus($event)" (blur)="onBlur($event)" id="maritalSelect"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || basicDetailsForm.get('MaritalStatus')?.touched) && (basicDetailsForm.get('MaritalStatus')?.invalid)}">
+                                    <option value="Married">Married</option>
+                                    <option value="Single">Single</option>
+                                </select>
+                                <label for="maritalSelect" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || basicDetailsForm.get('MaritalStatus')?.touched) && (basicDetailsForm.get('MaritalStatus')?.invalid)}">Marital
+                                    Status*</label>
+                                <div *ngIf="(isFormSubmitted || basicDetailsForm.get('MaritalStatus')?.touched) && basicDetailsForm.get('MaritalStatus')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="basicDetailsForm.get('MaritalStatus')?.errors?.required"
+                                        class="px-1 ">Marital Status is required.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <div class="custom-date-input">
+                                    <input type="date" placeholder=" " formControlName="JoiningDate"
+                                        (focus)="onFocus($event)" (blur)="onBlur($event)" class="form-control floating-input" [max]="today" id="basicJoiningDateId"
+                                        [ngClass]="{'is-invalid': (isFormSubmitted || basicDetailsForm.get('JoiningDate')?.touched) && (basicDetailsForm.get('JoiningDate')?.invalid || basicDetailsForm.hasError('dateComparison'))}" />
+                                    <label for="basicJoiningDateId" class="floating-label"
+                                        [ngClass]="{'text-danger': (isFormSubmitted || basicDetailsForm.get('JoiningDate')?.touched) && (basicDetailsForm.get('JoiningDate')?.invalid || basicDetailsForm.hasError('dateComparison'))}">
+                                        Joining Date*
+                                    </label>
+                                    <div *ngIf="(isFormSubmitted || basicDetailsForm.get('JoiningDate')?.touched) && (basicDetailsForm.get('JoiningDate')?.invalid || basicDetailsForm.hasError('dateComparison'))"
+                                        class="invalid-feedback m-0">
+                                        <span *ngIf="basicDetailsForm.get('JoiningDate')?.errors?.required"
+                                            class="px-1">Joining Date is required.</span>
+                                        <span *ngIf="basicDetailsForm.hasError('dateComparison')" class="px-1">Joining
+                                            Date cannot be the same as or earlier than Date of Birth.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                             <div class="form-group floating-label-group col-md-3 inputPadding" #dropdownContainer>
+                                <!-- Button acting as input -->
+                                <button class="form-control floating-input text-start" type="button"
+                                    (click)="bcaToggleDropdown($event)" style="height: 40px;"
+                                    [disabled]="basicDetailsForm.get('authorisedEntity')?.disabled">
+                                    <span class="button-text">{{ bcaSelectedEntityNames }}</span>
+                                </button>
+
+                                <!-- Floating label -->
+                                <label class="floating-label" style="left: 20px;"
+                                    [class.floating]="bcaSelectedEntityNames">
+                                    Authorised Entity
+                                </label>
+
+                                <!-- Dropdown list -->
+                                <div class="dropdown-menu w-100 show" *ngIf="bcaDropdownOpen">
+                                    <div class="dropdown-item" *ngFor="let entity of getLegalEntity">
+                                        <input type="checkbox" [checked]="bcaIsSelected(entity.LEId)"
+                                            (change)="bcaOnEntityChange(entity)" />
+                                        {{ entity.LegalEntity }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="approverPerson" id="nameInputApprove"
+                                    placeholder=" ">
+                                <label for="nameInputApprove" class="floating-label" style="left: 20px;">Approver</label>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 ">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="employeeType" id="nameInputEmptype"
+                                    placeholder=" ">
+                                <label for="nameInputEmptype" class="floating-label" style="left: 20px;">Employee Type</label>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding" *ngIf="isContractEnd">
+                                <div class="custom-date-input">
+                                    <input type="date" placeholder=" " formControlName="contractEndDate"
+                                        (focus)="onFocus($event)" (blur)="onBlur($event)"
+                                         id="basicConEndDateId" class="form-control floating-input " [min]="today"
+                                        [ngClass]="{'is-invalid': (isFormSubmitted || basicDetailsForm.get('contractEndDate')?.touched) && (basicDetailsForm.get('contractEndDate')?.invalid)}" />
+                                    <label for="basicConEndDateId" class="floating-label"
+                                        [ngClass]="{'text-danger': (isFormSubmitted || basicDetailsForm.get('contractEndDate')?.touched) && (basicDetailsForm.get('contractEndDate')?.invalid)}">Contract
+                                        End Date</label>
+                                    <div *ngIf="(isFormSubmitted || basicDetailsForm.get('contractEndDate')?.touched) && basicDetailsForm.get('contractEndDate')?.invalid"
+                                        class="invalid-feedback m-0">
+                                        <span *ngIf="basicDetailsForm.get('contractEndDate')?.errors?.required"
+                                            class="px-1 ">Contract End Date is required.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display: flex;justify-content: end;">
+                            <button class="HRMS_primary_button" type="submit" *ngIf="isBasicUpdateButton"
+                                (click)="updateBasicDetials()">Update</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- This is for Contact Information -->
+    <div class="expansion-panel">
+        <div class="panel-header py-2" (click)="togglePanel(1)">
+            <div class="panel-title">
+                <h5 class="m-0">Contact Information</h5>
+            </div>
+            <div class="panel-controls">
+                <span>
+                    <i class="fas" [ngClass]="isOpen[1] ? 'fa-minus' : 'fa-plus'"></i>
+                </span>
+                <span (click)="onEditClickContact($event)"><i class="fas fa-pen fa-md"></i></span>
+            </div>
+        </div>
+        <div class="panel-body" *ngIf="isOpen[1]" @slideToggle>
+            <div class="container-fluid w-100">
+                <form [formGroup]="contactInfoForm">
+                    <div class="col-md-12">
+                        <span class="underlined">Personal Information :</span>
+                        <div class="row mt-2">
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="PMailId" id="nameInputPmail" placeholder=" "
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || contactInfoForm.get('PMailId')?.touched) && (contactInfoForm.get('PMailId')?.invalid)}">
+                                <label for="nameInputPmail" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || contactInfoForm.get('PMailId')?.touched) && contactInfoForm.get('PMailId')?.invalid}">Personal
+                                    Mail ID*</label>
+                                <div *ngIf="(isFormSubmitted || contactInfoForm.get('PMailId')?.touched) && contactInfoForm.get('PMailId')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm?.get('PMailId')?.errors?.required"
+                                        class="px-1">Personal
+                                        Email ID is
+                                        required.</span>
+                                    <span *ngIf="contactInfoForm?.get('PMailId')?.errors?.pattern" class="px-1">Invalid
+                                        Personal Email ID
+                                        .</span>
+                                </div>
+                            </div>
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="TotalExperience" id="nameInputTotal"
+                                    placeholder=" ">
+                                <label for="nameInputTotal" class="floating-label" style="left: 20px;">Total
+                                    Experience</label>
+                            </div>
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="RelevantExperience" id="nameInputRelavant"
+                                    placeholder=" ">
+                                <label for="nameInputRelavant" class="floating-label" style="left: 20px;">Relevant
+                                    Experience</label>
+                            </div>
+                            <div class="form-group floating-label-group col-md-3 ">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Height" id="nameInputHeight" placeholder=" "
+                                    (keypress)="handleAlphaChar($event)" minlength="2" maxlength="3"
+                                    [ngClass]="{'is-invalid': (contactInfoForm.get('Height')?.invalid) && (contactInfoForm.get('Height')?.hasError('pattern'))}">
+                                <label for="nameInputHeight" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (contactInfoForm.get('Height')?.invalid) && (contactInfoForm.get('Height')?.hasError('pattern'))}">Height(cm)</label>
+                                <div *ngIf="(contactInfoForm.get('Height')?.invalid) && (contactInfoForm.get('Height')?.hasError('pattern'))"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('Height')?.hasError('pattern')" class="px-1">Enter
+                                        Valid Height.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Weight" id="nameInputWeight" placeholder=" "
+                                    (keypress)="handleAlphaChar($event)" minlength="2" maxlength="3"
+                                    [ngClass]="{'is-invalid': (contactInfoForm.get('Weight')?.invalid) && (contactInfoForm.get('Weight')?.hasError('pattern'))}">
+                                <label for="nameInputWeight" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (contactInfoForm.get('Weight')?.invalid) && (contactInfoForm.get('Weight')?.hasError('pattern'))}">Weight(kg)</label>
+                                <div *ngIf="(contactInfoForm.get('Weight')?.invalid) && (contactInfoForm.get('Weight')?.hasError('pattern'))"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('Weight')?.hasError('pattern')" class="px-1">Enter
+                                        Valid Weight.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Disability" id="nameInputDesablity" placeholder=" "
+                                    [ngClass]="{'is-invalid': (contactInfoForm.get('Disability')?.touched) && (contactInfoForm.get('Disability')?.invalid)}">
+                                <label for="nameInputDesablity" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (contactInfoForm.get('Disability')?.touched) && contactInfoForm.get('Disability')?.invalid}">Critical
+                                    Alignment</label>
+                                <div *ngIf="contactInfoForm.get('Disability')?.touched && contactInfoForm.get('Disability')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('Disability')?.errors?.pattern">Only alphabets and
+                                        spaces are allowed.</span>
+                                    <span
+                                        *ngIf="contactInfoForm.get('Disability')?.errors?.minlength || contactInfoForm.get('Disability')?.errors?.maxlength">
+                                        2 to 50 characters are allowed.
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="ECActivities" id="nameInputExtra"
+                                    placeholder=" ">
+                                <label for="nameInputExtra" class="floating-label" style="left: 20px;">Extra Curricular
+                                    Activities</label>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 ">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Cast" id="nameInputCaste" placeholder=" ">
+                                <label for="nameInputCaste" class="floating-label" style="left: 20px;">Caste</label>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Religion" id="nameInputReligion" placeholder=" ">
+                                <label for="nameInputReligion" class="floating-label" style="left: 20px;">Religion</label>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Country" id="nameInputCountry" placeholder=" "
+                                    [ngClass]="{'is-invalid': (contactInfoForm.get('Country')?.touched) && (contactInfoForm.get('Country')?.invalid)}">
+                                <label for="nameInputCountry" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (contactInfoForm.get('Country')?.touched) && contactInfoForm.get('Country')?.invalid}">Country</label>
+                                <div *ngIf="contactInfoForm.get('Country')?.touched && contactInfoForm.get('Country')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('Country')?.errors?.pattern">Only
+                                        alphabets and spaces are allowed.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Nationality" id="nameInputNation" placeholder=" "
+                                    [ngClass]="{'is-invalid': (contactInfoForm.get('Nationality')?.touched) && (contactInfoForm.get('Nationality')?.invalid)}">
+                                <label for="nameInputNation" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (contactInfoForm.get('Nationality')?.touched) && contactInfoForm.get('Nationality')?.invalid}">Nationality</label>
+                                <div *ngIf="contactInfoForm.get('Nationality')?.touched && contactInfoForm.get('Nationality')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('Nationality')?.errors?.pattern">Only
+                                        alphabets and spaces are allowed.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <span class="underlined">Contact Details:</span>
+                        <div class="row mt-2">
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="AMobileNo" id="nameInputAlter" placeholder=" "
+                                    (keypress)="handleAlphaChar($event)" minlength="10" maxlength="10"
+                                    [ngClass]="{'is-invalid': (contactInfoForm.get('AMobileNo')?.invalid) && (contactInfoForm.get('AMobileNo')?.hasError('pattern'))}">
+                                <label for="nameInputAlter" class="floating-label" style="left: 20px;">Alternative Mobile
+                                    Number</label>
+                                <div *ngIf="(contactInfoForm.get('AMobileNo')?.invalid) && (contactInfoForm.get('AMobileNo')?.hasError('pattern'))"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('AMobileNo')?.hasError('pattern')"
+                                        class="px-1">Enter
+                                        Valid Phone Number.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="FatherName" id="nameInputFather" placeholder=" "
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || contactInfoForm.get('FatherName')?.touched) && (contactInfoForm.get('FatherName')?.invalid)}">
+                                <label for="nameInputFather" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || contactInfoForm.get('FatherName')?.touched) && contactInfoForm.get('FatherName')?.invalid}">Father's
+                                    Name*</label>
+                                <div *ngIf="(isFormSubmitted || contactInfoForm.get('FatherName')?.touched) && contactInfoForm.get('FatherName')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm?.get('FatherName')?.errors?.required"
+                                        class="px-1">Father's
+                                        Name is
+                                        required.</span>
+                                    <span *ngIf="basicDetailsForm.get('FatherName')?.errors?.pattern">Only alphabets
+                                        and
+                                        spaces are allowed.</span>
+                                    <span *ngIf="contactInfoForm?.get('FatherName')?.errors?.pattern"
+                                        class="px-1">Invalid
+                                        Father's Name</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " id="nameInputFNO" placeholder=" "
+                                    (focus)="onFocus($event)" (blur)="onBlur($event)" formControlName="FContactNo"
+                                    (keypress)="handleAlphaChar($event)" minlength="10" maxlength="10"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || contactInfoForm.get('FContactNo')?.touched) && (contactInfoForm.get('FContactNo')?.invalid)}">
+                                <label for="nameInputFNO" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || contactInfoForm.get('FContactNo')?.touched) && (contactInfoForm.get('FContactNo')?.invalid)}">Father's
+                                    Contact
+                                    Number*</label>
+                                <div *ngIf="(isFormSubmitted || contactInfoForm.get('FContactNo')?.touched) && contactInfoForm.get('FContactNo')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm?.get('FContactNo')?.errors?.required">Father's Contact
+                                        Number is
+                                        required.</span>
+                                    <span *ngIf="contactInfoForm?.get('FContactNo')?.errors?.pattern">Invalid Mobile
+                                        Number.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3">
+                                <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="MotherName" id="nameInputMNO" placeholder=" "
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || contactInfoForm.get('MotherName')?.touched) && (contactInfoForm.get('MotherName')?.invalid)}">
+                                <label for="nameInputMNO" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': ( isFormSubmitted || contactInfoForm.get('MotherName')?.touched) && contactInfoForm.get('MotherName')?.invalid}">Mother's
+                                    Name*</label>
+                                <div *ngIf="(isFormSubmitted || contactInfoForm.get('MotherName')?.touched) && contactInfoForm.get('MotherName')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm?.get('MotherName')?.errors?.required"
+                                        class="px-1">Mother's
+                                        Name is required.</span>
+                                    <span style="font-size: 9px;"
+                                        *ngIf="contactInfoForm.get('MotherName')?.errors?.pattern">Only alphabets and
+                                        spaces are allowed.</span>
+                                    <span style="font-size: 9px;"
+                                        *ngIf="contactInfoForm.get('MotherName')?.errors?.minlength || contactInfoForm.get('MotherName')?.errors?.maxlength">
+                                        2 to 50 characters are allowed.
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="MContactNo" id="nameInputMCon" placeholder=" "
+                                    (keypress)="handleAlphaChar($event)" minlength="10" maxlength="10"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || contactInfoForm.get('MContactNo')?.touched) && (contactInfoForm.get('MContactNo')?.invalid)}">
+                                <label for="nameInputMCon" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || contactInfoForm.get('MContactNo')?.touched) && (contactInfoForm.get('MContactNo')?.invalid)}">Mother's
+                                    Contact
+                                    Number*</label>
+                                <div *ngIf="(isFormSubmitted || contactInfoForm.get('MContactNo')?.touched) && contactInfoForm.get('MContactNo')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm?.get('MContactNo')?.errors?.required">Mother's Contact
+                                        Number is
+                                        required.</span>
+                                    <span *ngIf="contactInfoForm?.get('MContactNo')?.errors?.pattern">Invalid Mobile
+                                        Number.</span>
+                                </div>
+                            </div>
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="HusbandName" id="nameInputHusNam" placeholder=" "
+                                    [ngClass]="{'is-invalid': (contactInfoForm.get('HusbandName')?.touched) && (contactInfoForm.get('HusbandName')?.invalid)}">
+                                <label for="nameInputHusNam" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (contactInfoForm.get('HusbandName')?.touched) && contactInfoForm.get('HusbandName')?.invalid}">Spouse
+                                    Name</label>
+                                <div *ngIf="contactInfoForm.get('HusbandName')?.touched && contactInfoForm.get('HusbandName')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('HusbandName')?.errors?.pattern">Only alphabets and
+                                        spaces are allowed.</span>
+                                    <span
+                                        *ngIf="contactInfoForm.get('HusbandName')?.errors?.minlength || contactInfoForm.get('HusbandName')?.errors?.maxlength">
+                                        2 to 50 characters are allowed.
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="HContactNo" id="nameInputSpouce" placeholder=" "
+                                    (keypress)="handleAlphaChar($event)" minlength="10" maxlength="10"
+                                    [ngClass]="{'is-invalid': (contactInfoForm.get('HContactNo')?.invalid) && (contactInfoForm.get('HContactNo')?.hasError('pattern'))}">
+                                <label for="nameInputSpouce" class="floating-label" style="left: 20px;">Spouse Contact
+                                    Number</label>
+                                <div *ngIf="(contactInfoForm.get('HContactNo')?.invalid) && (contactInfoForm.get('HContactNo')?.hasError('pattern'))"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('HContactNo')?.hasError('pattern')"
+                                        class="px-1">Enter
+                                        Valid Phone Number.</span>
+                                </div>
+                            </div>
+                            <div class="form-group floating-label-group col-md-3">
+                                <div class="custom-date-input">
+                                    <input type="date" placeholder=" " formControlName="date_of_anniversary"
+                                         [max]="today" id="dateOfAnnivId" class="form-control floating-input" />
+                                    <label for="dateOfAnnivId" class="floating-label">
+                                        Date Of Anniversary
+                                    </label>
+                                  
+                                </div>
+                            </div>
+                        </div> -->
+                        
+                        <span class="underlined">Emergency Contact Details :</span>
+                        <div class="row mt-2">
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="EContactName" id="nameInputEcon"
+                                    placeholder=" "
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || contactInfoForm.get('EContactName')?.touched) && (contactInfoForm.get('EContactName')?.invalid)}">
+                                <label for="nameInputEcon" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || contactInfoForm.get('EContactName')?.touched) && contactInfoForm.get('EContactName')?.invalid}">Name*</label>
+                                <div *ngIf="(isFormSubmitted || contactInfoForm.get('EContactName')?.touched) && contactInfoForm.get('EContactName')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('EContactName')?.errors?.required" class="px-1 ">
+                                        Name is required.</span>
+                                    <span *ngIf="contactInfoForm.get('EContactName')?.errors?.pattern">Only alphabets
+                                        and
+                                        spaces are allowed.</span>
+                                    <span
+                                        *ngIf="contactInfoForm.get('EContactName')?.errors?.minlength || contactInfoForm.get('EContactName')?.errors?.maxlength">
+                                        2 to 50 characters are allowed.
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="EContactNo" id="nameInputEcoNo" placeholder=" "
+                                    (keypress)="handleAlphaChar($event)" minlength="10" maxlength="10"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || contactInfoForm.get('EContactNo')?.touched) && (contactInfoForm.get('EContactNo')?.invalid)}">
+                                <label for="nameInputEcoNo" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || contactInfoForm.get('EContactNo')?.touched) && (contactInfoForm.get('EContactNo')?.invalid)}">
+                                    Contact Number*</label>
+                                <div *ngIf="(isFormSubmitted || contactInfoForm.get('EContactNo')?.touched) && contactInfoForm.get('EContactNo')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm?.get('EContactNo')?.errors?.required">Contact
+                                        Number is
+                                        required.</span>
+                                    <span *ngIf="contactInfoForm?.get('EContactNo')?.errors?.pattern">Invalid Mobile
+                                        Number.</span>
+                                </div>
+                            </div>
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="EContactRelationship" id="nameInputERel"
+                                    placeholder=" "
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || contactInfoForm.get('EContactRelationship')?.touched) && (contactInfoForm.get('EContactRelationship')?.invalid)}">
+                                <label for="nameInputERel" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || contactInfoForm.get('EContactRelationship')?.touched) && contactInfoForm.get('EContactRelationship')?.invalid}">
+                                    Relationship*</label>
+                                <div *ngIf="(isFormSubmitted || contactInfoForm.get('EContactRelationship')?.touched) && contactInfoForm.get('EContactRelationship')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('EContactRelationship')?.errors?.required"
+                                        class="px-1 "> Relationship is required.</span>
+                                    <span *ngIf="contactInfoForm.get('EContactRelationship')?.errors?.pattern">Only
+                                        alphabets and
+                                        spaces are allowed.</span>
+                                    <span
+                                        *ngIf="contactInfoForm.get('EContactRelationship')?.errors?.minlength || contactInfoForm.get('EContactRelationship')?.errors?.maxlength">
+                                        2 to 50 characters are allowed.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="EContactName1" id="EContactNameId1"
+                                    placeholder=" " (input)="convertToUppercase($event,'EContactName1')"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || contactInfoForm.get('EContactName1')?.touched) && (contactInfoForm.get('EContactName1')?.invalid)}">
+                                <label for="EContactNameId1" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || contactInfoForm.get('EContactName1')?.touched) && contactInfoForm.get('EContactName1')?.invalid}">Name*</label>
+                                <div *ngIf="(isFormSubmitted || contactInfoForm.get('EContactName1')?.touched) && contactInfoForm.get('EContactName1')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('EContactName1')?.errors?.required" class="px-1 ">
+                                        Name is required.</span>
+                                    <span *ngIf="contactInfoForm.get('EContactName1')?.errors?.pattern">Only alphabets
+                                        and
+                                        spaces are allowed.</span>
+                                    <span
+                                        *ngIf="contactInfoForm.get('EContactName1')?.errors?.minlength || contactInfoForm.get('EContactName1')?.errors?.maxlength">
+                                        2 to 50 characters are allowed.
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="EContactNo1" id="EContactNoId1"
+                                    placeholder=" " (keypress)="handleAlphaChar($event)" minlength="10" maxlength="10"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || contactInfoForm.get('EContactNo1')?.touched) && (contactInfoForm.get('EContactNo1')?.invalid)}">
+                                <label for="EContactNoId1" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || contactInfoForm.get('EContactNo1')?.touched) && (contactInfoForm.get('EContactNo1')?.invalid)}">
+                                    Contact Number*</label>
+                                <div *ngIf="(isFormSubmitted || contactInfoForm.get('EContactNo1')?.touched) && contactInfoForm.get('EContactNo1')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm?.get('EContactNo1')?.errors?.required">Contact
+                                        Number is
+                                        required.</span>
+                                    <span *ngIf="contactInfoForm?.get('EContactNo1')?.errors?.pattern">Invalid Mobile
+                                        Number.</span>
+                                </div>
+                            </div>
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="EContactRelationship1"
+                                    id="EContactRelationshipId1" placeholder=" "
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || contactInfoForm.get('EContactRelationship1')?.touched) && (contactInfoForm.get('EContactRelationship1')?.invalid)}">
+                                <label for="EContactRelationshipId1" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || contactInfoForm.get('EContactRelationship1')?.touched) && contactInfoForm.get('EContactRelationship1')?.invalid}">
+                                    Relationship*</label>
+                                <div *ngIf="(isFormSubmitted || contactInfoForm.get('EContactRelationship1')?.touched) && contactInfoForm.get('EContactRelationship1')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('EContactRelationship1')?.errors?.required"
+                                        class="px-1 "> Relationship is required.</span>
+                                    <span *ngIf="contactInfoForm.get('EContactRelationship1')?.errors?.pattern">Only
+                                        alphabets and
+                                        spaces are allowed.</span>
+                                    <span
+                                        *ngIf="contactInfoForm.get('EContactRelationship1')?.errors?.minlength || contactInfoForm.get('EContactRelationship1')?.errors?.maxlength">
+                                        2 to 50 characters are allowed.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="EContactName2" id="EContactNameId2"
+                                    placeholder=" " (input)="convertToUppercase($event,'EContactName2')"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || contactInfoForm.get('EContactName2')?.touched) && (contactInfoForm.get('EContactName2')?.invalid)}">
+                                <label for="EContactNameId2" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || contactInfoForm.get('EContactName2')?.touched) && contactInfoForm.get('EContactName2')?.invalid}">Name*</label>
+                                <div *ngIf="(isFormSubmitted || contactInfoForm.get('EContactName2')?.touched) && contactInfoForm.get('EContactName2')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('EContactName2')?.errors?.required" class="px-1 ">
+                                        Name is required.</span>
+                                    <span *ngIf="contactInfoForm.get('EContactName2')?.errors?.pattern">Only alphabets
+                                        and
+                                        spaces are allowed.</span>
+                                    <span
+                                        *ngIf="contactInfoForm.get('EContactName2')?.errors?.minlength || contactInfoForm.get('EContactName2')?.errors?.maxlength">
+                                        2 to 50 characters are allowed.
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="EContactNo2" id="EContactNoId2"
+                                    placeholder=" " (keypress)="handleAlphaChar($event)" minlength="10" maxlength="10"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || contactInfoForm.get('EContactNo2')?.touched) && (contactInfoForm.get('EContactNo2')?.invalid)}">
+                                <label for="EContactNoId2" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || contactInfoForm.get('EContactNo2')?.touched) && (contactInfoForm.get('EContactNo2')?.invalid)}">
+                                    Contact Number*</label>
+                                <div *ngIf="(isFormSubmitted || contactInfoForm.get('EContactNo2')?.touched) && contactInfoForm.get('EContactNo2')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm?.get('EContactNo2')?.errors?.required">Contact
+                                        Number is
+                                        required.</span>
+                                    <span *ngIf="contactInfoForm?.get('EContactNo2')?.errors?.pattern">Invalid Mobile
+                                        Number.</span>
+                                </div>
+                            </div>
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="EContactRelationship2"
+                                    id="EContactRelationshipId2" placeholder=" "
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || contactInfoForm.get('EContactRelationship2')?.touched) && (contactInfoForm.get('EContactRelationship2')?.invalid)}">
+                                <label for="EContactRelationshipId2" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || contactInfoForm.get('EContactRelationship2')?.touched) && contactInfoForm.get('EContactRelationship2')?.invalid}">
+                                    Relationship*</label>
+                                <div *ngIf="(isFormSubmitted || contactInfoForm.get('EContactRelationship2')?.touched) && contactInfoForm.get('EContactRelationship2')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('EContactRelationship2')?.errors?.required"
+                                        class="px-1 "> Relationship is required.</span>
+                                    <span *ngIf="contactInfoForm.get('EContactRelationship2')?.errors?.pattern">Only
+                                        alphabets and
+                                        spaces are allowed.</span>
+                                    <span
+                                        *ngIf="contactInfoForm.get('EContactRelationship2')?.errors?.minlength || contactInfoForm.get('EContactRelationship2')?.errors?.maxlength">
+                                        2 to 50 characters are allowed.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <span class="underlined">Permanent Address :</span>
+                        <div class="row mt-2">
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Per_Building" id="nameInputPBuil"
+                                    placeholder=" ">
+                                <label for="nameInputPBuil" class="floating-label" style="left: 20px;">Building Name</label>
+                            </div>
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Per_Door_Number" id="nameInputPDoor"
+                                    placeholder=" ">
+                                <label for="nameInputPDoor" class="floating-label" style="left: 20px;">Door Number</label>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Per_Street" id="contStreetId" placeholder=" ">
+                                <label for="contStreetId" class="floating-label" style="left: 20px;">Street</label>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3">
+                                <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Per_City" id="nameInputPCity" placeholder=" "
+                                    [ngClass]="{'is-invalid': (contactInfoForm.get('Per_City')?.touched) && (contactInfoForm.get('Per_City')?.invalid)}">
+                                <label for="nameInputPCity" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (contactInfoForm.get('Per_City')?.touched) && contactInfoForm.get('Per_City')?.invalid}">City</label>
+                                <div *ngIf="contactInfoForm.get('Per_City')?.touched && contactInfoForm.get('Per_City')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('Per_City')?.errors?.pattern">Only
+                                        alphabets and spaces are allowed.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Per_State" id="nameInputPState" placeholder=" "
+                                    [ngClass]="{'is-invalid': (contactInfoForm.get('Per_State')?.touched) && (contactInfoForm.get('Per_State')?.invalid)}">
+                                <label for="nameInputPState" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (contactInfoForm.get('Per_State')?.touched) && contactInfoForm.get('Per_State')?.invalid}">State</label>
+                                <div *ngIf="contactInfoForm.get('Per_State')?.touched && contactInfoForm.get('Per_State')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('Per_State')?.errors?.pattern">Only
+                                        alphabets and spaces are allowed.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Per_Country" id="nameInputPCountry" placeholder=" "
+                                    [ngClass]="{'is-invalid': (contactInfoForm.get('Per_Country')?.touched) && (contactInfoForm.get('Per_Country')?.invalid)}">
+                                <label for="nameInputPCountry" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (contactInfoForm.get('Per_Country')?.touched) && contactInfoForm.get('Per_Country')?.invalid}">Country</label>
+                                <div *ngIf="contactInfoForm.get('Per_Country')?.touched && contactInfoForm.get('Per_Country')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('Per_Country')?.errors?.pattern">Only
+                                        alphabets and spaces are allowed.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Per_Location" id="nameInputPLandMark"
+                                    placeholder=" ">
+                                <label for="nameInputPLandMark" class="floating-label" style="left: 20px;">Landmark</label>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 ">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Per_PinCode" id="nameInputPcode" placeholder=" "
+                                    (keypress)="handleAlphaChar($event)" minlength="5" maxlength="6"
+                                    [ngClass]="{'is-invalid': (contactInfoForm.get('Per_PinCode')?.invalid) && (contactInfoForm.get('Per_PinCode')?.hasError('pattern'))}">
+                                <label for="nameInputPcode" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (contactInfoForm.get('Per_PinCode')?.invalid) && (contactInfoForm.get('Per_PinCode')?.hasError('pattern'))}">PinCode</label>
+                                <div *ngIf="(contactInfoForm.get('Per_PinCode')?.invalid) && (contactInfoForm.get('Per_PinCode')?.hasError('pattern'))"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('Per_PinCode')?.hasError('pattern')"
+                                        class="px-1">Enter Valid Pincode.</span>
+                                </div>
+                            </div>
+
+                        </div>
+                        <span class="underlined">Current Address :</span>
+                        <div class="d-flex align-items-center mb-3 same-address-wrapper">
+                            <input type="checkbox" id="sameAddress" class="form-check-input custom-checkbox"
+                                (change)="sameAsPermanent($event)">
+                            <label for="sameAddress" class="ms-2 same-address-label">
+                                Same as Permanent Address
+                            </label>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Curr_Building" id="nameInputCBuild"
+                                    placeholder=" ">
+                                <label for="nameInputCBuild" class="floating-label" style="left: 20px;">Building Name</label>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Curr_Door_Number" id="nameInputCDoor"
+                                    placeholder=" ">
+                                <label for="nameInputCDoor" class="floating-label" style="left: 20px;">Door Number</label>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Curr_Street" id="nameInputCStreet"
+                                    placeholder=" ">
+                                <label for="nameInputCStreet" class="floating-label" style="left: 20px;">Street</label>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 ">
+                                <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Curr_City" id="contCurrCityId" placeholder=" "
+                                    [ngClass]="{'is-invalid': (contactInfoForm.get('Curr_City')?.touched) && (contactInfoForm.get('Curr_City')?.invalid)}">
+                                <label for="contCurrCityId" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (contactInfoForm.get('Curr_City')?.touched) && contactInfoForm.get('Curr_City')?.invalid}">City</label>
+                                <div *ngIf="contactInfoForm.get('Curr_City')?.touched && contactInfoForm.get('Curr_City')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('Curr_City')?.errors?.pattern">Only
+                                        alphabets and spaces are allowed.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Curr_State" id="contCurrStateId" placeholder=" "
+                                    [ngClass]="{'is-invalid': (contactInfoForm.get('Curr_State')?.touched) && (contactInfoForm.get('Curr_State')?.invalid)}">
+                                <label for="contCurrStateId" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (contactInfoForm.get('Curr_State')?.touched) && contactInfoForm.get('Curr_State')?.invalid}">State</label>
+                                <div *ngIf="contactInfoForm.get('Curr_State')?.touched && contactInfoForm.get('Curr_State')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('Curr_State')?.errors?.pattern">Only
+                                        alphabets and spaces are allowed.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Curr_Country" id="contCurrCountryId"
+                                    placeholder=" "
+                                    [ngClass]="{'is-invalid': (contactInfoForm.get('Curr_Country')?.touched) && (contactInfoForm.get('Curr_Country')?.invalid)}">
+                                <label for="contCurrCountryId" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (contactInfoForm.get('Curr_Country')?.touched) && contactInfoForm.get('Curr_Country')?.invalid}">Country</label>
+                                <div *ngIf="contactInfoForm.get('Curr_Country')?.touched && contactInfoForm.get('Curr_Country')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('Curr_Country')?.errors?.pattern">Only
+                                        alphabets and spaces are allowed.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Curr_Location" id="contLandId"
+                                    placeholder=" ">
+                                <label for="contLandId" class="floating-label" style="left: 20px;">Landmark</label>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="Curr_PinCode" id="contCurrPinId"
+                                    placeholder=" " (keypress)="handleAlphaChar($event)" minlength="5" maxlength="6"
+                                    [ngClass]="{'is-invalid': (contactInfoForm.get('Curr_PinCode')?.invalid) && (contactInfoForm.get('Curr_PinCode')?.hasError('pattern'))}">
+                                <label for="contCurrPinId" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (contactInfoForm.get('Curr_PinCode')?.invalid) && (contactInfoForm.get('Curr_PinCode')?.hasError('pattern'))}">PinCode</label>
+                                <div *ngIf="(contactInfoForm.get('Curr_PinCode')?.invalid) && (contactInfoForm.get('Curr_PinCode')?.hasError('pattern'))"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="contactInfoForm.get('Curr_PinCode')?.hasError('pattern')"
+                                        class="px-1">Enter Valid Pincode.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+                <div style="display: flex;justify-content: end;">
+                    <button class="HRMS_primary_button" type="submit" *ngIf="isContactUpdatedButton"
+                        (click)="updateContactInformation()">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- This is for Career Details -->
+    <ng-container>
+        <div class="expansion-panel">
+            <div class="panel-header py-2" (click)="togglePanel(2)">
+                <div class="panel-title">
+                    <h5 class="m-0">Career Details</h5>
+                </div>
+                <div class="panel-controls">
+                    <span>
+                        <i class="fas" [ngClass]="isOpen[2] ? 'fa-minus' : 'fa-plus'"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="panel-body" *ngIf="isOpen[2]" @slideToggle>
+                <div class="container-fluid">
+                    <div class="col-md-12">
+                        <form [formGroup]="careerForm">
+                            <div class="row ">
+                                <div class="form-group floating-label-group col-md-3 inputPadding">
+                                    <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                        (blur)="onBlur($event)" formControlName="careerCompanyName" id="CarrComNameId"
+                                        placeholder=" "
+                                        [ngClass]="{'is-invalid': (isFormSubmitted || careerForm.get('careerCompanyName')?.touched) && (careerForm.get('careerCompanyName')?.invalid)}">
+                                    <label for="CarrComNameId" class="floating-label" style="left: 20px;"
+                                        [ngClass]="{'text-danger': (isFormSubmitted || careerForm.get('careerCompanyName')?.touched) && careerForm.get('careerCompanyName')?.invalid}">Company
+                                        Name*</label>
+                                    <div *ngIf="(isFormSubmitted || careerForm.get('careerCompanyName')?.touched) && careerForm.get('careerCompanyName')?.invalid"
+                                        class="invalid-feedback m-0">
+                                        <span *ngIf="careerForm.get('careerCompanyName')?.errors?.required"
+                                            class="px-1 ">Company Name is required</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group floating-label-group col-md-3 inputPadding">
+                                    <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                        (blur)="onBlur($event)" formControlName="career_Designation" id="carrDesignId"
+                                        placeholder=" "
+                                        [ngClass]="{'is-invalid': (isFormSubmitted || careerForm.get('career_Designation')?.touched) && (careerForm.get('career_Designation')?.invalid)}">
+                                    <label for="carrDesignId" class="floating-label" style="left: 20px;"
+                                        [ngClass]="{'text-danger': (isFormSubmitted || careerForm.get('career_Designation')?.touched) && careerForm.get('career_Designation')?.invalid}">Designation*</label>
+                                    <div *ngIf="(isFormSubmitted || careerForm.get('career_Designation')?.touched) && careerForm.get('career_Designation')?.invalid"
+                                        class="invalid-feedback m-0">
+                                        <span *ngIf="careerForm.get('career_Designation')?.errors?.required"
+                                            class="px-1 ">Designation is required.</span>
+                                        <span *ngIf="careerForm.get('career_Designation')?.errors?.pattern">Only
+                                            alphabets and spaces are allowed.</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group floating-label-group col-md-3 inputPadding">
+                                    <div class="custom-date-input">
+                                        <input type="date" formControlName="date_from"
+                                            class="form-control floating-input" (ngModelChange)="onFromDateCareer()" [max]="today"
+                                            [ngClass]="{'is-invalid': isFromDateInvalid()}" 
+                                            id="carrDateFromId"/>
+                                        <label for="carrDateFromId" class="floating-label"
+                                            [ngClass]="{'text-danger': (isFormSubmitted || careerForm.get('date_from')?.touched) && careerForm.get('date_from')?.invalid}">
+                                            From Date*
+                                        </label>
+                                        <div *ngIf="isFromDateInvalid()" class="invalid-feedback m-0">
+                                            <span *ngIf="careerForm.get('date_from')?.errors?.required">From Date is
+                                                required.</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group floating-label-group col-md-3">
+                                    <div class="custom-date-input">
+                                        <input type="date" formControlName="date_to"
+                                       class="form-control floating-input" (ngModelChange)="onToDateCareer()" [max]="today" [min]="minDateCareer"
+                                            [ngClass]="{'is-invalid': isToDateInvalid() || dateRangeError}" 
+                                            id="carrDateToId"/>
+                                        <label for="carrDateToId" class="floating-label"
+                                            [ngClass]="{'text-danger': (isFormSubmitted || careerForm.get('date_to')?.touched) && careerForm.get('date_to')?.invalid}">
+                                            To Date*
+                                        </label>
+                                        <div *ngIf="isToDateInvalid() || dateRangeError" class="invalid-feedback m-0">
+                                            <span *ngIf="careerForm.get('date_to')?.errors?.required">To Date is
+                                                required.</span>
+                                            <span *ngIf="dateRangeError">To Date must be after From Date.</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group floating-label-group col-md-3 inputPadding">
+                                    <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                        (blur)="onBlur($event)" formControlName="career_CTC" id="carrCtc"
+                                        placeholder=" ">
+                                    <label for="carrCtc" class="floating-label" style="left: 20px;">CTC</label>
+                                </div>
+
+                                <div class="form-group floating-label-group col-md-3 inputPadding">
+                                    <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                        (blur)="onBlur($event)" formControlName="career_Reason" id="carrReasonId"
+                                        placeholder=" ">
+                                    <label for="carrReasonId" class="floating-label" style="left: 20px;">Reason For
+                                        Relieving</label>
+                                </div>
+
+                            </div>
+                            <span class="underlined">Reference Contact Information:</span>
+                            <div class="row mt-2">
+                                <div class="form-group floating-label-group col-md-3 inputPadding">
+                                    <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                        (blur)="onBlur($event)" formControlName="career_HR_ManagerName" id="carrHRNameId"
+                                        placeholder=" "
+                                        [ngClass]="{'is-invalid': (careerForm.get('career_HR_ManagerName')?.touched) && (careerForm.get('career_HR_ManagerName')?.invalid)}">
+                                    <label for="carrHRNameId" class="floating-label" style="left: 20px;"
+                                        [ngClass]="{'text-danger': (careerForm.get('career_HR_ManagerName')?.touched) && careerForm.get('career_HR_ManagerName')?.invalid}">Name</label>
+                                    <div *ngIf="careerForm.get('career_HR_ManagerName')?.touched && careerForm.get('career_HR_ManagerName')?.invalid"
+                                        class="invalid-feedback m-0">
+                                        <span *ngIf="careerForm.get('career_HR_ManagerName')?.errors?.pattern">Only
+                                            alphabets and
+                                            spaces are allowed.</span>
+                                        <span
+                                            *ngIf="careerForm.get('career_HR_ManagerName')?.errors?.minlength || careerForm.get('career_HR_ManagerName')?.errors?.maxlength">
+                                            2 to 50 characters are allowed.
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group floating-label-group col-md-3 inputPadding">
+                                    <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                        (blur)="onBlur($event)" formControlName="career_HR_ManagerDesignation"
+                                        id="carrHRDesigId" placeholder=" "
+                                        [ngClass]="{'is-invalid': (careerForm.get('career_HR_ManagerDesignation')?.touched) && (careerForm.get('career_HR_ManagerDesignation')?.invalid)}">
+                                    <label for="carrHRDesigId" class="floating-label" style="left: 20px;"
+                                        [ngClass]="{'text-danger': (careerForm.get('career_HR_ManagerDesignation')?.touched) && careerForm.get('career_HR_ManagerDesignation')?.invalid}">Designation</label>
+                                    <div *ngIf="careerForm.get('career_HR_ManagerDesignation')?.touched && careerForm.get('career_HR_ManagerDesignation')?.invalid"
+                                        class="invalid-feedback m-0">
+                                        <span
+                                            *ngIf="careerForm.get('career_HR_ManagerDesignation')?.errors?.pattern">Only
+                                            alphabets and spaces are allowed.</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group floating-label-group col-md-3 inputPadding">
+                                    <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                        (blur)="onBlur($event)" formControlName="career_HR_ManagerEmail" id="carrHREmailId"
+                                        placeholder=" "
+                                        [ngClass]="{'is-invalid': careerForm.get('career_HR_ManagerEmail')?.invalid && careerForm.get('career_HR_ManagerEmail')?.touched}">
+                                    <label for="carrHREmailId" class="floating-label" style="left: 20px;"
+                                        [ngClass]="{'is-invalid': careerForm.get('career_HR_ManagerEmail')?.invalid && careerForm.get('career_HR_ManagerEmail')?.touched}">
+                                        Email
+                                    </label>
+                                    <div *ngIf="careerForm.get('career_HR_ManagerEmail')?.invalid && careerForm.get('career_HR_ManagerEmail')?.touched"
+                                        class="invalid-feedback m-0">
+                                        <span *ngIf="careerForm.get('career_HR_ManagerEmail')?.errors?.pattern">Invalid
+                                            Email ID</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group floating-label-group col-md-3">
+                                    <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                        (blur)="onBlur($event)" formControlName="career_HR_ManagerMob" id="carrContNumberId"
+                                        placeholder=" " (keypress)="handleAlphaChar($event)" minlength="10"
+                                        maxlength="10"
+                                        [ngClass]="{'is-invalid': (careerForm.get('career_HR_ManagerMob')?.invalid) && (careerForm.get('career_HR_ManagerMob')?.hasError('pattern'))}">
+                                    <label for="carrContNumberId" class="floating-label" style="left: 20px;">Contact
+                                        Number</label>
+                                    <div *ngIf="(careerForm.get('career_HR_ManagerMob')?.invalid) && (careerForm.get('career_HR_ManagerMob')?.hasError('pattern'))"
+                                        class="invalid-feedback m-0">
+                                        <span *ngIf="careerForm.get('career_HR_ManagerMob')?.hasError('pattern')"
+                                            class="px-1">Enter Valid Phone Number.</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <span class="underlined">Last 3 Months Pay Slips:</span>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <button type="button" class="btn payslipButton" (click)="addSet()"><i
+                                                class="fas fa-plus"></i> Add </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-2" formArrayName="sets">
+                                <div *ngFor="let set of sets.controls; let i = index" [formGroupName]="i" class="row" >
+                                    <div class="form-group floating-label-group col-md-3 inputPadding">
+                                        <select class="form-control floating-input" formControlName="PMonth"
+                                            id="departmentSelect{{i}}" (focus)="onFocus($event)" (blur)="onBlur($event)"
+                                            [ngClass]="{'is-invalid': (isFormSubmitted || set.get('PMonth')?.touched) && (set.get('PMonth')?.invalid)}">
+                                            <option value="" selected hidden></option>
+                                            <option [value]="month" *ngFor="let month of monthsCareer">{{month}}
+                                            </option>
+                                        </select>
+                                        <label for="departmentSelect{{i}}" class="floating-label" style="left: 20px; top: 13%;" 
+                                            [ngClass]="{'text-danger': (isFormSubmitted || set.get('PMonth')?.touched) && set.get('PMonth')?.invalid}">Month*</label>
+                                        <div *ngIf="(isFormSubmitted || set.get('PMonth')?.touched) && set.get('PMonth')?.invalid"
+                                            class="invalid-feedback m-0">
+                                            <span *ngIf="set.get('PMonth')?.errors?.['required']" class="px-1">Month is
+                                                required.</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <input type="file" id="PMonthOne{{i}}" accept=".pdf, .jpg"
+                                            formControlName="PaySlip" (change)="payslipMonth(i, $event)">
+                                        <label for="PMonthOne{{i}}" class="fileInput" style="margin-left: 8px; margin-top: 9px;">Choose
+                                            File</label>
+                                        <img *ngIf="previewUrls[i]" [src]="previewUrls[i]" alt=""
+                                            style="max-width: 27%; height: 30%; margin-left: 10px;overflow-y: auto;">
+                                        <a *ngIf="!previewUrls[i] && fileNames[i]" [href]="fileNames[i]" target="_blank"
+                                            style="margin-left: 3px;">
+                                            {{ fileNames[i] }}
+                                        </a>
+                                        <button type="button" (click)="removeSet(i)" *ngIf="sets.length > 1"
+                                            class="btn payslipCrossButton"><i class="fas fa-times"></i>
+                                        </button>
+                                        <div *ngIf="uploadStatus[i]" class="upload-status">{{ uploadStatus[i] }}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <span class="underlined ">Required Documents:</span>
+                         <div class="row mt-2">
+                            <ng-container>
+                                <div class="form-group floating-label-group col-md-3 mt-3">
+                                    <label class="floating-label" style="left: 20px;" for="OfferLetter"
+                                        [ngClass]="{'text-danger': (isFormSubmitted || careerForm.get('OfferLetter')?.touched) && careerForm.get('OfferLetter')?.invalid}">Offer
+                                        Letter</label>
+                                </div>
+
+                                <div class="career-file-upload col-md-3">
+                                    <label for="OfferLetter" class="fileInput">Choose File</label>
+                                    <img *ngIf="isOfferLetterImage && offerLetterSrc" [src]="offerLetterSrc"
+                                        alt="Preview" style="max-width: 25%; height: 60%; margin-left: 2px;">
+                                    <a *ngIf="!isOfferLetterImage && offerLetterPath" [href]="offerLetterPath"
+                                        target="_blank" style="margin-left: 3px;">{{ offerLetterName }}</a>
+                                </div>
+
+                                <div class="form-group floating-label-group col-md-3 d-none">
+                                    <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                        (blur)="onBlur($event)" formControlName="OfferLetterMonth"
+                                        id="offerLetterInput" placeholder=" ">
+                                    <label for="offerLetterInput" class="floating-label" style="left: 20px;">Offer
+                                        Letter</label>
+                                    <div class="d-none">
+                                        <input type="file" id="OfferLetter" accept=".pdf, .jpg"
+                                            formControlName="OfferLetter" (change)="offerLetterUpload($event)">
+                                    </div>
+                                </div>
+                            </ng-container>
+
+                            <ng-container>
+                                <div class="form-group floating-label-group col-md-3 mt-3">
+                                    <label for="" class="floating-label" style="left: 20px;">Appraisal Letter</label>
+                                </div>
+                                <div class="career-file-upload col-md-3 mb-2">
+                                    <label for="SalaryLetter" class="fileInput">Choose File</label>
+                                    <img *ngIf="isSalaryLetterImage && salaryLetterSrc" [src]="salaryLetterSrc"
+                                        alt="Preview" style="max-width: 25%; height: 60%; margin-left: 2px;">
+                                    <a *ngIf="!isSalaryLetterImage && salaryLetterPath" [href]="salaryLetterPath"
+                                        target="_blank" style="margin-left: 3px;">{{ salaryLetterName }}</a>
+                                </div>
+                                <div class="form-group floating-label-group col-md-3 d-none">
+                                    <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                        (blur)="onBlur($event)" formControlName="SalaryLetterMonth"
+                                        id="salaryLetterInput" placeholder=" ">
+                                    <label for="salaryLetterInput" class="floating-label"
+                                        style="left: 20px;">Appraisal Letter</label>
+                                    <div class="d-none">
+                                        <input type="file" id="SalaryLetter" accept=".pdf, .jpg"
+                                            formControlName="SalaryLetter" (change)="salaryLetterUpload($event)">
+                                    </div>
+                                </div>
+                            </ng-container>
+
+                            <ng-container>
+                                <div class="form-group floating-label-group col-md-3 mt-2">
+                                    <label class="floating-label" style="left: 20px;" for=""
+                                        [ngClass]="{'text-danger': (isFormSubmitted || careerForm.get('ExperienceLetter')?.touched) && careerForm.get('ExperienceLetter')?.invalid}">Experience/Relieving
+                                        Letter</label>
+                                </div>
+                                <div class="career-file-upload col-md-3 my-2">
+                                    <label for="ExperienceLetter" class="fileInput">Choose File</label>
+                                    <img *ngIf="isExperienceLetterImage && experienceLetterSrc"
+                                        [src]="experienceLetterSrc" alt="Preview"
+                                        style="max-width: 25%; height: 60%; margin-left: 2px;">
+                                    <a *ngIf="!isExperienceLetterImage && experienceLetterPath"
+                                        [href]="experienceLetterPath" target="_blank" style="margin-left: 3px;">{{
+                                        experienceLetterName }}</a>
+                                </div>
+
+                                <div class="form-group floating-label-group col-md-3 d-none">
+                                    <input type="text" class="form-control floating-input" (focus)="onFocus($event)"
+                                        (blur)="onBlur($event)" formControlName="ExperienceLetterMonth"
+                                        id="experienceLetterInput" placeholder=" ">
+                                    <label for="experienceLetterInput" class="floating-label"
+                                        style="left: 20px;">Experience/Relieving Letter</label>
+                                    <div class="d-none">
+                                        <input type="file" id="ExperienceLetter" accept=".pdf, .jpg"
+                                            formControlName="ExperienceLetter"
+                                            (change)="experienceLetterUpload($event)">
+                                    </div>
+                                </div>
+                            </ng-container>
+
+                        </div>
+                            <div class="table-wrapper">
+                                <table class="table table-bordered">
+                                    <thead class="sticky-header">
+                                        <tr class="inner-shadow">
+                                            <th class="employeeId text-center">Company Name</th>
+                                            <th class="companyName text-center">Designation</th>
+                                            <th class="companyName text-center">From Date</th>
+                                            <th class="startDate text-center">To Date</th>
+                                            <th class="description text-center">View Pay Slip</th>
+                                            <th class="description text-center">{{ dynamicHeaders.offerLetter ? 'Offer Letter' :
+                                                'Offer Letter' }}</th>
+                                            <th class="description text-center">{{ dynamicHeaders.salaryLetter ? 'Appraisal Letter'
+                                                :
+                                                'Appraisal Letter' }}</th>
+                                            <th class="description text-center">{{ dynamicHeaders.experienceLetter ?
+                                                'ExperienceLetter' : 'Experience Letter' }}</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody *ngIf="isTableDataCareer == false">
+                                        <tr *ngFor="let row of getEmpCareerDetailsRows; let i = index;">
+                                            <td class="text-center">
+                                                <span>{{row.Company}}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span>{{row.Designation}}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span>{{row.FromDate | date:'dd-MM-yyyy'}}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span>{{row.ToDate | date:'dd-MM-yyyy'}}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span><a [href]="row.PaySlip1"
+                                                        target="_blank">{{row.PMonth1}},&nbsp;</a></span>
+                                                <span><a [href]="row.PaySlip2"
+                                                        target="_blank">{{row.PMonth2}},&nbsp;</a></span>
+                                                <span><a [href]="row.PaySlip3"
+                                                        target="_blank">{{row.PMonth3}},&nbsp;</a></span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span *ngIf="row.OfferLetter">
+                                                    <a [href]="baseUrl + '/' + row.OfferLetter.replace('\\', '/')"
+                                                        target="_blank">View</a>
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span *ngIf="row.SalaryLetter">
+                                                    <a [href]="baseUrl + '/' + row.SalaryLetter.replace('\\', '/')"
+                                                        target="_blank">View</a>
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span *ngIf="row.ExperienceLetter">
+                                                    <a [href]="baseUrl + '/' + row.ExperienceLetter.replace('\\', '/')"
+                                                        target="_blank">View</a>
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="mx-2" style="color: #072f5f;font-weight: 600;cursor:pointer">
+                                                    <i class="fas fa-pen fa-lg" (click)="updateCareerDetails(row)"></i>
+                                                </span>
+                                                <span class="mx-2" style="color: #ee3535;font-weight: 600;cursor:pointer">
+                                                    <i class="fas fa-trash fa-lg" data-bs-toggle="modal"
+                                                        data-bs-target="#deleteCareerData"
+                                                        (click)="deleteCareerDetails(row)"></i>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div *ngIf="isTableDataCareer == true" class="text-center errorMassage">
+                                    <span class="text-danger">{{ errorMessageCareer }}</span>
+                                </div>
+                            </div>
+
+                            <div style="display: flex;justify-content: end;" class="mt-2">
+                                <button class="HRMS_primary_button" type="submit" (click)="submitCareerDetails()"
+                                    *ngIf="!isCareerUpdateButton">Submit</button>
+                                <button class="HRMS_primary_button" type="submit" *ngIf="isCareerUpdateButton"
+                                    (click)="updatecareerForm()">Update</button>
+                                <button class="HRMS_secondary_button mx-2" type="button"
+                                    (click)="resetCareerDetails()">Reset</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Delete Modal Career Details -->
+        <div class="modal fade" id="deleteCareerData" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true" data-bs-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered modal-confirm">
+                <!-- <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title fs-5" id="exampleModalLabel">Are You Sure You Want To Delete this Record?
+                        </h3>
+                        <button type="button" class="btn-close modal_close_button" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-footer p-0">
+                        <button type="button" class="HRMS_secondary_button" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="HRMS_primary_button" data-bs-dismiss="modal"
+                            (click)="deleteCareerTableList()">Yes</button>
+                    </div>
+                </div> -->
+                <div class="modal-content">
+                    <div class="text-end">
+                      <button type="reset" class="btn-close " data-bs-dismiss="modal" aria-label="Close" #closeModal
+                        style="background-color: rgb(228, 208, 208);"></button>
+                    </div>
+                    <div class="modal-header flex-column py-0">
+                      <div class="icon-box" *ngIf="!isRecordDeleted">
+                        <i class="fas fa-times checkmark_check"></i>
+                      </div>
+                      <div class="modal-wrapper" *ngIf="isRecordDeleted"> <svg class="checkmark" xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 52 52">
+                          <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                          <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                        </svg>
+                      </div>
+                      <h4 class="modal-title w-100">Are you sure?</h4>
+                    </div>
+                    <div class="modal-body py-0">
+                      <p>Do you really want to delete these records?This process cannot be undone.</p>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                      <button type="submit" class="btn btn-danger" (click)="deleteCareerTableList()">Delete</button>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </ng-container>
+
+    <!-- This is for Education Details -->
+    <ng-container>
+        <div class="expansion-panel">
+            <div class="panel-header py-2" (click)="togglePanel(3)">
+                <div class="panel-title">
+                    <h5 class="m-0">Education Details</h5>
+                </div>
+                <div class="panel-controls">
+                    <span>
+                        <i class="fas" [ngClass]="isOpen[3] ? 'fa-minus' : 'fa-plus'"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="panel-body" *ngIf="isOpen[3]" @slideToggle>
+                <div class="container-fluid w-100">
+                    <div class="col-md-12">
+                        <form [formGroup]="EducationForm">
+                            <div class="row mt-2">
+                                <div class="row col-md-10 ">
+
+                                    <div class="form-group floating-label-group col-md-4 inputPadding">
+                                        <select class="form-control floating-input" formControlName="edu_doc_name"
+                                            id="eduDocNameId" (focus)="onFocus($event)" (blur)="onBlur($event)"
+                                            (change)="getEducDocName($event)"
+                                            [ngClass]="{'is-invalid': (isFormSubmitted || EducationForm.get('edu_doc_name')?.touched) && (EducationForm.get('edu_doc_name')?.invalid)}">
+                                            <option *ngFor="let doc_name of educationDocName"
+                                                [value]="doc_name['DocId']">
+                                                {{doc_name.DocName}}</option>
+                                        </select>
+                                        <label for="eduDocNameId" class="floating-label m-0" style="left: 20px;"
+                                            [ngClass]="{'text-danger': (isFormSubmitted || EducationForm.get('edu_doc_name')?.touched) && EducationForm.get('edu_doc_name')?.invalid}">Qualification*</label>
+                                        <div *ngIf="(isFormSubmitted || EducationForm.get('edu_doc_name')?.touched) && EducationForm.get('edu_doc_name')?.invalid"
+                                            class="invalid-feedback m-0">
+                                            <span
+                                                *ngIf="EducationForm.get('edu_doc_name')?.errors?.required">Qualification
+                                                is
+                                                required.</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group floating-label-group col-md-4 inputPadding" *ngIf="isShowEducOthers">
+                                        <input type="text" class="form-control floating-input" id="educOtherId"
+                                            placeholder=" " (focus)="onFocus($event)" (blur)="onBlur($event)"
+                                            formControlName="Others"
+                                            [ngClass]="{'is-invalid': (isFormSubmitted || EducationForm.get('Others')?.touched) && (EducationForm.get('Others')?.invalid)}"
+                                            [attr.disabled]="EducationForm.get('edu_doc_name').value !== 'Others' ? true : null">
+                                        <label for="educOtherId" class="floating-label" style="left: 20px;"
+                                            [ngClass]="{'text-danger': (isFormSubmitted || EducationForm.get('Others')?.touched) && (EducationForm.get('Others')?.invalid)}">Others
+                                            Name*</label>
+                                        <div *ngIf="(isFormSubmitted || EducationForm.get('Others')?.touched) && EducationForm.get('Others')?.invalid"
+                                            class="invalid-feedback m-0">
+                                            <span *ngIf="EducationForm.get('Others')?.errors?.required"
+                                                class="px-1">Others
+                                                Name is required.</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group floating-label-group col-md-4 inputPadding">
+                                        <input type="text" class="form-control floating-input" id="educSchId"
+                                            placeholder=" " (focus)="onFocus($event)" (blur)="onBlur($event)"
+                                            formControlName="school"
+                                            [ngClass]="{'is-invalid': (isFormSubmitted || EducationForm.get('school')?.touched) && (EducationForm.get('school')?.invalid)}">
+                                        <label for="educSchId" class="floating-label" style="left: 20px;"
+                                            [ngClass]="{'text-danger': (isFormSubmitted || EducationForm.get('school')?.touched) && (EducationForm.get('school')?.invalid)}">Institution/University*</label>
+                                        <div *ngIf="(isFormSubmitted || EducationForm.get('school')?.touched) && EducationForm.get('school')?.invalid"
+                                            class="invalid-feedback m-0">
+                                            <span *ngIf="EducationForm.get('school')?.errors?.required"
+                                                class="px-1 ">Institution/University
+                                                is required.</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group floating-label-group col-md-4 inputPadding">
+                                        <input type="text" class="form-control floating-input" id="educFOSId"
+                                            placeholder=" " (focus)="onFocus($event)" (blur)="onBlur($event)"
+                                            formControlName="field_Of_Study"
+                                            [ngClass]="{'is-invalid': (isFormSubmitted || EducationForm.get('field_Of_Study')?.touched) && (EducationForm.get('field_Of_Study')?.invalid)}">
+                                        <label for="educFOSId" class="floating-label" style="left: 20px;"
+                                            [ngClass]="{'text-danger': (isFormSubmitted || EducationForm.get('field_Of_Study')?.touched) && (EducationForm.get('field_Of_Study')?.invalid)}">Specialization*</label>
+                                        <div *ngIf="(isFormSubmitted || EducationForm.get('field_Of_Study')?.touched) && EducationForm.get('field_Of_Study')?.invalid"
+                                            class="invalid-feedback m-0">
+                                            <span *ngIf="EducationForm.get('field_Of_Study')?.errors?.required"
+                                                class="px-1 ">Specialization is required.</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group floating-label-group col-md-4 inputPadding">
+                                        <div class="custom-date-input">
+                                            <input type="date" placeholder=" " formControlName="date_from" id="educFromDate"
+                                                 class="form-control floating-input" (ngModelChange)="onFromDateEducation()" [max]="today"
+                                                [ngClass]="{'is-invalid': isFromDateInvalidEducation()}" />
+                                            <label for="educFromDate" class="floating-label"
+                                                [ngClass]="{'text-danger': (isFormSubmitted || EducationForm.get('date_from')?.touched) && (EducationForm.get('date_from')?.invalid)}">Start
+                                                Date*</label>
+                                            <div *ngIf="isFromDateInvalidEducation()" class="invalid-feedback m-0">
+                                                <span *ngIf="EducationForm.get('date_from')?.errors?.required">Start
+                                                    Date is required.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group floating-label-group col-md-4 inputPadding">
+                                        <div class="custom-date-input">
+                                            <input type="date" placeholder=" " formControlName="date_to" id="educToDate"
+                                                 class="form-control floating-input" (ngModelChange)="onToDateEducation()" [max]="today"
+                                                [min]="minDateEducation"
+                                                [ngClass]="{'is-invalid': isToDateInvalidEducation() || dateRangeErrorEducation}" />
+                                            <label for="educToDate" class="floating-label"
+                                                [ngClass]="{'text-danger': (isFormSubmitted || EducationForm.get('date_to')?.touched) && (EducationForm.get('date_to')?.invalid)}">End
+                                                Date*</label>
+                                            <div *ngIf="isToDateInvalidEducation() || dateRangeErrorEducation"
+                                                class="invalid-feedback m-0">
+                                                <span *ngIf="EducationForm.get('date_to')?.errors?.required">End Date is
+                                                    required.</span>
+                                                <span *ngIf="dateRangeErrorEducation">End Date must be after From
+                                                    Date.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group floating-label-group col-md-4 inputPadding">
+                                        <input type="text" class="form-control floating-input" id="educGradeId"
+                                            placeholder=" " (focus)="onFocus($event)" (blur)="onBlur($event)"
+                                            formControlName="grade"
+                                            [ngClass]="{'is-invalid': (EducationForm.get('grade')?.touched) && (EducationForm.get('grade')?.invalid)}">
+                                        <label for="educGradeId" class="floating-label" style="left: 20px;"
+                                            [ngClass]="{'text-danger': (EducationForm.get('grade')?.touched) && (EducationForm.get('grade')?.invalid)}">GPA/Percentage</label>
+                                        <div *ngIf="EducationForm.get('grade')?.touched && EducationForm.get('grade')?.invalid"
+                                            class="invalid-feedback m-0">
+                                            <span *ngIf="EducationForm.get('grade')?.errors?.pattern">Only Number,
+                                                dots(.) and % are allowed.</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group floating-label-group col-md-4 inputPadding">
+                                        <input type="text" class="form-control floating-input" id="educDescId"
+                                            placeholder=" " (focus)="onFocus($event)" (blur)="onBlur($event)"
+                                            formControlName="edu_description">
+                                        <label for="educDescId" class="floating-label"
+                                            style="left: 20px;">Remarks</label>
+                                    </div>
+
+                                </div>
+
+
+                                <div class="col-md-2">
+                                    <div class="custom-file-upload">
+                                        <div class="d-none">
+                                            <input type="file" id="eduPhotoInput" (change)="chooseEducDoc($event)"
+                                                accept=".pdf, .jpg" formControlName="edu_photo">
+                                        </div>
+                                        <label for="eduPhotoInput" class="fileInput" style="margin-top:8px">Choose File</label>
+                                        <img *ngIf="isImageEducDoc && imageSrcEducDoc" [src]="imageSrcEducDoc"
+                                            alt="Preview" style="max-width: 60%; height: auto;margin-top: 3px;">
+                                        <a *ngIf="!isImageEducDoc && filePathEducDoc" [href]="filePathEducDoc"
+                                            target="_blank" style="margin-left: 3px;">{{
+                                            fileNameEducDoc }}</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-wrapper">
+                                <table class="table table-bordered">
+                                    <thead class="sticky-header">
+                                        <tr class="inner-shadow ">
+                                            <th class="employeeId text-center">School</th>
+                                            <th class="companyName text-center">Degree</th>
+                                            <th class="companyName text-center">Filed Of Study</th>
+                                            <th class="startDate text-center">Start Date</th>
+                                            <th class="endDate text-center">End Date</th>
+                                            <th class="path text-center">File/Photo</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody *ngIf="isTableDataEducation == false">
+                                        <tr *ngFor="let row of educationDetailsRows;let i = index;">
+                                            <td class="text-center">
+                                                <span>{{row.School}}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span>{{row.DegreeId}}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span>{{row.Filed}}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span>{{row.StartDate | date:'dd-MM-yyyy'}}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span>{{row.EndDate | date:'dd-MM-yyyy'}}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span *ngIf="row.Path">
+                                                    <a [href]="baseUrl + '/' + row.Path.replace('\\', '/')"
+                                                        target="_blank">View</a>
+                                                </span>
+                                            </td>
+                                            <td class="text-center" style="cursor: pointer;">
+                                                <span class="mx-2" style="color: #072f5f;font-weight: 600;cursor:pointer"> <i
+                                                        class="fas fa-pen fa-lg"
+                                                        (click)="updateEducationDoc(row)"></i></span>
+                                                <span class="mx-2" style="color: #ee3535;font-weight: 600;cursor:pointer"> <i
+                                                        class="fas fa-trash fa-lg " data-bs-toggle="modal"
+                                                        data-bs-target="#exampleModal"
+                                                        (click)="deleteEducation(row)"></i></span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div *ngIf="isTableDataEducation == true" class="text-center errorMassage">
+                                    <span class="text-danger">{{ errorMessageEducation }}</span>
+                                </div>
+                            </div>
+
+                            <div style="display: flex;justify-content: end;" class="mt-2">
+                                <button class="HRMS_primary_button" type="submit" (click)="addEductionDetails()"
+                                    *ngIf="!isEducUpdateButton">Submit</button>
+                                <button class="HRMS_primary_button" type="submit" (click)="updateEducationForm()"
+                                    *ngIf="isEducUpdateButton">Update</button>
+                                <button class="HRMS_secondary_button mx-2" type="button"
+                                    (click)="resetEducationDoc()">Reset</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Education Details-->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
+            <div class="modal-dialog  modal-dialog-centered modal-confirm">
+                <!-- <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title fs-5" id="exampleModalLabel">Are You Sure You Want To Delete this Record?
+                        </h3>
+                        <button type="button" class="btn-close modal_close_button" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-footer p-0">
+                        <button type="button" class="HRMS_secondary_button" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="HRMS_primary_button" data-bs-dismiss="modal"
+                            (click)="deleteEducationTableList()">Yes</button>
+                    </div>
+                </div> -->
+                <div class="modal-content">
+                    <div class="text-end">
+                      <button type="reset" class="btn-close " data-bs-dismiss="modal" aria-label="Close" #closeModalEduc
+                        style="background-color: rgb(228, 208, 208);"></button>
+                    </div>
+                    <div class="modal-header flex-column py-0">
+                      <div class="icon-box" *ngIf="!isRecordDeleted">
+                        <i class="fas fa-times checkmark_check"></i>
+                      </div>
+                      <div class="modal-wrapper" *ngIf="isRecordDeleted"> <svg class="checkmark" xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 52 52">
+                          <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                          <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                        </svg>
+                      </div>
+                      <h4 class="modal-title w-100">Are you sure?</h4>
+                    </div>
+                    <div class="modal-body py-0">
+                      <p>Do you really want to delete these records?This process cannot be undone.</p>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                      <button type="submit" class="btn btn-danger" (click)="deleteEducationTableList()">Delete</button>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </ng-container>
+
+
+    <!-- This is for Account Details -->
+    <!-- <div class="expansion-panel">
+        <div class="panel-header py-2" (click)="togglePanel(4)">
+            <div class="panel-title">
+                <h5 class="m-0">Account Details</h5>
+            </div>
+            <div class="panel-controls">
+                <span>
+                    <i class="fas" [ngClass]="isOpen[4] ? 'fa-minus' : 'fa-plus'"></i>
+                </span>
+                <span (click)="onEditAccountClick($event)"><i class="fas fa-pen fa-md"></i></span>
+            </div>
+        </div>
+        <div class="panel-body" *ngIf="isOpen[4]" @slideToggle>
+            <div class="container-fluid w-100">
+                <div class="col-md-12">
+                    <form [formGroup]="accountForm" (ngSubmit)="updateAccountDetails()">
+                        <div class="row mt-2">
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="BankName" id="accoBackNameId" placeholder=" "
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || accountForm.get('BankName')?.touched) && (accountForm.get('BankName')?.invalid)}">
+                                <label for="accoBackNameId" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || accountForm.get('BankName')?.touched) && accountForm.get('BankName')?.invalid}">Bank
+                                    Name*</label>
+                                <div *ngIf="(isFormSubmitted || accountForm.get('BankName')?.touched) && accountForm.get('BankName')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="accountForm?.get('BankName')?.errors?.required" class="px-1">Bank Name
+                                        is
+                                        required.</span>
+                                    <span *ngIf="accountForm?.get('BankName')?.errors?.pattern" class="px-1">Invalid
+                                        Bank Name</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="IFSCCode" id="accIFSCid" placeholder=" "
+                                    minlength="10" maxlength="16"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || accountForm.get('IFSCCode')?.touched) && (accountForm.get('IFSCCode')?.invalid)}">
+                                <label for="accIFSCid" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || accountForm.get('IFSCCode')?.touched) && accountForm.get('IFSCCode')?.invalid}">IFSC
+                                    /Swift Code
+                                    *</label>
+                                <div *ngIf="(isFormSubmitted || accountForm.get('IFSCCode')?.touched) && accountForm.get('IFSCCode')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="accountForm?.get('IFSCCode')?.errors?.required" class="px-1">IFSC/Swift
+                                        Code
+                                        is
+                                        required.</span>
+                                    <span *ngIf="accountForm?.get('IFSCCode')?.errors?.pattern" class="px-1">Invalid
+                                        IFSC/Swift Code</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="BranchName" id="accBranchId" placeholder=" "
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || accountForm.get('BranchName')?.touched) && (accountForm.get('BranchName')?.invalid)}">
+                                <label for="accBranchId" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || accountForm.get('BranchName')?.touched) && accountForm.get('BranchName')?.invalid}">Branch
+                                    Name
+                                    *</label>
+                                <div *ngIf="(isFormSubmitted || accountForm.get('BranchName')?.touched) && accountForm.get('BranchName')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="accountForm?.get('BranchName')?.errors?.required" class="px-1">Branch
+                                        Name is
+                                        required.</span>
+                                    <span *ngIf="accountForm?.get('BranchName')?.errors?.pattern" class="px-1">Invalid
+                                        Branch Name</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 ">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="AccHolderName" id="accHoldNameId"
+                                    placeholder=" "
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || accountForm.get('AccHolderName')?.touched) && (accountForm.get('AccHolderName')?.invalid)}">
+                                <label for="accHoldNameId" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || accountForm.get('AccHolderName')?.touched) && accountForm.get('AccHolderName')?.invalid}">Acc.
+                                    Holder Name
+                                    *</label>
+                                <div *ngIf="(isFormSubmitted || accountForm.get('AccHolderName')?.touched) && accountForm.get('AccHolderName')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="accountForm?.get('AccHolderName')?.errors?.required" class="px-1">Acc.
+                                        Holder Name is
+                                        required.</span>
+                                    <span *ngIf="accountForm.get('AccHolderName')?.errors?.pattern">Only alphabets
+                                        and
+                                        spaces are allowed.</span>
+                                    <span *ngIf="accountForm?.get('AccHolderName')?.errors?.pattern"
+                                        class="px-1">Invalid Acc. Holder Name</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="AccNo" id="accNumId" placeholder=" "
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || accountForm.get('AccNo')?.touched) && (accountForm.get('AccNo')?.invalid)}">
+                                <label for="accNumId" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || accountForm.get('AccNo')?.touched) && accountForm.get('AccNo')?.invalid}">Account
+                                    Number
+                                    *</label>
+                                <div *ngIf="(isFormSubmitted || accountForm.get('AccNo')?.touched) && accountForm.get('AccNo')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="accountForm?.get('AccNo')?.errors?.required" class="px-1">Account
+                                        Number is
+                                        required.</span>
+                                    <span *ngIf="accountForm?.get('AccNo')?.errors?.pattern" class="px-1">Invalid
+                                        Account Number</span>
+                                </div>
+                            </div>
+                           
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <input type="text" class="form-control floating-input  " id="accMobNumId" placeholder=" "
+                                    (focus)="onFocus($event)" (blur)="onBlur($event)" formControlName="Acc_MobileNo"
+                                    (keypress)="handleAlphaChar($event)" minlength="10" maxlength="10"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || accountForm.get('Acc_MobileNo')?.touched) && (accountForm.get('Acc_MobileNo')?.invalid)}">
+                                <label for="accMobNumId" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || accountForm.get('Acc_MobileNo')?.touched) && (accountForm.get('Acc_MobileNo')?.invalid)}">Mobile
+                                    Number*</label>
+                                <div *ngIf="(isFormSubmitted || accountForm.get('Acc_MobileNo')?.touched) && accountForm.get('Acc_MobileNo')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="accountForm?.get('Acc_MobileNo')?.errors?.required">Mobile Number is
+                                        required.</span>
+                                    <span *ngIf="accountForm?.get('Acc_MobileNo')?.errors?.pattern">Invalid Mobile
+                                        Number.</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div style="display: flex;justify-content: end;">
+                            <button class="HRMS_primary_button" type="submit"
+                                *ngIf="isUpdateAccountDetails">Update</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- This is for Government Issued Documents -->
+    <ng-container>
+        <div class="expansion-panel">
+            <div class="panel-header py-2" (click)="togglePanel(5)">
+                <div class="panel-title">
+                    <h5 class="m-0">Government Issued Documents</h5>
+                </div>
+                <div class="panel-controls">
+                    <span>
+                        <i class="fas" [ngClass]="isOpen[5] ? 'fa-minus' : 'fa-plus'"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="panel-body" *ngIf="isOpen[5]" @slideToggle>
+                <div class="container-fluid ">
+                    <div class="col-md-12">
+                        <form [formGroup]="governmentForm">
+
+                            <div class="col-md-12 d-flex justify-content-end" style="display: flex; align-items: center;">
+                                <div class="d-none">
+                                    <input type="file" id="govPhotoInput" (change)="chooseGovDoc($event)"
+                                        accept=".pdf, .jpg" formControlName="gov_photo">
+                                </div>
+                                <label for="govPhotoInput" class="fileInput" >
+                                    Choose File
+                                </label>
+                                <img *ngIf="isImageGovtDoc && imageSrcGovtDoc" [src]="imageSrcGovtDoc"
+                                    alt="Preview" style="max-width: 5%; height: auto; margin-top: 3px; margin-left: 10px;">
+                                <a *ngIf="!isImageGovtDoc && filePathGovtDoc" [href]="filePathGovtDoc" target="_blank"
+                                    style="margin-left: 10px;">{{ fileNameGovtDoc }}</a>
+                            </div>
+                            
+                            
+                                <div class="row mt-2">
+                                    <div class="form-group floating-label-group col-md-3 inputPadding">
+                                        <select class="form-control floating-input" formControlName="gov_doc_name"
+                                            id="govtDocNameId" (focus)="onFocus($event)" (blur)="onBlur($event)"
+                                            (change)="getGovtDocName($event)"
+                                            [ngClass]="{'is-invalid': (isFormSubmitted || governmentForm.get('gov_doc_name')?.touched) && (governmentForm.get('gov_doc_name')?.invalid)}">
+                                            <option selected disabled value="" hidden></option>
+                                            <option *ngFor="let doc_name of govtDocName" [value]="doc_name.DocId">
+                                                {{doc_name.DocName}}</option>
+                                        </select>
+                                        <label for="govtDocNameId" class="floating-label m-0" style="left: 20px;"
+                                            [ngClass]="{'text-danger': (isFormSubmitted || governmentForm.get('gov_doc_name')?.touched) && governmentForm.get('gov_doc_name')?.invalid}">Document
+                                            Name*</label>
+                                        <div *ngIf="(isFormSubmitted || governmentForm.get('gov_doc_name')?.touched) && governmentForm.get('gov_doc_name')?.invalid"
+                                            class="invalid-feedback m-0">
+                                            <span *ngIf="governmentForm.get('gov_doc_name')?.errors?.required">Document
+                                                is
+                                                required.</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group floating-label-group col-md-3 inputPadding" *ngIf="isViewGovtOthers">
+                                        <input type="text" class="form-control floating-input" id="govtOtherNameId"
+                                            placeholder=" " (focus)="onFocus($event)" (blur)="onBlur($event)"
+                                            formControlName="Others"
+                                            [ngClass]="{'is-invalid': (isFormSubmitted || governmentForm.get('Others')?.touched) && (governmentForm.get('Others')?.invalid)}"
+                                            [attr.disabled]="governmentForm.get('gov_doc_name').value !== 'Others' ? true : null">
+                                        <label for="govtOtherNameId" class="floating-label" style="left: 20px;"
+                                            [ngClass]="{'text-danger': (isFormSubmitted || governmentForm.get('Others')?.touched) && (governmentForm.get('Others')?.invalid)}">Others
+                                            Name*</label>
+                                        <div *ngIf="(isFormSubmitted || governmentForm.get('Others')?.touched) && governmentForm.get('Others')?.invalid"
+                                            class="invalid-feedback m-0">
+                                            <span *ngIf="governmentForm.get('Others')?.errors?.required"
+                                                class="px-1 ">Others
+                                                Name is required.</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group floating-label-group col-md-3 inputPadding" >
+                                        <input type="text" class="form-control floating-input" id="govtDocNumId"
+                                            placeholder=" " (focus)="onFocus($event)" (blur)="onBlur($event)"
+                                            formControlName="govt_doc_num"
+                                            [ngClass]="{'is-invalid': (isFormSubmitted || governmentForm.get('govt_doc_num')?.touched) && (governmentForm.get('govt_doc_num')?.invalid)}">
+                                        <label for="govtDocNumId" class="floating-label" style="left: 20px;"
+                                            [ngClass]="{'text-danger': (isFormSubmitted || governmentForm.get('govt_doc_num')?.touched) && (governmentForm.get('govt_doc_num')?.invalid)}">
+                                            Document Number*</label>
+                                        <div *ngIf="(isFormSubmitted || governmentForm.get('govt_doc_num')?.touched) && governmentForm.get('govt_doc_num')?.invalid"
+                                            class="invalid-feedback m-0">
+                                            <span *ngIf="governmentForm.get('govt_doc_num')?.errors?.required"
+                                                class="px-1 ">Document Number is required.</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group floating-label-group col-md-3 inputPadding" *ngIf="isGovtVisibleDates">
+                                        <div class="custom-date-input">
+                                            <input type="date" placeholder=" " formControlName="date_from" id="govtFromDate"
+                                             class="form-control floating-input" (ngModelChange)="onFromDateGovt()" [max]="today"
+                                                [ngClass]="{'is-invalid': isFromDateInvalidGovt()}" />
+                                            <label for="govtFromDate" class="floating-label"
+                                                [ngClass]="{'text-danger': (isFormSubmitted || governmentForm.get('date_from')?.touched) && (governmentForm.get('date_from')?.invalid)}">Issued
+                                                Date</label>
+                                            <div *ngIf="isFromDateInvalidGovt()" class="invalid-feedback m-0">
+                                                <span *ngIf="governmentForm.get('date_from')?.errors?.required">Issued
+                                                    Date is
+                                                    required.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group floating-label-group col-md-3 inputPadding" *ngIf="isGovtVisibleDates">
+                                        <div class="custom-date-input">
+                                            <input type="date" placeholder=" " formControlName="date_to" id="govtToDate"
+                                                 class="form-control floating-input" (ngModelChange)="onToDateGovt()" [min]="minDateGovt"
+                                                [ngClass]="{'is-invalid': isToDateInvalidGovt() || dateRangeErrorGovt}" />
+                                            <label for="govtToDate" class="floating-label"
+                                                [ngClass]="{'text-danger': (isFormSubmitted || governmentForm.get('date_to')?.touched) && (governmentForm.get('date_to')?.invalid)}">Expired
+                                                Date</label>
+                                            <div *ngIf="isToDateInvalidGovt() || dateRangeErrorGovt"
+                                                class="invalid-feedback m-0">
+                                                <span *ngIf="governmentForm.get('date_to')?.errors?.required">Expired
+                                                    Date is
+                                                    required.</span>
+                                                <span *ngIf="dateRangeErrorGovt">Expired Date must be after Issued
+                                                    Date.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group floating-label-group col-md-3 inputPadding">
+                                        <input type="text" class="form-control floating-input" id="govtDescId"
+                                            placeholder=" " (focus)="onFocus($event)" (blur)="onBlur($event)"
+                                            formControlName="govt_description">
+                                        <label for="govtDescId" class="floating-label" style="left: 20px;">
+                                            Remarks</label>
+                                    </div>
+                                </div>
+
+                            <div class="table-wrapper">
+                                <table class="table table-bordered">
+                                    <thead class="sticky-header">
+                                        <tr class="inner-shadow ">
+                                            <th class="companyName text-center">Document Name</th>
+                                            <th class="companyName text-center">Document Number</th>
+                                            <th class="startDate text-center">Issued Date</th>
+                                            <th class="endDate text-center">Expired Date</th>
+                                            <th class="path text-center">File/Photo</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody *ngIf="isTableDataGovt == false">
+                                        <tr *ngFor="let row of govtDetailsRows;let i = index;">
+                                            <td class="text-center">
+                                                <span>{{row.DocName}}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span>{{row.DocNo}}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span>{{row.IssuedDate | date:'dd-MM-yyyy'}}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span>{{row.ExpiredDate | date:'dd-MM-yyyy'}}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span *ngIf="row.Path">
+                                                    <a [href]="baseUrl + '/' + row.Path.replace('\\', '/')"
+                                                        target="_blank">View</a>
+                                                </span>
+                                            </td>
+                                            <td class="text-center" style="cursor: pointer;">
+                                                <span class="mx-2" style="color: #072f5f;font-weight: 600;cursor:pointer"> <i
+                                                        class="fas fa-pen fa-lg" (click)="editgovtData(row)"></i></span>
+                                                <span class="mx-2" style="color: #ee3535;font-weight: 600;cursor:pointer"> <i
+                                                        class="fas fa-trash fa-lg" data-bs-toggle="modal"
+                                                        data-bs-target="#deleteGovtTableList"
+                                                        (click)="deleteGovtDoc(row)"></i></span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div *ngIf="isTableDataGovt == true" class="text-center errorMassage">
+                                    <span class="text-danger">{{ errorMessageGovt }}</span>
+                                </div>
+                            </div>
+
+                            <div style="display: flex;justify-content: end;" class="mt-2">
+                                <button class="HRMS_primary_button" type="submit" (click)="addGovermentDetails()"
+                                    *ngIf="!isGovtUpdateButton">Submit</button>
+                                <button class="HRMS_primary_button" type="submit" *ngIf="isGovtUpdateButton"
+                                    (click)="updateGovtForm()">Update</button>
+                                <button class="HRMS_secondary_button mx-2" type="button"
+                                    (click)="resetGovtDoc()">Reset</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Modal Government -->
+        <div class="modal fade" id="deleteGovtTableList" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true" data-bs-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered modal-confirm">
+                <!-- <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title fs-5" id="exampleModalLabel">Are You Sure You Want To Delete this Record?
+                        </h3>
+                        <button type="button" class="btn-close modal_close_button" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-footer p-0">
+                        <button type="button" class="HRMS_secondary_button" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="HRMS_primary_button" data-bs-dismiss="modal"
+                            (click)="deleteGovtDocument()">Yes</button>
+                    </div>
+                </div> -->
+                <div class="modal-content">
+                    <div class="text-end">
+                      <button type="reset" class="btn-close " data-bs-dismiss="modal" aria-label="Close" #closeModalGovt
+                        style="background-color: rgb(228, 208, 208);"></button>
+                    </div>
+                    <div class="modal-header flex-column py-0">
+                      <div class="icon-box" *ngIf="!isRecordDeleted">
+                        <i class="fas fa-times checkmark_check"></i>
+                      </div>
+                      <div class="modal-wrapper" *ngIf="isRecordDeleted"> <svg class="checkmark" xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 52 52">
+                          <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                          <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                        </svg>
+                      </div>
+                      <h4 class="modal-title w-100">Are you sure?</h4>
+                    </div>
+                    <div class="modal-body py-0">
+                      <p>Do you really want to delete these records?This process cannot be undone.</p>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                      <button type="submit" class="btn btn-danger" (click)="deleteGovtDocument()">Delete</button>
+                    </div>
+                  </div>
+            </div>
+        </div>
+
+    </ng-container>
+
+</app-card>

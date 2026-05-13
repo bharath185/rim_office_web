@@ -1,0 +1,622 @@
+<app-toast-message></app-toast-message>
+
+
+<div class="dis-fl-end">
+    <div class="dis-fl-end">
+        <div class="heading-dash-sub">
+            <span>Create Leave</span>
+            <ol class="breadcrumb fade-left">
+                <li class="breadcrumb-item active dis-fl" aria-current="page">
+                    <span class="breadC">Leaves</span>
+                    <span class="breadC" [routerLink]="['/leave']" style="color:rgb(127, 186, 235);cursor: pointer"> <i
+                            class="feather icon-chevron-right"></i>&nbsp;Leave Card</span>
+                    <span class="breadC"><i class="feather icon-chevron-right"></i></span><span
+                        class="breadC col-act">Create Leave</span>
+                </li>
+            </ol>
+        </div>
+    </div>
+    <div class="text-end">
+        <button class="HRMS_Create_Close text-end" type="button" (click)="toggleButton()">
+            <i class="feather" [ngClass]="isCardOpen ? 'icon-x' : 'icon-plus'"></i>&nbsp;
+            {{ isCardOpen ? 'Close' : 'Create' }}
+        </button>
+    </div>
+</div>
+
+<div class="divSpinner" *ngIf="isSpinner">
+    <div class="spinner"></div>
+</div>
+<app-card [options]="false" *ngIf="isCardOpen">
+    <div class="col-md-12">
+        <div class="col-md-6 mb-3">
+            <h5 class="mb-0 form-heading">Create Leave Type</h5>
+        </div>
+        <form [formGroup]="leaveSettingsForm">
+            <div class="row">
+
+                <div #locationDropdownWrapper class="form-group floating-label-group col-md-3">
+                    <div class="custom-multiselect" tabindex="0" (click)="toggleLocationDropdown()"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || leaveSettingsForm.get('Location')?.touched) && leaveSettingsForm.get('Location')?.invalid}">
+
+                        <div class="selected-items">
+                            {{ getSelectedLocationsLabel() }}
+                        </div>
+                        <div class="dropdown-arrow">&#9662;</div>
+                    </div>
+
+                    <div class="dropdown-list" *ngIf="showLocationDropdown">
+                        <div *ngFor="let location of getLocations">
+                            <label class="checkbox-label">
+                                <input type="checkbox" [value]="location.LocationId"
+                                    [checked]="isLocationSelected(location.LocationId)"
+                                    (change)="onLocationCheckboxChange($event)">
+                                {{ location.Location }}
+                            </label>
+                        </div>
+                    </div>
+
+                    <label class="floating-label m-0" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || leaveSettingsForm.get('Location')?.touched) && leaveSettingsForm.get('Location')?.invalid}">
+                        Location*
+                    </label>
+
+                    <div *ngIf="(isFormSubmitted || leaveSettingsForm.get('Location')?.touched) && leaveSettingsForm.get('Location')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="leaveSettingsForm.get('Location')?.errors?.required">
+                            Location is required.
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3">
+                    <select class="form-control floating-input" formControlName="yearType" id="yearTypeId"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || leaveSettingsForm.get('yearType')?.touched) && (leaveSettingsForm.get('yearType')?.invalid)}">
+                        <option selected hidden value=""></option>
+                        <option Value="Calendar Year">Calendar Year</option>
+                        <option value="Financial Year">Financial Year</option>
+                        <option value="Worked Year">Worked Year</option>
+                    </select>
+                    <label for="yearTypeId" class="floating-label m-0" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || leaveSettingsForm.get('yearType')?.touched) && leaveSettingsForm.get('yearType')?.invalid}">Year
+                        Type*</label>
+                    <div *ngIf="(isFormSubmitted || leaveSettingsForm.get('yearType')?.touched) && leaveSettingsForm.get('yearType')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="leaveSettingsForm.get('yearType')?.errors?.required">Year Type is
+                            required.</span>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3">
+                    <input type="text" class="form-control floating-input" formControlName="levaeType" id="levaeType"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || leaveSettingsForm.get('levaeType')?.touched) && leaveSettingsForm.get('levaeType')?.invalid}">
+                    <label for="levaeTypeId" class="floating-label" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || leaveSettingsForm.get('levaeType')?.touched) && leaveSettingsForm.get('levaeType')?.invalid}">
+                        Leave Type *</label>
+                    <div *ngIf="(isFormSubmitted || leaveSettingsForm.get('levaeType')?.touched) && leaveSettingsForm.get('levaeType')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="leaveSettingsForm?.get('levaeType')?.errors?.required">levae Type is
+                            required.</span>
+                        <span
+                            *ngIf="(leaveSettingsForm.get('levaeType')?.errors?.minlength || leaveSettingsForm.get('levaeType')?.errors?.maxlength)">2
+                            to 50 Charater are allowed.</span>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3">
+                    <input type="text" class="form-control floating-input" id="shortNameId" placeholder=" "
+                        formControlName="shortName"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || leaveSettingsForm.get('shortName')?.touched) && leaveSettingsForm.get('shortName')?.invalid}">
+                    <label for="shortNameId" class="floating-label" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || leaveSettingsForm.get('shortName')?.touched) && leaveSettingsForm.get('shortName')?.invalid}">
+                        Short Name*</label>
+                    <div *ngIf="(isFormSubmitted || leaveSettingsForm.get('shortName')?.touched) && leaveSettingsForm.get('shortName')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="leaveSettingsForm?.get('shortName')?.errors?.required">Short Name is
+                            required.</span>
+                        <span
+                            *ngIf="(leaveSettingsForm.get('shortName')?.errors?.minlength || leaveSettingsForm.get('shortName')?.errors?.maxlength)">2
+                            to 50 Charater are allowed.</span>
+                    </div>
+                </div>
+
+                <div #dropdownWrapper class="form-group floating-label-group col-md-3">
+                    <div class="custom-multiselect" tabindex="0" (click)="toggleDropdown()"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || leaveSettingsForm.get('employeeType')?.touched) && leaveSettingsForm.get('employeeType')?.invalid}">
+                        <div class="selected-items">
+                            {{ getSelectedEmployeeTypesLabel() }}
+                        </div>
+                        <div class="dropdown-arrow">&#9662;</div>
+                    </div>
+                    <div class="dropdown-list" *ngIf="showDropdown">
+                        <div *ngFor="let employeeType of getEmployeeTypeList">
+                            <label class="checkbox-label">
+                                <input type="checkbox" [value]="employeeType.EmpTypeId"
+                                    [checked]="isSelected(employeeType.EmpTypeId)" (change)="onCheckboxChange($event)">
+                                {{employeeType.EmpType}}
+                            </label>
+                        </div>
+                    </div>
+                    <label class="floating-label m-0" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || leaveSettingsForm.get('employeeType')?.touched) && leaveSettingsForm.get('employeeType')?.invalid}">
+                        Employee Type*
+                    </label>
+                    <div *ngIf="(isFormSubmitted || leaveSettingsForm.get('employeeType')?.touched) && leaveSettingsForm.get('employeeType')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="leaveSettingsForm.get('employeeType')?.errors?.required">Employee Type is
+                            required.</span>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3" #gradeDropdownWrapper>
+                    <div class="custom-multiselect" (click)="toggleGradeDropdown()" tabindex="0"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || leaveSettingsForm.get('grade')?.touched) && leaveSettingsForm.get('grade')?.invalid}">
+                        <div class="selected-items">
+                            {{ getSelectedGradesLabel() }}
+                        </div>
+                        <div class="dropdown-arrow">&#9662;</div>
+                    </div>
+
+                    <div class="dropdown-list" *ngIf="showGradeDropdown">
+                        <div *ngFor="let grade of getDD_grade">
+                            <label class="checkbox-label">
+                                <input type="checkbox" [value]="grade.GradeId"
+                                    [checked]="isGradeSelected(grade.GradeId)" (change)="onGradeCheckboxChange($event)">
+                                {{ grade.Grade }}
+                            </label>
+                        </div>
+                    </div>
+
+                    <label class="floating-label m-0" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || leaveSettingsForm.get('grade')?.touched) && leaveSettingsForm.get('grade')?.invalid}">
+                        Employee Level*
+                    </label>
+
+                    <div *ngIf="(isFormSubmitted || leaveSettingsForm.get('grade')?.touched) && leaveSettingsForm.get('grade')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="leaveSettingsForm.get('grade')?.errors?.required">Employee Level is
+                            required.</span>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3">
+                    <select class="form-control floating-input" formControlName="durationType" id="durationTypeId"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || leaveSettingsForm.get('durationType')?.touched) && (leaveSettingsForm.get('durationType')?.invalid)}">
+                        <option selected hidden value=""></option>
+                        <option Value="Full Day">Full Day</option>
+                        <option value="Half Day">Half Day</option>
+                    </select>
+                    <label for="durationTypeId" class="floating-label m-0" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || leaveSettingsForm.get('durationType')?.touched) && leaveSettingsForm.get('durationType')?.invalid}">Period
+                        Type*</label>
+                    <div *ngIf="(isFormSubmitted || leaveSettingsForm.get('durationType')?.touched) && leaveSettingsForm.get('durationType')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="leaveSettingsForm.get('durationType')?.errors?.required">Period Type is
+                            required.</span>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3">
+                    <select class="form-control floating-input" formControlName="applicableTo" id="ApplicableToId"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || leaveSettingsForm.get('applicableTo')?.touched) && (leaveSettingsForm.get('applicableTo')?.invalid)}">
+                        <option selected hidden value=""></option>
+                        <option value="Male">Male</option>
+                        <option Value="Female">Female</option>
+                        <option Value="All">All</option>
+                    </select>
+                    <label for="applicableToId" class="floating-label m-0" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || leaveSettingsForm.get('applicableTo')?.touched) && leaveSettingsForm.get('applicableTo')?.invalid}">Applicable
+                        To*</label>
+                    <div *ngIf="(isFormSubmitted || leaveSettingsForm.get('applicableTo')?.touched) && leaveSettingsForm.get('applicableTo')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="leaveSettingsForm.get('applicableTo')?.errors?.required"> Applicable To is
+                            required.</span>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3">
+                    <input type="text" class="form-control floating-input" id="MaxPerMonthId" placeholder=" "
+                        formControlName="maxPerMonth" (keypress)="handleAlphaChar($event)" minlength="1" maxlength="3"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || leaveSettingsForm.get('maxPerMonth')?.touched) && leaveSettingsForm.get('maxPerMonth')?.invalid}">
+                    <label for="MaxPerMonthId" class="floating-label" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || leaveSettingsForm.get('maxPerMonth')?.touched) && leaveSettingsForm.get('maxPerMonth')?.invalid}">
+                        Max Per Month*
+                    </label>
+                    <div *ngIf="(isFormSubmitted || leaveSettingsForm.get('maxPerMonth')?.touched) && leaveSettingsForm.get('maxPerMonth')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="leaveSettingsForm.get('maxPerMonth')?.errors?.required">Max per month is
+                            required.</span>
+                        <span *ngIf="leaveSettingsForm.get('maxPerMonth')?.errors?.min">Value must be at least
+                            1.</span>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3">
+                    <input type="text" class="form-control floating-input" id="MaxPerYearId" placeholder=" "
+                        formControlName="maxPerYear" (keypress)="handleAlphaChar($event)" minlength="1"
+                        maxlength="3    "
+                        [ngClass]="{'is-invalid': (isFormSubmitted || leaveSettingsForm.get('maxPerYear')?.touched) && leaveSettingsForm.get('maxPerYear')?.invalid}">
+                    <label for="MaxPerYearId" class="floating-label" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || leaveSettingsForm.get('maxPerYear')?.touched) && leaveSettingsForm.get('maxPerYear')?.invalid}">
+                        Max Per Year*
+                    </label>
+                    <div *ngIf="(isFormSubmitted || leaveSettingsForm.get('maxPerYear')?.touched) && leaveSettingsForm.get('maxPerYear')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="leaveSettingsForm.get('maxPerYear')?.errors?.required">Max per year is
+                            required.</span>
+                        <span *ngIf="leaveSettingsForm.get('maxPerYear')?.errors?.min">Value must be at least
+                            1.</span>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3">
+                    <input type="text" class="form-control floating-input" id="maxApplyId" placeholder=" "
+                        formControlName="maxApply" (keypress)="handleAlphaChar($event)" minlength="1" maxlength="3"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || leaveSettingsForm.get('maxApply')?.touched) && leaveSettingsForm.get('maxApply')?.invalid}">
+                    <label for="maxApplyId" class="floating-label" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || leaveSettingsForm.get('maxApply')?.touched) && leaveSettingsForm.get('maxApply')?.invalid}">
+                        Max Apply*
+                    </label>
+                    <div *ngIf="(isFormSubmitted || leaveSettingsForm.get('maxApply')?.touched) && leaveSettingsForm.get('maxApply')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="leaveSettingsForm.get('maxApply')?.errors?.required">Max Apply is
+                            required.</span>
+                        <span *ngIf="leaveSettingsForm.get('maxApply')?.errors?.min">Value must be at least
+                            1.</span>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3"
+                    *ngIf="leaveSettingsForm.get('applicableTo')?.value === 'All'">
+                    <input type="number" class="form-control floating-input" id="applicableDurationId" placeholder=" "
+                        formControlName="applicableDuration" (keypress)="handleAlphaChar($event)" minlength="1"
+                        maxlength="2" min="0" max="12"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || leaveSettingsForm.get('applicableDuration')?.touched) && leaveSettingsForm.get('applicableDuration')?.invalid}">
+                    <label for="applicableDurationId" class="floating-label" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || leaveSettingsForm.get('applicableDuration')?.touched) && leaveSettingsForm.get('applicableDuration')?.invalid}">
+                        Applicable Period*
+                    </label>
+                    <div *ngIf="(isFormSubmitted || leaveSettingsForm.get('applicableDuration')?.touched) && leaveSettingsForm.get('applicableDuration')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="leaveSettingsForm.get('applicableDuration')?.errors?.required">Applicable
+                            Period is
+                            required.</span>
+                        <span *ngIf="leaveSettingsForm.get('applicableDuration')?.errors?.min">Value must be at
+                            least
+                            1.</span>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3"
+                    *ngIf="leaveSettingsForm.get('applicableTo')?.value === 'Male' || leaveSettingsForm.get('applicableTo')?.value === 'Female'">
+                    <input type="text" class="form-control floating-input" id="maxAllowedEventId" placeholder=" "
+                        formControlName="maxAllowedEvent" (keypress)="handleAlphaChar($event)" minlength="1"
+                        maxlength="2"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || leaveSettingsForm.get('maxAllowedEvent')?.touched) && leaveSettingsForm.get('maxAllowedEvent')?.invalid}">
+                    <label for="maxAllowedEventId" class="floating-label" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || leaveSettingsForm.get('maxAllowedEvent')?.touched) && leaveSettingsForm.get('maxAllowedEvent')?.invalid}">
+                        MaxAllowed Event*
+                    </label>
+                    <div *ngIf="(isFormSubmitted || leaveSettingsForm.get('maxAllowedEvent')?.touched) && leaveSettingsForm.get('maxAllowedEvent')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="leaveSettingsForm.get('maxAllowedEvent')?.errors?.required">MaxAllowed
+                            Event is
+                            required.</span>
+                        <span *ngIf="leaveSettingsForm.get('maxAllowedEvent')?.errors?.min">Value must be at
+                            least
+                            1.</span>
+                    </div>
+                </div>
+
+                <div class="form-group col-md-3 ">
+                    <div class="d-flex align-items-center gap-3">
+
+                        <div class="form-check m-0">
+                            <input class="form-check-input" type="checkbox" id="carryForwardId"
+                                formControlName="carryForward">
+                            <label class="form-check-label" for="carryForwardId">
+                                Carry Forward
+                            </label>
+                        </div>
+
+                        <div class="form-check m-0">
+                            <input class="form-check-input" type="checkbox" id="encashableId"
+                                formControlName="encashable">
+                            <label class="form-check-label" for="encashableId">
+                                Encashable
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- <div class="form-group col-md-3 ">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="form-check m-0">
+                                    <input class="form-check-input" type="checkbox" id="isPaidId"
+                                        formControlName="isPaid">
+                                    <label class="form-check-label" for="isPaidId">
+                                        Paid
+                                    </label>
+                                </div>
+                            </div>
+                        </div> -->
+
+                <div class="form-group col-md-3 ">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="form-check m-0">
+                            <input class="form-check-input" type="checkbox" id="singleApplicationId"
+                                formControlName="singleApplication">
+                            <label class="form-check-label" for="singleApplicationId">
+                                Single Application
+                            </label>
+                        </div>
+                        <div class="form-check m-0">
+                            <input class="form-check-input" type="checkbox" id="weekendIncId"
+                                formControlName="weekendInc">
+                            <label class="form-check-label" for="weekendIncId">
+                                Weekend Inclusive
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <ng-container *ngIf="leaveSettingsForm.get('carryForward')?.value">
+                    <div class="form-group floating-label-group col-md-3">
+                        <input type="text" class="form-control floating-input" id="creditId" placeholder=" "
+                            formControlName="credit" (keypress)="handleAlphaChar($event)" minlength="1" maxlength="2"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || leaveSettingsForm.get('credit')?.touched) && leaveSettingsForm.get('credit')?.invalid}">
+                        <label for="creditId" class="floating-label" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || leaveSettingsForm.get('credit')?.touched) && leaveSettingsForm.get('credit')?.invalid}">
+                            Credit
+                        </label>
+                        <div *ngIf="(isFormSubmitted || leaveSettingsForm.get('credit')?.touched) && leaveSettingsForm.get('credit')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="leaveSettingsForm.get('credit')?.errors?.required">Credit is
+                                required.</span>
+                            <span *ngIf="leaveSettingsForm.get('credit')?.errors?.min">Value must be at least
+                                1.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-3 ">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="form-check m-0">
+                                <input class="form-check-input" type="checkbox" id="monthId" formControlName="month"
+                                    (change)="onMonthChange()">
+                                <label class="form-check-label" for="monthId">
+                                    Month
+                                </label>
+                            </div>
+
+                            <div class="form-check m-0">
+                                <input class="form-check-input" type="checkbox" id="yearId" formControlName="year"
+                                    (change)="onYearChange()">
+                                <label class="form-check-label" for="yearId">
+                                    Year
+                                </label>
+                            </div>
+
+                            <div class="form-check m-0">
+                                <input class="form-check-input" type="checkbox" id="resetYearId"
+                                    formControlName="resetYear">
+                                <label class="form-check-label" for="resetYearId">
+                                    Reset Year
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3">
+                        <input type="text" class="form-control floating-input" id="maxCarryForwardId" placeholder=" "
+                            formControlName="maxCarryForward" (keypress)="handleAlphaChar($event)" minlength="1"
+                            maxlength="2"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || leaveSettingsForm.get('maxCarryForward')?.touched) && leaveSettingsForm.get('maxCarryForward')?.invalid}">
+                        <label for="maxCarryForwardId" class="floating-label" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || leaveSettingsForm.get('maxCarryForward')?.touched) && leaveSettingsForm.get('maxCarryForward')?.invalid}">
+                            maxCarryForward
+                        </label>
+                        <div *ngIf="(isFormSubmitted || leaveSettingsForm.get('maxCarryForward')?.touched) && leaveSettingsForm.get('maxCarryForward')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="leaveSettingsForm.get('maxCarryForward')?.errors?.required">Max
+                                CarryForward is
+                                required.</span>
+                            <span *ngIf="leaveSettingsForm.get('maxCarryForward')?.errors?.min">Value must be at
+                                least
+                                1.</span>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <div class="form-group floating-label-group col-md-3">
+                    <textarea type="text" class="form-control floating-input" id="DescriptionId" placeholder=" "
+                        formControlName="description"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || leaveSettingsForm.get('description')?.touched) && leaveSettingsForm.get('description')?.invalid}"></textarea>
+                    <label for="DescriptionId" class="floating-label" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || leaveSettingsForm.get('description')?.touched) && leaveSettingsForm.get('description')?.invalid}">
+                        Description*</label>
+                    <div *ngIf="(isFormSubmitted || leaveSettingsForm.get('description')?.touched) && leaveSettingsForm.get('description')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="leaveSettingsForm?.get('description')?.errors?.required">Description is
+                            required.</span>
+                        <span
+                            *ngIf="(leaveSettingsForm.get('description')?.errors?.minlength || leaveSettingsForm.get('description')?.errors?.maxlength)">2
+                            to 50 Charater are allowed.</span>
+                    </div>
+                </div>
+
+
+                <div class="text-end">
+                    <button class="HRMS_secondary_button" (click)="resetData()" type="reset"><i class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+                    <button class="HRMS_primary_button me-2" type="submit" (click)="addLeaveType()"
+                        *ngIf="!isEdited"><i class="feather icon-check"></i>&nbsp;Submit</button>
+                    <button class="HRMS_primary_button me-2" type="submit" (click)="updateLeaveType()"
+                        *ngIf="isEdited"><i class="feather icon-check"></i>&nbsp;Update</button>
+                </div>
+
+
+            </div>
+        </form>
+    </div>
+</app-card>
+
+<div class="card p-3">
+    <div class="row align-items-center my-2">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 form-heading">Available Leave Type</h5>
+
+                <div class="d-flex align-items-center gap-2">
+                    <input type="text" class="form-control rad-50" #inputValue (keyup)="applyFilter($event)"
+                        placeholder="Search" id="serachInputId" style="max-width: 200px;" />
+
+                    <div class="export-container position-relative">
+                        <button class="export-button d-flex align-items-center" (click)="toggleDropdownExport()">
+                            <i class="feather icon-upload me-1"></i> Export
+                            <!-- <i class="fas fa-chevron-down ms-1"></i> -->
+                        </button>
+
+                        <div class="dropdown-content position-absolute end-0 mt-1" *ngIf="dropdownVisible"
+                            style="z-index: 999;">
+                            <div class="dropdown-item" (click)="exportFile('excel')">
+                                <i class="fas fa-file-excel me-1"></i> Excel
+                            </div>
+                            <div class="dropdown-item" (click)="exportFile('pdf')">
+                                <i class="fas fa-file-pdf me-1"></i> PDF
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- </div> -->
+    <div class="table-wrapper">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th style="white-space: nowrap;font-weight: unset;">Leave Type</th>
+                    <!-- <th class="text-center ">Employee Type</th> -->
+                    <!-- <th class="text-center ">Period Type</th>
+                    <th class="text-center ">Applicable To</th>
+                    <th class="text-center ">Carry Forward</th>
+                    <th class="text-center ">Encashable</th>
+                    <th class="text-center ">Paid</th>
+                    <th class="text-center ">Max Per Month</th>
+                    <th class="text-center ">Max Per Year</th> -->
+                    <th class="">Manage</th>
+                    <th class="">Status</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="isTableData == false">
+                <tr
+                    *ngFor="let row of this.rows | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                    <td class="">
+                        <span>{{row.LeaveName}}</span>
+                    </td>
+                    <!-- <td class="text-center ">
+                        <span>{{row.EmpType}}</span>
+                    </td>
+                    <td class="text-center ">
+                        <span>{{row.DurationType}}</span>
+                    </td>
+                    <td class="text-center ">
+                        <span>{{row.ApplicableTo}}</span>
+                    </td>
+                    <td class="text-center ">
+                        <span>{{row.CarryForward}}</span>
+                    </td>
+                    <td class="text-center ">
+                        <span>{{row.Encashable}}</span>
+                    </td>
+                    <td class="text-center ">
+                        <span>{{row.IsPaid}}</span>
+                    </td>
+                    <td class="text-center ">
+                        <span>{{row.MaxPerMonth}}</span>
+                    </td>
+                    <td class="text-center ">
+                        <span>{{row.MaxPerYear}}</span>
+                    </td> -->
+                    <td style="cursor: pointer;">
+                        <i class="action-icon action-edit feather icon-edit-2" (click)="editPatchData(row,true)"
+                            *ngIf="controlAccessPage?.UpdateAccess ===  true"></i>
+
+                        <!-- <i class="fas fa-trash text-danger" (click)="onView(row)"
+                            *ngIf="controlAccessPage?.DeleteAccess === true" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal"></i> -->
+                    </td>
+                    <td class="align-middle p-0 m-0" *ngIf="controlAccessPage?.UpdateAccess ===  true">
+                        <label class="toggle-switch m-0">
+                            <input type="checkbox" [checked]="row.IsActive" (change)="toggleIsActive(row)">
+                            <span class="slider-content">
+                                <i class="status-icon"
+                                    [ngClass]="row.IsActive ? 'fas fa-check-circle text-success' : 'fas fa-times-circle text-danger'">
+                                </i>
+                                <span class="status-text ms-1">
+                                    {{ row.IsActive ? 'Active' : 'Inactive' }}
+                                </span>
+                            </span>
+                        </label>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div *ngIf="isTableData == true" class="text-center errorMassage">
+        <span class="text-danger">{{errorMessage}}</span>
+    </div>
+
+    <div class="pagination-controls-wrapper">
+        <div class="row align-items-center">
+            <div class="col-auto">
+                <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+                <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+                    <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+                </select>
+            </div>
+            <div class="col">
+            </div>
+            <div class="col-auto">
+                <pagination-controls (pageChange)="page = $event"></pagination-controls>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- this is delete modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-confirm">
+        <div class="modal-content">
+            <div class="text-end">
+                <button type="reset" class="btn-close " data-bs-dismiss="modal" aria-label="Close" #closeModalDelete
+                    style="background-color: rgb(228, 208, 208);"></button>
+            </div>
+            <div class="modal-header flex-column py-0">
+                <div class="icon-box" *ngIf="!isRecordDeleted">
+                    <i class="fas fa-times checkmark_check"></i>
+                </div>
+                <div class="modal-wrapper" *ngIf="isRecordDeleted"> <svg class="checkmark"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                </div>
+                <h4 class="modal-title w-100">Are you sure?</h4>
+            </div>
+            <div class="modal-body py-0">
+                <p>Do you really want to delete these records?This process cannot be undone.</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger" (click)="deleteLeaveType()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- this is end of delete modal -->

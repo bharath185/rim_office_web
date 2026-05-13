@@ -1,0 +1,557 @@
+<app-toast-message></app-toast-message>
+<div class="divSpinner" *ngIf="isSpinner">
+    <div class="spinner"></div>
+</div>
+
+<div class="text-end mb-2">
+    <button class="HRMS_Create_Close text-end" type="button" (click)="toggleButton()">
+        <i class="feather" [ngClass]="isCardOpen ? 'icon-x' : 'icon-plus'"></i>&nbsp;
+        {{ isCardOpen ? 'Close' : 'Open' }}
+    </button>
+</div>
+
+<fieldset class="border p-3 mb-3 custom-fieldset" *ngIf="isCardOpen">
+    <div class="col-md-12">
+        <div [formGroup]="getAllEmployeeSalForm">
+            <div class="row">
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="BusinessUnit" id="businessId">
+                        <option disabled selected hidden value=""></option>
+                        <option *ngFor="let unitList of getBusinessUnitlist" [value]="unitList.BUId">
+                            {{unitList.BusinessUnit}}</option>
+                    </select>
+                    <label for="businessId" class="floating-label m-0" style="left: 20px;">Business Unit</label>
+                </div>
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="Location" id="locationId">
+                        <option disabled selected hidden value=""></option>
+                        <option *ngFor="let location of getLocations" [value]="location.LocationId">
+                            {{location.Location}}</option>
+                    </select>
+                    <label for="locationId" class="floating-label m-0" style="left: 20px;">Location</label>
+                </div>
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="DeptName" id="depNameId"
+                        (change)="callDDDesignation()">
+                        <option value="" selected hidden></option>
+                        <option *ngFor="let option of getDepartementName" [value]="option['DeptId']">
+                            {{ option['DeptName']['length'] > 20 ? (option['DeptName'] | slice: 0:20) + '...' :
+                            option['DeptName'] }}
+                        </option>
+                    </select>
+                    <label for="depNameId" class="floating-label m-0" style="left: 20px;">Department</label>
+                </div>
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="Designation" id="designationId"
+                        (change)="callReporter();">
+                        <option value="" selected hidden></option>
+                        <option *ngFor="let option of getDepartementRole" [value]="option['DesignationId']">
+                            {{ option.Designation.length > 17 ? (option.Designation | slice: 0:17) + '...' :
+                            option.Designation }}
+                        </option>
+                    </select>
+                    <label for="designationId" class="floating-label m-0" style="left: 20px;">Designation</label>
+                </div>
+
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="reporter_name" id="reporter_name_id"
+                        (change)="callDDEmployee()">
+                        <option value="" selected hidden></option>
+                        <option *ngFor="let reporter of getDropdownReporter" [value]="reporter.ReporterId">
+                            {{reporter.ReporterName}}({{reporter.ReporterCode}})</option>
+                    </select>
+                    <label for="reporter_name_id" class="floating-label m-0" style="left: 20px;">Reporting
+                        To</label>
+                </div>
+
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="employee_name" id="reporter_name_id">
+                        <option value="" selected hidden></option>
+                        <option *ngFor="let emp of getDropdownEmployee" [value]="emp.EmpId">
+                            {{emp.EmpName}}({{emp.EmpCode}})</option>
+                    </select>
+                    <label for="reporter_name_id" class="floating-label m-0" style="left: 20px;">Employee</label>
+                </div>
+
+                <div class="text-end">
+                    <button class="HRMS_secondary_button" type="reset" (click)="resetFilterData()">
+                        <i class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+                    <button class="HRMS_primary_button" type="button" (click)="submitFilterData()">
+
+                        <span *ngIf="!isSpinner">
+                            <i class="feather icon-filter"></i>&nbsp;Filter
+                        </span>
+
+                        <span *ngIf="isSpinner">
+                            <i class="fa fa-spinner fa-spin"></i>&nbsp;Filtering...
+                        </span>
+
+                    </button>
+                    <button class="btn btn-primary btn-sm-custom" style="padding-top:10px;margin-left: 5px;"
+                        (click)="openModal();" *ngIf="controlAccessPage?.AddAccess == true">
+                        <i class="feather icon-plus"></i>&nbsp;Add Emp Salary
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</fieldset>
+
+<!-- <div style="display: flex;justify-content: end;align-items: center;" class="mt-2">
+    <button class="HRMS_secondary_button" type="reset" (click)="resetFilter()">
+        <i class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+    <button class="HRMS_primary_button" type="submit" (click)="FilterTable()">
+        <i class="feather icon-filter"></i>&nbsp;Filter</button>
+</div> -->
+
+<app-card [options]="false">
+    <div class="col-md-12 d-flex flex-column">
+
+        <div class="row">
+            <div class="col-md-9">
+                <h5 class="mb-0 form-heading">List Of Employees</h5>
+            </div>
+            <div class="col-md-3 text-end pb-2">
+                <input type="text" class="form-control rad-50" [(ngModel)]="searchValue" (keyup)="applyFilter()"
+                    placeholder="Search" id="serachInputId" />
+            </div>
+        </div>
+
+        <div class="table-responsive table-wrapper flex-grow-1" style="overflow-y: auto;">
+            <table class="table table-hover align-middle">
+                <thead class="sticky-header table-light">
+                    <tr class="inner-shadow">
+                        <th class="">Resource Name(Code)</th>
+                        <th class="">CTC</th>
+                        <th class="">Effective From</th>
+                        <th class="">Effective To</th>
+                        <th class="">Salary Revision</th>
+                        <th class="">Pervious CTC</th>
+                        <th class="">Increment Percent</th>
+                        <th class="">Variable Name</th>
+                        <th class="">Variable Amt</th>
+                        <th class="">Arrear Amt</th>
+                        <th class="">Pending Month</th>
+                        <th class="">Arrer Clear</th>
+                        <th class="">Manage</th>
+                    </tr>
+                </thead>
+                <tbody *ngIf="isTableData == false && getListOfAllEmployeeSalaryDetails.length > 0">
+                    <tr
+                        *ngFor="let row of getListOfAllEmployeeSalaryDetails | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                        <td>{{row.FirstName}}({{row.EmpCode}})</td>
+                        <td>{{row.CTC}}</td>
+                        <td>{{row.EffectiveFromDate}}</td>
+                        <td>{{row.EffectiveToDate}}</td>
+                        <td>
+                            <span class="badge" [ngClass]="row.IsAppraised ? 'bg-success' : 'bg-danger'">
+                                {{ row.IsAppraised ? 'Yes' : 'No' }}
+                            </span>
+                        </td>
+                        <td>{{row.PerviousCTC}}</td>
+                        <td> <span *ngIf="row.IncrementPercent != null">
+                                {{row.IncrementPercent}}%</span>
+                        </td>
+                        <td>{{row.VariableName}}</td>
+                        <td>{{row.VariableAmt}}</td>
+                        <td>{{row.ArrearAmt}}</td>
+                        <td>{{row.PendingMonth}}</td>
+                        <td>{{ row.IsClearArrear ? 'Yes' : 'No' }}</td>
+                        <td style="cursor: pointer;" class="" *ngIf="row.RecordStatus === true">
+                            <i class="action-icon action-edit feather icon-edit-2" title="Edit"
+                                (click)="patchVlaues(row,true)" *ngIf="controlAccessPage?.UpdateAccess === true"
+                                [class.disabled]="!row.RecordStatus"></i>
+                            <i class="action-icon action-delete feather icon-trash-2"
+                                [class.disabled]="!row.RecordStatus" *ngIf="controlAccessPage?.DeleteAccess === true"
+                                data-bs-toggle="modal" data-bs-target="#deleteModal" title="Delete"
+                                (click)="confirmDelete(row)"></i>
+                        </td>
+                    </tr>
+                </tbody>
+
+
+            </table>
+            <div *ngIf="isTableData == true" class="text-center errorMassage">
+                <span class="text-danger text-center">{{errorMessage}}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="pagination-controls-wrapper">
+        <div class="row align-items-center" style="padding-top: 1rem;">
+            <div class="col-auto">
+                <label for="pageSizeSelect" style="font-size: smaller;">Records per
+                    page:</label>
+                <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+                    <option *ngFor="let size of pageSizes" [value]="size">{{ size }}
+                    </option>
+                </select>
+            </div>
+            <div class="col">
+            </div>
+            <div class="col-auto">
+                <pagination-controls (pageChange)="page = $event"></pagination-controls>
+            </div>
+        </div>
+    </div>
+</app-card>
+<!-- this is delete modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-confirm">
+        <div class="modal-content">
+            <div class="text-end">
+                <button type="reset" class="btn-close" data-bs-dismiss="modal" aria-label="Close" #closeModalDelete
+                    style="background-color: rgb(228, 208, 208);"></button>
+            </div>
+            <div class="modal-header flex-column py-0 ">
+                <div class="icon-box" *ngIf="!isRecordDeletedCommon">
+                    <i class="fas fa-times checkmark_check"></i>
+                </div>
+                <div class="modal-wrapper" *ngIf="isRecordDeletedCommon"> <svg class="checkmark"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                </div>
+                <h4 class="modal-title w-100 text-center">Are you sure?</h4>
+            </div>
+            <div class="modal-body py-0 text-center">
+                <div class="divSpinner1" *ngIf="isSpinner1">
+                    <div class="spinner1"></div>
+                </div>
+                <p>Do you really want to <strong>delete </strong>these records?. This process cannot be undone.</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger" (click)="deleteRecord()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- this is end of delete modal -->
+
+
+<!-- This is for  modal -->
+<div class="modal fade" id="modal-right" tabindex="-1" aria-labelledby="modal-right-label" data-bs-backdrop="static"
+    aria-hidden="false">
+    <div class="modal-dialog modal-md modal-end">
+        <div class="modal-content vh-100 no-radius">
+            <div class="modal-header d-flex justify-content-between align-items-center">
+                <h5 class="modal-title" id="modal-right-label">Add Employee Salary</h5>
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" #closeModal
+                        (click)="resetData()"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    <div class="row">
+
+                        <div class="com-md-8">
+                            <form [formGroup]="addEmployeeSalForm">
+                                <div class="row">
+                                    <div class="form-group floating-label-group dropdown  inputPadding mt-2">
+                                        <input type="text" formControlName="emloyee" class="form-control floating-input"
+                                            placeholder="Select Employee" [(ngModel)]="searchText" id="employeeNameId"
+                                            (focus)="openDropdown()" (input)="filterEmployees()"
+                                            (blur)="closeDropdown(); checkValidEmployee()" autocomplete="off"
+                                            [ngClass]="{'is-invalid': isFormSubmitted && !isValidEmployee}" />
+                                        <label class="floating-label m-0" style="left: 20px;" for="employeeNameId"
+                                            [ngClass]="{'text-danger':(isFormSubmitted || addEmployeeSalForm.get('emloyee')?.touched) && addEmployeeSalForm.get('emloyee')?.invalid}">Employee*</label>
+                                        <ul class="dropdown-menu"
+                                            [class.show]="isDropdownOpen && filteredEmployees.length >= 0">
+                                            <li *ngFor="let employee of filteredEmployees"
+                                                (click)="selectEmployeee(employee)" class="dropdown-item">
+                                                {{ employee.EmpName }} ({{ employee.EmpCode }})
+                                            </li>
+                                            <li *ngIf="filteredEmployees.length === 0"
+                                                class="dropdown-item text-danger">No results
+                                                found
+                                            </li>
+                                        </ul>
+                                        <div style="font-size: 10px;" class="text-danger"
+                                            *ngIf="(isFormSubmitted || addEmployeeSalForm.get('emloyee')?.touched) && addEmployeeSalForm.get('emloyee')?.invalid">
+                                            Invalid Employee</div>
+                                        <div *ngIf="isFormSubmitted && !isValidEmployee" class="invalid-feedback m-0">
+                                            Please select a
+                                            valid
+                                            Employee.</div>
+                                        <div *ngIf="errorMessageEmpName" class="error-message">{{ errorMessageEmpName }}
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group floating-label-group  inputPadding mt-2">
+                                        <input type="text" formControlName="emloyeeCode" id="emloyeeCodeId"
+                                            class="form-control floating-input" readonly>
+                                        <label class="floating-label m-0" style="left: 20px;"
+                                            for="emloyeeCodeId">Employee Code</label>
+                                    </div>
+
+                                    <div class="form-group floating-label-group  inputPadding mt-2">
+                                        <input type="text" id="ctcId" class="form-control floating-input"
+                                            formControlName="CTC"
+                                            [ngClass]="{ 'is-invalid': (isFormSubmitted || addEmployeeSalForm.get('CTC')?.touched)  && addEmployeeSalForm.get('CTC')?.invalid}">
+                                        <label class="floating-label m-0" style="left: 20px;" for="ctcId"
+                                            [ngClass]="{'text-danger': (isFormSubmitted || addEmployeeSalForm.get('CTC')?.touched) && addEmployeeSalForm.get('CTC')?.invalid}">CTC*</label>
+                                        <div *ngIf="(isFormSubmitted || addEmployeeSalForm.get('CTC')?.touched) && addEmployeeSalForm.get('CTC')?.invalid "
+                                            class="invalid-feedback m-0">
+                                            <span *ngIf="addEmployeeSalForm.get('CTC')?.errors?.required">
+                                                CTC is required.
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="custom-date-input mt-2">
+                                        <input type="date" placeholder=" " id="addStartDateId"
+                                            formControlName="date_from" class="form-control floating-input"
+                                            (ngModelChange)="onFromDate()" [max]="maxStartDate"
+                                            [ngClass]="{'is-invalid': isFromDateInvalid()}" />
+
+                                        <label for="addStartDateId" style="left: 20px;" class="floating-label"
+                                            [ngClass]="{'text-danger': (isFormSubmitted || addEmployeeSalForm.get('date_from')?.touched) && (addEmployeeSalForm.get('date_from')?.invalid)}">Effective
+                                            From Date*</label>
+                                        <div *ngIf="isFromDateInvalid()" class="invalid-feedback m-0">
+                                            <span
+                                                *ngIf="addEmployeeSalForm.get('date_from')?.errors?.required">Effective
+                                                Date is
+                                                required.</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group inputPadding mt-3">
+                                        <div class="d-flex align-items-center gap-4">
+
+                                            <div class="form-check">
+                                                <input formControlName="appraised" class="form-check-input"
+                                                    type="checkbox" id="defaultCheck1">
+                                                <label class="form-check-label" for="defaultCheck1">
+                                                    Salary Revision
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check">
+                                                <input formControlName="IsArrear" class="form-check-input"
+                                                    type="checkbox" id="IsArrear">
+                                                <label class="form-check-label" for="IsArrear">
+                                                    Is Arrear
+                                                </label>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <ng-container *ngIf="addEmployeeSalForm.get('IsArrear')?.value === true">
+
+                                        <div class="form-group floating-label-group  inputPadding">
+                                            <select class="form-control floating-input" id="yearDDId"
+                                                [(ngModel)]="selectedYear" (change)="onYearChange()"
+                                                formControlName="year">
+                                                <option value="" disabled>Select Year</option>
+                                                <option *ngFor="let y of years" [ngValue]="y">{{ y }}</option>
+                                            </select>
+                                            <label for="yearDDId" class="floating-label"
+                                                style="left: 20px;">Arrear Year</label>
+                                        </div>
+
+                                        <div class="form-group floating-label-group  inputPadding">
+                                            <select class="form-control floating-input" id="monthDDId"
+                                                [(ngModel)]="selectedMonth" formControlName="month">
+                                                <option value="" disabled selected>Select Month</option>
+                                                <option *ngFor="let m of months" [value]="m.id">{{ m.name }}</option>
+                                            </select>
+                                            <label for="monthDDId" class="floating-label"
+                                                style="left: 20px;">Arrear Month</label>
+                                        </div>
+
+                                        <div class="form-group floating-label-group">
+                                            <input type="text" id="PendingMonthId" class="form-control floating-input"
+                                                formControlName="PendingMonth">
+                                            <label class="floating-label m-0" style="left: 20px;"
+                                                for="PendingMonthId">Pending Month</label>
+                                        </div>
+
+                                        <div class="form-group floating-label-group">
+                                            <input type="text" id="arrearAmtId" class="form-control floating-input"
+                                                formControlName="arrearAmt">
+                                            <label class="floating-label m-0" style="left: 20px;"
+                                                for="arrearAmtId">Arrear Amount</label>
+                                        </div>
+
+                                        <div class="form-group floating-label-group">
+                                            <input type="text" id="DescriptionforArrearId"
+                                                class="form-control floating-input"
+                                                formControlName="DescriptionforArrear">
+                                            <label class="floating-label m-0" style="left: 20px;"
+                                                for="DescriptionforArrearId">Description forArrear</label>
+                                        </div>
+
+                                    </ng-container>
+
+
+
+                                    <div class="form-group mt-2">
+                                        <label>Salary Type</label><br>
+
+                                        <input type="radio" value="fixed" formControlName="salaryType"
+                                            (change)="onSalaryTypeChange()">
+                                        Fixed
+
+                                        <input class="ml-2" type="radio" value="variable" formControlName="salaryType"
+                                            (change)="onSalaryTypeChange()">
+                                        Variable
+                                    </div>
+
+
+
+                                    <div *ngIf="addEmployeeSalForm.get('salaryType')?.value === 'variable'">
+
+                                        <div class="form-group floating-label-group ">
+                                            <select class="form-control floating-input" formControlName="variable"
+                                                (change)="onVariableChange($event)">
+                                                <option value="" hidden></option>
+                                                <option value="createNew">Create New</option>
+                                                <option *ngFor="let variable of getDropdownVariable"
+                                                    [value]="variable.VariableCode">
+                                                    {{ variable.VariableName }}
+                                                </option>
+                                            </select>
+                                            <label for="variable_id" class="floating-label m-0"
+                                                style="left: 20px;">Variable</label>
+                                        </div>
+
+                                        <div class="form-group floating-label-group">
+                                            <input type="text" id="variableAmtId" class="form-control floating-input"
+                                                formControlName="variableAmt">
+                                            <label class="floating-label m-0" style="left: 20px;"
+                                                for="variableAmtId">Variable Amount</label>
+                                        </div>
+
+                                        <div class="form-group floating-label-group ">
+                                            <select class="form-control floating-input" formControlName="Period"
+                                                id="Period_id">
+                                                <option value="" selected hidden></option>
+                                                <option value="1">Monthly</option>
+                                                <option value="2">Quarterly</option>
+                                                <option value="3">Halfly</option>
+                                                <option value="4">Yearly</option>
+                                            </select>
+                                            <label for="Period_id" class="floating-label m-0"
+                                                style="left: 20px;">Period</label>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                                <div class="text-end">
+                                    <button class="HRMS_secondary_button" type="button" (click)="resetData()"> <i
+                                            class="feather icon-rotate-ccw"></i> Reset</button>
+                                    <button class="HRMS_primary_button" type="submit"
+                                        *ngIf="!isEdited && controlAccessPage?.AddAccess === true"
+                                        (click)="submitAddSalForm()">
+                                        <i class="feather icon-check"></i>&nbsp;Submit
+                                    </button>
+                                    <button type="submit" class="HRMS_primary_button" *ngIf="isEdited"
+                                        (click)="updateAddForm()">
+                                        <span><i class="feather icon-check"></i>&nbsp;Update</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- This is end side Modal -->
+
+<!-- this is variable modal -->
+<div class="modal fade custom-input-modal" id="inputModal" tabindex="-1" data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-confirm modal-lg">
+        <div class="modal-content">
+
+            <div class="text-end">
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-header flex-column py-0">
+                <div class="icon-box">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <h4 class="modal-title w-100 text-center">Add New</h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="form-group floating-label-group col-md-6">
+                        <input type="text" class="form-control floating-input" [(ngModel)]="variableObj.VariableName"
+                            name="VariableName">
+
+                        <label for="variableName" class="floating-label" style="left: 20px;">
+                            Variable Name*
+                        </label>
+                    </div>
+
+
+                    <div class="form-group floating-label-group col-md-6">
+
+                        <input type="text" class="form-control floating-input" [(ngModel)]="variableObj.VariableCode"
+                            name="VariableCode">
+                        <label for="variableCode" class="floating-label" style="left: 20px;">
+                            Variable Code
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-primary" (click)="saveVariable()"
+                    [disabled]="!variableObj.VariableName || !variableObj.VariableCode">
+                    {{ isEditMode ? 'Update' : 'Save' }}
+                </button>
+            </div>
+
+            <div class="table-responsive table-wrapper flex-grow-1" style="overflow-y: auto;">
+                <table class="table table-hover align-middle">
+                    <thead class="sticky-header table-light">
+                        <tr class="inner-shadow">
+                            <th class="">VariableName</th>
+                            <th class="">VariableCode</th>
+                            <th class="">Manage</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngIf="isTableDataForVariable == false && gelAllVariableData.length > 0">
+                        <tr
+                            *ngFor="let row of gelAllVariableData | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                            <td>{{row.VariableName}}</td>
+                            <td>{{row.VariableCode}}</td>
+                            <td style="cursor: pointer;" class="">
+                                <i class="action-icon action-edit feather icon-edit-2" title="Edit"
+                                    (click)="openEditModal(row)" *ngIf="controlAccessPage?.UpdateAccess === true"></i>
+                                <i class="action-icon action-delete feather icon-trash-2"
+                                    *ngIf="controlAccessPage?.DeleteAccess === true" title="Delete"
+                                    (click)="deleteVariable(row)"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+
+
+                </table>
+                <div *ngIf="isTableDataForVariable == true" class="text-center errorMassage">
+                    <span class="text-danger text-center">{{errorMessageForVariable}}</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- this is variable modal -->

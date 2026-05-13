@@ -1,0 +1,164 @@
+fieldset {
+    border: 1px solid #ddd !important;
+    border-radius: 6px;
+}
+
+legend {
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+}
+
+.custom-fieldset {
+    position: relative;
+    border: 1px solid #072f5f;
+    border-radius: 5px;
+    padding-top: 1.5em;
+}
+.table thead th {
+  padding: 10px 10px !important;
+}
+
+.table tbody td {
+  padding: 5px 10px !important;
+}
+
+.custom-legend {
+    font-weight: bold;
+    color: #072f5f;
+    text-align: left;
+    width: auto;
+    margin: 0;
+    position: absolute;
+    top: -0.7em;
+    left: 12%;
+    transform: translateX(-50%);
+    background: white;
+}
+@media (max-width: 768px) {
+    .custom-legend,
+    .custom-fieldset-second .custom-legend {
+        left: 30% !important;        
+        transform: translateX(-50%); 
+        font-size: 0.9rem;           
+    }
+}
+
+.horizontal-stepper {
+  position: relative;
+}
+
+.step-item {
+  position: relative;
+  flex: 1;
+}
+
+.step-circle {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: #e9ecef;
+  line-height: 2.5rem;
+  font-weight: bold;
+  color: #6c757d;
+  margin: 0 auto;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.step-circle.active {
+  background-color: #0d6efd;
+  color: #fff;
+}
+
+.step-circle.completed {
+  background-color: #198754;
+  color: #fff;
+}
+
+.step-circle.disabled {
+  opacity: 0.5;
+}
+
+.step-label {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.step-line {
+  height: 4px;
+  background-color: #e9ecef;
+  flex: 1;
+  margin: 0 0.5rem;
+  transition: background-color 0.3s;
+  align-self: center;
+}
+
+.step-line.completed {
+  background-color: #198754;
+}
+// ************this is for custome date*******
+.custom-date-input {
+    position: relative;
+}
+
+.custom-date-input input {
+    // border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 3px 5px;
+    width: 100%;
+    outline: none;
+    font-size: 11px;
+    padding-top: 16px;
+    line-height: 1.6;
+}
+
+.custom-date-input input::placeholder {
+    font-size: 5px;
+    color: #aaa;
+}
+
+.custom-date-input label {
+    position: absolute;
+    color: #888;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.custom-date-input input:focus+label,
+.custom-date-input input:not(:placeholder-shown)+label {
+    top: 1px;
+    left: 5px;
+    font-size: 12px;
+}
+
+// .custom-date-input.is-invalid{
+//     border-color: #ff5370;
+// }
+// ************this is for custome date*******
+.spinner1 {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 9px solid;
+    border-color: #dbdcef;
+    border-right-color: #072f5f;
+    animation: spinner-d3wgkg 1s infinite linear;
+}
+
+.divSpinner1 {
+    position: relative;
+
+    .spinner1 {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-top: 10rem;
+        z-index: 9999;
+    }
+}
+
+@keyframes spinner-d3wgkg {
+    to {
+        transform: rotate(1turn);
+    }
+}

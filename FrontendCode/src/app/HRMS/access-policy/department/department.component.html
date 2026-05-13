@@ -1,0 +1,182 @@
+<app-toast-message></app-toast-message>
+<div class="dis-fl-end">
+  <div class="heading-dash-sub">
+    <span>Department</span>
+    <ol class="breadcrumb fade-left">
+      <li class="breadcrumb-item active dis-fl" aria-current="page">
+        <span class="breadC">Access Policy</span><span class="breadC"><i
+            class="feather icon-chevron-right"></i></span><span class="breadC col-act">Department List</span>
+      </li>
+    </ol>
+  </div>
+  <div class="text-end" *ngIf="controlAccessPage?.AddAccess === true">
+    <button class="HRMS_Create_Close text-end" type="button" (click)="toggleButton()">
+      <i class="feather" [ngClass]="isCardOpen ? 'icon-x' : 'icon-plus'"></i>&nbsp;
+      {{ isCardOpen ? 'Close' : 'Create' }}
+    </button>
+  </div>
+</div>
+
+<app-card [options]="false"  *ngIf="isCardOpen">
+  <div class="col-md-12">
+    <div class="col-md-6 mb-3">
+      <h5 class="mb-0 form-heading">Create Department</h5>
+    </div>
+    <form [formGroup]="departmentForm">
+      <div class="row">
+
+        <div class="form-group floating-label-group col-md-3 inputPadding mt-2">
+          <input type="text" class="form-control floating-input" id="departmentId" placeholder=" "
+            formControlName="department_Name"
+            [ngClass]="{'is-invalid': (isFormSubmitted || departmentForm.get('department_Name')?.touched) && departmentForm.get('department_Name')?.invalid}">
+          <label for="departmentId" class="floating-label" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || departmentForm.get('department_Name')?.touched) && departmentForm.get('department_Name')?.invalid}">
+            Department Name*</label>
+          <div
+            *ngIf="(isFormSubmitted || departmentForm.get('department_Name')?.touched) && departmentForm.get('department_Name')?.invalid"
+            class="invalid-feedback m-0">
+            <span *ngIf="departmentForm?.get('department_Name')?.errors?.required">Department Name is required.</span>
+            <span *ngIf="departmentForm?.get('department_Name')?.errors?.pattern">Only alphabets and spaces are
+              allowed.</span>
+            <span
+              *ngIf="(departmentForm.get('department_Name')?.errors?.minlength || departmentForm.get('department_Name')?.errors?.maxlength)">2
+              to 50 Charater are allowed.</span>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 inputPadding mt-2">
+          <input type="text" class="form-control floating-input" id="depShortId" placeholder=" "
+            formControlName="short_Name"
+            [ngClass]="{'is-invalid': (isFormSubmitted || departmentForm.get('short_Name')?.touched) && departmentForm.get('short_Name')?.invalid}">
+          <label for="depShortId" class="floating-label " style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || departmentForm.get('short_Name')?.touched) && departmentForm.get('short_Name')?.invalid}">
+            Dept. Short Name*</label>
+          <div
+            *ngIf="(isFormSubmitted || departmentForm.get('short_Name')?.touched) && departmentForm.get('short_Name')?.invalid"
+            class="invalid-feedback m-0">
+            <span *ngIf="departmentForm?.get('short_Name')?.errors?.required">Dept. Short Name is required.</span>
+            <span *ngIf="departmentForm?.get('short_Name')?.errors?.short_Name">Invalid Dept. Short Name.</span>
+            <span
+              *ngIf="(departmentForm.get('short_Name')?.errors?.minlength || departmentForm.get('short_Name')?.errors?.maxlength)">2
+              to 50 Charater are allowed.</span>
+          </div>
+        </div>
+
+        
+      </div>
+
+      <div class="d-flex flex-column flex-md-row justify-content-end gap-2 mt-2">
+        <button class="HRMS_secondary_button" type="button" (click)="resetData()"> <i
+            class="feather icon-rotate-ccw"></i> Reset</button>
+        <button class="HRMS_primary_button" type="submit" (click)="submitFormdata()" *ngIf="!isEdited">
+          <span > <i class="feather icon-check"></i>
+            Submit</span></button>
+        <button class="HRMS_primary_button" type="submit" (click)="updateDepartmentForm()" *ngIf="isEdited"><i
+            class="feather icon-check"></i> Update</button>
+      </div>
+    </form>
+  </div>
+</app-card>
+
+
+<div class="divSpinner" *ngIf="isSpinner">
+  <div class="spinner"></div>
+</div>
+
+<app-card [options]="false">
+  <div class="col-md-12">
+    <div class="row">
+      <div class="col-md-9">
+        <h5 class="mb-0 form-heading">Available Department</h5>
+      </div>
+      <div class="col-md-3 text-end">
+        <input type="text" class="form-control rad-50" #inputValue (keyup)="applyFilter($event)" placeholder="Search"
+          id="serachInputId" />
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="table-wrapper mt-3">
+      <table class="table table-hover align-middle">
+        <thead class="table-light sticky-header">
+          <tr class="inner-shadow ">
+            <th class="">Department Name</th>
+            <th class="">Dept. Short Name</th>
+            <th class="text-end me-2"
+              *ngIf="(controlAccessPage?.UpdateAccess === true) || (controlAccessPage?.DeleteAccess === true)">
+              Action</th>
+          </tr>
+        </thead>
+        <tbody *ngIf="isTableData == false">
+          <tr *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+            <td class="">
+              <span>{{row.DeptName}}</span>
+            </td>
+            <td class="">
+              <span>{{row.DeptShortName}}</span>
+            </td>
+
+            <td class="text-end" style="cursor: pointer;" *ngIf="(controlAccessPage?.UpdateAccess === true) || (controlAccessPage?.DeleteAccess === true)">
+              <span class=""> <i class="action-icon action-edit feather icon-edit-2" (click)="editData(row,true)"
+                  *ngIf="controlAccessPage?.UpdateAccess === true"></i></span>
+              <span class=""> <i class="action-icon action-delete feather icon-trash-2 " (click)="onView(row)"
+                  data-bs-toggle="modal" data-bs-target="#exampleModal"
+                  *ngIf="controlAccessPage?.DeleteAccess === true"></i></span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="isTableData == true" class="text-center errorMassage">
+        <span class="text-danger">{{errorMessage}}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="pagination-controls-wrapper">
+    <div class="row align-items-center" style="padding-top: 1rem;">
+      <div class="col-auto">
+        <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+        <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+          <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+        </select>
+      </div>
+      <div class="col">
+      </div>
+      <div class="col-auto">
+        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+      </div>
+    </div>
+  </div>
+
+</app-card>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered modal-confirm">
+    <div class="modal-content">
+      <div class="text-end">
+        <button type="reset" class="btn-close " data-bs-dismiss="modal" aria-label="Close" #closeModal
+          style="background-color: rgb(228, 208, 208);"></button>
+      </div>
+      <div class="modal-header flex-column py-0">
+        <div class="icon-box" *ngIf="!isRecordDeleted">
+          <i class="fas fa-times checkmark_check"></i>
+        </div>
+        <div class="modal-wrapper" *ngIf="isRecordDeleted"> <svg class="checkmark" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 52 52">
+            <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+            <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+          </svg>
+        </div>
+        <h4 class="modal-title w-100">Are you sure?</h4>
+      </div>
+      <div class="modal-body py-0">
+        <p>Do you really want to delete these records?This process cannot be undone.</p>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-danger" (click)="deleteDepartmentData()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>

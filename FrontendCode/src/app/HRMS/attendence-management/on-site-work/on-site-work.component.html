@@ -1,0 +1,378 @@
+<app-toast-message></app-toast-message>
+
+
+<div class="dis-fl-end">
+    <div class="heading-dash-sub">
+        <span>On Site</span>
+        <ol class="breadcrumb fade-left">
+            <li class="breadcrumb-item active dis-fl" aria-current="page">
+                <span class="breadC">Attendance</span><span class="breadC"><i
+                        class="feather icon-chevron-right"></i></span><span class="breadC col-act">On Site</span>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="container-fuild" *ngIf="!visibleForm">
+    <div class="card py-2 px-2">
+        <p class="text-center fw-bold">To Submit On Site Details Please Turn On Location And Click On Button</p>
+        <button (click)="getLocation()" type="button" class="btn btn-info">Get My Location</button>
+        <p class="text-danger text-center">{{ locationMessage }}</p>
+    </div>
+
+</div>
+<app-card [options]="false" *ngIf="visibleForm">
+    <div class="divSpinner" *ngIf="isSpinner">
+        <div class="spinner"></div>
+    </div>
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <!-- <h5 class="text-center py-1 addAccessHeading">Visit Log</h5> -->
+
+            <form [formGroup]="addOnSiteForm">
+                <div class="row">
+                    <div class="form-group floating-label-group col-md-2">
+                        <div class="custom-date-input">
+                            <input type="date" formControlName="date" [min]="today" [max]="today"
+                                [ngClass]="{'is-invalid': (isFormSubmitted || addOnSiteForm.get('date')?.touched) && (addOnSiteForm.get('date')?.invalid)}"
+                                (keydown)="preventKeyboardInput($event)" (keypress)="preventKeyboardInput($event)"
+                                (paste)="preventPaste($event)" id="dateId">
+                            <label for="dateId" class="floating-label"
+                                [ngClass]="{'text-danger': (isFormSubmitted || addOnSiteForm.get('date')?.touched) && (addOnSiteForm.get('date')?.invalid)}">
+                                Date*
+                            </label>
+                            <div *ngIf="(isFormSubmitted || addOnSiteForm.get('date')?.touched) && addOnSiteForm.get('date')?.invalid"
+                                class="invalid-feedback m-0">
+                                <span *ngIf="addOnSiteForm.get('date')?.errors?.required" class="px-1">Date is
+                                    required.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <input type="text" class="form-control floating-input" formControlName="company" id="companyId"
+                            placeholder=" ">
+                        <label for="companyId" class="floating-label" style="left: 20px;">Company*</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <input type="text" class="form-control floating-input" formControlName="purpose" id="purposeId"
+                            placeholder=" ">
+                        <label for="purposeId" class="floating-label" style="left: 20px;">Purpose*</label>
+                    </div>
+
+                    <div class="col-md-2" style="margin-top: 9px;">
+                        <button type="submit" (click)="submitFormData()" class="py-1 px-2"
+                            [ngClass]="{ 'button-valid': addOnSiteForm.valid,'button-invalid': addOnSiteForm.invalid}"
+                            [disabled]="addOnSiteForm.invalid"><i class="fas fa-map-marker-alt"></i> Check-In</button>
+                    </div>
+
+                    <div class="col-md-2"></div>
+
+                    <div class="col-md-2 ">
+                        <!-- <input (keyup)="applyFilter($event)" placeholder="Search" #inputValue id="serachInputId" /> -->
+                         <input type="text" class="form-control rad-50" #inputValue id="serachInputId"
+                                (keyup)="applyFilter($event)" placeholder="Search" id="serachInputId" />
+                    </div>
+
+                </div>
+            </form>
+
+            <!-- <div class="table-wrapper ">
+                <table class="table">
+                    <thead style="background-color: #E6E7EB;" class="sticky-header">
+                        <tr>
+                            <th class="text-center" (click)="sortData('Date')">
+                                Date
+                                <i *ngIf="sortKey === 'Date'" class="fas"
+                                    [ngClass]="{'fa-arrow-up': sortDirection['Date'], 'fa-arrow-down': !sortDirection['Date']}"></i>
+                            </th>
+                            <th class="text-center" (click)="sortData('Company')">
+                                Company
+                                <i *ngIf="sortKey === 'Date'" class="fas"
+                                    [ngClass]="{'fa-arrow-up': sortDirection['Date'], 'fa-arrow-down': !sortDirection['Date']}"></i>
+                            </th>
+                            <th class="text-center" (click)="sortData('LogInTime')">
+                                Login Time
+                                <i *ngIf="sortKey === 'LogInTime'" class="fas"
+                                    [ngClass]="{'fa-arrow-up': sortDirection['LogInTime'], 'fa-arrow-down': !sortDirection['LogInTime']}"></i>
+                            </th>
+                            <th class="text-center" (click)="sortData('LogOutTime')">
+                                Logout Time
+                                <i *ngIf="sortKey === 'LogOutTime'" class="fas"
+                                    [ngClass]="{'fa-arrow-up': sortDirection['LogOutTime'], 'fa-arrow-down': !sortDirection['LogOutTime']}"></i>
+                            </th>
+                            <th class="text-center">View</th>
+                            <th class="text-center">Check-Out</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngIf="isTableData == false">
+                        <tr
+                            *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                            <td class="text-center">{{row.LoginDate}}</td>
+                            <td class="text-center">{{row.Company}}</td>
+                            <td class="text-center">
+                                <span *ngIf="row.LogInTime?.Hours !== null || row.LogInTime?.Minutes !== null">
+                                    {{ row.LogInTime?.Hours }}:{{ row.LogInTime?.Minutes }}
+                                </span>
+                            </td>
+                            <td class="text-center">{{ row.LogOutTime?.Hours }}:{{ row.LogOutTime?.Minutes }}</td>
+                            <td class="text-center">
+                                <span><i class="fas fa-eye" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                        style="color:#072f5f;cursor: pointer;" (click)="onView(row)"></i></span>
+                            </td>
+                            <td class="text-center">
+                                <span>
+                                    <i class="fas fa-sign-out-alt" [ngClass]="{
+                                         'disabled-cell': row.LogOutTime?.Hours,
+                                         'enabled-cell': !row.LogOutTime?.Hours
+                                     }" data-bs-toggle="modal" data-bs-target="#checkoutModal"
+                                        (click)="checkModalView(row)">
+                                    </i>
+                                </span>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+                <div *ngIf="isTableData == true" class="alert alert-danger" role="alert">
+                    {{ errorMessage }}
+                </div>
+            </div> -->
+            <!-- triggers="mouseenter:blur" -->
+
+            <div class="table-wrapper mt-3">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light sticky-header">
+                        <tr class="inner-shadow">
+                            <th class="text-center" (click)="sortData('Date')">
+                                Login Date
+                                <i *ngIf="sortKey === 'Date'" class="fas"
+                                    [ngClass]="{'fa-arrow-up': sortDirection['Date'], 'fa-arrow-down': !sortDirection['Date']}"></i>
+                            </th>
+                            <th class="text-center" (click)="sortData('Company')">
+                                Company
+                                <i *ngIf="sortKey === 'Date'" class="fas"
+                                    [ngClass]="{'fa-arrow-up': sortDirection['Date'], 'fa-arrow-down': !sortDirection['Date']}"></i>
+                            </th>
+                            <th class="text-center" (click)="sortData('LogInTime')">
+                                Login Time
+                                <i *ngIf="sortKey === 'LogInTime'" class="fas"
+                                    [ngClass]="{'fa-arrow-up': sortDirection['LogInTime'], 'fa-arrow-down': !sortDirection['LogInTime']}"></i>
+                            </th>
+                            <th class="text-center" (click)="sortData('LogOutTime')">
+                                Logout Time
+                                <i *ngIf="sortKey === 'LogOutTime'" class="fas"
+                                    [ngClass]="{'fa-arrow-up': sortDirection['LogOutTime'], 'fa-arrow-down': !sortDirection['LogOutTime']}"></i>
+                            </th>
+                            <th class="text-center">Check-Out</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngIf="isTableData == false">
+                        <tr
+                            *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                            <td class="text-center">{{ row.LoginDate }}</td>
+                            <td class="text-center" #tooltip="ngbTooltip" [ngbTooltip]="tooltipTemplate"
+                                tooltipClass="card-tooltip" container="body" placement="top"
+                                (mouseenter)="showTooltip('company', row)" (mouseleave)="hideTooltip()">
+                                {{ row.Company }}
+                            </td>
+                            <td class="text-center" (mouseenter)="showTooltip('logintime', row)"
+                                (mouseleave)="hideTooltip()" #tooltip="ngbTooltip" [ngbTooltip]="tooltipTemplate"
+                                tooltipClass="card-tooltip" container="body" placement="top">
+                                <span *ngIf="row.LogInTime?.Hours !== null || row.LogInTime?.Minutes !== null">
+                                    {{ row.LogInTime?.Hours }}:{{ row.LogInTime?.Minutes }}
+                                </span>
+                            </td>
+                            <td class="text-center" (mouseenter)="showTooltip('logouttime', row)"
+                                (mouseleave)="hideTooltip()" #tooltip="ngbTooltip" [ngbTooltip]="tooltipTemplate"
+                                tooltipClass="card-tooltip" container="body" placement="top">
+                                <span *ngIf="row.LogOutTime?.Hours">
+                                    {{ row.LogOutTime?.Hours }}:{{ row.LogOutTime?.Minutes }}
+                                </span>
+                                <span *ngIf="!row.LogOutTime?.Hours" class="text-danger">
+                                    No Check-Out
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <span>
+                                    <i class="fas fa-sign-out-alt" [ngClass]="{
+                                        'disabled-cell': (row.LogOutTime?.Hours) || (getTodayDate() !== row.LoginDate),
+                                        'enabled-cell': !row.LogOutTime?.Hours
+                                    }" data-bs-toggle="modal" data-bs-target="#checkoutModal"
+                                        (click)="checkModalView(row)">
+                                    </i>
+                                </span>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <ng-template #tooltipTemplate>
+                    <div [innerHTML]="tooltipContent"></div>
+                </ng-template>
+                <div *ngIf="isTableData == true" class="alert alert-danger" role="alert">
+                    {{ errorMessage }}
+                </div>
+            </div>
+
+            <div class="pagination-controls-wrapper">
+                <div class="row align-items-center" style="padding-top: 1rem;">
+                    <div class="col-auto">
+                        <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+                        <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+                            <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                    </div>
+                    <div class="col-auto">
+                        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-card>
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body"
+                style="background: linear-gradient(145deg, rgba(255, 255, 255, 0.4), rgba(0, 0, 0, 0.1))">
+                <div class="col-md-12">
+                    <h5 class="text-start fw-bold" style="color:black">View Work Detsils</h5>
+                    <div class="text-end">
+                        <button style="background-color: white;" type="reset" class="btn-close " data-bs-dismiss="modal"
+                            #closeModal aria-label="Close" style="background-color: rgb(228, 208, 208);"></button>
+                    </div>
+                    <div class="row mb-1">
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Employee Name :</span>
+                                <span class="fw-bold text-truncate">{{employeeDetails[0]?.FirstName}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Employee Code :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.EmpCode}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Company :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.Company}}</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Date :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.LoginDate}} </span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Login Time :</span>
+                                <span
+                                    *ngIf="viewdata?.LogInTime?.Hours !== undefined && viewdata?.LogInTime?.Minutes !== undefined">
+                                    {{ viewdata?.LogInTime?.Hours }}:{{ viewdata?.LogInTime?.Minutes }}
+                                </span>
+                                <span
+                                    *ngIf="viewdata?.LogInTime?.Hours === undefined || viewdata?.LogInTime?.Minutes === undefined">
+                                    Not Available
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Logout Time :</span>
+                                <span
+                                    *ngIf="viewdata?.LogOutTime?.Hours !== undefined && viewdata?.LogOutTime?.Minutes !== undefined">
+                                    {{ viewdata?.LogOutTime?.Hours }}:{{ viewdata?.LogOutTime?.Minutes }}
+                                </span>
+                                <span
+                                    *ngIf="viewdata?.LogOutTime?.Hours === undefined || viewdata?.LogOutTime?.Minutes === undefined">
+                                    Not Available
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row mb-2">
+                        <div class="col-md-12">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Login Address :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.LoginAddress}} </span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Login City :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.LoginCity}} </span>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row mb-2">
+                        <div class="col-md-12">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Logout Address :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.LogoutAddress}} </span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Logout City :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.LogoutCity}} </span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-confirm">
+        <div class="modal-content">
+            <div class="text-end">
+                <button type="reset" class="btn-close " data-bs-dismiss="modal" aria-label="Close" #closeModal
+                    style="background-color: rgb(228, 208, 208);" (click)="resetValOnCloseModal()"></button>
+            </div>
+            <div class="modal-header flex-column py-0">
+                <div class="icon-box" *ngIf="!isCheckedOut">
+                    <i class="fas fa-sign-out-alt checkmark_check"></i>
+                </div>
+                <div class="modal-wrapper" *ngIf="isCheckedOut"> <svg class="checkmark"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                </div>
+                <h4 class="modal-title w-100">Checkout Confirmation</h4>
+            </div>
+            <div class="modal-body py-0">
+                <p>Are you sure you want to checkout? This action will record your logout time and cannot be undone.</p>
+                <div class="descrption w-100">
+                    <p class="m-0">Any Description&nbsp;:&nbsp;</p>
+                    <textarea [(ngModel)]="description" class="wider-textarea"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                    (click)="resetValOnCloseModal()"><i class=" feather icon-x"></i>&nbsp;Cancel</button>
+                <button type="submit" class="btn btn-success" (click)="checkoutFromOffice()"><i class="fas fa-sign-out-alt"></i>&nbsp;Checkout</button>
+            </div>
+        </div>
+    </div>
+</div>

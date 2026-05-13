@@ -1,0 +1,456 @@
+::ng-deep .pcoded-header {
+  .card {
+    margin: 0px !important;
+  }
+}
+
+::ng-deep .pcoded-content {
+  position: relative;
+  display: block;
+  padding: 0px !important;
+  padding-left: 25px !important;
+  padding-right: 25px !important;
+}
+
+::ng-deep.ngx-pagination .current {
+  padding: .1875rem .625rem;
+  background-color: #072f5f !important;
+  color: #fefefe;
+  cursor: default;
+}
+
+// search Input Field
+
+.dis-fl-end {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.dropdown-icon {
+  position: absolute;
+  right: 10px;
+  top: 40%;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 12px;
+
+}
+
+.dropdown-item {
+  cursor: pointer;
+}
+
+.dropdown .dropdown-item {
+  padding: 5px 6px;
+}
+
+.table-wrapper {
+  max-height: 420px !important;
+}
+
+.table thead th {
+  padding: 3px 6px !important;
+  background-color: #4CAF50 !important;
+  color: #fff;
+  font-size: 13px;
+}
+
+.table tbody td {
+  padding: 3px 20px !important;
+}
+
+
+/* ALL headers sticky on top */
+thead th {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 9;
+}
+
+/* Common sticky column */
+.sticky-col {
+  position: sticky;
+  background-color: #fff;
+}
+
+/* Left sticky columns */
+.slno-col {
+  left: 0;
+  width: 60px;
+  min-width: 60px;
+  z-index: 11;
+}
+
+.name-col {
+  left: 60px;
+  width: 180px;
+  min-width: 180px;
+  z-index: 10;
+}
+
+.code-col {
+  left: 240px;
+  width: 120px;
+  min-width: 120px;
+  z-index: 9;
+}
+
+.paydays-col {
+  left: 360px;
+  width: 50px;
+  min-width: 50px;
+  z-index: 8;
+  box-shadow: 4px 0 6px -2px rgba(0, 0, 0, 0.3);
+}
+
+/* Header cells that are also left-sticky */
+thead th.sticky-col {
+  z-index: 12;
+}
+
+/* Non-sticky date cells stay behind */
+tbody td:not(.sticky-col) {
+  position: relative;
+  z-index: 1;
+}
+
+
+.weekend {
+  color: red;
+  font-weight: bold;
+}
+
+::ng-deep .tooltip-inner {
+  color: white;
+  background-color: rgb(68, 68, 240) !important;
+  text-align: center;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+
+
+::ng-deep.card-tooltip .essl-title {
+  color: rgb(226, 156, 226);
+  font-weight: 900;
+}
+
+::ng-deep.card-tooltip .wfh-title {
+  color: #fd7e14;
+  font-weight: 700;
+
+}
+
+::ng-deep.card-tooltip .onsite-title {
+  color: yellow;
+  font-weight: 700;
+
+}
+
+@media only screen and (max-width: 991px) {
+  ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+    margin-left: 0px;
+    margin-top: 57px !important;
+  }
+}
+
+.bold-on-hover {
+  font-weight: bold;
+  background-color: #072f5f;
+  color: white;
+}
+
+// this is for export dropdown
+.export-container {
+  position: relative;
+  display: inline-block;
+}
+
+.export-button {
+  background-color: #ffffff;
+  color: #072f5f;
+  border: 1px solid #072f5f;
+  font-size: 14px;
+  padding: 5px 6px;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+  border-radius: 5px;
+}
+
+.export-button:hover {
+  background-color: #e6f0ff;
+  border-color: #0056b3;
+}
+
+.export-button i {
+  margin-left: 2px;
+}
+
+.dropdown-item {
+  padding: 10px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s;
+}
+
+.dropdown-item i {
+  margin-right: 5px;
+}
+
+.dropdown-item:hover {
+  background-color: #072f5f;
+  color: white;
+}
+
+.dropdown-content {
+  position: absolute;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin-top: 5px;
+  z-index: 1;
+  width: 120px;
+  top: 84%;
+}
+
+// this is for export dropdown
+
+.top-nav-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: nowrap;
+  /* 🔥 NO WRAP on desktop */
+}
+
+
+/* Upload button styling */
+.upload-btn {
+  padding: 4px 10px;
+  border-radius: 5px;
+  border: 1px solid #072F5F;
+  background: #072F5F;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  margin-top: 5px;
+}
+
+.saveButton {
+  padding: 4px 12px;
+  border-radius: 5px;
+}
+
+/* Enabled state */
+.save-enabled {
+  background-color: #4CAF50;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Disabled state */
+.save-disabled {
+  background-color: #d6d6d6;
+  color: #888;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.attendance-legend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  /* 🔥 keeps legend in one line on web */
+}
+
+
+/* Legend item */
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* Circle size default */
+.legend-item .circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
+/* Mobile behavior */
+
+#serachInputId {
+  width: 180px;
+}
+.disabled-btn {
+  pointer-events: none;   /* blocks click completely */
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+
+@media (max-width: 768px) {
+
+  /* Keep items compact */
+  #serachInputId {
+    width: 140px;
+  }
+
+  .export-container {
+    width: auto;
+  }
+
+  .export-button {
+    width: auto;
+    padding: 5px 10px;
+  }
+
+  .attendance-legend {
+    white-space: normal;     
+    flex-wrap: wrap;         
+    gap: 8px 14px;         
+    max-width: 100%;
+  }
+
+  .legend-item {
+    flex: 0 0 auto;          
+    font-size: 12px;
+  }
+
+
+  .saveButton {
+    width: fit-content;
+    align-self: flex-start;
+  }
+
+
+  .top-nav-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .upload-btn {
+    width: 100%;
+  }
+
+  .paydays-col {
+    min-width: 80px;
+  }
+
+  .dis-fl-end {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  /* Title smaller */
+  .heading-dash-sub span {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  /* Breadcrumb wraps */
+  .breadcrumb {
+    flex-wrap: wrap;
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .breadC {
+    white-space: normal;
+  }
+
+  /* Buttons container */
+  .mobile-actions {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+  }
+
+  /* Small full-width buttons */
+  .mobile-actions .upload-btn {
+    flex: 1;
+    font-size: 12px;
+    padding: 6px 8px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+
+  /* Remove sticky from ALL columns */
+  .sticky-col {
+    position: static !important;
+    left: auto !important;
+    z-index: auto !important;
+  }
+
+  /* Make ONLY Name sticky */
+  .name-col {
+    position: sticky !important;
+    left: 0 !important;
+    z-index: 15 !important;
+    background-color: #f3da75 !important;
+  }
+
+  /* Header Name also sticky */
+  thead th.name-col {
+    z-index: 20 !important;
+  }
+}
+
+
+
+
+/* Full overlay inside modal */
+.divSpinner2 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255, 255, 255, 0.75); /* overlay effect */
+
+  z-index: 9999 !important; /* 🔥 force it above everything */
+}
+
+/* Spinner design */
+.spinner2 {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #ccc;
+  border-top: 5px solid #007bff; /* primary color */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

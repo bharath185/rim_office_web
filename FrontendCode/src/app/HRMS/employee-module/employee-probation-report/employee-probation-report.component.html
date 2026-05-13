@@ -1,0 +1,249 @@
+<app-toast-message></app-toast-message>
+<!-- <div class="overlay" *ngIf="isSpinner"></div> -->
+<div class="dis-fl-end">
+    <div class="heading-dash-sub">
+        <span>Employee Probation Report</span>
+        <ol class="breadcrumb fade-left">
+            <li class="breadcrumb-item active dis-fl" aria-current="page">
+                <span class="breadC">Employee Module</span>
+                <span class="breadC" [routerLink]="['/view_all_employee']"
+                    style="color:rgb(127, 186, 235);cursor: pointer"> <i
+                        class="feather icon-chevron-right"></i>&nbsp;Employee</span>
+                <span class="breadC"><i class="feather icon-chevron-right"></i></span><span
+                    class="breadC col-act">Employee Probation Report</span>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="col-md-12">
+    <div class="divSpinner" *ngIf="isSpinner">
+        <div class="spinner"></div>
+    </div>
+    <fieldset class="border p-3 mb-3 custom-fieldset">
+        <div [formGroup]="employeeProbationForm">
+            <div class="row">
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="BusinessUnit" id="businessId">
+                        <!-- (change)="callLocation()" -->
+                        <option disabled selected hidden value=""></option>
+                        <option *ngFor="let unitList of getBusinessUnitlist" [value]="unitList.BUId">
+                            {{unitList.BusinessUnit}}</option>
+                    </select>
+                    <label for="businessId" class="floating-label m-0" style="left: 20px;">Business Unit</label>
+                </div>
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="Location" id="locationId">
+                        <option disabled selected hidden value=""></option>
+                        <option *ngFor="let location of getLocations" [value]="location.LocationId">
+                            {{location.Location}}</option>
+                    </select>
+                    <label for="locationId" class="floating-label m-0" style="left: 20px;">Location</label>
+                </div>
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="DeptName" id="depNameId"
+                        (change)="callDDDesignation()">
+                        <option value="" selected hidden></option>
+                        <option *ngFor="let option of getDepartementName" [value]="option['DeptId']">
+                            {{ option['DeptName']['length'] > 20 ? (option['DeptName'] | slice: 0:20) + '...' :
+                            option['DeptName'] }}
+                        </option>
+                    </select>
+                    <label for="depNameId" class="floating-label m-0" style="left: 20px;">Department</label>
+                </div>
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="Designation" id="designationId"
+                        (change)="callReporter();callDDEmployee()">
+                        <option value="" selected hidden></option>
+                        <option *ngFor="let option of getDepartementRole" [value]="option['DesignationId']">
+                            {{ option.Designation.length > 17 ? (option.Designation | slice: 0:17) + '...' :
+                            option.Designation }}
+                        </option>
+                    </select>
+                    <label for="designationId" class="floating-label m-0" style="left: 20px;">Designation</label>
+                </div>
+
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="reporter_name" id="reporter_name_id">
+                        <option value="" selected hidden></option>
+                        <option *ngFor="let reporter of getDropdownReporter" [value]="reporter.ReporterId">
+                            {{reporter.ReporterName}}({{reporter.ReporterCode}})</option>
+                    </select>
+                    <label for="reporter_name_id" class="floating-label m-0" style="left: 20px;">Reporting To</label>
+                </div>
+
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="employee_name" id="reporter_name_id">
+                        <option value="" selected hidden></option>
+                        <option *ngFor="let emp of getDropdownEmployee" [value]="emp.EmpId">
+                            {{emp.EmpName}}({{emp.EmpCode}})</option>
+                    </select>
+                    <label for="reporter_name_id" class="floating-label m-0" style="left: 20px;">Employee</label>
+                </div>
+
+                <!-- <div class="col-md-2"> -->
+                <div class="text-end">
+                    <button class="HRMS_secondary_button" type="reset" (click)="resetData()">
+                        <i class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+                    <button class="HRMS_primary_button" type="button" (click)="submitFilterData()">
+
+                        <span *ngIf="!isSpinner">
+                            <i class="feather icon-filter"></i>&nbsp;Filter
+                        </span>
+
+                        <span *ngIf="isSpinner">
+                            <i class="fa fa-spinner fa-spin"></i>&nbsp;Filtering...
+                        </span>
+
+                    </button>
+                </div>
+                <!-- </div> -->
+            </div>
+
+        </div>
+    </fieldset>
+
+    <div class="probation-container">
+
+        <!-- Header: Tabs + Confirm -->
+        <div class="header-bar">
+
+            <div class="tabs">
+                <button class="tab" [class.active]="activeTab === 'pending'" (click)="activeTab = 'pending'">
+                    Pending Probation
+                </button>
+
+                <button class="tab" [class.active]="activeTab === 'history'" (click)="activeTab = 'history'">
+                    Probation History
+                </button>
+            </div>
+
+            <!-- Confirm Button (only for pending) -->
+            <button (click)="confirmSelection()"
+             *ngIf="activeTab === 'pending'" class="confirm-btn" [disabled]="selectedEmployees.length === 0">
+                <!-- (click)="confirmSelection()" -->
+                Confirm
+            </button>
+
+        </div>
+
+        <!-- ✅ Pending Table -->
+        <div *ngIf="activeTab === 'pending'" class="table-card">
+
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>
+                            <!-- <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()" /> -->
+                        </th>
+                        <th>Resource Name</th>
+                        <th>Report Code</th>
+                        <th>Joining Date</th>
+                        <th>Probation Days</th>
+                        <th>End Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let emp of pendingList">
+
+                        <td>
+                            <input type="checkbox" [(ngModel)]="emp.selected" (change)="updateSelection()" />
+                        </td>
+
+                        <td>{{ emp.EmpName }}</td>
+                        <td>{{ emp.ReportCode }}</td>
+                        <td>{{ formatDate(emp.JoiningDate) }}</td>
+                        <td>{{ emp.ProbationDays }}</td>
+                        <td>{{ formatDate(emp.ProbationEndDate) }}</td>
+
+                    </tr>
+
+                    <tr *ngIf="pendingList.length === 0">
+                        <td colspan="6" class="empty-state">
+                            No history records found
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+
+        <!-- ✅ History Table -->
+        <div *ngIf="activeTab === 'history'" class="table-card">
+
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Resource Name</th>
+                        <th>Report Code</th>
+                        <th>Joining Date</th>
+                        <th>End Date</th>
+                        <th>Confirm Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let emp of historyList">
+                        <td>{{ emp.EmpName }}</td>
+                        <td>{{ emp.ReportCode }}</td>
+                        <td>{{ formatDate(emp.JoiningDate) }}</td>
+                        <td>{{ formatDate(emp.ProbationEndDate) }}</td>
+                        <td>{{ formatDate(emp.ConfirmDate) }}</td>
+                        <td>
+                            <span class="badge completed">Completed</span>
+                        </td>
+                    </tr>
+
+                    <!-- Empty State -->
+                    <tr *ngIf="historyList.length === 0">
+                        <td colspan="6" class="empty-state">
+                            No history records found
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- this is confirm modal -->
+ <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-confirm">
+        <div class="modal-content">
+            <div class="text-end">
+                <button type="reset" class="btn-close " data-bs-dismiss="modal" aria-label="Close" #closeModalReject
+                    style="background-color: rgb(228, 208, 208);" (click)="resetRemarksReject()"></button>
+            </div>
+            <div class="modal-header flex-column py-0">
+                <div class="icon-box" *ngIf="!isRecordDeleted">
+                    <i class="fas fa-times checkmark_check"></i>
+                </div>
+                <div class="modal-wrapper" *ngIf="isRecordDeleted"> <svg class="checkmark"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                </div>
+                <h4 class="modal-title w-100">Are you sure?</h4>
+            </div>
+            <div class="modal-body py-0">
+                <p>Do you really want to <strong>Confirm</strong> these records?This process cannot be undone.</p>
+                <div class="mb-3 px-3">
+                    <label for="remarks" class="form-label">Remarks</label>
+                    <textarea type="text" id="remarks" class="form-control" [(ngModel)]="rejectRemarks"
+                        name="rejectRemarks" placeholder="Enter remarks for Confirm"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetRemarksReject()">No</button>
+                <button type="submit" class="btn btn-danger" (click)="rejectSelectedByHR()">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- this is confirm modal -->

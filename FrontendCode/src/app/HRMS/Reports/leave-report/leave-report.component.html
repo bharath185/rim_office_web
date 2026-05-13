@@ -1,0 +1,195 @@
+<app-toast-message></app-toast-message>
+
+<app-card [options]="false">
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <form [formGroup]="leaveReportForm">
+                <div class="row">
+                    <div class="form-group floating-label-group dropdown col-md-3 inputPadding mt-2">
+                        <input type="text" formControlName="emloyee" class="form-control floating-input"
+                            placeholder="Select Employee" [(ngModel)]="searchText" id="employeeNameId"
+                            (focus)="openDropdown()" (input)="filterEmployees()"
+                            (blur)="closeDropdown(); checkValidEmployee()" autocomplete="off"
+                            [ngClass]="{'is-invalid': isFormSubmitted && !isValidEmployee}" />
+                        <label class="floating-label m-0" style="left: 20px;" for="employeeNameId"
+                            [ngClass]="{'text-danger':(isFormSubmitted || leaveReportForm.get('emloyee')?.touched) && leaveReportForm.get('emloyee')?.invalid}">Employee*</label>
+                        <ul class="dropdown-menu" [class.show]="isDropdownOpen && filteredEmployees.length >= 0">
+                            <li *ngFor="let employee of filteredEmployees" (click)="selectEmployeee(employee)"
+                                class="dropdown-item">
+                                {{ employee.EmpName }} ({{ employee.EmpCode }})
+                            </li>
+                            <li *ngIf="filteredEmployees.length === 0" class="dropdown-item text-danger">No results
+                                found
+                            </li>
+                        </ul>
+                        <div style="font-size: 10px;" class="text-danger"
+                            *ngIf="(isFormSubmitted || leaveReportForm.get('emloyee')?.touched) && leaveReportForm.get('emloyee')?.invalid">
+                            Invalid Employee</div>
+                        <div *ngIf="isFormSubmitted && !isValidEmployee" class="invalid-feedback m-0">Please select a
+                            valid
+                            Employee.</div>
+                        <div *ngIf="errorMessageEmpName" class="error-message">{{ errorMessageEmpName }}</div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 inputPadding mt-2">
+                        <input type="text" formControlName="emloyeeCode" id="emloyeeCodeId"
+                            class="form-control floating-input" readonly>
+                        <label class="floating-label m-0" style="left: 20px;" for="emloyeeCodeId">Employee Code</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 inputPadding mt-2">
+                        <input type="text" formControlName="division" id="divisionId"
+                            class="form-control floating-input">
+                        <label class="floating-label m-0" style="left: 20px;" for="divisionId">Division</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 mt-2">
+                        <select class="form-control floating-input" formControlName="DeptName" id="depNameId">
+                            <option value="" selected hidden></option>
+                            <option *ngFor="let option of getDepartementName" [value]="option['DeptId']">
+                                {{ option['DeptName']['length'] > 20 ? (option['DeptName'] | slice: 0:20) + '...' :
+                                option['DeptName'] }}
+                            </option>
+                        </select>
+                        <label for="depNameId" class="floating-label m-0" style="left: 20px;">Department</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 inputPadding mt-2">
+                        <select class="form-control floating-input" formControlName="Location" style="left: 20px;"
+                            id="locationId">
+                            <option disabled selected hidden value=""></option>
+                            <option *ngFor="let location of getLocations" [value]="location.LocationId">
+                                {{location.Location}}</option>
+                        </select>
+                        <label for="locationId" class="floating-label m-0" style="left: 20px;">Location</label>
+                    </div>                                                                      
+
+                    <div class="col-md-3 mt-2">
+                        <div style="display: flex;justify-content: end;">
+                            <button class="HRMS_secondary_button" type="reset" (click)="resetData()">
+                                <i class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+                            <button class="HRMS_primary_button" type="submit" (click)="submitFilterData()">
+                                <i class="feather icon-filter"></i>&nbsp;Filter</button>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+        <div class="divSpinner" *ngIf="isSpinner">
+            <div class="spinner"></div>
+        </div>
+        <div class="col-md-12">
+            <div class="row align-items-center my-2">
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 form-heading">List Of Employees</h5>
+
+                        <div class="d-flex align-items-center gap-2">
+
+                            <input type="text" class="form-control rad-50" [(ngModel)]="searchValue"
+                                (keyup)="applyFilter()" placeholder="Search" id="serachInputId" />
+
+                            <div class="export-container position-relative">
+                                <button class="export-button d-flex align-items-center"
+                                    (click)="toggleDropdownExport()">
+                                    <i class="feather icon-upload me-1"></i> Export
+                                </button>
+
+                                <div class="dropdown-content position-absolute end-0 mt-1" *ngIf="dropdownVisible"
+                                    style="z-index: 999;">
+                                    <div class="dropdown-item" (click)="exportFile('excel')">
+                                        <i class="fas fa-file-excel me-1"></i> Excel
+                                    </div>
+                                    <div class="dropdown-item" (click)="exportFile('pdf')">
+                                        <i class="fas fa-file-pdf me-1"></i> PDF
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="custom-table-wrapper">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Code</th>
+                                <th>Division</th>
+                                <th>Department</th>
+                                <th>Location</th>
+                                <th colspan="2">Total Leaves</th>
+                                <th colspan="12">Leaves Utilized</th>
+                                <th colspan="2">Leave Balance</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th>EL</th>
+                                <th>CL</th>
+                                <th>Jan</th>
+                                <th>Feb</th>
+                                <th>Mar</th>
+                                <th>Apr</th>
+                                <th>May</th>
+                                <th>Jun</th>
+                                <th>Jul</th>
+                                <th>Aug</th>
+                                <th>Sep</th>
+                                <th>Oct</th>
+                                <th>Nov</th>
+                                <th>Dec</th>
+                                <th>CL</th>
+                                <th>EL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page }">
+                                <td class="long-text" [title]="row.name">{{ row.name }}</td>
+                                <td>{{ row.code }}</td>
+                                <td class="long-text" [title]="row.department">{{ row.department }}</td>
+                                <td class="long-text" [title]="row.location">{{ row.location }}</td>
+                                <td>{{ row.location }}</td>
+                                <td>{{ row.totalEL }}</td>
+                                <td>{{ row.totalCL }}</td>
+                                <td *ngFor="let leave of row.leavesUtilized" [class.leave-taken]="leave > 0">{{ leave }}
+                                </td>
+                                <td>{{ row.leaveBalanceCL }}</td>
+                                <td>{{ row.leaveBalanceEL }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <ng-template #noData>
+                    <div class="custom-no-data">
+                        <span>No leave data available.</span>
+                    </div>
+                </ng-template>
+
+            </div>
+
+            <div class="pagination-controls-wrapper">
+                <div class="row align-items-center" style="padding-top: 1rem;">
+                    <div class="col-auto">
+                        <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+                        <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+                            <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                    </div>
+                    <div class="col-auto">
+                        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</app-card>

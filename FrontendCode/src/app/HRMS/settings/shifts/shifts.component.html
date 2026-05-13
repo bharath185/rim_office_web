@@ -1,0 +1,36 @@
+<div class="dis-fl-end">
+  <div class="heading-dash-sub">
+    <span>Shifts</span>
+    <ol class="breadcrumb fade-left">
+      <li class="breadcrumb-item active dis-fl" aria-current="page">
+        <span class="breadC">Settings</span><span class="breadC"><i class="feather icon-chevron-right"></i></span><span
+          class="breadC col-act">Shifts</span>
+      </li>
+    </ol>
+  </div>
+  <div class="text-end">
+    <div class="top-nav d-flex gap-2 mt-2">
+      <button *ngFor="let tab of tabs" class="nav-btn" [class.active]="selectedTab === tab.key"
+        (click)="selectTab(tab.key)">
+        <i [class]="tab.icon"></i> {{ tab.label }}
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<div>
+  <div *ngIf="selectedTab === 'Shifts_Mapping'">
+    <app-shifts-mapping></app-shifts-mapping>
+  </div>
+
+  <div *ngIf="selectedTab === 'Add_Shifts'" class="text-center">
+    <app-add-shifts-settings></app-add-shifts-settings>
+  </div>
+
+  <div *ngIf="selectedTab === 'Employee_Shifts_Mapping'">
+    <app-employee-shift-mapping></app-employee-shift-mapping>
+  </div>
+
+
+</div>

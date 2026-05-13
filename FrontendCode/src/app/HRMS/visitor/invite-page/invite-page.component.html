@@ -1,0 +1,494 @@
+<app-toast-message></app-toast-message>
+<div class="overlay" *ngIf="isSpinner"></div>
+<div class="dis-fl-end">
+  <div class="heading-dash-sub">
+    <span>Visitor</span>
+    <ol class="breadcrumb fade-left">
+      <li class="breadcrumb-item active dis-fl" aria-current="page">
+        <span class="breadC">Visitor Module</span><span class="breadC"><i
+            class="feather icon-chevron-right"></i></span><span class="breadC col-act">Visitor</span>
+      </li>
+    </ol>
+  </div>
+  <div class="text-end">
+
+    <div class="top-nav d-flex gap-2">
+      <button *ngFor="let tab of tabs; let i = index" class="nav-btn" [class.active]="selectedTab === i"
+        (click)="selectTab(i)" [routerLink]="tab.url">
+        <i [class]="tab.icon"></i> {{ tab.title }}
+      </button>
+    </div>
+
+    <button class="HRMS_Create_Close text-end mt-2" type="button" (click)="toggleButton()"
+      *ngIf="controlAccessPage?.AddAccess === true">
+      <i class="feather" [ngClass]="isCardOpen ? 'icon-x' : 'icon-plus'"></i>&nbsp;
+      {{ isCardOpen ? 'Close' : 'Create' }}
+    </button>
+  </div>
+</div>
+<div class="divSpinner" *ngIf="isSpinner">
+  <div class="spinner"></div>
+</div>
+<ng-container *ngIf="isCardOpen">
+  <app-card [options]="false">
+    <div class="container-fluid p-0">
+      <div class="col-md-12">
+        <form [formGroup]="invitePageForm">
+          <div class="row align-items-center mb-3">
+            <div class="col-md-6">
+              <h5 class="mb-0 form-heading">Create Invite</h5>
+            </div>
+            <div class="col-md-6 d-flex justify-content-end" style="align-items: center;">
+              <div class="d-none upload-container">
+                <input type="file" id="fileInput" (change)="onFileChange($event)" accept=".jpg" class="form-control"
+                  formControlName="uplaodImage">
+              </div>
+
+              <label for="fileInput" class="upload-box" style="cursor: pointer;">
+                <i class="fas fa-camera upload-icon"></i>
+                <span>Upload</span>
+              </label>
+
+              <img [src]="imageSrc" style="max-width: 8%; height: auto; margin-top: 3px; margin-left: 10px;" alt="">
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="form-group floating-label-group col-md-2 inputPadding">
+              <input type="text" class="form-control floating-input  " (focus)="onFocus($event)" (blur)="onBlur($event)"
+                formControlName="contact_name" id="nameInput" placeholder=" "  (input)="convertToUppercase($event,'contact_name')"
+                [ngClass]="{'is-invalid': (isFormSubmitted || invitePageForm.get('contact_name')?.touched) && (invitePageForm.get('contact_name')?.invalid)}">
+              <label for="nameInput" class="floating-label" style="left: 20px;"
+                [ngClass]="{'text-danger': (isFormSubmitted || invitePageForm.get('contact_name')?.touched) && invitePageForm.get('contact_name')?.invalid}">
+                Name*</label>
+              <div
+                *ngIf="(isFormSubmitted || invitePageForm.get('contact_name')?.touched) && invitePageForm.get('contact_name')?.invalid"
+                class="invalid-feedback m-0">
+                <span *ngIf="invitePageForm.get('contact_name')?.errors?.required" class="px-1 ">Name is
+                  required.</span>
+                <span *ngIf="invitePageForm.get('contact_name')?.errors?.pattern">Only alphabets
+                  and
+                  spaces are allowed.</span>
+                <span
+                  *ngIf="(invitePageForm.get('contact_name')?.errors?.minlength || invitePageForm.get('contact_name')?.errors?.maxlength)">2
+                  to 50 Charater are allowed.</span>
+              </div>
+            </div>
+
+            <div class="form-group floating-label-group col-md-2 inputPadding">
+              <input type="text" class="form-control floating-input  " (focus)="onFocus($event)" (blur)="onBlur($event)"
+                formControlName="designation" id="designationId" placeholder=" "
+                [ngClass]="{'is-invalid': (isFormSubmitted || invitePageForm.get('designation')?.touched) && (invitePageForm.get('designation')?.invalid)}">
+              <label for="designationId" class="floating-label" style="left: 20px;"
+                [ngClass]="{'text-danger': (isFormSubmitted || invitePageForm.get('designation')?.touched) && invitePageForm.get('designation')?.invalid}">Designation
+              </label>
+            </div>
+
+            <div class="form-group floating-label-group col-md-2 inputPadding">
+              <input type="text" class="form-control floating-input  " (focus)="onFocus($event)" (blur)="onBlur($event)"
+                formControlName="company" id="companyId" placeholder=" "
+                [ngClass]="{'is-invalid': (isFormSubmitted || invitePageForm.get('company')?.touched) && (invitePageForm.get('company')?.invalid)}">
+              <label for="companyId" class="floating-label" style="left: 20px;"
+                [ngClass]="{'text-danger': (isFormSubmitted || invitePageForm.get('company')?.touched) && invitePageForm.get('company')?.invalid}">Company
+              </label>
+            </div>
+
+            <div class="form-group floating-label-group col-md-2 inputPadding">
+              <input type="text" class="form-control floating-input  " (focus)="onFocus($event)" (blur)="onBlur($event)"
+                formControlName="purpose" id="purposeId" placeholder=" "
+                [ngClass]="{'is-invalid': (isFormSubmitted || invitePageForm.get('purpose')?.touched) && (invitePageForm.get('purpose')?.invalid)}">
+              <label for="purposeId" class="floating-label" style="left: 20px;"
+                [ngClass]="{'text-danger': (isFormSubmitted || invitePageForm.get('purpose')?.touched) && invitePageForm.get('purpose')?.invalid}">Purpose
+              </label>
+            </div>
+
+            <div class="form-group floating-label-group col-md-2 inputPadding">
+              <input type="text" class="form-control floating-input" id="emailId" placeholder=" "
+                (focus)="onFocus($event)" (blur)="onBlur($event)" formControlName="official_email"
+                [ngClass]="{'is-invalid': (isFormSubmitted || invitePageForm.get('official_email')?.touched) && (invitePageForm.get('official_email')?.invalid)}">
+              <label for="emailId" class="floating-label" style="left: 20px;"
+                [ngClass]="{'text-danger': (isFormSubmitted || invitePageForm.get('official_email')?.touched) && (invitePageForm.get('official_email')?.invalid)}">
+                Email Id*</label>
+              <div
+                *ngIf="(isFormSubmitted || invitePageForm.get('official_email')?.touched) && invitePageForm.get('official_email')?.invalid"
+                class="invalid-feedback m-0">
+                <span *ngIf="invitePageForm?.get('official_email')?.errors?.required">Email
+                  ID is required.</span>
+                <span *ngIf="invitePageForm?.get('official_email')?.errors?.pattern">Invalid Email
+                  ID</span>
+              </div>
+            </div>
+
+            <div class="form-group floating-label-group col-md-2 ">
+              <input type="text" class="form-control floating-input  " id="mobileNoId" placeholder=" "
+                (focus)="onFocus($event)" (blur)="onBlur($event)" formControlName="mobile_number"
+                (keypress)="handleAlphaChar($event)" minlength="10" maxlength="10"
+                [ngClass]="{'is-invalid': (isFormSubmitted || invitePageForm.get('mobile_number')?.touched) && (invitePageForm.get('mobile_number')?.invalid)}">
+              <label for="mobileNoId" class="floating-label" style="left: 20px;"
+                [ngClass]="{'text-danger': (isFormSubmitted || invitePageForm.get('mobile_number')?.touched) && (invitePageForm.get('mobile_number')?.invalid)}">Mobile
+                Number*</label>
+              <div
+                *ngIf="(isFormSubmitted || invitePageForm.get('mobile_number')?.touched) && invitePageForm.get('mobile_number')?.invalid"
+                class="invalid-feedback m-0">
+                <span *ngIf="invitePageForm?.get('mobile_number')?.errors?.required">Mobile Number is
+                  required.</span>
+                <span *ngIf="invitePageForm?.get('mobile_number')?.errors?.pattern">Invalid Mobile
+                  Number.</span>
+              </div>
+            </div>
+
+            <div class="form-group floating-label-group col-md-2 inputPadding mb-0">
+              <input type="text" class="form-control floating-input  " (focus)="onFocus($event)" (blur)="onBlur($event)"
+                formControlName="alter_mobile_number" id="alterNum" placeholder=" " (keypress)="handleAlphaChar($event)"
+                minlength="10" maxlength="10"
+                [ngClass]="{'is-invalid': (invitePageForm.get('alter_mobile_number')?.invalid) && (invitePageForm.get('alter_mobile_number')?.hasError('pattern'))}">
+              <label for="alterNum" class="floating-label" style="left: 20px;">Alternate Mobile
+                Number</label>
+              <div
+                *ngIf="(invitePageForm.get('alter_mobile_number')?.invalid) && (invitePageForm.get('alter_mobile_number')?.hasError('pattern'))"
+                class="invalid-feedback m-0">
+                <span *ngIf="invitePageForm.get('alter_mobile_number')?.hasError('pattern')" class="px-1">Enter
+                  Valid Phone Number.</span>
+              </div>
+            </div>
+
+            <div class="form-group floating-label-group col-md-2 inputPadding mb-0">
+              <select class="form-control floating-input" formControlName="facilities" id="facilitySelectId"
+                (focus)="onFocus($event)" (blur)="onBlur($event)"
+                [ngClass]="{'is-invalid': (isFormSubmitted || invitePageForm.get('facilities')?.touched) && (invitePageForm.get('facilities')?.invalid)}">
+                <option value="" selected hidden></option>
+                <option *ngFor="let option of getFacalities" [value]="option.CompName">{{option.CompName}}</option>
+              </select>
+              <label for="facilitySelectId" class="floating-label m-0" style="left: 20px;"
+                [ngClass]="{'text-danger': (isFormSubmitted || invitePageForm.get('facilities')?.touched) && invitePageForm.get('facilities')?.invalid}">Facilities*</label>
+              <div
+                *ngIf="(isFormSubmitted || invitePageForm.get('facilities')?.touched) && invitePageForm.get('facilities')?.invalid"
+                class="invalid-feedback m-0">
+                <span *ngIf="invitePageForm.get('facilities')?.errors?.required">Facilities is
+                  required.</span>
+              </div>
+              <div *ngIf="errorMessageFacility" class="error-message">
+                {{ errorMessageFacility }}
+              </div>
+            </div>
+
+            <div class="form-group floating-label-group col-md-2 inputPadding mb-0">
+              <div class="dropdown">
+                <input type="text" formControlName="meet_to" class="form-control floating-input"
+                  placeholder="Select Employee" [(ngModel)]="searchText" id="employeeNameId" (focus)="openDropdown()"
+                  (input)="filterEmployees()" (blur)="closeDropdown(); checkValidEmployee()" autocomplete="off"
+                  [ngClass]="{'is-invalid': isFormSubmitted && !isValidEmployee}" />
+                <label class="floating-label m-0" style="left: 10px;" for="employeeNameId"
+                  [ngClass]="{'text-danger':(isFormSubmitted || invitePageForm.get('meet_to')?.touched) && invitePageForm.get('meet_to')?.invalid}">Contact
+                  Person*</label>
+                <i class="fas fa-chevron-down dropdown-icon"></i>
+                <ul class="dropdown-menu" [class.show]="isDropdownOpen && filteredEmployees.length >= 0">
+                  <li *ngFor="let employee of filteredEmployees" (click)="selectEmployeee(employee)"
+                    class="dropdown-item">
+                    {{ employee.EmpName }} ({{ employee.EmpCode }})
+                  </li>
+                  <li *ngIf="filteredEmployees.length === 0" class="dropdown-item text-danger">
+                    No results found
+                  </li>
+                </ul>
+                <div style="font-size: 10px;" class="text-danger"
+                  *ngIf="(isFormSubmitted || invitePageForm.get('meet_to')?.touched) && invitePageForm.get('meet_to')?.invalid">
+                  Invalid contact person
+                </div>
+                <div *ngIf="isFormSubmitted && !isValidEmployee" class="invalid-feedback m-0">
+                  Please select a valid contact person.
+                </div>
+              </div> 
+            </div>
+
+            <!-- (keypress)="preventKeyboardInput($event)" (paste)="preventPaste($event)" (keydown)="preventKeyboardInput($event)" -->
+            <div class="form-group floating-label-group col-md-2 inputPadding mb-0">
+              <div class="custom-date-input">
+                <input type="date" placeholder=" " formControlName="date" id="dateInputId" [min]="today"
+                  class="form-control floating-input"
+                  [ngClass]="{'is-invalid': (isFormSubmitted || invitePageForm.get('date')?.touched) && (invitePageForm.get('date')?.invalid)}" />
+                <label for="dateInputId" class="floating-label"
+                  [ngClass]="{'text-danger': (isFormSubmitted || invitePageForm.get('date')?.touched) && (invitePageForm.get('date')?.invalid)}">
+                  Date*
+                </label>
+                <div
+                  *ngIf="(isFormSubmitted || invitePageForm.get('date')?.touched) && invitePageForm.get('date')?.invalid"
+                  class="invalid-feedback m-0">
+                  <span *ngIf="invitePageForm.get('date')?.errors?.required" class="px-1">Date is required.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group floating-label-group col-md-2 inputPadding mb-0">
+              <input type="time" #timeInput class="form-control floating-input" (focus)="onFocus($event)"
+                (blur)="onBlur($event)" (input)="onTimeInputChange()" placeholder=" " formControlName="Time"
+                id="timeInput" triggers="mouseenter:blur"
+                [ngClass]="{'is-invalid': (isFormSubmitted || invitePageForm.get('Time')?.touched) && (invitePageForm.get('Time')?.invalid)}">
+              <label for="timeInput" class="floating-label" style="left: 20px;"
+                [ngClass]="{'text-danger': (isFormSubmitted || invitePageForm.get('Time')?.touched) && (invitePageForm.get('Time')?.invalid)}">Time*</label>
+              <div
+                *ngIf="(isFormSubmitted || invitePageForm.get('Time')?.touched) && invitePageForm.get('Time')?.invalid"
+                class="invalid-feedback m-0">
+                <span *ngIf="invitePageForm.get('Time')?.errors?.required" class="px-1">Time is required.</span>
+              </div>
+            </div>
+
+            <div class="d-flex flex-column flex-md-row justify-content-end gap-2 mt-3">
+              <button class="HRMS_secondary_button" type="button" (click)="resetFormData()"> <i
+                  class="feather icon-rotate-ccw"></i> Reset</button>
+              <button class="HRMS_primary_button" type="submit" (click)="submitForm()">
+                <span> <i class="feather icon-check"></i>
+                  Submit</span></button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="divSpinner1" *ngIf="isSpinner1">
+      <div class="spinner1"></div>
+    </div>
+
+  </app-card>
+</ng-container>
+
+<app-card [options]="false">
+  <!-- <div class="text-right hrms_search_field ">
+    <input (keyup)="applyFilter($event)" placeholder="Search" #inputValue id="serachInputId" />
+  </div> -->
+  <div class="col-md-12">
+    <div class="row">
+      <div class="col-md-9">
+        <h5 class="mb-0 form-heading">Invited List</h5>
+      </div>
+      <div class="col-md-3 text-end">
+        <input type="text" class="form-control rad-50" #inputValue (keyup)="applyFilter($event)" placeholder="Search"
+          id="serachInputId" />
+      </div>
+    </div>
+  </div>
+  <div class="table-wrapper mt-3" style="max-height: fit-content;">
+    <table class="table table-hover align-middle">
+      <thead class="table-light sticky-header">
+        <tr class="inner-shadow ">
+          <th class="">Date </th>
+          <th class="">Name</th>
+          <th class="">Contact Person</th>
+          <th class="">Check In</th>
+          <th class="">Check Out</th>
+          <th class="">Status</th>
+          <th class="text-end me-2"
+            *ngIf="(controlAccessPage?.UpdateAccess === true) || (controlAccessPage?.DeleteAccess === true)">
+            Action</th>
+        </tr>
+      </thead>
+      <tbody *ngIf="isTableData == false">
+        <tr *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page } ;let i = index;">
+          <td class="" [ngClass]="{'highlight-today': row.Date === today}">
+            <span>{{row.Date | date:'dd-MM-yyyy'}}</span>&nbsp;
+          </td>
+          <td class="">
+            <span>{{row.Name}}</span>
+          </td>
+          <td class="">
+            <span>{{row.WName}}</span>
+          </td>
+          <td class="">
+            <span>{{row.CheckIn}}</span>
+          </td>
+          <td class="">
+            <span>{{row.CheckOut}}</span>
+          </td>
+          <td class="">
+            <span *ngIf="row.Expired === true && row.Expired !== null" style="color: #A9A9A9;">Expired</span>
+
+            <span *ngIf="row.Expired !== true">
+              <span
+                *ngIf="(row.Invited === true) && (row.Accept === false) && (row.CheckIn === '') && (row.CheckOut === '')">Invited</span>
+
+              <span *ngIf="(row.Invited === true) && (row.Accept === true) && (row.Approved === false)"
+                style="color: #072f5f">Invite Accepted</span>
+
+              <span *ngIf="(row.CheckIn != null) && (row.CheckIn !== '') && (row.CheckOut === '')"
+                style="color: green">Checked In</span>
+
+              <span
+                *ngIf="(row.CheckIn != null) && (row.CheckOut != null) && (row.CheckIn !== '') && (row.CheckOut !== '')"
+                style="color: red;">Checked Out</span>
+            </span>
+          </td>
+          <td class="text-end"
+            *ngIf="(controlAccessPage?.UpdateAccess === true) || (controlAccessPage?.DeleteAccess === true)">
+            <span *ngIf="controlAccessPage?.UpdateAccess === true"><i class="action-icon action-edit feather icon-eye"
+                data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="onView(row)"></i></span>
+            <span *ngIf="row.Approved === false">
+              <i class="action-icon action-delete feather icon-x" (click)="deleteInvite(row)"
+                *ngIf="controlAccessPage?.DeleteAccess === true"></i>
+              <!-- <button class="tableCancelButton" (click)="deleteInvite(row)">Cancel</button> -->
+            </span>
+
+          </td>
+
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="isTableData == true" class="text-center errorMassage">
+      <span class="text-danger">{{errorMessageGetAllInvite}}</span>
+    </div>
+  </div>
+
+  <div class="pagination-controls-wrapper">
+    <div class="row align-items-center" style="padding-top: 1rem;">
+      <div class="col-auto">
+        <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+        <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+          <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+        </select>
+      </div>
+      <div class="col">
+      </div>
+      <div class="col-auto">
+        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+      </div>
+    </div>
+  </div>
+</app-card>
+<ng-container>
+
+
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header d-flex align-items-center justify-content-between">
+          <h1 class="modal-title fs-5 mx-auto" id="exampleModalLabel">View Visitor Details</h1>
+          <button type="reset" class="btn-close " data-bs-dismiss="modal" aria-label="Close" #closeModal><i
+              class="fa fa-times lg"></i></button>
+        </div>
+        <div class="modal-body pt-2">
+          <div class="container">
+            <div class="divSpinner1" *ngIf="isSpinner1">
+              <div class="spinner1"></div>
+            </div>
+            <div class="row mb-1">
+              <div class="col-md-4">
+                <div class="info-item">
+                  <span class="text-muted text-truncate">Name :</span>
+                  <span class="fw-bold text-truncate">{{viewdata?.Name}}</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="info-item">
+                  <span class="text-muted text-truncate">Designation :</span>
+                  <span class="fw-bold text-truncate">{{viewdata?.Designation}}</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="info-item">
+                  <span class="text-muted text-truncate">Company :</span>
+                  <span class="fw-bold text-truncate">{{viewdata?.Company}}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-2">
+              <div class="col-md-4">
+                <div class="info-item">
+                  <span class="text-muted text-truncate">Purpose of Visit :</span>
+                  <span class="fw-bold text-truncate">{{viewdata?.Purpose}}</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="info-item">
+                  <span class="text-muted text-truncate">Employee Code :</span>
+                  <span class="fw-bold text-truncate">{{viewdata?.WEmpCode}}</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="info-item">
+                  <span class="text-muted text-truncate">Email ID :</span>
+                  <span class="fw-bold text-truncate">{{viewdata?.OMail}}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-2">
+              <div class="col-md-4">
+                <div class="info-item">
+                  <span class="text-muted text-truncate">Mobile Number :</span>
+                  <span class="fw-bold text-truncate">{{viewdata?.Mobile}}</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="info-item">
+                  <span class="text-muted text-truncate">Alternate Mobile Number :</span>
+                  <span class="fw-bold text-truncate">{{viewdata?.AMobile}}</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="info-item">
+                  <span class="text-muted text-truncate">Contact Person :</span>
+                  <span class="fw-bold text-truncate">{{viewdata?.WName}}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-2">
+              <div class="col-md-4">
+                <div class="info-item">
+                  <span class="text-muted text-truncate">Facilities :</span>
+                  <span class="fw-bold text-truncate">{{viewdata?.CompName}}</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="info-item">
+                  <span class="text-muted text-truncate">Date :</span>
+                  <span class="fw-bold text-truncate">{{viewdata?.Date}}</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="info-item">
+                  <span class="text-muted text-truncate">Time :</span>
+                  <span class="fw-bold text-truncate">{{viewdata?.Time}}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-2">
+              <div class="col-md-4">
+                <div class="info-item">
+                  <span class="text-muted text-truncate">Check In :</span>
+                  <span class="fw-bold text-truncate">{{viewdata?.CheckIn}}</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="info-item">
+                  <span class="text-muted text-truncate">Check Out :</span>
+                  <span class="fw-bold text-truncate">{{viewdata?.CheckOut}}</span>
+                </div>
+              </div>
+              <!-- <div class="col-md-4">
+                <div class="info-item">
+                  <span class="text-muted text-truncate">Expired :</span>
+                  <span class="fw-bold text-truncate text-danger">{{viewdata?.Expired}}</span>
+                </div>
+              </div> -->
+            </div>
+
+            <div class="row mb-2">
+              <div class="info-item">
+                <span class="text-muted text-truncate">Photo :</span>
+                <div class="d-flex align-items-center" *ngIf="isValidPhoto">
+                  <img [src]="patchPhotoUrl" class="img-fluid" style="height: 50px;" alt="Uploaded">
+                </div>
+                <div class="d-flex align-items-center" *ngIf="!isValidPhoto">
+                  <img src="/assets/visitorLogo.jfif" alt="" class="img-fluid" style="height: 50px;">
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

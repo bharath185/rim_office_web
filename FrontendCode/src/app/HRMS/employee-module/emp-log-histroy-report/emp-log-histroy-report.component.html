@@ -1,0 +1,313 @@
+<app-toast-message></app-toast-message>
+<!-- <div class="overlay" *ngIf="isSpinner"></div> -->
+<div class="dis-fl-end">
+    <div class="heading-dash-sub">
+        <span>Employee Log History Report</span>
+        <ol class="breadcrumb fade-left">
+            <li class="breadcrumb-item active dis-fl" aria-current="page">
+                <span class="breadC">Employee Module</span>
+                <span class="breadC" [routerLink]="['/view_all_employee']"
+                    style="color:rgb(127, 186, 235);cursor: pointer"> <i
+                        class="feather icon-chevron-right"></i>&nbsp;Employee</span>
+                <span class="breadC"><i class="feather icon-chevron-right"></i></span><span
+                    class="breadC col-act">Employee Log History Report</span>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="col-md-12"> 
+
+    <fieldset class="border p-3 mb-3 custom-fieldset">
+        <div [formGroup]="employeeLogHistroyForm">
+            <div class="row">
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="BusinessUnit" id="businessId">
+                        <!-- (change)="callLocation()" -->
+                        <option disabled selected hidden value=""></option>
+                        <option *ngFor="let unitList of getBusinessUnitlist" [value]="unitList.BUId">
+                            {{unitList.BusinessUnit}}</option>
+                    </select>
+                    <label for="businessId" class="floating-label m-0" style="left: 20px;">Business Unit</label>
+                </div>
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="Location" id="locationId">
+                        <option disabled selected hidden value=""></option>
+                        <option *ngFor="let location of getLocations" [value]="location.LocationId">
+                            {{location.Location}}</option>
+                    </select>
+                    <label for="locationId" class="floating-label m-0" style="left: 20px;">Location</label>
+                </div>
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="DeptName" id="depNameId"
+                        (change)="callDDDesignation()">
+                        <option value="" selected hidden></option>
+                        <option *ngFor="let option of getDepartementName" [value]="option['DeptId']">
+                            {{ option['DeptName']['length'] > 20 ? (option['DeptName'] | slice: 0:20) + '...' :
+                            option['DeptName'] }}
+                        </option>
+                    </select>
+                    <label for="depNameId" class="floating-label m-0" style="left: 20px;">Department</label>
+                </div>
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="Designation" id="designationId"
+                        (change)="callReporter();">
+                        <option value="" selected hidden></option>
+                        <option *ngFor="let option of getDepartementRole" [value]="option['DesignationId']">
+                            {{ option.Designation.length > 17 ? (option.Designation | slice: 0:17) + '...' :
+                            option.Designation }}
+                        </option>
+                    </select>
+                    <label for="designationId" class="floating-label m-0" style="left: 20px;">Designation</label>
+                </div>
+
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="reporter_name" id="reporter_name_id"
+                    (change)="callDDEmployee()">
+                        <option value="" selected hidden></option>
+                        <option *ngFor="let reporter of getDropdownReporter" [value]="reporter.ReporterId">
+                            {{reporter.ReporterName}}({{reporter.ReporterCode}})</option>
+                    </select>
+                    <label for="reporter_name_id" class="floating-label m-0" style="left: 20px;">Reporting To</label>
+                </div>
+
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="employee_name" id="reporter_name_id">
+                        <option value="" selected hidden></option>
+                        <option *ngFor="let emp of getDropdownEmployee" [value]="emp.EmpId">
+                            {{emp.EmpName}}({{emp.EmpCode}})</option>
+                    </select>
+                    <label for="reporter_name_id" class="floating-label m-0" style="left: 20px;">Employee</label>
+                </div>
+
+                <!-- <div class="col-md-2"> -->
+                <div class="text-end">
+                    <button class="HRMS_secondary_button" type="reset" (click)="resetData()">
+                        <i class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+                    <button class="HRMS_primary_button" type="button" (click)="submitFilterData()">
+
+                        <span *ngIf="!isSpinner">
+                            <i class="feather icon-filter"></i>&nbsp;Filter
+                        </span>
+
+                        <span *ngIf="isSpinner">
+                            <i class="fa fa-spinner fa-spin"></i>&nbsp;Filtering...
+                        </span>
+
+                    </button>
+                </div>
+                <!-- </div> -->
+            </div>
+
+        </div>
+    </fieldset>
+    
+    <app-card [options]="false">
+        <div class="divSpinner" *ngIf="isSpinner">
+            <div class="spinner"></div>
+        </div>
+        <div class="table-wrapper pt-2">
+            <table class="table table-hover align-middle">
+                <thead class="table-light sticky-header">
+                    <tr class="inner-shadow ">
+                        <th>Sl No.</th>
+
+                        <th class="">Resource Name(code)</th>
+                        <th class="">Department</th>
+                        <th class="">Designation</th>
+                        <th class="">Company</th>
+                        <th class="">Rept.Manager</th>
+                        <th class="">Employment</th>
+                        <th class="text-center">View</th>
+
+                    </tr>
+                </thead>
+                <tbody *ngIf="isTableData == false">
+                    <tr
+                        *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page } ;let i = index;">
+                        <td>
+                            {{ i + 1 }}
+                        </td>
+
+                        <td class="">
+                            <span>{{row.FirstName}} {{row.LastName}} ({{row.EmpCode}})</span>
+                        </td>
+                        <td class="">
+                            <span>{{row.DeptName}}</span>
+                        </td>
+                        <td class="">
+                            <span>{{row.Designation}}</span>
+                        </td>
+                        <td class="">
+                            <span>{{row.Company}}</span>
+                        </td>
+                        <td class="">
+                            <span>{{row.Approver}}</span>
+                        </td>
+                        <td class="">
+                            <span>{{row.EmpType}}</span>
+                        </td>
+                        <td class="text-end">
+                            <span>
+                                <i class="action-icon action-edit feather icon-eye" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal" (click)="onView(row)"
+                                    style="color:#072f5f;cursor: pointer;">
+                                </i>
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="isTableData == true" class="text-center errorMassage">
+                <span class="text-danger">{{errorMessage}}</span>
+            </div>
+        </div>
+        <div class="pagination-controls-wrapper">
+            <div class="row align-items-center" style="padding-top: 1rem;">
+                <div class="col-auto">
+                    <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+                    <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+                        <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+                    </select>
+                </div>
+                <div class="col">
+                </div>
+                <div class="col-auto">
+                    <pagination-controls (pageChange)="page = $event"></pagination-controls>
+                </div>
+            </div>
+        </div>
+    </app-card>
+
+</div>
+
+<!-- this is the modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content" *ngIf="selectedEmployee">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Employee Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="info-grid">
+
+                    <!-- Personal -->
+                    <div class="info-card">
+                        <span class="info-label">Personal Info</span>
+
+                        <div class="info-row">
+                            <span class="label">Name :</span>
+                            <span class="value">
+                                {{selectedEmployee.FirstName}} {{selectedEmployee.LastName}}
+                            </span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="label">Code :</span>
+                            <span class="value">{{selectedEmployee.EmpCode}}</span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="label">DOB :</span>
+                            <span class="value">{{ formatDotNetDate(selectedEmployee?.DOB) }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Work -->
+                    <div class="info-card">
+                        <span class="info-label">Work Info</span>
+
+                        <div class="info-row">
+                            <span class="label">Designation :</span>
+                            <span class="value">{{selectedEmployee.Designation}}</span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="label">Department :</span>
+                            <span class="value">{{selectedEmployee.DeptName}}</span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="label">Approver :</span>
+                            <span class="value">{{selectedEmployee.Approver}}</span>
+                        </div>
+                    </div>
+
+                    <!-- Organization -->
+                    <div class="info-card">
+                        <span class="info-label">Organization</span>
+
+                        <div class="info-row">
+                            <span class="label">Company :</span>
+                            <span class="value">{{selectedEmployee.Company}}</span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="label">Entity :</span>
+                            <span class="value">{{selectedEmployee.LegalEntity}}</span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="label">BU :</span>
+                            <span class="value">{{selectedEmployee.BusinessUnit}}</span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="label">Location :</span>
+                            <span class="value">{{selectedEmployee.Location}}</span>
+                        </div>
+                    </div>
+
+                    <!-- Contact -->
+                    <div class="info-card">
+                        <span class="info-label">Contact</span>
+
+                        <div class="info-row">
+                            <span class="label">Phone :</span>
+                            <span class="value">{{selectedEmployee.MobileNo}}</span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="label">Blood :</span>
+                            <span class="value">{{selectedEmployee.BloodGroup}}</span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="label">Gender :</span>
+                            <span class="value">{{selectedEmployee.Gender}}</span>
+                        </div>
+                    </div>
+
+                    <!-- Employment -->
+                    <div class="info-card">
+                        <span class="info-label">Employment</span>
+
+                        <div class="info-row">
+                            <span class="label">Joining :</span>
+                            <span class="value">{{ formatDotNetDate(selectedEmployee?.JoiningDate) }}</span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="label">Type :</span>
+                            <span class="value">{{selectedEmployee.EmpType}}</span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="label">Contract End :</span>
+                            <span class="value">{{ formatDotNetDate(selectedEmployee?.CEndDate) }}</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- this is the modal -->

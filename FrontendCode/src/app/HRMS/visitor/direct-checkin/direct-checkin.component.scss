@@ -1,0 +1,181 @@
+::ng-deep.pcoded-content {
+  position: relative;
+  display: block;
+  padding: 0px !important;
+  padding-left: 25px !important;
+  padding-right: 25px !important;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.error-message {
+  font-size: 10px;
+  color: red;
+}
+
+.fileInput {
+  background: white;
+  color: #072f5f;
+  padding: 3px;
+  border: 1px solid #072f5f;
+}
+
+.uploaded-image-preview {
+  max-width: 10%;
+  height: auto;
+  margin-top: 3px;
+  margin-left: 10px;
+  order: 2;
+}
+
+.was-validated .date-time-picker:invalid,
+.date-time-picker.is-invalid {
+  border-color: #ff5370;
+  padding: 2px;
+}
+
+.upload-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 25px;
+  background: #f1f3f5;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+  font-size: 14px;
+}
+
+.upload-box:hover {
+  background: #eef0ff;
+}
+
+.upload-icon {
+  font-size: 16px;
+  color: #6c63ff;
+}
+
+video {
+  width: 100%;
+  height: auto;
+}
+
+.webcam-preview {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  border: 2px solid #ccc;
+}
+
+.floating-input {
+  line-height: 2;
+}
+
+// ************this is for custome date*******
+.custom-date-input {
+  position: relative;
+}
+
+.custom-date-input input {
+  // border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 3px 5px;
+  width: 100%;
+  outline: none;
+  font-size: 11px;
+  padding-top: 17px;
+  line-height: 1.9;
+}
+
+.custom-date-input input::placeholder {
+  font-size: 5px;
+  color: #aaa;
+}
+
+.custom-date-input label {
+  position: absolute;
+  color: #888;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.custom-date-input input:focus+label,
+.custom-date-input input:not(:placeholder-shown)+label {
+  top: 1px;
+  left: 5px;
+  font-size: 12px;
+}
+
+// ************this is for custome date*******
+
+// search Input Field
+
+.dropdown-icon {
+  position: absolute;
+  right: 10px;
+  top: 23%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.dropdown-item {
+  cursor: pointer;
+}
+
+.dropdown .dropdown-item {
+  padding: 5px 6px;
+}
+@media only screen and (max-width: 991px) {
+  ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+      margin-left: 0px;
+      margin-top: 57px !important;
+  }
+}
+
+// #time-picker {
+//   border-radius: 5px;
+//   display: flex;
+//   align-items: center;
+//   select {
+//       font-size: 15px;
+//       margin: 0 1px;
+//   }
+// }
+
+// .dropdown-list {
+//   border: 1px solid #ccc;
+//   border-radius: 0.25rem;
+//   max-height: 150px;
+//   overflow-y: auto; 
+//   position: absolute; 
+//   background-color: white; 
+//   width: 90%; 
+//   z-index: 1; 
+// }
+
+// .dropdown-list ul {
+//   list-style-type: none; /* Remove bullet points */
+//   padding: 0; 
+//   margin: 0; 
+// }
+
+// .dropdown-list li {
+//   padding: 10px; 
+//   cursor: pointer; 
+// }
+
+// .dropdown-list li:hover {
+//   background-color: #f1f1f1; 
+// }
+
+// .position-relative {
+//   position: relative; 
+// }

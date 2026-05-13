@@ -1,0 +1,403 @@
+<app-toast-message></app-toast-message>
+
+<div class="dis-fl-end">
+    <div class="heading-dash-sub">
+        <span>WFH Mode</span>
+        <ol class="breadcrumb fade-left">
+            <li class="breadcrumb-item active dis-fl" aria-current="page">
+                <span class="breadC">Attendance</span><span class="breadC"><i
+                        class="feather icon-chevron-right"></i></span><span class="breadC col-act">WFH Mode</span>
+            </li>
+        </ol>
+    </div>
+</div>
+
+
+
+<!-- <app-card [options]="false">
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <h5 class="text-center py-1 addAccessHeading">View Employee Work From Home(WFH) Details</h5>
+            <form [formGroup]="wfhModeForm">
+                <div class="row mb-0">
+                    <div class="form-group floating-label-group col-md-3">
+                        <select class="form-control floating-input" formControlName="company" id="companyId"
+                            (focus)="onFocus($event)" (blur)="onBlur($event)">
+                            <option value="" selected hidden></option>
+                            <option *ngFor="let company of getDDCompany" [value]="company.CompId">
+                                {{company.Company}}</option>
+                        </select>
+                        <label for="companyId" class="floating-label m-0" style="left: 20px;">Company</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3">
+                        <select class="form-control floating-input" formControlName="DeptName" id="depNameId"
+                            (focus)="onFocus($event)" (blur)="onBlur($event)" (change)="callDDDesignation($event)">
+                            <option value="" selected hidden></option>
+                            <option *ngFor="let option of getDepartementName" [value]="option['DeptId']">
+                                {{option['DeptName']}}
+                            </option>
+                        </select>
+                        <label for="depNameId" class="floating-label m-0" style="left: 20px;">Department</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3">
+                        <select class="form-control floating-input" formControlName="Designation" id="designationId"
+                            (focus)="onFocus($event)" (blur)="onBlur($event)" (change)="callEmplyee()">
+                            <option value="" selected hidden></option>
+                            <option *ngFor="let option of getDepartementRole" [value]="option['DesignationId']">
+                                {{ option.Designation.length > 26 ? (option.Designation | slice: 0:26) + '...' :
+                                option.Designation }}
+                            </option>
+                        </select>
+                        <label for="designationId" class="floating-label m-0" style="left: 20px;">Designation</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3">
+                        <div class="custom-date-input">
+                            <input type="date" placeholder=" " formControlName="date_from" id="startDataId"
+                                (keydown)="preventKeyboardInput($event)" (keypress)="preventKeyboardInput($event)"
+                                (paste)="preventPaste($event)" [max]="today" (ngModelChange)="onFromDate()" />
+                            <label for="startDataId">From Date</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3">
+                        <div class="custom-date-input">
+                            <input type="date" placeholder=" " formControlName="date_to" id="endDataId" [min]="minDate"
+                                [max]="today" (keydown)="preventKeyboardInput($event)"
+                                (keypress)="preventKeyboardInput($event)" (paste)="preventPaste($event)"
+                                [ngClass]="{'is-invalid': dateRangeError}" />
+                            <label for="endDataId">To Date</label>
+                            <div *ngIf="dateRangeError" class="invalid-feedback m-0">
+                                <span *ngIf="dateRangeError">To Date must be after From
+                                    Date.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3">
+                        <div class="dropdown">
+                            <input type="text" formControlName="employee" class="form-control floating-input"
+                                placeholder="Select Employee" [(ngModel)]="searchText" id="employeeNameId"
+                                autocomplete="off" (focus)="openDropdown()" (input)="filterEmployees()"
+                                (blur)="closeDropdown(); checkValidEmployee()" aria-haspopup="true"
+                                [ngClass]="{'is-invalid': !isValidEmployee}">
+                            <label class="floating-label m-0" style="left: 10px;" for="employeeNameId"
+                            [ngClass]="{'text-danger': !isValidEmployee}">Employee</label>
+                            <span class="dropdown-icon">&#x25BC;</span>
+                            <ul class="dropdown-menu" [class.show]="isDropdownOpen && filteredEmployees.length >= 0">
+                                <li *ngFor="let employee of filteredEmployees" (click)="selectEmployee(employee)"
+                                    class="dropdown-item">
+                                    {{ employee.EmpName }} ({{ employee.EmpCode }})
+                                </li>
+                                <li *ngIf="filteredEmployees.length === 0" class="dropdown-item text-danger">
+                                    No results found
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div style="display: flex;justify-content: end;">
+                        <button class="HRMS_primary_button" type="submit" (click)="submitFilterData()"><i
+                                class="fas fa-filter"></i> Filter</button>
+                        <button class="HRMS_secondary_button mx-2" type="reset" (click)="resetData()">reset</button>
+                    </div>
+
+                </div>
+            </form>
+
+        </div>
+    </div>
+</app-card> -->
+
+<app-card [options]="false">
+
+    <div class="container-fluid p-0">
+        <div class="col-md-12">
+            <!-- <h5 class="text-center py-1 addAccessHeading">View Employee Work From Home(WFH) Details</h5> -->
+            <form [formGroup]="wfhModeForm">
+                <div class="row mb-0">
+                    <!-- <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <select class="form-control floating-input" formControlName="company" id="companyId"
+                            (focus)="onFocus($event)" (blur)="onBlur($event)">
+                            <option value="" selected hidden></option>
+                            <option *ngFor="let company of getDDCompany" [value]="company.CompId">
+                                {{company.Company}}</option>
+                        </select>
+                        <label for="companyId" class="floating-label m-0" style="left: 20px;">Company</label>
+                    </div> -->
+
+                    <!-- <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <select class="form-control floating-input" formControlName="location" id="facilitySelectId">
+                            <option disabled selected hidden value=""></option>
+                            <option *ngFor="let location of getLocations" [value]="location.LocationId">
+                                {{location.Location}}</option>
+                        </select>
+                        <label for="facilitySelectId" class="floating-label m-0" style="left: 20px;">location</label>
+                    </div> -->
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <select class="form-control floating-input" formControlName="DeptName" id="depNameId"
+                            (focus)="onFocus($event)" (blur)="onBlur($event)" (change)="callDDDesignation($event)">
+                            <option value="" selected hidden></option>
+                            <option *ngFor="let option of getDepartementName" [value]="option['DeptId']">
+                                {{option['DeptName']['length'] > 17 ? (option['DeptName'] | slice: 0:17) + '...' :
+                                option['DeptName']}}
+                            </option>
+                        </select>
+                        <label for="depNameId" class="floating-label m-0" style="left: 20px;">Department</label>
+                    </div>
+
+                    <!-- <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <select class="form-control floating-input" formControlName="teams" id="facilitySelectId">
+                            <option disabled selected hidden value=""></option>
+                        </select>
+                        <label for="facilitySelectId" class="floating-label m-0" style="left: 20px;">Select Team</label>
+                    </div> -->
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <select class="form-control floating-input" formControlName="Designation" id="designationId"
+                            (focus)="onFocus($event)" (blur)="onBlur($event)" (change)="callEmplyee()">
+                            <option value="" selected hidden></option>
+                            <option *ngFor="let option of getDepartementRole" [value]="option['DesignationId']">
+                                {{ option.Designation.length > 17 ? (option.Designation | slice: 0:17) + '...' :
+                                option.Designation }}
+                            </option>
+                        </select>
+                        <label for="designationId" class="floating-label m-0" style="left: 20px;">Designation</label>
+                    </div>
+
+                    <!-- (keydown)="preventKeyboardInput($event)" (keypress)="preventKeyboardInput($event)"(paste)="preventPaste($event)" -->
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <div class="custom-date-input">
+                            <input type="date" placeholder=" " formControlName="date_from" id="startDataId"
+                                [max]="today" (ngModelChange)="onFromDate()" />
+                            <label for="startDataId" class="floating-label">From Date</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <div class="custom-date-input">
+                            <input type="date" placeholder=" " formControlName="date_to" id="endDataId" [min]="minDate"
+                                [max]="today" [ngClass]="{'is-invalid': dateRangeError}" />
+                            <label for="endDataId" class="floating-label">To Date</label>
+                            <div *ngIf="dateRangeError" class="invalid-feedback m-0">
+                                <span *ngIf="dateRangeError">To Date must be after From
+                                    Date.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-2 ">
+                        <div class="dropdown">
+                            <input type="text" formControlName="employee" class="form-control floating-input"
+                                placeholder="Select Employee" [(ngModel)]="searchText" id="employeeNameId"
+                                autocomplete="off" (focus)="openDropdown()" (input)="filterEmployees()"
+                                (blur)="closeDropdown(); checkValidEmployee()" aria-haspopup="true"
+                                [ngClass]="{'is-invalid': !isValidEmployee}">
+                            <label class="floating-label m-0" style="left: 10px;" for="employeeNameId"
+                                [ngClass]="{'text-danger': !isValidEmployee}">Employee</label>
+                            <span class="dropdown-icon">&#x25BC;</span>
+                            <ul class="dropdown-menu" [class.show]="isDropdownOpen && filteredEmployees.length >= 0">
+                                <li *ngFor="let employee of filteredEmployees" (click)="selectEmployee(employee)"
+                                    class="dropdown-item">
+                                    {{ employee.EmpName }} ({{ employee.EmpCode }})
+                                </li>
+                                <li *ngIf="filteredEmployees.length === 0" class="dropdown-item text-danger">
+                                    No results found
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div style="display: flex;justify-content: end;align-items: center;">
+                        <button class="HRMS_secondary_button" type="button" (click)="resetData()">
+                            <i class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+                        <button class="HRMS_primary_button" type="submit" (click)="submitFilterData()">
+                            <i class="feather icon-filter"></i>&nbsp;Filter</button>
+                    </div>
+
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <div class="col-md-12 my-3">
+        <div class="divSpinner" *ngIf="isSpinner">
+            <div class="spinner"></div>
+        </div>
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-9">
+                    <h5 class="mb-0 form-heading">View WFH</h5>
+                </div>
+                <div class="col-md-3 text-end">
+                    <input type="text" class="form-control rad-50" [(ngModel)]="searchValue" (keyup)="applyFilter()"
+                        placeholder="Search" id="searchInputId" />
+
+                </div>
+            </div>
+        </div>
+
+        <div class="table-wrapper mt-3">
+            <table class="table table-hover align-middle">
+                <thead class="table-light sticky-header">
+                    <tr class="inner-shadow">
+                        <th class="">Date</th>
+                        <th class="">Employee Name</th>
+                        <th class="">Employee Code</th>
+                        <th class="">Login Time</th>
+                        <th class="">Logout Time</th>
+                        <th class="">Active Hours</th>
+                        <th class="">View</th>
+                    </tr>
+                </thead>
+                <tbody *ngIf="!isTableData">
+                    <tr
+                        *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                        <td class=" fw-bold">
+                            <span>{{ row.Date | date:'dd-MM-yyyy' }}</span>
+                        </td>
+                        <td class="">
+                            <span>{{ row.EmpName }}</span>
+                        </td>
+                        <td class="">
+                            <span>{{ row.EmpCode }}</span>
+                        </td>
+                        <td class="">
+                            <span *ngIf="row.LoginTime?.Hours !== null || row.LoginTime?.Minutes !== null">
+                                {{ row.LoginTime.Hours }}:{{ row.LoginTime.Minutes }}
+                            </span>
+                        </td>
+                        <td class="">
+                            <span *ngIf="row.LogOutTime?.Hours !== null || row.LogOutTime?.Minutes !== null">
+                                {{ row.LogOutTime.Hours }}:{{ row.LogOutTime.Minutes }}
+                            </span>
+                        </td>
+                        <td class="">
+                            <span *ngIf="row.Activehrs?.Hours !== null || row.Activehrs?.Minutes !== null">
+                                {{ row.Activehrs.Hours }}:{{ row.Activehrs.Minutes }}
+                            </span>
+                        </td>
+                        <td class=""><span><i class="action-icon action-edit feather icon-eye" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal" style="color:#072f5f;cursor: pointer;"
+                                    (click)="onView(row)"></i></span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div *ngIf="isTableData == true" class="text-center errorMassage">
+                <span class="text-danger">{{errorMessage}}</span>
+            </div>
+
+        </div>
+
+        <div class="pagination-controls-wrapper">
+            <div class="row align-items-center" style="padding-top: 1rem;">
+                <div class="col-auto">
+                    <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+                    <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+                        <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+                    </select>
+                </div>
+                <div class="col">
+                </div>
+                <div class="col-auto">
+                    <pagination-controls (pageChange)="page = $event"></pagination-controls>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</app-card>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body"
+                style="background: linear-gradient(145deg, rgba(255, 255, 255, 0.4), rgba(0, 0, 0, 0.1))">
+                <div class="col-md-12">
+                    <h5 class="text-start fw-bold" style="color:black">View Work From Home Detsils</h5>
+                    <div class="text-end">
+                        <button style="background-color: white;" type="reset" class="btn-close " data-bs-dismiss="modal"
+                            #closeModal aria-label="Close" style="background-color: rgb(228, 208, 208);"></button>
+                    </div>
+                    <div class="row mb-1">
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Employee Name :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.EmpName}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Employee Code :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.EmpCode}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Company :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.CompName}}</span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Department :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.DeptName}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Designation :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.Designation}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Date :</span>
+                                <span class="fw-bold text-truncate">{{viewdata?.Date | date:'dd-MM-yyyy'}}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Login Time :</span>
+                                <span class="fw-bold text-truncate"
+                                    *ngIf="viewdata.LoginTime?.Hours !== null || viewdata.LoginTime?.Minutes !== null">
+                                    {{ viewdata.LoginTime?.Hours }}:{{ viewdata.LoginTime?.Minutes }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Logout Time :</span>
+                                <span class="fw-bold text-truncate"
+                                    *ngIf="viewdata.LogOutTime?.Hours !== null || viewdata.LogOutTime?.Minutes !== null">
+                                    {{ viewdata.LogOutTime?.Hours }}:{{ viewdata.LogOutTime?.Minutes }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <span class="text-muted text-truncate">Active Hours :</span>
+                                <span class="fw-bold text-truncate"
+                                    *ngIf="viewdata.Activehrs?.Hours !== null || viewdata.Activehrs?.Minutes !== null">
+                                    {{ viewdata.Activehrs?.Hours }}:{{ viewdata.Activehrs?.Minutes }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

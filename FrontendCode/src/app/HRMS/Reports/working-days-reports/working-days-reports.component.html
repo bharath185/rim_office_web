@@ -1,0 +1,191 @@
+<app-toast-message></app-toast-message>
+<div class="dis-fl-end">
+    <div class="heading-dash-sub">
+        <span>Present-Absent Report</span>
+        <ol class="breadcrumb fade-left">
+            <li class="breadcrumb-item active dis-fl" aria-current="page">
+                <span class="breadC">Attendance</span>
+                <span class="breadC" [routerLink]="['/employee_attendance']"
+                    style="color:rgb(127, 186, 235);cursor: pointer"> <i
+                        class="feather icon-chevron-right"></i>&nbsp;Employee Attendance</span>
+                <span class="breadC"><i class="feather icon-chevron-right"></i></span><span
+                    class="breadC col-act">Present-Absent Report</span>
+            </li>
+        </ol>
+    </div>
+</div>
+<app-card [options]="false">
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <form [formGroup]="workingDayForm">
+                <div class="row">
+
+                    <div class="custom-date-input col-md-2 inputPadding mt-2">
+                        <input type="date" formControlName="date_from" class="form-control floating-input"
+                            id="carrFromDateId" (ngModelChange)="onFromDateCareer()" [max]="yesterday"
+                            [ngClass]="{'is-invalid': isFromDateInvalid()}" />
+                        <label for="carrFromDateId" class="floating-label"
+                            [ngClass]="{'text-danger': (isFormSubmitted || workingDayForm.get('date_from')?.touched) && workingDayForm.get('date_from')?.invalid}">
+                            From Date*
+                        </label>
+                        <div *ngIf="isFromDateInvalid()" class="invalid-feedback m-0">
+                            <span *ngIf="workingDayForm.get('date_from')?.errors?.required">From Date is
+                                required.</span>
+                        </div>
+                    </div>
+
+                    <div class="custom-date-input col-md-2 mt-2 inputPadding">
+                        <input type="date" formControlName="date_to" class="form-control floating-input"
+                            id="carrToDateId" (ngModelChange)="onToDateCareer()" [max]="yesterday" [min]="minDateCareer"
+                            [ngClass]="{'is-invalid': isToDateInvalid() || dateRangeError}" />
+                        <label for="carrToDateId" class="floating-label"
+                            [ngClass]="{'text-danger': (isFormSubmitted || workingDayForm.get('date_to')?.touched) && workingDayForm.get('date_to')?.invalid}">
+                            To Date*
+                        </label>
+                        <div *ngIf="isToDateInvalid() || dateRangeError" class="invalid-feedback m-0">
+                            <span *ngIf="workingDayForm.get('date_to')?.errors?.required">To Date is
+                                required.</span>
+                            <span *ngIf="dateRangeError">To Date must be after From Date.</span>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding mt-2">
+                        <select class="form-control floating-input" formControlName="DeptName" id="depNameId">
+                            <option value="" selected hidden></option>
+                            <option *ngFor="let option of getDepartementName" [value]="option['DeptId']">
+                                {{ option['DeptName']['length'] > 30 ? (option['DeptName'] | slice: 0:30) + '...' :
+                                option['DeptName'] }}
+                            </option>
+                        </select>
+                        <label for="depNameId" class="floating-label m-0" style="left: 20px;">Department</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding mt-2">
+                        <select class="form-control floating-input" formControlName="BusinessUnit" id="businessId"
+                            >
+                            <!-- (change)="callLocation()" -->
+                            <option disabled selected hidden value=""></option>
+                            <option *ngFor="let unitList of getBusinessUnitlist" [value]="unitList.BUId">
+                                {{unitList.BusinessUnit}}</option>
+                        </select>
+                        <label for="businessId" class="floating-label m-0" style="left: 20px;">Business Unit</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding mt-2">
+                        <select class="form-control floating-input" formControlName="Location" id="locationId">
+                            <option disabled selected hidden value=""></option>
+                            <option *ngFor="let location of getLocations" [value]="location.LocationId">
+                                {{location.Location}}</option>
+                        </select>
+                        <label for="locationId" class="floating-label m-0" style="left: 20px;">Location</label>
+                    </div>
+
+                    <div >
+                        <div style="display: flex;justify-content: end;">
+                            <button class="HRMS_secondary_button" type="reset" (click)="resetData()">
+                                <i class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+                            <button class="HRMS_primary_button" type="submit" (click)="submitFilterData()">
+                                <i class="feather icon-filter"></i>&nbsp;Filter</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</app-card>
+<div class="divSpinner" *ngIf="isSpinner">
+    <div class="spinner"></div>
+</div>
+<div class="col-md-12" *ngIf="isTableShow">
+    <div class="row align-items-center my-2">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <!-- <h5 class="mb-0 form-heading">List Of Employees</h5> -->
+
+                <div class="d-flex align-items-center gap-2">
+
+                    <div class="export-container position-relative">
+                        <button class="export-button d-flex align-items-center" (click)="toggleDropdownExport()">
+                            <i class="feather icon-upload me-1"></i> Export
+                        </button>
+
+                        <div class="dropdown-content position-absolute end-0 mt-1" *ngIf="dropdownVisible"
+                            style="z-index: 999;">
+                            <div class="dropdown-item" (click)="exportFile('excel')">
+                                <i class="fas fa-file-excel me-1"></i> Excel
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="custom-table-wrapper table-responsive table-wrapper">
+            <table class="custom-table table table-hover align-middle">
+                <thead class="sticky-header">
+                    <tr class="inner-shadow">
+                        <th rowspan="3">SL No</th>
+                        <th rowspan="3">Working Days</th>
+                        <th *ngFor="let dept of departments" [attr.colspan]="4">{{ dept.DeptName }}</th>
+                    </tr>
+                    <tr>
+                        <ng-container *ngFor="let dept of departments">
+                            <th colspan="4">
+                                <span>Total: {{ dept.Total }}</span>&nbsp;&nbsp;&nbsp;
+                                <span>OA %: {{ dept.OverAllAbsentPercentage }}</span>
+                            </th>
+                        </ng-container>
+
+                    </tr>
+                    <tr>
+                        <ng-container *ngFor="let dept of departments">
+                            <th>PR</th>
+                            <th>AB</th>
+                            <th>LV</th>
+                            <th>AB %</th>
+                        </ng-container>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr
+                        *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+                        <td>
+                            {{ row.Date }}<br>
+                            {{ row.Day }}
+                        </td>
+
+                        <ng-container *ngFor="let dept of row.lstofDept">
+                            <td>{{ dept.Present }}</td>
+                            <td>{{ dept.Absent }}</td>
+                            <td>{{ dept.Leave }}</td>
+                            <td>{{ dept.AbsentPesent }}</td>
+                        </ng-container>
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="isTableData && errorMessage" class="text-center errorMassage">
+                <span class="text-danger">{{ errorMessage }}</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="pagination-controls-wrapper">
+        <div class="row align-items-center" style="padding-top: 1rem;">
+            <div class="col-auto">
+                <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+                <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+                    <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+                </select>
+            </div>
+            <div class="col">
+            </div>
+            <div class="col-auto">
+                <pagination-controls (pageChange)="page = $event"></pagination-controls>
+            </div>
+        </div>
+    </div>
+</div>

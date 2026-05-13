@@ -1,0 +1,327 @@
+// **********This is for Pannel***********
+.expansion-panel {
+    border: 1px solid #ddd;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+.panel-header {
+    background-color: #072f5f;
+    padding: 4px 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-title {
+    flex-grow: 1;
+
+    h5 {
+        color: white;
+        font-size: medium;
+        font-weight: 500;
+    }
+}
+
+.panel-controls {
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.panel-controls span {
+    margin-left: 10px;
+}
+
+.panel-body {
+    padding: 15px;
+    border-top: 1px solid #ddd;
+}
+
+
+// **********This is for Pannel***********
+
+// ************This is for Floating********
+.form-group {
+    position: relative;
+}
+
+.floating-label-group {
+    position: relative;
+}
+
+.floating-input {
+    border-radius: 0.25rem;
+    padding: 1rem 0rem 0rem 0.3rem;
+    font-size: 0.875rem;
+    width: 100%;
+    line-height: 2;
+
+}
+
+.floating-label {
+    position: absolute;
+    top: 23%;
+    left: 1.2rem;
+    transform: translateY(-50%);
+    color: #999;
+    transition: all 0.2s ease;
+    pointer-events: none;
+}
+
+.floating-input:focus+.floating-label,
+.floating-label.floating {
+    font-size: 0.75rem;
+    color: #020d1b;
+}
+
+.floating-input::placeholder {
+    color: transparent;
+}
+
+.floating-input:focus {
+    outline: none !important;
+    box-shadow: none;
+    border-color: initial;
+}
+
+.floating-input:focus-visible {
+    outline: none !important;
+    box-shadow: none;
+    border-color: initial;
+}
+
+// ************This is for Floating********
+
+
+// ************This is for Photo show*********
+.custom-file-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.custom-file-upload label {
+    background: white;
+    color: #072f5f;
+    padding: 3px;
+    border: 1px solid #072f5f;
+    cursor: pointer;
+}
+
+.custom-file-upload input[type="file"] {
+    display: none;
+}
+
+.preview-img {
+    max-width: 75px;
+    max-height: 73px;
+    border-radius: 10%;
+    margin-top: 2px;
+}
+
+.preview-img1 {
+    max-width: 60px;
+    max-height: 63px;
+    border-radius: 10%;
+    margin-bottom: 2px;
+}
+
+// ************This is for Photo show*********
+
+// ************this is for custome date*******
+.custom-date-input {
+    position: relative;
+}
+
+.custom-date-input input {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 3px 5px;
+    width: 100%;
+    outline: none;
+    font-size: 11px;
+    padding-top: 17px;
+    line-height: 1.9;
+}
+
+.custom-date-input input::placeholder {
+    font-size: 5px;
+    color: #aaa;
+}
+
+.custom-date-input label {
+    position: absolute;
+    color: #888;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.custom-date-input input:focus+label,
+.custom-date-input input:not(:placeholder-shown)+label {
+    top: 1px;
+    left: 5px;
+    font-size: 12px;
+}
+
+// ************this is for custome date*******
+
+
+// **********This is for table things********
+.inner-shadow {
+    .employeeId {
+        width: 15%;
+    }
+
+    .companyName {
+        width: 20%;
+    }
+
+    .startDate {
+        width: 15%;
+    }
+
+    .endDate {
+        width: 15%;
+    }
+
+    .description {
+        width: 20%;
+    }
+
+    .path {
+        width: 15%;
+    }
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 7px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    font-size: 13px;
+
+}
+
+th {
+    background-color: #2d5483;
+    color: #ffffff;
+
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+// **********This is for table things********
+.error-message {
+    font-size: 10px;
+    margin: 0px;
+}
+
+::ng-deep.pcoded-content {
+    position: relative;
+    display: block;
+    padding: 0px !important;
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+}
+
+.pcoded-header {
+    .card {
+        margin: 0px !important;
+    }
+}
+
+.uplaodIcon {
+    color: #072f5f;
+    background: none;
+    border: none;
+    margin: 2px;
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+}
+
+/* image-upload.component.css */
+.img-thumbnail {
+    max-width: 50%;
+    height: auto;
+    // margin-top: 10px;
+}
+
+.fileInput {
+    background: white;
+    color: #072f5f;
+    padding: 3px;
+    border: 1px solid #072f5f;
+    cursor: pointer;
+}
+
+.uploadIcon {
+    text-align: center;
+    margin: 0px;
+    margin-top: 7px;
+    margin-left: 8px;
+    color: #072f5f;
+    font-size: 1.1rem;
+}
+
+.disabled-icon {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+input[type="file"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.plus-icon {
+    position: absolute;
+    color: #072f5f;
+    background: white;
+    font-size: 1rem;
+    border-radius: 50%;
+    padding: 3px;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    margin-right: 17px;
+    margin-top: 25px;
+}
+
+.payslipButton {
+    border-color: #072f5f;
+    color: #072f5f;
+    border-radius: 0px;
+    padding: 3px 7px 3px 7px;
+}
+
+.payslipCrossButton {
+    border-color: #072f5f;
+    color: #072f5f;
+    border-radius: 0px;
+    padding: 0px 4px 0px 4px;
+    margin-left: 12px;
+}
+
+.invalid-feedback {
+    span {
+        font-size: 10px;
+    }
+}

@@ -1,0 +1,121 @@
+::ng-deep .pcoded-content {
+    position: relative;
+    display: block;
+    padding: 0px !important;
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+  
+  }
+  
+  .pcoded-header {
+    .card {
+      margin: 0px !important;
+    }
+  }
+  
+  ::ng-deep.ngx-pagination .current {
+    padding: .1875rem .625rem;
+    // background-color: #072f5f !important;
+    color: #fefefe;
+    cursor: default;
+  }
+  
+  @media only screen and (max-width: 991px) {
+    ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+      margin-left: 0px;
+      margin-top: 57px !important;
+    }
+  }
+  .table td,
+  .table th {
+      padding: 7px 10px !important;
+  }
+  
+  .sticky-header{
+      position: sticky;  
+      top: 0;           
+      background-color: #E6E7EB; 
+      z-index: 2;
+  }
+  .table-wrapper {
+      width: 100%;
+      max-height: 500px;
+      overflow: auto;
+  }
+  
+  // ************this is for custome date*******
+  .custom-date-input {
+    position: relative;
+  }
+  
+  .custom-date-input input {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 3px 5px;
+    width: 100%;
+    outline: none;
+    font-size: 11px;
+    padding-top: 17px;
+    line-height: 1.6;
+  }
+  
+  .custom-date-input input::placeholder {
+    font-size: 5px;
+    color: #aaa;
+  }
+  
+  .custom-date-input label {
+    position: absolute;
+    color: #888;
+    pointer-events: none;
+    transition: all 0.3s ease;
+  }
+  
+  .custom-date-input input:focus+label,
+  .custom-date-input input:not(:placeholder-shown)+label {
+    top: 1px;
+    left: 5px;
+    font-size: 12px;
+  }
+  
+  // ************this is for custome date*******
+  
+  // Example 2
+  .custom-time-dropdown .dropdown-menu {
+    max-height: 200px;
+    overflow-y: auto;
+    width: auto;
+    min-width: fit-content;
+  }
+  
+  .custom-time-dropdown .dropdown-item {
+    cursor: pointer;
+  }
+  
+  .custom-time-dropdown .floating-input {
+    width: 100px;
+  }
+  
+  .custom-time-dropdown .invalid-feedback {
+    display: block;
+  }
+  
+  .button-valid {
+    background-color: #4caf50;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.4s;
+    border: none;
+    cursor: pointer;
+    /* Show pointer cursor when valid */
+  }
+  
+  .button-invalid {
+    color: #fff;
+    background: #c1c1c1;
+    text-decoration: none;
+    transition: all 0.4s;
+    border: none;
+    cursor: not-allowed;
+    /* Show not-allowed cursor when invalid */
+  }

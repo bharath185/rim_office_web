@@ -1,0 +1,935 @@
+::ng-deep .pcoded-content {
+  position: relative;
+  display: block;
+  padding: 0px !important;
+  padding-left: 25px !important;
+  padding-right: 25px !important;
+  padding-top: 5px !important;
+}
+
+@media only screen and (max-width: 991px) {
+  ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+    margin-left: 0px;
+    margin-top: 57px !important;
+  }
+}
+
+// This is for top cards
+.stat-card {
+  transition: 0.3s;
+  overflow: hidden;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.shape {
+  width: 50px;
+  height: 50px;
+  border-radius: 0 50% 50% 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+  background: linear-gradient(to bottom, #4facfe, #00f2fe);
+  z-index: 0;
+  clip-path: path("M 0 0 Q 100% 50% 0 100% L 0 100% L 0 0 Z");
+}
+
+.stat-card h6 {
+  font-size: 14px;
+  color: #555;
+}
+
+.stat-card h5 {
+  font-size: 14px;
+  margin-bottom: 0;
+}
+
+.small-calendar-card {
+  transition: all 0.3s ease;
+}
+
+.small-calendar-card:hover {
+  background: #0A4C9A;
+}
+
+.blinking-circle-wrapper {
+  position: relative;
+  display: inline-block;
+  padding-left: 28px;
+  /* enough space for blinking circle on left */
+  user-select: none;
+}
+
+.blinking-circle-wrapper .blinking-circle {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid;
+  box-sizing: border-box;
+  animation: blink-animation 1.5s infinite ease-in-out;
+  z-index: 10;
+}
+
+.blinking-circle-wrapper .blinking-circle::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: currentColor;
+  transform: translate(-50%, -50%);
+  animation: inner-blink 1.5s infinite ease-in-out alternate;
+}
+
+/* Colors for each status */
+.circle-orange .blinking-circle {
+  border-color: orange;
+  color: orange;
+}
+
+.circle-green .blinking-circle {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.circle-red .blinking-circle {
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+.circle-gray .blinking-circle {
+  border-color: gray;
+  color: gray;
+}
+
+.circle-brown .blinking-circle {
+  background-color: #cfc3b9;
+  color: #8b5e3c;
+}
+
+/* Outer blinking */
+@keyframes blink-animation {
+
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 8px 4px currentColor;
+  }
+
+  50% {
+    opacity: 0.4;
+    box-shadow: 0 0 12px 6px rgba(0, 0, 0, 0);
+  }
+}
+
+/* Inner blinking */
+@keyframes inner-blink {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.3;
+  }
+}
+
+.count-text {
+  position: relative;
+  z-index: 20;
+  /* above the blinking circle */
+  color: black;
+  /* or white, depending on your background */
+  user-select: none;
+}
+
+// This is for top cards
+
+// this is for table things
+.table-wrapper {
+  max-height: 550px !important;
+  overflow-y: auto;
+  overflow-x: hidden !important;
+  position: relative;
+}
+.table thead th {
+  padding: 10px 10px !important;
+}
+
+.table tbody td {
+  padding: 5px 10px !important;
+}
+.pending-table-section {
+  overflow-x: hidden;
+}
+
+.pending-table-section table {
+  table-layout: auto;
+  width: 100%;
+  overflow-x: hidden;
+  word-wrap: break-word;
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 2px 0;
+  width: 80px;
+  text-align: center;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 500;
+  color: white;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.status-applied {
+  background-color: #0d6efd;
+}
+
+.status-cancelled {
+  background-color: #6c757d;
+}
+
+.status-approved {
+  background-color: #198754;
+}
+
+.status-rejected {
+  background-color: #f0270d;
+}
+
+.pending-table-section .table-scroll-wrapper {
+  max-height: 230px;
+  overflow-y: auto;
+}
+
+.pending-table-section .table thead.sticky-top th {
+  background-color: #f8f9fa;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.pending-table-section .table {
+  margin-bottom: 0;
+  font-size: 14px;
+}
+
+.table-wrapper table,
+.table-wrapper table th,
+.table-wrapper table td {
+  border: none !important;
+  font-weight: unset;
+}
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  z-index: 1000;
+  /* or higher */
+}
+
+// this is for table things
+
+.divSpinner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.6);
+  z-index: 9999;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 9px solid;
+  border-color: #dbdcef;
+  border-right-color: #072f5f;
+  animation: spinner-d3wgkg 1s infinite linear;
+}
+
+// ************this is for custome date*******
+.custom-date-input {
+  position: relative;
+}
+
+.custom-date-input input {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 16px 8px 4px 8px;
+  /* Top padding to make space for label */
+  width: 100%;
+  outline: none;
+  font-size: 12px;
+  height: 38px;
+  /* <-- Match the select height */
+  line-height: 1.2;
+}
+
+.custom-date-input label {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  font-size: 12px;
+  color: #888;
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+.custom-date-input input:focus+label,
+.custom-date-input input:not(:placeholder-shown)+label {
+  top: 4px;
+  left: 10px;
+  font-size: 10px;
+  color: #333;
+}
+
+/* Style select to match input height */
+.custom-select-wrapper select {
+  height: 38px;
+  font-size: 12px;
+  padding: 8px 15px;
+}
+
+.custom-clean-tabs {
+  border-bottom: 2px solid #dee2e6;
+  padding-left: 0;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.custom-clean-tabs .nav-item {
+  margin-bottom: -2px;
+  /* Align active underline flush with bottom border */
+}
+
+.custom-clean-tabs .nav-link {
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.5rem 1rem;
+  color: #6c757d;
+  font-weight: 500;
+  background: none;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.custom-clean-tabs .nav-link:hover {
+  color: #0d6efd;
+  border-color: #0d6efd40;
+}
+
+.custom-clean-tabs .nav-link.active {
+  color: #0d6efd;
+  border-color: #0d6efd;
+  background-color: transparent;
+  font-weight: 600;
+}
+
+
+.export-button,
+.btn {
+  height: 30px;
+  /* Consistent height */
+}
+
+// ************this is for custome date*******
+
+
+/* Make pagination wrapper sticky inside the scrollable table region */
+.pagination-controls-wrapper {
+  position: sticky;
+  bottom: 0;
+  background: white;
+  z-index: 5;
+  padding: 8px 0;
+  border-top: 1px solid #dee2e6;
+}
+
+.pagination-controls-wrapper .form-control-sm {
+  height: 30px;
+  font-size: 12px;
+  padding: 2px 4px;
+}
+
+.pagination-controls-wrapper .col-auto select {
+  min-width: 80px;
+}
+
+/* Remove horizontal overflow hiding on smaller screens */
+@media only screen and (max-width: 991px) {
+  .table-wrapper {
+    overflow-x: auto !important;
+  }
+
+  .pending-table-section {
+    overflow-x: auto !important;
+  }
+
+  .pending-table-section table {
+    min-width: 700px;
+  }
+}
+
+// this is for Calendar modal
+.btn-close {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.btn-close:hover {
+  transform: rotate(90deg);
+  opacity: 0.7;
+}
+
+.day-header {
+  background-color: #cce5ff;
+  color: #004085;
+  font-weight: 600;
+}
+
+.marked-date {
+  background-color: #FEF5E7 !important;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.marked-date:hover {
+  background-color: #f1b0b7;
+  transition: background-color 0.3s;
+}
+
+.holiday-cell {
+  // background-color: #fef5e7 !important;
+  color: #7e5109 !important;
+  font-weight: normal;
+  font-size: 11px;
+  padding: 4px;
+}
+
+.event {
+  background: #e6f0ff;
+  border-left: 3px solid #0d6efd;
+  padding: 2px 4px;
+  margin-top: 2px;
+  border-radius: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+}
+
+.event-general {
+  background: #ffe6e6;
+  border-left: 3px solid red;
+  color: red;
+}
+
+.event-rh {
+  background: #e6f0ff;
+  border-left: 3px solid #007bff;
+  color: #007bff;
+}
+
+.event-title {
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-type {
+  font-size: 11px;
+  color: #666;
+  white-space: nowrap;
+}
+
+.today-badge {
+  border: 2px solid #0d6efd !important;
+  /* Bootstrap Primary Blue */
+  border-radius: 4px;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+}
+
+.event-other {
+  background: #f7f7f7;
+  border-left: 3px solid #888;
+  color: #444;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.legend-dot-gh {
+  background-color: red;
+}
+
+.legend-dot-rh {
+  background-color: #007bff;
+
+}
+
+/* New additions */
+.legend-dot-applied {
+  background-color: #0d6efd;
+}
+
+.legend-dot-approved {
+  background-color: #198754;
+}
+
+.legend-dot-draft {
+  background-color: rgb(189, 170, 134);
+}
+
+.legend-dot-rejected {
+  background-color: #f0270d;
+}
+
+.legend-dot-withdrawn {
+  background-color: #8b5e3c;
+}
+
+.legend-dot-cancelled {
+  background-color: #6c757d;
+}
+
+.leave-count-container {
+  display: flex;
+  justify-content: center;
+  gap: 1px;
+  margin-top: 3px;
+  flex-wrap: wrap;
+}
+
+.dot-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.approved-dot {
+  background-color: green;
+}
+
+.applied-dot {
+  background-color: blue;
+}
+
+.total-label {
+  width: 100%;
+  /* Ensures it wraps to the next line */
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+// this is for Calendar modal
+
+// this is for delete modal end
+.modal-confirm {
+  color: #636363;
+  // width: 400px;
+}
+
+.modal-confirm .modal-content {
+  padding: 20px;
+  border-radius: 5px;
+  border: none;
+  text-align: center;
+  font-size: 14px;
+}
+
+.modal-confirm .modal-header {
+  border-bottom: none;
+  position: relative;
+}
+
+.modal-confirm h4 {
+  text-align: center;
+  font-size: 20px;
+  margin: 10px 0 0px;
+}
+
+.modal-confirm .close {
+  position: absolute;
+}
+
+.modal-confirm .modal-body {
+  color: #999;
+}
+
+.modal-confirm .modal-footer {
+  border: none;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.modal-confirm .modal-footer a {
+  color: #999;
+}
+
+.modal-confirm .icon-box {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+  border-radius: 50%;
+  z-index: 9;
+  text-align: center;
+  border: 3px solid #f15e5e;
+}
+
+.modal-confirm .icon-box i {
+  color: #f15e5e;
+  font-size: 46px;
+  display: inline-block;
+  margin-top: 13px;
+}
+
+// This is for Approve
+.modal-confirm .icon-box-approve {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+  border-radius: 50%;
+  z-index: 9;
+  text-align: center;
+  border: 3px solid green;
+}
+
+.modal-confirm .icon-box-approve i {
+  color: green;
+  font-size: 46px;
+  display: inline-block;
+  margin-top: 13px;
+}
+
+// This is for Approve
+
+.modal-confirm .btn,
+.modal-confirm .btn:active {
+  color: #fff;
+  border-radius: 4px;
+  background: #60c7c1;
+  text-decoration: none;
+  transition: all 0.4s;
+  line-height: normal;
+  min-width: 120px;
+  border: none;
+  min-height: 40px;
+  border-radius: 3px;
+  margin: 0 5px;
+}
+
+.modal-confirm .btn-secondary {
+  background: #c1c1c1;
+}
+
+.modal-confirm .btn-secondary:hover,
+.modal-confirm .btn-secondary:focus {
+  background: #a8a8a8;
+}
+
+.modal-confirm .btn-danger {
+  background: #f15e5e;
+}
+
+.modal-confirm .btn-danger:hover,
+.modal-confirm .btn-danger:focus {
+  background: #ee3535;
+}
+
+.trigger-btn {
+  display: inline-block;
+  margin: 100px auto;
+}
+
+.icon-box:before {
+  content: none !important;
+}
+
+.btn-close {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.btn-close:hover {
+  transform: rotate(90deg);
+  opacity: 0.7;
+}
+
+
+.modal-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.checkmark__circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: #7ac142;
+  fill: none;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards
+}
+
+.checkmark {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 2;
+  stroke: #fff;
+  stroke-miterlimit: 10;
+  margin: 10% auto;
+  box-shadow: inset 0px 0px 0px #7ac142;
+  animation: fill .2s ease-in-out .4s forwards, scale .3s ease-in-out .9s both
+}
+
+.checkmark__check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: stroke 0.2s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards
+}
+
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0
+  }
+}
+
+@keyframes scale {
+
+  0%,
+  100% {
+    transform: none
+  }
+
+  50% {
+    transform: scale3d(1.1, 1.1, 1)
+  }
+}
+
+@keyframes fill {
+  100% {
+    box-shadow: inset 0px 0px 0px 30px #7ac142
+  }
+}
+
+// this is for delete modal end
+
+// this is for export dropdown
+.export-container {
+  position: relative;
+  display: inline-block;
+  z-index: 2000;
+
+}
+
+.export-button {
+  background-color: #ffffff;
+  color: #072f5f;
+  border: 1px solid #072f5f;
+  font-size: 14px;
+  padding: 5px 6px;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+  border-radius: 5px;
+}
+
+.export-button:hover {
+  background-color: #e6f0ff;
+  border-color: #0056b3;
+}
+
+.export-button i {
+  margin-left: 2px;
+}
+
+.dropdown-item {
+  padding: 10px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s;
+}
+
+.dropdown-item i {
+  margin-right: 5px;
+}
+
+.dropdown-item:hover {
+  background-color: #072f5f;
+  color: white;
+}
+
+.dropdown-content {
+  position: absolute;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin-top: 5px;
+  z-index: 2000 !important;
+  width: 140px;
+}
+
+
+// this is for export dropdown
+
+// this is for th status dropdown
+.custom-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  list-style: none;
+  padding: 4px 0;
+  margin: 4px 0 0;
+  width: max-content;
+  min-width: 150px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+}
+
+.custom-dropdown .dropdown-item {
+  padding: 4px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.custom-dropdown .dropdown-item:hover {
+  background-color: #f1f1f1;
+}
+
+// this is for th status dropdown
+
+.date-dropdown-container {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 4px;
+  z-index: 1000;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 4px;
+  width: 140px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+::ng-deep .custom-modal-width {
+  max-width: 100% !important; // or any value you need
+  width: 100% !important;
+}
+
+@media only screen and (max-width: 768px) {
+
+  .calendar-container table {
+    font-size: 9px !important;
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  .calendar-container table th,
+  .calendar-container table td {
+    padding: 2px 0 !important;
+    width: calc(100% / 7); 
+    vertical-align: top;
+  }
+
+  .calendar-container h5 {
+    font-size: 9px !important;
+  }
+
+  .calendar-container .btn-sm {
+    font-size: 9px !important;
+    padding: 2px 5px !important;
+  }
+
+  .event-title {
+    display: none !important;
+  }
+
+  .event {
+    width: 6px;
+    height: 16px;
+    margin: 0 auto;
+    padding: 0 !important;
+    border-radius: 3px;
+    border-left: none !important;
+  }
+
+  .event-general {
+    background-color: red !important;
+  }
+
+  .event-rh {
+    background-color: #007bff !important;
+  }
+
+  .event-other {
+    background-color: #888 !important;
+  }
+
+  .calendar-container {
+    overflow-x: hidden !important;
+    max-width: 100%;
+  }
+
+  .table-wrapper {
+    overflow-x: auto !important; 
+    -webkit-overflow-scrolling: touch; 
+  }
+
+  .table-wrapper table {
+    min-width: fit-content; 
+    font-size: 9px !important;
+  }
+
+  .table-wrapper th,
+  .table-wrapper td {
+    white-space: nowrap; 
+    text-align: center;
+  }
+  .status-pill {
+    width: 50px;
+    font-size: 9px;
+    padding: 2px 0;
+  }
+  
+}

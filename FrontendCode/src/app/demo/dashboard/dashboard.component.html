@@ -1,0 +1,1058 @@
+<!-- Toast Message Component -->
+<app-toast-message></app-toast-message>
+
+<!-- Main Dashboard Wrapper -->
+
+<div class="dashboard-wrapper">
+
+    <!-- Animated Background Elements -->
+    <div class="bg-animation">
+        <div class="gradient-sphere sphere-1"></div>
+        <div class="gradient-sphere sphere-2"></div>
+        <div class="gradient-sphere sphere-3"></div>
+    </div>
+
+
+    <!-- Loading Overlay with Enhanced Animation -->
+    <div class="loading-overlay" *ngIf="isSpinner">
+        <div class="loading-spinner">
+            <div class="spinner-circle"></div>
+            <div class="spinner-text">Loading amazing things...</div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+
+        <!-- Filter Section with Glass Effect Form-->
+        <!-- <div class="filter-header">
+                    <div class="filter-title">
+                        <i class="fas fa-sliders-h"></i>
+                        <span>Smart Filters</span>
+                    </div>
+                    <div class="filter-subtitle">Customize your view</div>
+                </div> -->
+        <div class="filter-panel glass-card animate-float">
+            <form [formGroup]="attendanceDashboard" (ngSubmit)="submitFilterData()" class="filter-form">
+
+
+                <div class="filter-body">
+                    <div class="filter-item" *ngIf="employeeDetails[0].Authorised">
+                        <label class="filter-label">View Mode</label>
+                        <div class="view-toggle">
+                            <button type="button" class="toggle-btn" [class.active]="isSelfSelected"
+                                (click)="toggleSelection('self')">
+                                <i class="fas fa-user"></i>
+                                <span>Self</span>
+                            </button>
+                            <button type="button" class="toggle-btn" [class.active]="!isSelfSelected"
+                                (click)="toggleSelection('all')">
+                                <i class="fas fa-users"></i>
+                                <span>All</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="filter-item">
+                        <label class="filter-label">From Date</label>
+                        <div class="date-field">
+                            <i class="fas fa-calendar-alt"></i>
+                            <input type="date" formControlName="fromDate" [max]="today"
+                                [class.error]="isFormSubmitted && attendanceDashboard.get('fromDate')?.invalid">
+                        </div>
+                        <span class="error-msg" *ngIf="isFormSubmitted && attendanceDashboard.get('fromDate')?.invalid">
+                            Required
+                        </span>
+                    </div>
+
+                    <div class="filter-item">
+                        <label class="filter-label">To Date</label>
+                        <div class="date-field">
+                            <i class="fas fa-calendar-alt"></i>
+                            <input type="date" formControlName="toDate" [max]="today"
+                                [class.error]="isFormSubmitted && attendanceDashboard.get('toDate')?.invalid">
+                        </div>
+                        <span class="error-msg" *ngIf="isFormSubmitted && attendanceDashboard.get('toDate')?.invalid">
+                            Required
+                        </span>
+                    </div>
+
+                    <div class="filter-item" *ngIf="employeeDetails[0].Authorised && !isSelfView">
+                        <label class="filter-label">Location</label>
+                        <select formControlName="location" (change)="locationBasedEmployee()">
+                            <option value="" disabled selected>Select location</option>
+                            <option *ngFor="let location of getLocations" [value]="location.LocationId">
+                                {{location.Location}}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div *ngIf="employeeDetails[0].Authorised && !isSelfView">
+                        <div class="dropdown">
+                            <input type="text" formControlName="emloyee" class="form-control"
+                                placeholder="Select Employee" [(ngModel)]="searchText" (focus)="openDropdown()"
+                                (input)="filterEmployees()" (blur)="checkValidEmployee()" autocomplete="off" />
+                            <ul class="dropdown-menu" [class.show]="isDropdownOpen && filteredEmployees.length >= 0">
+                                <li *ngFor="let employee of filteredEmployees" (mousedown)="selectEmployeee(employee)"
+                                    class="dropdown-item">
+                                    {{ employee.FirstName }} ({{ employee.EmpCode }})
+                                </li>
+                                <li *ngIf="filteredEmployees.length === 0" class="dropdown-item text-danger">No results
+                                    found
+                                </li>
+                            </ul>
+                            <div style="font-size: 10px;" class="text-danger"
+                                *ngIf="(isFormSubmitted || attendanceDashboard.get('emloyee')?.touched) && attendanceDashboard.get('emloyee')?.invalid">
+                                Invalid Employee</div>
+                            <div *ngIf="isFormSubmitted && !isValidEmployee" class="invalid-feedback m-0">Please select
+                                a valid
+                                Employee.</div>
+                            <div *ngIf="errorMessageEmpName" class="error-message">{{ errorMessageEmpName }}</div>
+                        </div>
+                    </div>
+
+                    <div class="filter-actions">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-check"></i>
+                            <span>Apply Filters</span>
+                        </button>
+                        <button type="button" class="btn-secondary" (click)="resetFormData()">
+                            <i class="fas fa-undo-alt"></i>
+                            <span>Reset</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- KPI Cards Section with Hover Animations top 4 cards-->
+        <div class="kpi-section">
+
+            <div class="kpi-card glass-card" *ngIf="employeeDetails[0].Authorised && !isSelfView">
+                <!-- data-bs-toggle="modal" data-bs-target="#attendanceSourceModal" -->
+                <div class="kpi-bg-icon">
+                    <i class="fas fa-user-friends"></i>
+                </div>
+                <div class="kpi-content">
+                    <div class="kpi-icon-wrapper blue">
+                        <i class="feather icon-users"></i>
+                    </div>
+                    <div class="kpi-stats">
+                        <div class="kpi-value counter">{{ finaltotalEmployeesCount }}</div>
+                        <div class="kpi-title">Total Employees</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="kpi-card glass-card">
+                <div class="kpi-bg-icon">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="kpi-content">
+                    <div class="kpi-icon-wrapper green">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="kpi-stats">
+                        <div class="kpi-value counter">{{ finalDeviceCheckInCount }}</div>
+                        <div class="kpi-title">Office Check-Ins</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="kpi-card glass-card">
+                <div class="kpi-bg-icon">
+                    <i class="fas fa-laptop"></i>
+                </div>
+                <div class="kpi-content">
+                    <div class="kpi-icon-wrapper purple">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <div class="kpi-stats">
+                        <div class="kpi-value counter">{{ finalAppCheckInCount }}</div>
+                        <div class="kpi-title">WFH Check-Ins</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="kpi-card glass-card">
+                <div class="kpi-bg-icon">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+                <div class="kpi-content">
+                    <div class="kpi-icon-wrapper orange">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <div class="kpi-stats">
+                        <div class="kpi-value counter">{{ finalOnSiteCheckInCount }}</div>
+                        <div class="kpi-title">On-Site Check-Ins</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Metrics Grid with Animations -->
+        <div class="metrics-grid">
+            <!-- Leave Management Section -->
+            <div class="metrics-card glass-card animate-slide-up" style="animation-delay: 0.2s">
+                <div class="metrics-header">
+                    <div class="header-icon pulse">
+                        <i class="fas fa-umbrella-beach"></i>
+                    </div>
+                    <h3>Leave Management</h3>
+                    <div class="header-notification">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                </div>
+                <div class="metrics-body">
+                    <div class="metric-item" (click)="openLeaveModal('pending')">
+                        <span class="metric-label">Pending Requests</span>
+                        <span class="metric-value status-badge warning pulse-badge">
+                            {{ pendingLeavesCount }}
+                        </span>
+                    </div>
+
+                    <div class="metric-item" (click)="openLeaveModal('all')">
+                        <span class="metric-label">All Leave</span>
+                        <span class="metric-value">
+                            {{ allLeavesCount }}
+                        </span>
+                    </div>
+
+                    <div class="metric-item" (click)="openLeaveModal('compoff')">
+                        <span class="metric-label">Comp-Off Requests</span>
+                        <span class="metric-value status-badge warning">
+                            {{ compOffCount }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metrics-card glass-card animate-slide-up" style="animation-delay: 0.3s">
+                <div class="metrics-header">
+                    <div class="header-icon pulse">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+                    <h3>Work Hours</h3>
+                </div>
+                <div class="card d-flex " *ngIf="!errorConsolidatedAttendanceRes">
+                    <echarts [options]="gaugeOptions" class="my-gauge-chart" [autoResize]="true"></echarts>
+                </div>
+                <div *ngIf="errorConsolidatedAttendanceRes">
+                    <span class="text-danger">{{errorConsolidatedAttendanceRes}}</span>
+                </div>
+            </div>
+
+            <div class="info-card glass-card animate-slide-up" style="animation-delay: 0.2s"
+                *ngIf="!isloaderLeaveBalance && isSelfView">
+                <div class="card-header">
+                    <div class="header-left">
+                        <i class="fas fa-umbrella-beach"></i>
+                        <h4>Leave Balance</h4>
+                    </div>
+                    <button class="apply-btn" (click)="goToApplyLeave()">
+                        <i class="fas fa-paper-plane"></i>
+                        Apply
+                    </button>
+                </div>
+                <div class="card-content">
+                    <div class="leave-grid">
+                        <div *ngFor="let lb of leaveBalances" class="leave-item" [ngClass]="lb.cls">
+                            <span class="leave-value">{{ lb.value }}</span>
+                            <span class="leave-label">{{ lb.label }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employee Overview Section -->
+            <div class="metrics-card glass-card animate-slide-up" *ngIf="employeeDetails[0].Authorised && !isSelfView">
+                <div class="metrics-header">
+                    <div class="header-icon pulse">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Employee Overview(Current Month)</h3>
+                    <!-- <span class="header-badge">View</span> -->
+                </div>
+                <div class="metrics-body">
+                    <div class="metric-item" (click)="openEmployeeModal('new')">
+                        <span class="metric-label">
+                            <i class="fas fa-user-plus"></i>
+                            New Joiners
+                        </span>
+                        <span class="metric-value success">+{{ employeeOverview.newJoiners.length }}</span>
+                    </div>
+
+                    <div class="metric-item" (click)="openEmployeeModal('exit')">
+                        <span class="metric-label">
+                            <i class="fas fa-user-minus"></i>
+                            Exits
+                        </span>
+                        <span class="metric-value danger">-{{ employeeOverview.exits.length }}</span>
+                    </div>
+
+                    <div class="metric-item" (click)="openEmployeeModal('deactive')">
+                        <span class="metric-label">
+                            <i class="fas fa-user-slash"></i>
+                            Deactive
+                        </span>
+                        <span class="metric-value warning">{{ employeeOverview.deactive.length }}</span>
+                    </div>
+
+                    <!-- <div class="metric-item expandable">
+                        <span class="metric-label">
+                            <i class="fas fa-sitemap"></i>
+                            Department Headcount
+                        </span>
+                        <div class="dept-chips">
+                            <span class="dept-chip engineering">ENG: </span>
+                            <span class="dept-chip sales">SALES: </span>
+                            <span class="dept-chip hr">HR:</span>
+                            <span class="dept-chip marketing">MKT: </span>
+                        </div>
+                    </div> -->
+
+                </div>
+            </div>
+
+            <!-- Yesterday Attendance Details Section -->
+            <div class="metrics-card glass-card animate-slide-up" style="animation-delay: 0.1s;"
+                *ngIf="employeeDetails[0].Authorised && !isSelfView">
+
+                <div class="metrics-header">
+                    <div class="header-icon pulse">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h3>Yesterday Attendance Details</h3>
+                </div>
+
+                <div class="metrics-body">
+
+                    <div class="metric-item">
+                        <span class="metric-label">Present Yesterday</span>
+                        <!-- NEW VARIABLE -->
+                        <span class="metric-value success">{{ yesterdayPresentCount }}</span>
+                    </div>
+
+                    <div class="metric-item">
+                        <span class="metric-label">Absent Yesterday</span>
+                        <!-- NEW VARIABLE -->
+                        <span class="metric-value danger">{{ yesterdayAbsentCount }}</span>
+                    </div>
+
+                    <div class="metric-item">
+                        <span class="metric-label">On Leave Yesterday</span>
+                        <!-- NEW VARIABLE -->
+                        <span class="metric-value warning">{{ yesterdayLeaveCount }}</span>
+                    </div>
+
+                    <div class="metric-item">
+                        <span class="metric-label">Not Marked</span>
+                        <!-- OPTIONAL CALCULATION -->
+                        <span class="metric-value warning">
+                            {{
+                            finaltotalEmployeesCount
+                            - (yesterdayPresentCount + yesterdayAbsentCount + yesterdayLeaveCount)
+                            }}
+                        </span>
+                    </div>
+
+                    <div class="metric-item">
+                        <span class="metric-label">WFH Yesterday</span>
+                        <!-- NEW VARIABLE -->
+                        <span class="metric-value info">{{ yesterdayWFHCount }}</span>
+                    </div>
+
+                </div>
+
+                <div class="metric-progress">
+                    <div class="progress-bar" [style.width]="getAttendancePercentage() + '%'"></div>
+                </div>
+
+            </div>
+
+            <!-- Shift Management Section -->
+            <div class="metrics-card glass-card animate-slide-up" style="animation-delay: 0.4s"
+                *ngIf="employeeDetails[0].Authorised && !isSelfView">
+
+                <div class="metrics-header">
+                    <div class="header-icon pulse">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>Shift Management</h3>
+                </div>
+
+                <div class="metrics-body">
+
+                    <div class="shift-distribution">
+
+                        <div class="shift-distribution">
+
+                            <div class="shift-item" *ngFor="let shift of shiftManagementList; let i = index"
+                                [ngClass]="getShiftClassByIndex(i)">
+
+                                <span class="shift-label">
+                                    {{ shift.Shift }} ({{ shift.ShiftTime }})
+                                </span>
+
+                                <span class="shift-value">
+                                    {{ shift.ShiftEmpCount }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="metric-item alert-item">
+                        <span class="metric-label">Unmapped Employees</span>
+                        <span class="metric-value status-badge danger">
+                            {{ unmappedEmployeesCount }}
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- This is for Visitor section -->
+            <div class="info-card glass-card animate-slide-up" *ngIf="employeeDetails[0].Authorised && !isSelfView">
+                <div class="card-header">
+                    <div class="header-left">
+                        <i class="fas fa-user-friends"></i>
+                        <h4>Today's Visitors</h4>
+                        <span class="visitor-count-badge pulse">{{ todayVisitors.length || 0 }}</span>
+                    </div>
+                    <button class="apply-btn" (click)="goToViewVisitorPage()">
+                        <i class="fas fa-paper-plane"></i>
+                        View all
+                    </button>
+                </div>
+                <div class="card-content">
+                    <div *ngIf="todayVisitors && todayVisitors.length > 0; else noVisitors" class="visitor-list">
+                        <div *ngFor="let visitor of todayVisitors" class="visitor-item">
+                            <div class="visitor-avatar">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <div class="visitor-details">
+                                <span class="visitor-name">{{ visitor.Name }}</span>
+                                <span class="visitor-purpose">{{ visitor.Designation }} - {{ visitor.Company }}</span>
+                            </div>
+                            <div class="visitor-time">
+                                <i class="far fa-clock"></i>
+                                {{ visitor.Time }}
+                                <div class="visitor-status" [ngClass]="getVisitorStatus(visitor).class">
+                                    {{ getVisitorStatus(visitor).label }}
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <ng-template #noVisitors>
+                        <div class="empty-state small">
+                            <i class="fas fa-user-friends"></i>
+                            <p>No visitors today</p>
+                        </div>
+                    </ng-template>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <div class="grid-col col-main">
+
+                <!-- Team Members Card -->
+                <div class="team-card glass-card animate-slide-up">
+                    <div class="card-header">
+                        <h4>
+                            <i class="fas fa-users"></i>
+                            Team Members
+                        </h4>
+                        <span class="member-count">{{ listOfEmp.length }} total</span>
+                    </div>
+                    <div class="card-content">
+                        <div *ngIf="!isTeamsMemberLoader; else teamLoader" class="team-list">
+                            <div *ngFor="let emp of listOfEmp" class="team-item">
+                                <div class="member-avatar">
+                                    <img [src]="getEmployeeImage(emp)" alt="NoImage">
+                                </div>
+                                <div class="member-details">
+                                    <span class="member-name">{{ emp.FirstName }} {{ emp.LastName }}</span>
+                                    <span class="member-role">{{ emp.Designation }}</span>
+                                </div>
+                                <div class="member-actions">
+                                    <button class="action-btn teams" (click)="openTeamsChat(emp.EmailId)"
+                                        title="Chat on Teams">
+                                        <i class="fab fa-microsoft"></i>
+                                    </button>
+                                    <a class="action-btn email" [href]="'mailto:' + emp.EmailId" title="Send Email">
+                                        <i class="fas fa-envelope"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <ng-template #teamLoader>
+                            <div class="loader">Loading team members...</div>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="grid-col col-sidebar">
+                <!-- Calendar Card -->
+                <div class="calendar-card glass-card animate-slide-up" *ngIf="!isloaderLeaveBalance && isSelfView">
+                    <div class="calendar-header">
+                        <h4>
+                            <i class="fas fa-calendar-alt"></i>
+                            Attendance Calendar
+                        </h4>
+                        <button class="holidays-popup-btn" (click)="openHolidaysPopup()">
+                            <i class="fas fa-gift"></i>
+                            <span>View Holiday</span>
+                        </button>
+                    </div>
+                    <div class="calendar-body">
+                        <div class="calendar-nav">
+                            <button (click)="prevMonth()">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <span>{{ months[currentMonth] }} {{ currentYear }}</span>
+                            <button (click)="nextMonth()">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div class="weekdays">
+                            <span *ngFor="let wd of ['S','M','T','W','T','F','S']">{{wd}}</span>
+                        </div>
+                        <div class="days-grid">
+                            <ng-container *ngFor="let week of weeks">
+                                <div *ngFor="let day of week" class="day-cell" [class.empty]="!day.dayNumber"
+                                    [class.absent]="day.status==='absent'"
+                                    [class.rh-holiday]="day.status==='rh-holiday'"
+                                    [class.general-holiday]="day.status==='general-holiday'"
+                                    [class.today]="isToday(day.date)" (click)="selectDay(day)">
+                                    <span class="day-number">{{ day.dayNumber }}</span>
+                                </div>
+                            </ng-container>
+                        </div>
+                        <div class="calendar-legend">
+                            <span class="legend-item leave"></span> Leave
+                            <span class="legend-item rh"></span> RH
+                            <span class="legend-item general"></span> General Holiday
+                        </div>
+                        <div class="selected-day-info" *ngIf="selectedDayDetails">
+                            <div class="info-badge">
+                                <i class="fas fa-info-circle"></i>
+                                {{ selectedDayDetails.dateStr }}
+                            </div>
+                            <div class="info-details">
+                                <span *ngIf="selectedDayDetails.isHoliday">🎉 {{ selectedDayDetails.reason }}</span>
+                                <span *ngIf="selectedDayDetails.isLeave">📝 {{ selectedDayDetails.reason }}</span>
+                                <span *ngIf="selectedDayDetails.leaveReason" class="leave-reason">
+                                    "{{ selectedDayDetails.leaveReason }}"
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Celebrations Card -->
+                <div class="celebrations-card glass-card animate-slide-up">
+                    <div class="card-header">
+                        <h4>
+                            <i class="fas fa-birthday-cake"></i>
+                            Celebrations
+                        </h4>
+                        <div class="tab-filters">
+                            <button class="tab-filter" [class.active]="selectedTab === 'today'"
+                                (click)="selectedTab = 'today'">Today</button>
+                            <button class="tab-filter" [class.active]="selectedTab === 'yesterday'"
+                                (click)="selectedTab = 'yesterday'">Week</button>
+                            <button class="tab-filter" [class.active]="selectedTab === 'tomorrow'"
+                                (click)="selectedTab = 'tomorrow'">Month</button>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div *ngIf="getPeople(selectedTab).length > 0; else noCelebrations" class="celebrations-list">
+                            <div *ngFor="let person of getPeople(selectedTab)" class="celebration-item">
+                                <!-- <div class="avatar">
+                                    <img [src]="person.image || 'https://www.w3schools.com/howto/img_avatar.png'"
+                                        alt="avatar">
+                                </div> -->
+                                <div class="avatar">
+                                    <img [src]="getBirthdayPersonImage(person)" alt="NoImage">
+                                </div>
+                                <div class="person-info">
+                                    <span class="person-name">{{ person.FirstName }} {{ person.LastName }}</span>
+                                    <span class="person-type">{{ person.Day || 'Birthday' }}</span>
+                                    <span class="person-date" *ngIf="person.DOB">{{ formatDOB(person.DOB) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <ng-template #noCelebrations>
+                            <div class="empty-state">
+                                <i class="fas fa-glass-cheers"></i>
+                                <p>No celebrations for this period 🎉</p>
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Floating Action Menu + buuton -->
+    <div class="floating-menu" *ngIf="employeeDetails[0].Authorised && !isSelfView">
+        <div class="menu-trigger pulse">
+            <i class="fas fa-plus"></i>
+        </div>
+        <div class="menu-items">
+
+            <div class="menu-item" routerLink="/employee_attendance">
+                <div class="item-icon attendance">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <span class="item-label">Mark Attendance</span>
+            </div>
+            <div class="menu-item" routerLink="/view_all_employee">
+                <div class="item-icon employees">
+                    <i class="fas fa-users"></i>
+                </div>
+                <span class="item-label">View Employees</span>
+            </div>
+            <div class="menu-item" routerLink="/create_employee">
+                <div class="item-icon employees">
+                    <i class="fas fa-users"></i>
+                </div>
+                <span class="item-label">Add Employee</span>
+            </div>
+            <!-- <div class="menu-item" routerLink="/salary">
+                <div class="item-icon salary">
+                    <i class="fas fa-file-invoice"></i>
+                </div>
+                <span class="item-label">Salary Slip</span>
+            </div>
+            <div class="menu-item" routerLink="/reports">
+                <div class="item-icon reports">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <span class="item-label">Reports</span>
+            </div> -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal Starts Here ALL -->
+
+<!-- MODAL: Attendance Details -->
+<div class="modal fade modern-modal" id="attendanceSourceModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Attendance Overview
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="quick-filters">
+                    <select class="filter-select">
+                        <option>All Employees</option>
+                    </select>
+                    <div class="date-range">
+                        <input type="date" class="date-input" [max]="today">
+                        <span>to</span>
+                        <input type="date" class="date-input" [max]="today">
+                    </div>
+                    <button class="btn-primary small">
+                        <i class="fas fa-search"></i>
+                        Search
+                    </button>
+                </div>
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <div class="card-icon office">
+                            <i class="feather icon-log-in"></i>
+                        </div>
+                        <div class="card-stats">
+                            <span class="stat-value">{{ finalDeviceCheckInCount }}</span>
+                            <span class="stat-label">Office</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="card-icon wfh">
+                            <i class="feather icon-smartphone"></i>
+                        </div>
+                        <div class="card-stats">
+                            <span class="stat-value">{{ finalAppCheckInCount }}</span>
+                            <span class="stat-label">WFH</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="card-icon onsite">
+                            <i class="feather icon-map-pin"></i>
+                        </div>
+                        <div class="card-stats">
+                            <span class="stat-value">{{ finalOnSiteCheckInCount }}</span>
+                            <span class="stat-label">On-Site</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Department</th>
+                                <th>Check-In Type</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">Select filters to view data</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn-primary">
+                    <i class="fas fa-download"></i>
+                    Export Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Upcoming Holidays Popup -->
+<div class="modal fade modern-modal" id="upcomingHolidaysModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-gift"></i>
+                    Upcoming Holidays
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div *ngIf="!isHolidayLoader; else holidayLoader" class="holidays-popup-list">
+                    <div *ngFor="let h of holidaysList" class="holiday-popup-item">
+                        <div class="holiday-popup-date">
+                            <!-- | date:'dd' -->
+                            <!-- | date:'MMM' -->
+                            <span class="holiday-popup-day">{{ h.date }}</span>
+                            <span class="holiday-popup-month">{{ h.date }}</span>
+                        </div>
+                        <div class="holiday-popup-info">
+                            <span class="holiday-popup-name">{{ h.name }}</span>
+                            <span class="holiday-popup-type">{{ h.type }}</span>
+                        </div>
+                    </div>
+                    <div *ngIf="holidaysList.length === 0" class="empty-state">
+                        <i class="fas fa-calendar-times"></i>
+                        <p>No upcoming holidays</p>
+                    </div>
+                </div>
+                <ng-template #holidayLoader>
+                    <div class="loader">Loading holidays...</div>
+                </ng-template>
+            </div>
+            <div class="modal-footer">
+                <!-- <button type="button" class="btn btn-primary" (click)="goToAddHoliday()"
+                    *ngIf="controlAccessPage?.AddAccess == true && isSelfView">
+                    <i class="fas fa-plus-circle"></i>
+                    Add Holiday
+                </button> -->
+                <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Location Details -->
+<div class="modal fade modern-modal" id="empWorkLocationBreakdownModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Location Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="location-details">
+                    <div class="detail-item">
+                        <i class="fas fa-user-circle"></i>
+                        <div class="detail-text">
+                            <span class="label">Employee</span>
+                            <span class="value">-</span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-id-card"></i>
+                        <div class="detail-text">
+                            <span class="label">Employee Code</span>
+                            <span class="value">-</span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-building"></i>
+                        <div class="detail-text">
+                            <span class="label">Company</span>
+                            <span class="value">-</span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-map-pin"></i>
+                        <div class="detail-text">
+                            <span class="label">Location</span>
+                            <span class="value">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- MODAL: Login Details -->
+<div class="modal fade modern-modal" id="loginDetailsModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-fingerprint"></i>
+                    Login Session Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-list">
+                    <div class="detail-row">
+                        <span class="detail-label">Employee Code</span>
+                        <span class="detail-value">{{'N/A'}}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Mode</span>
+                        <span class="detail-value">
+                            <span class="badge">{{'N/A'}}</span>
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Date</span>
+                        <span class="detail-value">{{ 'dd MMM yyyy'}}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Login Time</span>
+                        <span class="detail-value">{{ 'N/A'}}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Logout Time</span>
+                        <span class="detail-value">{{ 'N/A'}}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Status</span>
+                        <span class="detail-value">
+                            <span class="status-badge active">Active Session</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Leave Modal -->
+<div class="modal fade modern-modal" id="leaveDetailsModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content glass-card">
+            <!-- Header -->
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-umbrella-beach"></i>
+
+                    {{ selectedModalType === 'pending' ? 'Pending Leaves' :
+                    selectedModalType === 'all' ? 'All Leaves' :
+                    'Comp-Off Requests' }}
+                </h5>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+
+                <!-- LEAVES TABLE -->
+                <div class="table-responsive">
+                    <table class="table table-hover" *ngIf="selectedModalType !== 'compoff'">
+
+                        <thead class="sticky-header">
+                            <tr>
+                                <th>Resource Name</th>
+                                <th>Leave Type</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr *ngFor="let item of modalData">
+                                <td>{{ item.EmpName || item.EmpCode }}</td>
+                                <td>{{ item.LeaveType }}</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark"
+                                        *ngIf="item.Status?.toLowerCase() === 'applied'">
+                                        {{ item.Status }}
+                                    </span>
+
+                                    <span class="badge bg-success"
+                                        *ngIf="item.Status?.toLowerCase().includes('approved')">
+                                        APPROVED
+                                    </span>
+
+                                    <span class="badge bg-danger" *ngIf="item.Status?.toLowerCase().includes('reject')">
+                                        REJECTED
+                                    </span>
+
+                                    <span class="badge bg-secondary"
+                                        *ngIf="item.Status?.toLowerCase().includes('cancel')">
+                                        {{ item.Status }}
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- COMPOFF TABLE -->
+                    <table class="table table-hover" *ngIf="selectedModalType === 'compoff'">
+
+                        <thead>
+                            <tr>
+                                <th>Resource Code</th>
+                                <th>Hours</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr *ngFor="let item of modalData">
+                                <td>{{ item.EmpCode }}</td>
+                                <td>{{ item.Hrs }}</td>
+                                <td>
+                                    <span class="badge bg-success" *ngIf="item.IsApproved">
+                                        Approved
+                                    </span>
+
+                                    <span class="badge bg-danger" *ngIf="item.IsRejected">
+                                        Rejected
+                                    </span>
+
+                                    <span class="badge bg-warning text-dark"
+                                        *ngIf="!item.IsApproved && !item.IsRejected">
+                                        Pending
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <!-- EMPTY STATE -->
+                <div *ngIf="modalData?.length === 0" class="text-center text-muted py-3">
+                    No data available
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer">
+                <button class="btn btn-outline" data-bs-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Employee Overview modal Modal -->
+<div class="modal fade modern-modal" id="employeeModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content glass-card">
+
+            <!-- HEADER -->
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-users"></i>
+
+                    {{
+                    selectedEmployeeType === 'new' ? 'New Joiners' :
+                    selectedEmployeeType === 'exit' ? 'Exits' :
+                    'Deactive Employees'
+                    }}
+                </h5>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- BODY -->
+            <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Employee Name</th>
+                            <th>Employee Code</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor="let emp of modalDataEmployeeverView">
+                            <td>{{ emp.FirstName || 'N/A' }}</td>
+                            <td>{{ emp.EmpCode || 'N/A' }}</td>
+                            <td>
+                                <span class="badge" [ngClass]="{
+            'bg-success': emp.EmpStatus?.toLowerCase() === 'active',
+            'bg-danger': emp.EmpStatus?.toLowerCase() === 'relieved',
+            'bg-warning text-dark': emp.EmpStatus?.toLowerCase() === 'deactive'
+        }">
+                                    {{ emp.EmpStatus || 'N/A' }}
+                                </span>
+                            </td>
+                        </tr>
+
+                        <tr *ngIf="modalDataEmployeeverView.length === 0">
+                            <td colspan="3" class="text-center text-muted">
+                                No data available
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+            <!-- FOOTER -->
+            <div class="modal-footer">
+                <button class="btn btn-outline" data-bs-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal Starts Here ALL -->

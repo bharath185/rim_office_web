@@ -1,0 +1,1171 @@
+<app-toast-message></app-toast-message>
+<div class="dis-fl-end">
+    <div class="heading-dash-sub">
+        <span>Master Creation</span>
+        <ol class="breadcrumb fade-left">
+            <li class="breadcrumb-item active dis-fl" aria-current="page">
+                <span class="breadC">Settings</span><span class="breadC"><i
+                        class="feather icon-chevron-right"></i></span><span class="breadC col-act">Master
+                    Creation</span>
+            </li>
+        </ol>
+    </div>
+    <div class="text-end">
+        <div class="top-nav d-flex gap-2">
+            <button *ngFor="let tab of tabs; let i = index" class="nav-btn" [class.active]="selectedTab === i"
+                (click)="selectTab(i)">
+                <i [class]="tab.icon"></i> {{ tab.label }}
+            </button>
+        </div>
+        <div class=" mb-2" *ngIf="selectedTab === 0">
+            <button class="HRMS_Create_Close text-end" type="button" (click)="toggleButton()"
+                *ngIf="controlAccessPage?.AddAccess === true">
+                <i class="feather" [ngClass]="isCardOpen ? 'icon-x' : 'icon-plus'"></i>&nbsp;
+                {{ isCardOpen ? 'Close' : 'Create' }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="divSpinner" *ngIf="isSpinner">
+    <div class="spinner"></div>
+</div>
+<ng-container *ngIf="selectedTab === 0 ">
+    <app-card [options]="false" *ngIf="isCardOpen">
+        <div class="col-md-12">
+            <h5 class="mb-3 form-heading text-start">Create Location</h5>
+            <form [formGroup]="companyCreationForm">
+                <div class="row">
+
+                    <div class="form-group col-md-3 ">
+                        <div class="d-flex align-items-end">
+                            <div class="flex-grow-1">
+                                <select class="form-control floating-input" formControlName="companyName"
+                                    id="departmentSelect" (change)="onCompanyChange($event)"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || companyCreationForm.get('companyName')?.touched) && companyCreationForm.get('companyName')?.invalid}">
+                                    <option value="" selected hidden></option>
+                                    <option value="createNew">Create New</option>
+                                    <option *ngFor="let company of getDDCompanyMain" [value]="company.CompId">
+                                        {{company.Company}}
+                                    </option>
+                                </select>
+                                <label for="departmentSelect" class="floating-label m-0" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || companyCreationForm.get('companyName')?.touched) && companyCreationForm.get('companyName')?.invalid}">
+                                    Company Name*
+                                </label>
+                                <div *ngIf="(isFormSubmitted || companyCreationForm.get('companyName')?.touched) && companyCreationForm.get('companyName')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="companyCreationForm.get('companyName')?.errors?.required">
+                                        Company is required.
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- <div class="ms-1">
+                                    <button type="button" class="btn btn-outline-primary btn-sm p-0"
+                                        style="height: 28px; width: 28px; display: flex; align-items: center; justify-content: center;"
+                                        title="Add Company" (click)="openAddModal('company')">
+                                        <i class="fa fa-plus" style="font-size: 12px;"></i>
+                                    </button>
+                                </div> -->
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <div class="d-flex align-items-end">
+                            <div class="flex-grow-1">
+                                <select class="form-control floating-input" formControlName="LegalEntity"
+                                    id="legalEntityId" (change)="onLegalEntityChange($event)"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || companyCreationForm.get('LegalEntity')?.touched) && (companyCreationForm.get('LegalEntity')?.invalid)}">
+
+                                    <option selected hidden value=""></option>
+                                    <option value="createNew">Create New</option>
+                                    <option *ngFor="let entity of getLegalEntity" [value]="entity.LEId">
+                                        {{entity.LegalEntity}}
+                                    </option>
+
+                                </select>
+                                <label for="legalEntityId" class="floating-label m-0" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || companyCreationForm.get('LegalEntity')?.touched) && companyCreationForm.get('LegalEntity')?.invalid}">
+                                    Entity*
+                                </label>
+                                <div *ngIf="(isFormSubmitted || companyCreationForm.get('LegalEntity')?.touched) && companyCreationForm.get('LegalEntity')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="companyCreationForm.get('LegalEntity')?.errors?.required">Entity is
+                                        required.</span>
+                                </div>
+                            </div>
+
+                            <!-- <div class="ms-1">
+                                    <button type="button" class="btn btn-outline-primary btn-sm p-0"
+                                        style="height: 28px; width: 28px; display: flex; align-items: center; justify-content: center;"
+                                        title="Add Company" (click)="openAddModal('entity')">
+                                        <i class="fa fa-plus" style="font-size: 12px;"></i>
+                                    </button>
+                                </div> -->
+
+                        </div>
+                    </div>
+
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <div class="d-flex align-items-end">
+                            <div class="flex-grow-1">
+                                <select class="form-control floating-input" formControlName="businessUnit"
+                                    style="left: 20px;" id="businessUnitId" (change)="onBusinessUnitChange($event)"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || companyCreationForm.get('businessUnit')?.touched) && (companyCreationForm.get('businessUnit')?.invalid)}">
+                                    <option disabled selected hidden value=""></option>
+                                    <option value="createNew">Create New</option>
+                                    <option *ngFor="let unitList of getBusinessUnitlist" [value]="unitList.BUId">
+                                        {{unitList.BusinessUnit}}
+                                    </option>
+                                </select>
+                                <label for="businessUnitId" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || companyCreationForm.get('businessUnit')?.touched) && companyCreationForm.get('businessUnit')?.invalid}">
+                                    Business Unit
+                                </label>
+                                <div *ngIf="(isFormSubmitted || companyCreationForm.get('businessUnit')?.touched) && companyCreationForm.get('businessUnit')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="companyCreationForm?.get('businessUnit')?.errors?.required">Business
+                                        Unit is required.</span>
+                                    <span
+                                        *ngIf="(companyCreationForm.get('businessUnit')?.errors?.minlength || companyCreationForm.get('businessUnit')?.errors?.maxlength)">
+                                        2 to 50 Charater are allowed.
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- <div class="ms-1">
+                                    <button type="button" class="btn btn-outline-primary btn-sm p-0"
+                                        style="height: 28px; width: 28px; display: flex; align-items: center; justify-content: center;"
+                                        title="Add Business Unit" (click)="openAddModal('businessUnit')">
+                                        <i class="fa fa-plus" style="font-size: 12px;"></i>
+                                    </button>
+                                </div> -->
+                        </div>
+                    </div>
+
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <input type="text" id="locationId" class="form-control floating-input"
+                            formControlName="location"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || companyCreationForm.get('location')?.touched) && companyCreationForm.get('location')?.invalid}" />
+                        <label for="locationId" class="floating-label" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || companyCreationForm.get('location')?.touched) && companyCreationForm.get('location')?.invalid}">
+                            location*
+                        </label>
+                        <div *ngIf="(isFormSubmitted || companyCreationForm.get('location')?.touched) &&companyCreationForm.get('location')?.invalid "
+                            class="invalid-feedback m-0">
+                            <span *ngIf="companyCreationForm.get('location')?.errors?.required">
+                                location is required.
+                            </span>
+                            <span
+                                *ngIf="companyCreationForm.get('location')?.errors?.minlength ||companyCreationForm.get('location')?.errors?.maxlength">
+                                2 to 50 characters are allowed.
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <input type="url" id="locationMapId" class="form-control floating-input"
+                            formControlName="locationMap" placeholder="https://maps.google.com/...">
+                        <label for="locationMapId" class="floating-label">Location Map</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <input type="text" id="ProbationPeriodId" class="form-control floating-input"
+                            formControlName="ProbationPeriod">
+                        <label for="ProbationPeriodId" class="floating-label" style="left: 20px;">Probation
+                            Period</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3" #weeklyDropdownContainer>
+                        <!-- Button -->
+                        <button class="form-control floating-input text-start" type="button"
+                            (click)="toggleWeeklyDropdown($event)" style="height: 40px;">
+                            {{ selectedWeeklyDays.length ? selectedWeeklyDays.join(', ') : 'Select Days' }}
+                        </button>
+                        <!-- Label -->
+                        <label class="floating-label" [class.floating]="selectedWeeklyDays.length" style="left: 20px;">
+                            Weekly Holiday
+                        </label>
+                        <!-- Dropdown -->
+                        <div class="weekly-dropdown-menu" *ngIf="weeklyDropdownOpen">
+                            <div class="weekly-dropdown-item" *ngFor="let day of weekDays">
+
+                                <input type="checkbox" [checked]="isDaySelected(day)"
+                                    [disabled]="!isDaySelected(day) && selectedWeeklyDays.length >= 3"
+                                    (change)="onDayChange(day)" />
+                                {{ day }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <input type="text" id="CompanyRegNoId" class="form-control floating-input"
+                            formControlName="CompanyRegNo" style="height: 40px">
+                        <label for="CompanyRegNoId" class="floating-label" style="left: 20px;">Company Reg. No.</label>
+                    </div>
+
+                    <div class="custom-date-input col-md-3 ">
+                        <input type="date" placeholder=" " formControlName="DateofReg" id="DateofRegID"
+                            class="form-control floating-input" />
+                        <label for="DateofRegID" class="floating-label">
+                            Date of Reg.
+                        </label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <input type="text" id="PFNoID" class="form-control floating-input" formControlName="PFNo"
+                            style="height: 40px">
+                        <label for="PFNoID" class="floating-label" style="left: 20px;">PF No.</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <input type="text" id="ESINoID" class="form-control floating-input" formControlName="ESINo"
+                            style="height: 40px">
+                        <label for="ESINoID" class="floating-label" style="left: 20px;">ESI No.</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <input type="text" id="TANNoID" class="form-control floating-input" formControlName="TANNo"
+                            style="height: 40px">
+                        <label for="TANNoID" class="floating-label" style="left: 20px;">TAN No.</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <input type="text" id="VATNoID" class="form-control floating-input" formControlName="VATNo"
+                            style="height: 40px">
+                        <label for="VATNoID" class="floating-label" style="left: 20px;">VAT No.</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <input type="text" id="PANNoID" class="form-control floating-input" formControlName="PANNo"
+                            style="height: 40px">
+                        <label for="PANNoID" class="floating-label" style="left: 20px;">PAN No.</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <input type="text" id="ServiceTaxNoId" class="form-control floating-input"
+                            formControlName="ServiceTaxNo" style="height: 40px">
+                        <label for="ServiceTaxNoId" class="floating-label" style="left: 20px;">ServiceTax No.</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <input type="text" id="GSTNoID" class="form-control floating-input" formControlName="GSTNo"
+                            style="height: 40px">
+                        <label for="GSTNoId" class="floating-label" style="left: 20px;">GST No.</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 position-relative">
+                        <label for="countryId" class="floating-label" style="left: 20px;">Country</label>
+                        <input type="text" id="countryId" class="form-control floating-input"
+                            placeholder="Search country..." [(ngModel)]="countrySearch" (input)="filterCountries()"
+                            autocomplete="off" formControlName="country" (focus)="showDropdown = true" />
+                        <ul class="dropdown-menu show country-dropdown-menu" *ngIf="showDropdown"
+                            style="max-height: 180px; max-width: 250px; overflow-y: auto;">
+                            <li *ngFor="let country of filteredCountries" class="dropdown-item"
+                                (click)="selectCountry(country)">
+                                {{ country }}
+                            </li>
+                            <li *ngIf="filteredCountries.length === 0" class="dropdown-item disabled text-muted">
+                                No data found.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <input type="text" id="stateId" class="form-control floating-input" formControlName="state">
+                        <label for="stateId" class="floating-label" style="left: 20px;">State</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <input type="text" id="cityId" class="form-control floating-input" formControlName="city">
+                        <label for="cityId" class="floating-label" style="left: 20px;">City</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <input type="text" id="postalCodeId" class="form-control floating-input"
+                            formControlName="postalCode">
+                        <label for="postalCodeId" class="floating-label" style="left: 20px;">Postal Code</label>
+                    </div>
+                    <div class="form-group floating-label-group col-md-3 position-relative">
+                        <label for="timezoneId" class="floating-label" style="left: 20px;">Time Zone</label>
+                        <input type="text" id="timezoneId" class="form-control floating-input"
+                            placeholder="Search time zone..." [(ngModel)]="timezoneSearch" (focus)="onTimezoneFocus()"
+                            (input)="filterTimezones()" autocomplete="off" formControlName="timezone"
+                            (focus)="showTimezoneDropdown = true" />
+                        <ul class="dropdown-menu show timezone-dropdown-menu" *ngIf="showTimezoneDropdown"
+                            style="max-height: 180px; max-width: 250px; overflow-y: auto;">
+                            <li *ngFor="let tz of filteredTimezones" class="dropdown-item" (click)="selectTimezone(tz)">
+                                {{ tz }}
+                            </li>
+                            <li *ngIf="filteredTimezones.length === 0" class="dropdown-item disabled text-muted">
+                                No data found.
+                            </li>
+                        </ul>
+                    </div>
+
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <textarea type="text" type="text" id="locationAddressId" class="form-control floating-input"
+                            formControlName="locationAddress" style="height: 40px"></textarea>
+                        <label for="locationAddressId" class="floating-label" style="left: 20px;">Address</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <textarea type="text" id="locationDescId" class="form-control floating-input"
+                            formControlName="locationDes" style="height: 40px"></textarea>
+                        <label for="locationDescId" class="floating-label" style="left: 20px;">Description</label>
+                    </div>
+
+                    <div class="d-flex flex-column flex-md-row justify-content-end gap-2">
+                        <button class="HRMS_secondary_button" type="button" (click)="resetData()"> <i
+                                class="feather icon-rotate-ccw"></i> Reset</button>
+                        <button class="HRMS_primary_button" type="submit" (click)="submitFormdataMain()"
+                            *ngIf="!isEdited">
+                            <span> <i class="feather icon-check"></i>
+                                Submit</span></button>
+                        <button class="HRMS_primary_button" type="submit" (click)="updateCompanyCreationForm()"
+                            *ngIf="isEdited"><i class="feather icon-check"></i> Update</button>
+                    </div>
+
+                </div>
+
+            </form>
+        </div>
+    </app-card>
+
+    <app-card [options]="false">
+
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-9">
+                    <h5 class="mb-0 form-heading">Locations by Company</h5>
+                </div>
+                <!-- <div class="col-md-3 text-end">
+                    <input type="text" class="form-control rad-50" #inputValue (keyup)="applyFilter($event)"
+                        placeholder="Search" id="serachInputId" />
+                </div> -->
+            </div>
+        </div>
+        <div class="col-md-12 d-flex flex-column pending-table-section mt-2">
+            <div class="table-responsive table-wrapper flex-grow-1" style="overflow-y: auto;">
+                <table class="table table-hover align-middle">
+                    <thead class="sticky-header table-light">
+                        <tr class="inner-shadow">
+                            <th class="">Company Name</th>
+                            <th class="">Entity Name</th>
+                            <th class="">Business Unit</th>
+                            <th class="">Location</th>
+                            <th class="">Description</th>
+                            <th class="">Action</th>
+                            <th class=""
+                                *ngIf="(controlAccessPage?.UpdateAccess === true) || (controlAccessPage?.DeleteAccess === true)">
+                                Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody *ngIf="!isTableData && rows?.length > 0">
+                        <tr
+                            *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                            <td class="">{{ row.Company }}</td>
+                            <td class="">{{ row.LegalEntity }}</td>
+                            <td class="">{{ row.BusinessUnit }}</td>
+                            <td class="">{{ row.Location }}</td>
+                            <td class="">{{ row.Description }}</td>
+                            <td style="cursor: pointer;" class="">
+                                <i class="action-icon action-edit feather icon-edit-2" title="Edit"
+                                    (click)="patchVlauesLocation(row,true)"
+                                    *ngIf="controlAccessPage?.UpdateAccess ==  true"></i>
+                                <i class="action-icon action-delete feather icon-trash-2"
+                                    *ngIf="controlAccessPage?.DeleteAccess === true" data-bs-toggle="modal"
+                                    data-bs-target="#deleteLocationModal" title="Delete"
+                                    (click)="getDeleteRow(row)"></i>
+                            </td>
+
+                            <td class=" align-middle p-0 m-0">
+                                <label class="toggle-switch m-0">
+                                    <input type="checkbox" [checked]="row.IsActive"
+                                        (change)="toggleIsActiveLocation(row)">
+                                    <span class="slider-content">
+                                        <i class="status-icon"
+                                            [ngClass]="row.IsActive ? 'fas fa-check-circle text-success' : 'fas fa-times-circle text-danger'">
+                                        </i>
+                                        <span class="status-text ms-1">
+                                            {{ row.IsActive ? 'Active' : 'Inactive' }}
+                                        </span>
+                                    </span>
+                                </label>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <div *ngIf="isTableData == true" class="text-center errorMassage">
+                        <span class="text-danger">{{errorMessage}}</span>
+                    </div>
+                </table>
+
+            </div>
+        </div>
+    </app-card>
+</ng-container>
+
+
+
+<!-- //////////////// This is for Modal /////////////////// -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-confirm modal-lg custom-modal-width">
+        <div class="modal-content">
+            <div class="text-end">
+                <button type="reset" class="btn-close m-1" data-bs-dismiss="modal" aria-label="Close"
+                    style="background-color: rgb(228, 208, 208);" (click)="closeModalReset()"></button>
+            </div>
+
+            <div class="modal-header flex-column py-0">
+                <h4 class="modal-title w-100">
+                    Add {{ currentAddType === 'company' ? 'Company' :
+                    currentAddType === 'entity' ? 'Entity' :
+                    currentAddType === 'businessUnit' ? 'Business Unit' :
+                    currentAddType === 'location' ? 'Location' : '' }}
+                </h4>
+            </div>
+
+            <div class="modal-body py-2">
+                <form [formGroup]="addForm">
+
+                    <!-- Company input -->
+                    <div *ngIf="currentAddType === 'company'" class="row">
+                        <div class="form-group floating-label-group col-md-3 ">
+                            <input type="text" id="companyNameId" class="form-control floating-input"
+                                formControlName="Company"
+                                [ngClass]="{'is-invalid': (isFormSubmittedAddForm || addForm.get('Company')?.touched) && addForm.get('Company')?.invalid}" />
+                            <label for="companyNameId" class="floating-label" style="left: 20px;"
+                                [ngClass]="{'text-danger': (isFormSubmittedAddForm || addForm.get('Company')?.touched) && addForm.get('Company')?.invalid}">
+                                Company Name *
+                            </label>
+                            <div *ngIf="(isFormSubmittedAddForm || addForm.get('Company')?.touched) &&addForm.get('Company')?.invalid "
+                                class="invalid-feedback m-0">
+                                <span *ngIf="addForm.get('Company')?.errors?.required">
+                                    Company Name is required.
+                                </span>
+                                <span
+                                    *ngIf="addForm.get('Company')?.errors?.minlength ||addForm.get('Company')?.errors?.maxlength">
+                                    2 to 50 characters are allowed.
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group floating-label-group col-md-3 ">
+                            <input type="text" id="companyCodeId" class="form-control floating-input"
+                                formControlName="CompanyCode" />
+                            <label for="companyCodeId" class="floating-label" style="left: 20px;">Company Code</label>
+                        </div>
+
+                        <!-- <div class="form-group floating-label-group col-md-3 ">
+                            <textarea type="text" id="locationMapId" class="form-control floating-input"
+                                formControlName="LocationMap" style="height: 40px;"></textarea>
+                            <label for="locationMapId" class="floating-label">Company Location</label>
+                        </div> -->
+
+                        <div class="form-group floating-label-group col-md-3 ">
+                            <textarea type="text" id="addressId" class="form-control floating-input"
+                                formControlName="Address" style="height: 40px;"></textarea>
+                            <label for="addressId" class="floating-label" style="left: 20px;">Address</label>
+                        </div>
+
+                        <div class="col-md-12 d-flex flex-column pending-table-section mt-2">
+                            <div class="table-responsive table-wrapper flex-grow-1" style="overflow-y: auto;">
+                                <table class="table table-hover align-middle">
+                                    <thead class="sticky-header table-light">
+                                        <tr class="inner-shadow">
+                                            <th class="">Name</th>
+                                            <th class="">Code</th>
+                                            <!-- <th class="">Location</th> -->
+                                            <th class="">Address</th>
+                                            <th class="">Action</th>
+                                            <th class="">Status</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody *ngIf="isTableDataAddCompany == false && modalgetDDCompany.length > 0">
+                                        <tr
+                                            *ngFor="let row of modalgetDDCompany | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                                            <td class="">{{ row.Company }}</td>
+                                            <td class="">{{ row.CompanyCode }}</td>
+                                            <!-- <td class="">
+                                                <ng-container *ngIf="row.LocationMap; else noMap">
+                                                    <a href="{{row.LocationMap}}" target="_blank"
+                                                        rel="noopener noreferrer" class="truncate"
+                                                        [title]="row.LocationMap">
+                                                        View Map
+                                                    </a>
+                                                </ng-container>
+                                                <ng-template #noMap>
+                                                    NA
+                                                </ng-template>
+                                            </td> -->
+                                            <td class=" truncate" [title]="row.Address">
+                                                {{ row.Address | slice:0:30 }}
+                                            </td>
+                                            <td style="cursor: pointer;" class="">
+                                                <i class="action-icon action-edit feather icon-edit-2" title="Edit"
+                                                    (click)="patchVlaues(row,true)"></i>
+                                                <i class="action-icon action-delete feather icon-trash-2"
+                                                    *ngIf="controlAccessPage?.DeleteAccess === true"
+                                                    data-bs-toggle="modal" data-bs-target="#deleteModal" title="Delete"
+                                                    (click)="confirmDelete(row)"></i>
+                                            </td>
+
+                                            <td class="text-center align-middle p-0 m-0"
+                                                *ngIf="controlAccessPage?.UpdateAccess ==  true">
+                                                <label class="toggle-switch m-0">
+                                                    <input type="checkbox" [checked]="row.IsActive"
+                                                        (change)="toggleIsActive(row)">
+                                                    <span class="slider-content">
+                                                        <i class="status-icon"
+                                                            [ngClass]="row.IsActive ? 'fas fa-check-circle text-success' : 'fas fa-times-circle text-danger'">
+                                                        </i>
+                                                        <span class="status-text ms-1">
+                                                            {{ row.IsActive ? 'Active' : 'Inactive' }}
+                                                        </span>
+                                                    </span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+                                    <div *ngIf="isTableDataAddCompany == true" class="text-center errorMassage">
+                                        <span class="text-danger">{{errorMessageCompany}}</span>
+                                    </div>
+
+                                </table>
+
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Entity fields -->
+                    <div *ngIf="currentAddType === 'entity'" class="row">
+
+                        <div class="form-group floating-label-group col-md-3">
+                            <select class="form-control floating-input" formControlName="CompId" id="CompanyIDfor"
+                                [ngClass]="{'is-invalid': (isFormSubmittedAddForm || addForm.get('CompId')?.touched) && (addForm.get('CompId')?.invalid)}">
+                                <option value="" selected hidden></option>
+                                <option *ngFor="let company of modalgetDDCompany" [value]="company.CompId">
+                                    {{company.Company}}</option>
+                            </select>
+
+                            <label for="CompanyIDfor" class="floating-label m-0" style="left: 20px;"
+                                [ngClass]="{'text-danger': (isFormSubmittedAddForm || addForm.get('CompId')?.touched) && addForm.get('CompId')?.invalid}">Company
+                                Name*</label>
+                            <div *ngIf="(isFormSubmittedAddForm || addForm.get('CompId')?.touched) && addForm.get('CompId')?.invalid"
+                                class="invalid-feedback m-0">
+                                <span *ngIf="addForm.get('CompId')?.errors?.required">Company is
+                                    required.</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group floating-label-group col-md-3 ">
+                            <input type="text" id="CompanyTypeId" class="form-control floating-input"
+                                formControlName="CompanyType">
+                            <label for="CompanyTypeId" class="floating-label" style="left: 20px;">Company Type</label>
+                        </div>
+
+                        <div class="form-group floating-label-group col-md-3 ">
+                            <input type="text" id="legalEntityId" class="form-control floating-input"
+                                formControlName="LegalEntity"
+                                [ngClass]="{'is-invalid': (isFormSubmittedAddForm || addForm.get('LegalEntity')?.touched) && addForm.get('LegalEntity')?.invalid}" />
+                            <label for="legalEntityId" class="floating-label" style="left: 20px;"
+                                [ngClass]="{'text-danger': (isFormSubmittedAddForm || addForm.get('LegalEntity')?.touched) && addForm.get('LegalEntity')?.invalid}">
+                                Entity Name *
+                            </label>
+                            <div *ngIf="(isFormSubmittedAddForm || addForm.get('LegalEntity')?.touched) &&addForm.get('LegalEntity')?.invalid"
+                                class="invalid-feedback m-0">
+                                <span *ngIf="addForm.get('LegalEntity')?.errors?.required">
+                                    Entity Name is required.
+                                </span>
+                                <span
+                                    *ngIf="addForm.get('LegalEntity')?.errors?.minlength ||addForm.get('LegalEntity')?.errors?.maxlength">
+                                    2 to 50 characters are allowed.
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group floating-label-group col-md-3 ">
+                            <input type="text" id="WebsiteId" class="form-control floating-input"
+                                formControlName="Website">
+                            <label for="WebsiteId" class="floating-label" style="left: 20px;">Website</label>
+                        </div>
+
+                        <div class="form-group floating-label-group col-md-3 ">
+                            <textarea type="text" id="descriptionId" class="form-control floating-input"
+                                formControlName="Description" style="height: 40px"></textarea>
+                            <label for="descriptionId" class="floating-label" style="left: 20px;">Description</label>
+                        </div>
+
+                        <!-- ================= LOGO ================= -->
+                        <div class="form-group floating-label-group col-md-3">
+                            <div class="upload-section">
+
+                                <label class="upload-box">
+
+                                    <i class="fas fa-camera upload-icon"></i>
+                                    <span>Upload Logo</span>
+
+                                    <!-- IMPORTANT: fully hidden input -->
+                                    <input type="file" class="file-input-hidden" accept=".jpg,.jpeg"
+                                        (change)="onFileSelected($event, 'LOGO')" />
+
+                                </label>
+
+                                <!-- file display -->
+                                <div class="file-item" *ngIf="selectedFiles.LOGO">
+                                    <span (click)="openFile('LOGO')" class="file-link">
+                                        {{ selectedFiles.LOGO?.name }}
+                                    </span>
+
+                                    <i class="fas fa-trash delete-icon" (click)="removeFile('LOGO')"></i>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- ================= LOGO WITH ADDRESS ================= -->
+                        <div class="form-group floating-label-group col-md-3">
+                            <div class="upload-section">
+
+                                <label class="upload-box">
+
+                                    <i class="fas fa-camera upload-icon"></i>
+                                    <span>Upload Logo With Address</span>
+
+                                    <input type="file" class="file-input-hidden" accept=".jpg,.jpeg"
+                                        (change)="onFileSelected($event, 'LOGOWITHADDRESS')" />
+
+                                </label>
+
+                                <div class="file-item" *ngIf="selectedFiles.LOGOWITHADDRESS">
+
+                                    <span (click)="openFile('LOGOWITHADDRESS')" class="file-link">
+                                        {{ selectedFiles.LOGOWITHADDRESS?.name }}
+                                    </span>
+
+                                    <i class="fas fa-trash delete-icon" (click)="removeFile('LOGOWITHADDRESS')"></i>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- ================= WEB APP LOGO ================= -->
+                        <div class="form-group floating-label-group col-md-3">
+                            <div class="upload-section">
+
+                                <label class="upload-box">
+
+                                    <i class="fas fa-camera upload-icon"></i>
+                                    <span>Upload WebApp Logo</span>
+
+                                    <input type="file" class="file-input-hidden" accept=".jpg,.jpeg"
+                                        (change)="onFileSelected($event, 'WEBAPPLOGO')" />
+
+                                </label>
+
+                                <div class="file-item" *ngIf="selectedFiles.WEBAPPLOGO">
+
+                                    <span (click)="openFile('WEBAPPLOGO')" class="file-link">
+                                        {{ selectedFiles.WEBAPPLOGO?.name }}
+                                    </span>
+
+                                    <i class="fas fa-trash delete-icon" (click)="removeFile('WEBAPPLOGO')"></i>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+
+
+                        <div class="col-md-12 d-flex flex-column pending-table-section mt-2">
+                            <div class="table-responsive table-wrapper flex-grow-1" style="overflow-y: auto;">
+                                <table class="table table-hover align-middle">
+                                    <thead class="sticky-header table-light">
+                                        <tr class="inner-shadow">
+                                            <th class="">Company</th>
+                                            <th class="">Entity</th>
+                                            <th class="">Description</th>
+                                            <!-- NEW LOGO COLUMNS -->
+                                            <th>Logo</th>
+                                            <th>Logo With Address</th>
+                                            <th>Web App Logo</th>
+                                            <th class="">Action</th>
+                                            <th class="">Status</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody *ngIf="isTableDataAddLegalEntity == false && modalLegalEntities.length > 0">
+                                        <tr
+                                            *ngFor="let row of modalLegalEntities | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                                            <td class="">{{ row.Company }}</td>
+                                            <td class="">{{ row.LegalEntity }}</td>
+                                            <td class=" truncate" [title]="row.Description">
+                                                {{ row.Description | slice:0:30 }}
+                                            </td>
+                                            <td>
+                                                <a *ngIf="row.Logo" [href]="getFullUrl(row.Logo)" target="_blank">
+                                                    View
+                                                </a>
+                                                <span *ngIf="!row.Logo">NA</span>
+                                            </td>
+
+                                            <td>
+                                                <a *ngIf="row.LogoWithAddress" [href]="getFullUrl(row.LogoWithAddress)"
+                                                    target="_blank">
+                                                    View
+                                                </a>
+                                                <span *ngIf="!row.LogoWithAddress">NA</span>
+                                            </td>
+                                            <td>
+                                                <a *ngIf="row.WebAppLogo" [href]="getFullUrl(row.WebAppLogo)"
+                                                    target="_blank">
+                                                    View
+                                                </a>
+                                                <span *ngIf="!row.WebAppLogo">NA</span>
+                                            </td>
+                                            <td style="cursor: pointer;" class="">
+                                                <i class="action-icon action-edit feather icon-edit-2" title="Edit"
+                                                    (click)="patchVlauesEntity(row,true)"></i>
+                                                <i class="action-icon action-delete feather icon-trash-2"
+                                                    *ngIf="controlAccessPage?.DeleteAccess === true"
+                                                    data-bs-toggle="modal" data-bs-target="#deleteModal" title="Delete"
+                                                    (click)="confirmDelete(row)"></i>
+                                            </td>
+
+                                            <td class=" align-middle p-0 m-0"
+                                                *ngIf="controlAccessPage?.UpdateAccess ==  true">
+                                                <label class="toggle-switch m-0">
+                                                    <input type="checkbox" [checked]="row.IsActive"
+                                                        (change)="toggleIsActiveEntity(row)">
+                                                    <span class="slider-content">
+                                                        <i class="status-icon"
+                                                            [ngClass]="row.IsActive ? 'fas fa-check-circle text-success' : 'fas fa-times-circle text-danger'">
+                                                        </i>
+                                                        <span class="status-text ms-1">
+                                                            {{ row.IsActive ? 'Active' : 'Inactive' }}
+                                                        </span>
+                                                    </span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <div *ngIf="isTableDataAddLegalEntity == true" class="text-center errorMassage">
+                                        <span class="text-danger">{{errorMessageLegalEntity}}</span>
+                                    </div>
+                                </table>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Business Unit input -->
+                    <div *ngIf="currentAddType === 'businessUnit'" class="row">
+
+                        <div class="form-group floating-label-group col-md-3">
+                            <select class="form-control floating-input" formControlName="CompNameBusiness"
+                                id="CompanyIDfor"
+                                [ngClass]="{'is-invalid': (isFormSubmittedAddForm || addForm.get('CompNameBusiness')?.touched) && (addForm.get('CompNameBusiness')?.invalid)}">
+                                <option value="" selected hidden></option>
+                                <option *ngFor="let company of modalgetDDCompany" [value]="company.CompId">
+                                    {{company.Company}}</option>
+                            </select>
+
+                            <label for="CompanyIDfor" class="floating-label m-0" style="left: 20px;"
+                                [ngClass]="{'text-danger': (isFormSubmittedAddForm || addForm.get('CompNameBusiness')?.touched) && addForm.get('CompNameBusiness')?.invalid}">Company
+                                Name*</label>
+                            <div *ngIf="(isFormSubmittedAddForm || addForm.get('CompNameBusiness')?.touched) && addForm.get('CompNameBusiness')?.invalid"
+                                class="invalid-feedback m-0">
+                                <span *ngIf="addForm.get('CompNameBusiness')?.errors?.required">Company is
+                                    required.</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group floating-label-group col-md-3">
+                            <select class="form-control floating-input" formControlName="legalEntityBusiness"
+                                id="entityIdforBusiness"
+                                [ngClass]="{'is-invalid': (isFormSubmittedAddForm || addForm.get('legalEntityBusiness')?.touched) && (addForm.get('legalEntityBusiness')?.invalid)}">
+                                <option value="" selected hidden></option>
+                                <option *ngFor="let entity of modalLegalEntities" [value]="entity.LEId">
+                                    {{entity.LegalEntity}}</option>
+                            </select>
+
+                            <label for="entityIdforBusiness" class="floating-label m-0" style="left: 20px;"
+                                [ngClass]="{'text-danger': (isFormSubmittedAddForm || addForm.get('legalEntityBusiness')?.touched) && addForm.get('legalEntityBusiness')?.invalid}">
+                                Entity*</label>
+                            <div *ngIf="(isFormSubmittedAddForm || addForm.get('legalEntityBusiness')?.touched) && addForm.get('legalEntityBusiness')?.invalid"
+                                class="invalid-feedback m-0">
+                                <span *ngIf="addForm.get('legalEntityBusiness')?.errors?.required">Entity is
+                                    required.</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group floating-label-group col-md-3 ">
+                            <input type="text" id="businessUnitNameId" class="form-control floating-input"
+                                formControlName="businessUnitName"
+                                [ngClass]="{'is-invalid': (isFormSubmittedAddForm || addForm.get('businessUnitName')?.touched) && addForm.get('businessUnitName')?.invalid}" />
+                            <label for="businessUnitNameId" class="floating-label" style="left: 20px;"
+                                [ngClass]="{'text-danger': (isFormSubmittedAddForm || addForm.get('businessUnitName')?.touched) && addForm.get('businessUnitName')?.invalid}">
+                                Business Unit*
+                            </label>
+                            <div *ngIf="(isFormSubmittedAddForm || addForm.get('businessUnitName')?.touched) &&addForm.get('businessUnitName')?.invalid"
+                                class="invalid-feedback m-0">
+                                <span *ngIf="addForm.get('businessUnitName')?.errors?.required">
+                                    Business Unit is required.
+                                </span>
+                                <span
+                                    *ngIf="addForm.get('businessUnitName')?.errors?.minlength ||addForm.get('businessUnitName')?.errors?.maxlength">
+                                    2 to 50 characters are allowed.
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group floating-label-group col-md-3 ">
+                            <textarea type="text" id="businessUnitDescId" class="form-control floating-input"
+                                formControlName="businessUnitDesc" style="height: 40px"></textarea>
+                            <label for="businessUnitDescId" class="floating-label"
+                                style="left: 20px;">Description</label>
+                        </div>
+
+                        <div class="col-md-12 d-flex flex-column pending-table-section mt-2">
+                            <div class="table-responsive table-wrapper flex-grow-1" style="overflow-y: auto;">
+                                <table class="table table-hover align-middle">
+                                    <thead class="sticky-header table-light">
+                                        <tr class="inner-shadow">
+                                            <th class="">Company</th>
+                                            <th class="">Entity</th>
+                                            <th class="">Business Unit</th>
+                                            <th class="">Description</th>
+                                            <th class="">Action</th>
+                                            <th class="">Status</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody
+                                        *ngIf="isTableDataAddBusinessUnit == false && modalBusinessUnitData.length > 0">
+                                        <tr
+                                            *ngFor="let row of modalBusinessUnitData | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                                            <td class="">{{ row.Company }}</td>
+                                            <td class="">{{ row.LegalEntity }}</td>
+                                            <td class="">{{ row.BusinessUnit }}</td>
+                                            <td class=" truncate" [title]="row.Description">
+                                                {{ row.Description | slice:0:30 }}
+                                            </td>
+                                            <td style="cursor: pointer;" class="">
+                                                <i class="action-icon action-edit feather icon-edit-2" title="Edit"
+                                                    (click)="patchVlauesBusiness(row,true)"></i>
+                                                <i class="action-icon action-delete feather icon-trash-2"
+                                                    *ngIf="controlAccessPage?.DeleteAccess === true"
+                                                    data-bs-toggle="modal" data-bs-target="#deleteModal" title="Delete"
+                                                    (click)="confirmDelete(row)"></i>
+                                            </td>
+
+                                            <td class=" align-middle p-0 m-0"
+                                                *ngIf="controlAccessPage?.UpdateAccess ==  true">
+                                                <label class="toggle-switch m-0">
+                                                    <input type="checkbox" [checked]="row.IsActive"
+                                                        (change)="toggleIsActiveBusiness(row)">
+                                                    <span class="slider-content">
+                                                        <i class="status-icon"
+                                                            [ngClass]="row.IsActive ? 'fas fa-check-circle text-success' : 'fas fa-times-circle text-danger'">
+                                                        </i>
+                                                        <span class="status-text ms-1">
+                                                            {{ row.IsActive ? 'Active' : 'Inactive' }}
+                                                        </span>
+                                                    </span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <div *ngIf="isTableDataAddBusinessUnit == true" class="text-center errorMassage">
+                                        <span class="text-danger">{{errorMessageBusinessUnit}}</span>
+                                    </div>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Location input -->
+                    <div *ngIf="currentAddType === 'location'">
+                        <label>Location</label>
+                        <input formControlName="locationName" class="form-control" />
+                    </div>
+
+                    <!-- Validation and feedback can be added per input -->
+                    <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                            (click)="closeModalReset()"><i class="feather icon-slash"></i>&nbsp;Cancel</button>
+                        <button type="submit" class="btn btn-primary" *ngIf="!isEdited" (click)="submitAddForm()">
+                            <span *ngIf="controlAccessPage?.AddAccess === true"><i
+                                    class="feather icon-plus"></i>&nbsp;Add</span>
+                        </button>
+                        <button type="submit" class="btn btn-primary" *ngIf="isEdited" (click)="updateAddForm()">
+                            <span><i class="feather icon-check"></i>&nbsp;Update</span>
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- //////////////// This is for Modal /////////////////// -->
+
+
+<!-- this is delete modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-confirm">
+        <div class="modal-content">
+            <div class="text-end">
+                <button type="reset" class="btn-close" data-bs-dismiss="modal" aria-label="Close" #closeModalDelete
+                    style="background-color: rgb(228, 208, 208);"></button>
+            </div>
+            <div class="modal-header flex-column py-0 ">
+                <div class="icon-box" *ngIf="!isRecordDeletedCommon">
+                    <i class="fas fa-times checkmark_check"></i>
+                </div>
+                <div class="modal-wrapper" *ngIf="isRecordDeletedCommon"> <svg class="checkmark"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                </div>
+                <h4 class="modal-title w-100 text-center">Are you sure?</h4>
+            </div>
+            <div class="modal-body py-0 text-center">
+                <p>Do you really want to <strong>delete </strong>these records?. This process cannot be undone.</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger" (click)="deleteRecord()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- this is end of delete modal -->
+
+<!-- this is delete Location modal -->
+<div class="modal fade" id="deleteLocationModal" tabindex="-1" aria-labelledby="deleteLocationModalLabel"
+    data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-confirm">
+        <div class="modal-content">
+            <div class="text-end">
+                <button type="reset" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    #closeModalDeleteLocation style="background-color: rgb(228, 208, 208);"></button>
+            </div>
+            <div class="modal-header flex-column py-0 ">
+                <div class="icon-box" *ngIf="!isRecordDeleted">
+                    <i class="fas fa-times checkmark_check"></i>
+                </div>
+                <div class="modal-wrapper" *ngIf="isRecordDeleted"> <svg class="checkmark"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                </div>
+                <h4 class="modal-title w-100 text-center">Are you sure?</h4>
+            </div>
+            <div class="modal-body py-0 text-center">
+                <p>Do you really want to <strong>delete </strong>these records?. This process cannot be undone.</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger" (click)="deleteLocationRecord()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- this is end of delete Location modal -->
+
+<ng-container *ngIf="selectedTab === 1">
+    <app-holidays></app-holidays>
+</ng-container>
+
+<ng-container *ngIf="selectedTab === 2">
+    <app-emp-financial-details></app-emp-financial-details>
+</ng-container>
+
+<ng-container *ngIf="selectedTab === 3">
+
+    <app-card [options]="false">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <h5 class="form-heading">Calendar Year</h5>
+            </div>
+            <div class="col-md-6 text-end">
+                <button class="HRMS_primary_button" (click)="openCalendarModal()">
+                    <i class="feather icon-plus"></i> Add Year
+                </button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody *ngIf="calendarYears.length > 0">
+                    <tr *ngFor="let row of calendarYears">
+                        <td>{{ row.Year }}</td>
+
+                        <td>
+                            <span [ngClass]="row.IsActive ? 'text-success' : 'text-danger'">
+                                {{ row.IsActive ? 'Active' : 'Inactive' }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <i class="feather icon-edit action-icon" (click)="editCalendarYear(row)"></i>
+
+                            <i class="feather icon-trash-2 action-icon text-danger"
+                                (click)="deleteCalendarYear(row)"></i>
+                        </td>
+                    </tr>
+                </tbody>
+
+                <tbody *ngIf="calendarYears.length === 0">
+                    <tr>
+                        <td colspan="3" class="text-center text-danger">No Data Found</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </app-card>
+
+
+    <!-- ================= FINANCIAL YEAR ================= -->
+
+    <app-card [options]="false" class="mt-3">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <h5 class="form-heading">Financial Year</h5>
+            </div>
+            <div class="col-md-6 text-end">
+                <button class="HRMS_primary_button" (click)="openFinancialModal()">
+                    <i class="feather icon-plus"></i> Add Financial Year
+                </button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Financial Year</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody *ngIf="financialYears.length > 0">
+                    <tr *ngFor="let row of financialYears">
+                        <td>{{ row.FinancialYear }}</td>
+
+                        <td>
+                            <span [ngClass]="row.IsActive ? 'text-success' : 'text-danger'">
+                                {{ row.IsActive ? 'Active' : 'Inactive' }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <i class="feather icon-edit action-icon" (click)="editFinancialYear(row)"></i>
+
+                            <i class="feather icon-trash-2 action-icon text-danger"
+                                (click)="deleteFinancialYear(row)"></i>
+                        </td>
+                    </tr>
+                </tbody>
+
+                <tbody *ngIf="financialYears.length === 0">
+                    <tr>
+                        <td colspan="3" class="text-center text-danger">No Data Found</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </app-card>
+
+</ng-container>
+
+
+
+<!-- Calendar Year Modal -->
+<div class="modal fade show" *ngIf="showCalendarModal" style="display:block; background: rgba(0,0,0,0.5);">
+
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    {{ isCalendarEdit ? 'Edit' : 'Add' }} Calendar Year
+                </h5>
+                <button class="btn-close" (click)="closeCalendarModal()"></button>
+            </div>
+
+            <div class="modal-body">
+                <input type="number" class="form-control" [(ngModel)]="calendarYearForm.Year"
+                    placeholder="Enter Year (e.g. 2025)" />
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" (click)="closeCalendarModal()">Cancel</button>
+
+                <button class="btn btn-primary" (click)="saveCalendarYear()">
+                    {{ isCalendarEdit ? 'Update' : 'Add' }}
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade show" *ngIf="showFinancialModal" style="display:block; background: rgba(0,0,0,0.5);">
+
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    {{ isFinancialEdit ? 'Edit' : 'Add' }} Financial Year
+                </h5>
+                <button class="btn-close" (click)="closeFinancialModal()"></button>
+            </div>
+
+            <div class="modal-body">
+                <input type="text" class="form-control" [(ngModel)]="financialYearForm.FinancialYear"
+                    placeholder="e.g. 2025-2026" />
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" (click)="closeFinancialModal()">Cancel</button>
+
+                <button class="btn btn-primary" (click)="saveFinancialYear()">
+                    {{ isFinancialEdit ? 'Update' : 'Add' }}
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<ng-container *ngIf="selectedTab === 4">
+
+</ng-container>

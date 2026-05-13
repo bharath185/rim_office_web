@@ -1,0 +1,185 @@
+<app-toast-message></app-toast-message>
+<div class="divSpinner" *ngIf="isSpinner">
+    <div class="spinner"></div>
+</div>
+<fieldset class="border p-3 mb-3 custom-fieldset">
+    <!-- <div class="container"> -->
+        <div class="col-md-12">
+            <form [formGroup]="empSalSummaryForm">
+                <div class="row">
+                    <!-- <div class="form-group floating-label-group col-md-3 inputPadding">
+                        <select class="form-control floating-input" formControlName="Company" id="companyId"
+                            (change)="calllegalEntity($event)">
+                            <option value="" selected hidden></option>
+                            <option *ngFor="let company of getDDCompany" [value]="company.CompId">
+                                {{company.Company}}</option>
+                        </select>
+                        <label for="companyId" class="floating-label m-0" style="left: 20px;">Company</label>
+                    </div> -->
+
+                    <div class="form-group floating-label-group col-md-3 inputPadding">
+                        <select class="form-control floating-input" formControlName="LegalEntity" id="entityId"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || empSalSummaryForm.get('LegalEntity')?.touched) && (empSalSummaryForm.get('LegalEntity')?.invalid)}">
+                            <!-- (change)="getBusinessUnit()" -->
+                            <option selected hidden value=""></option>
+                            <option *ngFor="let entity of getLegalEntity" [value]="entity.LEId">
+                                {{entity.LegalEntity}}</option>
+                        </select>
+                        <label for="entityId" class="floating-label m-0" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || empSalSummaryForm.get('LegalEntity')?.touched) && empSalSummaryForm.get('LegalEntity')?.invalid}">
+                            Entity</label>
+                        <!-- <div *ngIf="(isFormSubmitted || empSalSummaryForm.get('LegalEntity')?.touched) && empSalSummaryForm.get('LegalEntity')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="empSalSummaryForm.get('LegalEntity')?.errors?.required">Entity
+                                is required.</span>
+                        </div> -->
+                    </div>
+
+                    <!-- <div class="form-group floating-label-group col-md-3 inputPadding">
+                        <select class="form-control floating-input" formControlName="BusinessUnit"
+                            (change)="callLocation()" style="left: 20px;" id="businessId">
+                            <option disabled selected hidden value=""></option>
+                            <option *ngFor="let unitList of getBusinessUnitlist" [value]="unitList.BUId">
+                                {{unitList.BusinessUnit}}</option>
+                        </select>
+                        <label for="businessId" class="floating-label m-0">Business Unit</label>
+                    </div> -->
+
+                    <div class="form-group floating-label-group col-md-3 inputPadding">
+                        <select class="form-control floating-input" formControlName="Location" style="left: 20px;"
+                            id="locationId">
+                            <option disabled selected hidden value=""></option>
+                            <option *ngFor="let location of getLocations" [value]="location.LocationId">
+                                {{location.Location}}</option>
+                        </select>
+                        <label for="locationId" class="floating-label m-0">Location</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 inputPadding">
+                        <select class="form-control floating-input" formControlName="DeptName" id="depNameId"
+                            (change)="callDDDesignation($event)">
+                            <option value="" selected hidden></option>
+                            <option *ngFor="let option of getDepartementName" [value]="option['DeptId']">
+                                {{ option['DeptName']['length'] > 20 ? (option['DeptName'] | slice: 0:20) + '...' :
+                                option['DeptName'] }}
+                            </option>
+                        </select>
+                        <label for="depNameId" class="floating-label m-0" style="left: 20px;">Department</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 inputPadding">
+                        <select class="form-control floating-input" formControlName="Designation" id="designationId">
+                            <option value="" selected hidden></option>
+                            <option *ngFor="let option of getDepartementRole" [value]="option['DesignationId']">
+                                {{ option.Designation.length > 17 ? (option.Designation | slice: 0:17) + '...' :
+                                option.Designation }}
+                            </option>
+                        </select>
+                        <label for="designationId" class="floating-label m-0" style="left: 20px;">Designation</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 inputPadding">
+                        <select class="form-control floating-input" id="yearDDId" [(ngModel)]="selectedYear"
+                            (change)="onYearChange()" formControlName="year">
+                            <option value="" disabled selected>Select Year</option>
+                            <option *ngFor="let y of years" [ngValue]="y">{{ y }}</option>
+                        </select>
+                        <label for="yearDDId" class="floating-label" style="left: 20px;">Year</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 inputPadding">
+                        <select class="form-control floating-input" id="monthDDId" [(ngModel)]="selectedMonth"
+                            formControlName="month">
+                            <option value="" disabled selected>Select Month</option>
+                            <option *ngFor="let m of months" [ngValue]="m">{{ m.name }}</option>
+                        </select>
+                        <label for="monthDDId" class="floating-label" style="left: 20px;">Month</label>
+                    </div>
+                </div>
+
+
+
+                <div style="display: flex;justify-content: end;">
+                    <button class="HRMS_secondary_button" type="button" (click)="resetData()"><i
+                            class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+                    <button class="HRMS_primary_button " type="submit" (click)="filterData()"><i
+                            class="feather icon-filter"></i>&nbsp;Filter</button>
+                </div>
+            </form>
+        <!-- </div> -->
+    </div>
+</fieldset>
+
+<app-card [options]="false">
+    <div class="row align-items-center my-2">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 form-heading">List Of Employees</h5>
+
+                <div class="d-flex align-items-center gap-2">
+                    <input type="text" class="form-control rad-50" [(ngModel)]="searchValue" (keyup)="applyFilter()"
+                        placeholder="Search" id="serachInputId" />
+
+                    <div class="export-container position-relative">
+                        <button class="export-button d-flex align-items-center" (click)="toggleDropdownExport()">
+                            <i class="feather icon-upload me-1"></i> Export
+                            <!-- <i class="fas fa-chevron-down ms-1"></i> -->
+                        </button>
+
+                        <div class="dropdown-content position-absolute end-0 mt-1" *ngIf="dropdownVisible"
+                            style="z-index: 999;">
+                            <div class="dropdown-item" (click)="exportFile('excel')">
+                                <i class="fas fa-file-excel me-1"></i> Excel
+                            </div>
+                            <div class="dropdown-item" (click)="exportFile('pdf')">
+                                <i class="fas fa-file-pdf me-1"></i> PDF
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive table-wrapper flex-grow-1" style="overflow-y: auto;">
+        <table class="table table-hover align-middle">
+            <thead class="sticky-header table-light">
+                <tr class="inner-shadow">
+                    <th class="">Name</th>
+                    <th class="">Code</th>
+                    <th class="">Month&Year</th>
+                    <th class="">Location</th>
+                    <th class="">Total Days</th>
+                    <th class="">Working Days</th>
+                    <th class="">Paid Leave Days(CL)</th>
+                    <th class="">Paid Leave Days(EL)</th>
+                    <th class="">LOP Days</th>
+                    <th class="">LOP Amt.</th>
+                    <th class="">Arrears</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="isTableData == false && rows.length > 0">
+                <tr *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                    <td>{{row.EmpName}}</td>
+                    <td>{{row.EmpCode}}</td>
+                    <td>{{ row.Month }} & {{ row.Year }}</td>
+                    <td>{{row.Location}}</td>
+                    <td>{{row.TotalDays}}</td>
+                    <td>{{row.WorkingDays}}</td>
+                    <td>{{row.PaidLeaveDaysCL}}</td>
+                    <td>{{row.PaidLeaveDaysEL}}</td>
+                    <td>{{row.LOPDays}}</td>
+                    <td>{{row.LOPAmt}}</td>
+                    <td>{{row.Arrears}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="isTableData == true" class="text-center errorMassage">
+            <span class="text-danger text-center">{{errorMessage}}</span>
+        </div>
+    </div>
+
+
+
+</app-card>

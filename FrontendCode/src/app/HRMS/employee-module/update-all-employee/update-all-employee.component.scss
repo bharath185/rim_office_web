@@ -1,0 +1,487 @@
+// **********This is for Pannel***********
+.expansion-panel {
+  border: 1px solid #ddd;
+  margin: 10px 0;
+  border-radius: 5px; // overflow: hidden;
+
+}
+
+.panel-header {
+  padding: 18px 15px !important;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(128, 128, 128, 0.185);
+
+}
+
+.panel-title {
+  flex-grow: 1;
+
+  h5 {
+    font-size: medium;
+    font-weight: 400;
+  }
+}
+
+.panel-controls {
+  display: flex;
+  align-items: center;
+}
+
+.panel-controls span {
+  margin-left: 10px;
+}
+
+.panel-body {
+  padding: 15px;
+  border-top: 1px solid #ddd;
+}
+
+// **********This is for Pannel***********
+
+// ************This is for Photo show*********
+.custom-file-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.custom-file-upload label {
+  background: white;
+  color: #072f5f;
+  padding: 3px 21px;
+  font-size: 13px;
+  border: 1px solid #072f5f38;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.custom-file-upload input[type="file"] {
+  display: none;
+}
+
+.preview-img {
+  max-width: 64px;
+  max-height: 73px;
+  border-radius: 10%;
+  margin-top: 2px;
+}
+
+// ************This is for Photo show*********
+
+.dropdown-icon {
+  position: absolute;
+  right: 10px;
+  top: 23%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+
+.dropdown-item {
+  cursor: pointer;
+}
+
+.dropdown .dropdown-item {
+  padding: 5px 6px;
+}
+
+// ************this is for custome date*******
+.custom-date-input {
+  position: relative;
+}
+
+.custom-date-input input {
+  border-radius: 4px;
+  padding: 3px 5px;
+  width: 100%;
+  outline: none;
+  font-size: 11px;
+  padding-top: 16px;
+  line-height: 1.9;
+}
+
+.custom-date-input input::placeholder {
+  font-size: 5px;
+  color: #aaa;
+}
+
+.custom-date-input label {
+  position: absolute;
+  color: #888;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.custom-date-input input:focus+label,
+.custom-date-input input:not(:placeholder-shown)+label {
+  top: 1px;
+  left: 20px;
+  font-size: 12px;
+}
+// ************this is for custome date*******
+
+
+// **********This is for table things********
+.inner-shadow {
+  .employeeId {
+    width: 15%;
+  }
+
+  .companyName {
+    width: 20%;
+  }
+
+  .startDate {
+    width: 15%;
+  }
+
+  .endDate {
+    width: 15%;
+  }
+
+  .description {
+    width: 20%;
+  }
+
+  .path {
+    width: 15%;
+  }
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 7px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  font-size: 13px;
+
+}
+
+th {
+  background-color: #2d5483;
+  color: #ffffff;
+
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+// **********This is for table things********
+.error-message {
+  font-size: 10px;
+  margin: 0px;
+}
+
+::ng-deep.pcoded-content {
+  position: relative;
+  display: block;
+  padding: 0px !important;
+  padding-left: 25px !important;
+  padding-right: 25px !important;
+}
+
+.pcoded-header {
+  .card {
+    margin: 0px !important;
+  }
+}
+
+.uplaodIcon {
+  color: #072f5f;
+  background: none;
+  border: none;
+  margin: 2px;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+}
+
+/* image-upload.component.css */
+.img-thumbnail {
+  max-width: 50%;
+  height: auto;
+}
+
+.fileInput {
+  background: white;
+  color: #072f5f;
+  padding: 3px 21px;
+  font-size: 13px;
+  border: 1px solid #072f5f38;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.uploadIcon {
+  text-align: center;
+  margin: 0px;
+  margin-top: 7px;
+  margin-left: 8px;
+  color: #072f5f;
+  font-size: 1.1rem;
+}
+
+.disabled-icon {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+input[type="file"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.underlined {
+  border-bottom: 1px solid black;
+  padding-bottom: 1px;
+  margin-bottom: 2rem !important;
+  font-weight: 400;
+}
+
+.payslipButton {
+  background: white;
+  color: #072f5f;
+  padding: 3px 21px;
+  font-size: 13px;
+  border: 1px solid #072f5f38;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.payslipCrossButton {
+  border-color: #072f5f;
+  color: #072f5f;
+  border-radius: 0px;
+  padding: 0px 4px 0px 4px;
+  margin-left: 12px;
+}
+
+.invalid-feedback {
+  span {
+    font-size: 10px;
+  }
+}
+
+// This is for New Modal Start
+.modal-confirm {
+  color: #636363;
+  width: 400px;
+}
+
+.modal-confirm .modal-content {
+  padding: 20px;
+  border-radius: 5px;
+  border: none;
+  text-align: center;
+  font-size: 14px;
+}
+
+.modal-confirm .modal-header {
+  border-bottom: none;
+  position: relative;
+}
+
+.modal-confirm h4 {
+  text-align: center;
+  font-size: 20px;
+  margin: 10px 0 0px;
+}
+
+.modal-confirm .close {
+  position: absolute;
+}
+
+.modal-confirm .modal-body {
+  color: #999;
+}
+
+.modal-confirm .modal-footer {
+  border: none;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.modal-confirm .modal-footer a {
+  color: #999;
+}
+
+.modal-confirm .icon-box {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+  border-radius: 50%;
+  z-index: 9;
+  text-align: center;
+  border: 3px solid #f15e5e;
+}
+
+.modal-confirm .icon-box i {
+  color: #f15e5e;
+  font-size: 46px;
+  display: inline-block;
+  margin-top: 13px;
+}
+
+.modal-confirm .btn,
+.modal-confirm .btn:active {
+  color: #fff;
+  border-radius: 4px;
+  background: #60c7c1;
+  text-decoration: none;
+  transition: all 0.4s;
+  line-height: normal;
+  min-width: 120px;
+  border: none;
+  min-height: 40px;
+  border-radius: 3px;
+  margin: 0 5px;
+}
+
+.modal-confirm .btn-secondary {
+  background: #c1c1c1;
+}
+
+.modal-confirm .btn-secondary:hover,
+.modal-confirm .btn-secondary:focus {
+  background: #a8a8a8;
+}
+
+.modal-confirm .btn-danger {
+  background: #f15e5e;
+}
+
+.modal-confirm .btn-danger:hover,
+.modal-confirm .btn-danger:focus {
+  background: #ee3535;
+}
+
+.trigger-btn {
+  display: inline-block;
+  margin: 100px auto;
+}
+
+.icon-box:before {
+  content: none !important;
+}
+
+.btn-close {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.btn-close:hover {
+  transform: rotate(90deg);
+  opacity: 0.7;
+}
+
+
+.modal-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.checkmark__circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: #7ac142;
+  fill: none;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards
+}
+
+.checkmark {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 2;
+  stroke: #fff;
+  stroke-miterlimit: 10;
+  margin: 10% auto;
+  box-shadow: inset 0px 0px 0px #7ac142;
+  animation: fill .2s ease-in-out .4s forwards, scale .3s ease-in-out .9s both
+}
+
+.checkmark__check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: stroke 0.2s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards
+}
+
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0
+  }
+}
+
+@keyframes scale {
+
+  0%,
+  100% {
+    transform: none
+  }
+
+  50% {
+    transform: scale3d(1.1, 1.1, 1)
+  }
+}
+
+@keyframes fill {
+  100% {
+    box-shadow: inset 0px 0px 0px 30px #7ac142
+  }
+}
+
+// This is for New Modal End
+
+@media only screen and (max-width: 991px) {
+  ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+    margin-left: 0px;
+    margin-top: 57px !important;
+  }
+}
+
+.custom-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  border: 1px solid black;
+}
+
+.same-address-label {
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.same-address-wrapper {
+  background: #f8f9fa;
+  padding: 8px 12px;
+  border-radius: 6px;
+  width: fit-content;
+}

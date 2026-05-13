@@ -1,0 +1,203 @@
+<app-toast-message></app-toast-message>
+<div class="divSpinner" *ngIf="isSpinner">
+    <div class="spinner"></div>
+</div>
+
+<!-- <app-card [options]="false"> -->
+
+<form [formGroup]="nomineeForm" (ngSubmit)="submitForm()">
+    <div formArrayName="nominees">
+        <div *ngFor="let nominee of nominees.controls; let i = index" [formGroupName]="i"
+            class="border p-3 mb-3 rounded bg-light">
+            <h5>Nominee {{ i + 1 }}</h5>
+            <div class="row">
+                <div class="form-group floating-label-group col-md-3 inputPadding">
+                    <input type="text" class="form-control floating-input" formControlName="fullName" id="fullNameId"
+                        placeholder=" "  (input)="convertToUppercase($event,'fullName')"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || nominee.get('fullName')?.touched) && nominee.get('fullName')?.invalid}">
+                    <label for="fullNameId" class="floating-label" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || nominee.get('fullName')?.touched) && nominee.get('fullName')?.invalid}">Full
+                        Name*</label>
+                    <div *ngIf="(isFormSubmitted || nominee.get('fullName')?.touched) && nominee.get('fullName')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="nominee.get('fullName')?.errors?.['required']" class="px-1">
+                            Full Name is required.
+                        </span>
+                        <span *ngIf="nominee.get('fullName')?.errors?.['pattern']">
+                            Only alphabets and spaces are allowed.
+                        </span>
+                        <span
+                            *ngIf="nominee.get('fullName')?.errors?.['minlength'] || nominee.get('fullName')?.errors?.['maxlength']">
+                            2 to 50 Characters are allowed.
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3 inputPadding">
+                    <input type="text" class="form-control floating-input" formControlName="relationshipToEmp"
+                        id="relationshipToEmpId" placeholder=" "
+                        [ngClass]="{'is-invalid': (isFormSubmitted || nominee.get('relationshipToEmp')?.touched) && (nominee.get('relationshipToEmp')?.invalid)}">
+                    <label for="relationshipToEmpId" class="floating-label" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || nominee.get('relationshipToEmp')?.touched) && nominee.get('relationshipToEmp')?.invalid}">
+                        Relationship to Employee*</label>
+                    <div *ngIf="(isFormSubmitted || nominee.get('relationshipToEmp')?.touched) && nominee.get('relationshipToEmp')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="nominee.get('relationshipToEmp')?.errors?.['required']" class="px-1 ">Relationship
+                            to
+                            Employee
+                            is required.</span>
+                        <span *ngIf="nominee.get('relationshipToEmp')?.errors?.['pattern']">Only alphabets
+                            and
+                            spaces are allowed.</span>
+                        <span
+                            *ngIf="(nominee.get('relationshipToEmp')?.errors?.['minlength'] || nominee.get('relationshipToEmp')?.errors?.['maxlength'])">2
+                            to 50 Charater are allowed.</span>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3 inputPadding">
+                    <div class="custom-date-input">
+                        <input type="date" placeholder=" " formControlName="DOB" class="form-control floating-input"
+                            [max]="today" id="dateOfBId"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || nominee.get('DOB')?.touched) && (nominee.get('DOB')?.invalid)}" />
+                        <label for="dateOfBId" class="floating-label"
+                            [ngClass]="{'text-danger': (isFormSubmitted || nominee.get('DOB')?.touched) && (nominee.get('DOB')?.invalid)}">
+                            Date Of Birth*
+                        </label>
+                        <div *ngIf="(isFormSubmitted || nominee.get('DOB')?.touched) && nominee.get('DOB')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="nominee.get('DOB')?.errors?.['required']" class="px-1">Date Of
+                                Birth is required.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3 ">
+                    <select class="form-control floating-input" formControlName="Gender" id="genderId"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || nominee.get('Gender')?.touched) && (nominee.get('Gender')?.invalid)}">
+                        <option selected hidden value="" disabled></option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Transgender">Transgender</option>
+                        <option value="Others">Others</option>
+                    </select>
+                    <label for="genderId" class="floating-label" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || nominee.get('Gender')?.touched) && (nominee.get('Gender')?.invalid)}">Gender*</label>
+                    <div *ngIf="(isFormSubmitted || nominee.get('Gender')?.touched) && nominee.get('Gender')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="nominee.get('Gender')?.errors?.['required']" class="px-1 ">Gender
+                            is required.</span>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3 inputPadding">
+                    <input type="text" class="form-control floating-input  " formControlName="contactNo"
+                        id="contactNoId" placeholder=" " (keypress)="handleAlphaChar($event)" minlength="10"
+                        maxlength="10"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || nominee.get('contactNo')?.touched) && (nominee.get('contactNo')?.invalid)}">
+                    <label for="contactNoId" class="floating-label" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || nominee.get('contactNo')?.touched) && (nominee.get('contactNo')?.invalid)}">
+                        Contact Number*</label>
+                    <div *ngIf="(isFormSubmitted || nominee.get('contactNo')?.touched) && nominee.get('contactNo')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="nominee?.get('contactNo')?.errors?.['required']">Contact
+                            Number is
+                            required.</span>
+                        <span *ngIf="nominee?.get('contactNo')?.errors?.['pattern']">Invalid Mobile
+                            Number.</span>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3 inputPadding">
+                    <input type="text" class="form-control floating-input" formControlName="email" id="emailId"
+                        placeholder=" "
+                        [ngClass]="{'is-invalid': nominee.get('email')?.invalid && nominee.get('email')?.touched}">
+                    <label for="emailId" class="floating-label" style="left: 20px;"
+                        [ngClass]="{'is-invalid': nominee.get('email')?.invalid && nominee.get('email')?.touched}">
+                        Email
+                    </label>
+                    <div *ngIf="nominee.get('email')?.invalid && nominee.get('email')?.touched"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="nominee.get('email')?.errors?.['pattern']">Invalid
+                            Email ID</span>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3 inputPadding">
+                    <input type="text" class="form-control floating-input  " formControlName="percentageShare"
+                        id="percentageShareId" placeholder=" "
+                        [ngClass]="{'is-invalid': (isFormSubmitted || nominee.get('percentageShare')?.touched) && (nominee.get('percentageShare')?.invalid)}">
+                    <label for="percentageShareId" class="floating-label" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || nominee.get('percentageShare')?.touched) && (nominee.get('percentageShare')?.invalid)}">
+                        Percentage Share(%)*</label>
+                    <div *ngIf="(isFormSubmitted || nominee.get('percentageShare')?.touched) && nominee.get('percentageShare')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="nominee?.get('percentageShare')?.errors?.['required']">Percentage Share(%) is
+                            required.</span>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3 ">
+                    <select class="form-control floating-input" formControlName="identificationProof"
+                        id="identificationProofId">
+                        <option selected hidden value="" disabled></option>
+                        <option value="Aadhar Card">Aadhar Card</option>
+                        <option value="Female">Pan Card</option>
+                        <option value="Voter ID">Voter ID</option>
+                        <option value="Driving License">Driving License</option>
+                        <option value="Others">Others</option>
+                    </select>
+                    <label for="identificationProofId" class="floating-label" style="left: 20px;">Identification
+                        Proof</label>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3 inputPadding" *ngIf="isViewtOthers">
+                    <input type="text" class="form-control floating-input" id="OthersId" placeholder=" "
+                        formControlName="Others">
+                    <label for="OthersId" class="floating-label" style="left: 20px;">Others
+                        Name</label>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3 inputPadding">
+                    <input type="text" class="form-control floating-input" id="IdentificationProofId" placeholder=" "
+                        formControlName="IdentificationProofNum">
+                    <label for="IdentificationProofId" class="floating-label" style="left: 20px;">Identification
+                        Proof No.</label>
+                </div>
+
+            </div>
+
+            <!-- Remove button in top-right corner -->
+            <div class="text-right">
+                <button type="button" class="btn btn-outline-danger btn-sm" (click)="removeNominee(i)"
+                    *ngIf="nominees.length > 1" title="Remove this nominee">
+                    <i class="fas fa-times-circle"></i> Remove
+                </button>
+            </div>
+
+
+        </div>
+    </div>
+
+    <!-- Add Nominee -->
+    <div class="text-right my-3">
+        <button type="button" class="btn btn-success shadow-sm" (click)="addNominee()"
+            [disabled]="nominees.length >= maxNominees">
+            <i class="fas fa-user-plus"></i> Add Nominee
+        </button>
+        <small *ngIf="nominees.length >= maxNominees" class="text-muted d-block mt-1">
+            Max {{ maxNominees }} nominees allowed.
+        </small>
+    </div>
+
+
+
+    <!-- Submit -->
+    <div class="text-center">
+        <button type="submit" class="HRMS_primary_button"
+        *ngIf="controlAccessPage?.AddAccess === true"><i class="feather icon-check"></i>&nbsp;Submit</button>
+    </div>
+</form>
+
+
+<!-- </app-card> -->

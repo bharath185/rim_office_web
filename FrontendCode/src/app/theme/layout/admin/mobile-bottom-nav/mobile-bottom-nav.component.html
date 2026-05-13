@@ -1,0 +1,12 @@
+<nav class="mobile-bottom-nav">
+  <ul class="nav-items">
+    <li *ngFor="let item of navItems"
+        class="nav-item"
+        [class.active]="isActive(item.url)"
+        (click)="navigate(item.url)">
+      <i [class]="item.icon"></i>
+      <span>{{ item.title }}</span>
+      <span *ngIf="item.badge && item.badge > 0" class="badge">{{ item.badge }}</span>
+    </li>
+  </ul>
+</nav>

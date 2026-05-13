@@ -1,0 +1,183 @@
+::ng-deep .pcoded-content {
+    position: relative;
+    display: block;
+    padding: 0px !important;
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+    padding-top: 5px !important;
+}
+
+@media only screen and (max-width: 991px) {
+    ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+        margin-left: 0px;
+        margin-top: 57px !important;
+    }
+}
+// search Input Field
+.dropdown-icon {
+    position: absolute;
+    right: 10px;
+    top: 23%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.dropdown {
+    font-size: 12px;
+}
+
+.dropdown-menu {
+    width: 95%;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+
+.dropdown .dropdown-item {
+    padding: 5px 6px;
+}
+
+// search Input Field
+
+// this is for export dropdown
+.export-container {
+    position: relative;
+    display: inline-block;
+}
+
+.export-button {
+    background-color: #ffffff;
+    color: #072f5f;
+    border: 1px solid #072f5f;
+    font-size: 14px;
+    padding: 5px 6px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+    border-radius: 5px;
+}
+
+.export-button:hover {
+    background-color: #e6f0ff;
+    border-color: #0056b3;
+}
+
+.export-button i {
+    margin-left: 2px;
+}
+
+.dropdown-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s;
+}
+
+.dropdown-item i {
+    margin-right: 5px;
+}
+
+.dropdown-item:hover {
+    background-color: #072f5f;
+    color: white;
+}
+
+.dropdown-content {
+    position: absolute;
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin-top: 5px;
+    z-index: 1;
+    width: 120px;
+    top: 84%;
+}
+
+// this is for export dropdown
+
+/* Wrapper for responsive scroll table */
+
+.custom-table tbody td.long-text {
+  max-width: 150px; /* adjust width as needed */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.custom-table-wrapper {
+  overflow-x: auto;
+  margin-top: 20px;
+  border-radius: 8px;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1200px; 
+  font-family: 'Arial', sans-serif;
+}
+
+.custom-table thead th {
+  background-color: #4CAF50;
+  color: #fff;
+  padding: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.custom-table tbody td {
+  padding: 4px;
+  text-align: center;
+  border: 1px solid #ddd;
+  font-size: 12px;
+}
+
+.custom-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.leave-taken {
+  background-color: #f1e19f;
+  font-weight: 800;
+  color: #b9413d;
+  border-radius: 4px;
+}
+
+.leave-Avail {
+  background-color: #c3ee92;
+  font-weight: 700;
+  color: #111;
+  border-radius: 4px;
+}
+
+.custom-no-data {
+  text-align: center;
+  padding: 20px;
+  color: #777;
+  font-size: 16px;
+}
+
+.table-wrapper table,
+.table-wrapper table th,
+.table-wrapper table td {
+  border: 1px solid #e5d7d7 !important;
+  font-weight: unset;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+  .custom-table thead th,
+  .custom-table tbody td {
+    padding: 6px;
+    font-size: 12px;
+  }
+
+  .custom-table {
+    min-width: 800px; 
+  }
+}
+/* Wrapper for responsive scroll table */

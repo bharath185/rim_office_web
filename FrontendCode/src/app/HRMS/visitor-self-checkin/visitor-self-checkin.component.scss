@@ -1,0 +1,185 @@
+::ng-deep.pcoded-content {
+  position: relative;
+  display: block;
+  padding: 0px !important;
+  padding-left: 25px !important;
+  padding-right: 25px !important;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.error-message {
+  font-size: 10px;
+}
+
+.fileInput {
+  background: white;
+  color: #072f5f;
+  padding: 3px;
+  border: 1px solid #072f5f;
+}
+
+.uploaded-image-preview {
+  max-width: 10%;
+  height: auto;
+  margin-top: 3px;
+  margin-left: 10px;
+  order: 2;
+}
+
+video {
+  width: 100%;
+  height: auto;
+}
+
+.webcam-preview {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  border: 2px solid #ccc;
+}
+
+// ************this is for custome date*******
+.custom-date-input {
+  position: relative;
+}
+
+.custom-date-input input {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 3px 5px;
+  width: 100%;
+  outline: none;
+  font-size: 11px;
+  padding-top: 17px;
+  line-height: 1.6;
+}
+
+.custom-date-input input::placeholder {
+  font-size: 5px;
+  color: #aaa;
+}
+
+.custom-date-input label {
+  position: absolute;
+  color: #888;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.custom-date-input input:focus+label,
+.custom-date-input input:not(:placeholder-shown)+label {
+  top: 1px;
+  left: 5px;
+  font-size: 12px;
+}
+
+// ************this is for custome date*******
+.fade-bottom {
+  opacity: 0;
+  animation: fadeBottom 1.2s ease-out forwards;
+}
+
+@keyframes fadeBottom {
+  from {
+    opacity: 0;
+    transform: translateY(100px);
+    /* Moves the element up from below */
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    /* Moves the element to its original position */
+  }
+}
+
+.invalid-feedback {
+  margin: 0px;
+  font-size: 10px;
+
+  span {
+    font-size: 10px;
+  }
+}
+
+// search Input Field
+.floating-input {
+  position: relative;
+}
+
+.floating-label {
+  position: absolute;
+  top: 0% !important;
+  left: 1.2rem;
+  transform: none !important;
+  color: #999;
+  transition: none !important;
+  pointer-events: none;
+}
+
+.dropdown-icon {
+  position: absolute;
+  right: 10px;
+  top: 23%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.dropdown-item {
+  cursor: pointer;
+}
+
+.dropdown .dropdown-item {
+  padding: 5px 6px;
+}
+
+// input[type="time"].form-control {
+//   width: 120px; 
+// }
+
+// Example 1
+// .time-picker {
+//   display: flex;
+//   align-items: center;
+// }
+
+// .custom-dropdown {
+//   width: auto; 
+//   color: #000;
+//   padding: 5px;
+//   border: 1px solid #ccc;
+//   max-height: 200px; 
+//   overflow-y: auto; 
+// }
+
+// Example 2
+.custom-time-dropdown .dropdown-menu {
+  max-height: 200px;
+  overflow-y: auto;
+  width: auto;
+  min-width: fit-content;
+}
+
+.custom-time-dropdown .dropdown-item {
+  cursor: pointer;
+}
+
+.custom-time-dropdown .floating-input {
+  width: 100px; 
+}
+
+.custom-time-dropdown .invalid-feedback {
+  display: block;
+}
+
+
+

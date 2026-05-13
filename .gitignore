@@ -1,0 +1,52 @@
+# Java build output
+java/target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Maven wrapper local files
+java/.mvn/timing.properties
+
+# Uploaded files
+java/Uploads/
+
+# Log files
+*.log
+java/*.log
+java/startup.log
+java/startup_err.log
+
+# IDE files
+.metadata/
+.settings/
+.classpath
+.project
+.factorypath
+.vs/
+.vscode/
+*.suo
+*.user
+
+# Node / Frontend
+FrontendCode/node_modules/
+FrontendCode/.angular/
+FrontendCode/dist/
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Temp / backup
+java/temp/
+
+# Process / PID files
+java/java_pid.txt
+
+# Test data
+java/login.json
+java/test-login.json
+java/test-request.json
+
+# Reports
+java/reports/

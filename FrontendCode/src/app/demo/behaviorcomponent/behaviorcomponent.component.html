@@ -1,0 +1,43 @@
+<app-card [options]="false" >
+  <app-toast-message></app-toast-message>
+  <app-spinner *ngIf="loading"></app-spinner>
+  <div class="text-end">
+      <button type="button" class="btn " style=" border-color: #072f5f; color: #072f5f;  border-radius: 0%" (click)="addRow()"><i class="fas fa-plus"></i> Add Behavior</button>
+  </div>
+
+    <div class="table-wrapper">
+  <table class="table table-bordered mt-2">
+    <thead>
+      <tr class="inner-shadow ">
+          <th class="goal-header">Behavior</th>
+          <th class="weitage-header">Weightage {{Weightage}}%</th>
+          <th class="actions-header">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of rows; let i = index">
+        <td>
+          <input *ngIf="row.isEditing" type="text" [(ngModel)]="row.Behaviour" class="form-control">
+          <span *ngIf="!row.isEditing">{{ row.Behaviour }}</span>
+        </td>
+        <td>
+          <input *ngIf="row.isEditing" type="email" [(ngModel)]="row.Weightage" class="form-control">
+          <span *ngIf="!row.isEditing">{{ row.Weightage }}</span>
+        </td>
+        <td>
+          <span  class="mx-2" *ngIf="row.isEditing" (click)="toggleEdit(row, i)" style="color:#072f5f"> <i class="fas fa-check fa-lg "></i></span>
+          <span  class="mx-2" *ngIf="!row.isEditing" (click)="toggleEdit(row, i)" style="color:rgb(86, 86, 86)"> <i class="fas fa-pen fa-lg "></i></span>
+          <span  class="mx-2" *ngIf="!row.isEditing" (click)="removeRow(i,row)" style="color:rgb(86, 86, 86)">  <i class="fas fa-trash fa-lg " style="color:#072f5f"></i></span>
+          <span class="mx-2" *ngIf="row.isEditing" (click)="cancelEdit(row)" style="color:rgb(86, 86, 86)">
+            <i class="fas fa-times fa-lg " style=" color:#072f5f"></i>
+        </span>
+        </td>
+      </tr>
+    </tbody>
+
+  </table>
+</div>
+<!-- <div class="text-end">
+  <button type="button" class="btn " style=" background-color: #072f5f; color: #ffffff; border-radius: 0%; "  ><i class="fas fa-check"></i>  Final Submit</button>
+</div> -->
+</app-card>

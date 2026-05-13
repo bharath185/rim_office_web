@@ -1,0 +1,251 @@
+<app-toast-message></app-toast-message>
+<ol class="breadcrumb mx-1 p-1 mb-0 fade-left">
+  <li class="breadcrumb-item active" aria-current="page">
+    <button class="homeBackClass">Performance Portal</button><span>>&nbsp;</span>
+    <strong class="breadcrumb-sub-text">Reports</strong>
+  </li>
+</ol>
+<div class="divSpinner" *ngIf="isSpinner">
+  <div class="spinner"></div>
+</div>
+<app-card [options]="false">
+  <!-- <app-spinner *ngIf="loading"></app-spinner> -->
+  <div class="text-end">
+    <div>
+      <span>Financial Details : </span>
+      <strong>{{ getFinancialYear[0]?.FinancialDetails }}</strong>
+    </div>
+  </div>
+  <div class="col-md-12 m-0">
+    <form [formGroup]="reportForm">
+      <div class="row">
+        <div class="form-group floating-label-group col-md-3 inputPadding">
+          <select class="form-control floating-input" aria-label="Default select example" formControlName="DDYear"
+            id="DDYearSelect"
+            [ngClass]="{'is-invalid': (isFormSubmitted || reportForm.get('DDYear')?.touched) && reportForm.get('DDYear')?.invalid}">
+            <option value="" selected disabled hidden></option>
+            <option style="width:fit-content" *ngFor="let option of yearDropdown" [value]="option.YearId">
+              {{option.FinancialYear}}
+            </option>
+          </select>
+          <label for="DDYearSelect" class="floating-label" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || reportForm.get('DDYear')?.touched) && reportForm.get('DDYear')?.invalid}">
+            Year*
+          </label>
+          <div *ngIf="(isFormSubmitted || reportForm.get('DDYear')?.touched) && reportForm.get('DDYear')?.invalid"
+            class="invalid-feedback m-0">
+            <span *ngIf="reportForm.get('DDYear')?.errors?.required">Year is required.</span>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 inputPadding">
+          <select class="form-control floating-input" aria-label="Default select example" formControlName="quaters"
+            id="quatersSelect"
+            [ngClass]="{'is-invalid': (isFormSubmitted || reportForm.get('quaters')?.touched) && reportForm.get('quaters')?.invalid}">
+            <option value="" selected disabled hidden></option>
+            <option style="width:fit-content" *ngFor="let option of DDQuaterValue" [value]="option.QId">
+              {{option.Name}}
+            </option>
+          </select>
+          <label for="quatersSelect" class="floating-label" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || reportForm.get('quaters')?.touched) && reportForm.get('quaters')?.invalid}">
+            Quater*
+          </label>
+          <div *ngIf="(isFormSubmitted || reportForm.get('quaters')?.touched) && reportForm.get('quaters')?.invalid"
+            class="invalid-feedback m-0">
+            <span *ngIf="reportForm.get('quaters')?.errors?.required">Quater is required.</span>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 inputPadding">
+          <select class="form-control floating-input" aria-label="Default select example" formControlName="status"
+            id="statusSelect">
+            <!-- [ngClass]="{'is-invalid': (isFormSubmitted || reportForm.get('status')?.touched) && reportForm.get('status')?.invalid}" -->
+            <option value="" selected disabled hidden></option>
+            <option style="width:fit-content" *ngFor="let option of DDReviewStatusValue" [value]="option.OverAllStatus">
+              {{option.OverAllStatus}}
+            </option>
+          </select>
+          <label for="statusSelect" class="floating-label" style="left: 20px;">
+            <!-- [ngClass]="{'text-danger': (isFormSubmitted || reportForm.get('status')?.touched) && reportForm.get('status')?.invalid}" -->
+            Status
+          </label>
+          <!-- <div *ngIf="(isFormSubmitted || reportForm.get('status')?.touched) && reportForm.get('status')?.invalid"
+            class="invalid-feedback m-0">
+            <span *ngIf="reportForm.get('status')?.errors?.required">Status is required.</span>
+          </div> -->
+        </div>
+
+        <div style="display: flex;justify-content: end;align-items: center;">
+          <button class="HRMS_primary_button" type="submit" (click)="submitForm()"><i
+              class="fas fa-filter"></i>Filter</button>
+          <button class="HRMS_secondary_button mx-2" type="reset" (click)="resetForm()">reset</button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+  <hr>
+  <div class="table-wrapper">
+    <div class="text-right hrms_search_field ">
+      <input (keyup)="applyFilter($event)" placeholder="Search" #inputValue id="serachInputId" />
+    </div>
+    <table class="table table-bordered mt-2">
+      <thead class="sticky-header">
+        <tr class="inner-shadow ">
+          <th class="text-center">Financial Year</th>
+          <th class="text-center">Quater Name</th>
+          <th class="text-center">Employee Code</th>
+          <th class="text-center">Name</th>
+          <th class="text-center">Status</th>
+          <th class="text-center">Created Date</th>
+          <th class="text-center">Last Updated Date</th>
+        </tr>
+      </thead>
+      <tbody *ngIf="isTableData == false">
+        <tr *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page } ;let i = index;">
+          <td class="text-center">
+            <span>{{row.FYear}}</span>
+          </td>
+          <td class="text-center">
+            <span>{{row.QName}}</span>
+          </td>
+          <td class="text-center">
+            <span>{{row.EmpCode}}</span>
+          </td>
+          <td class="text-center">
+            <span>{{row.EmpName}}</span>
+          </td>
+          <ng-container *ngIf="row.Status === 'Pending'">
+            <td class="text-center">
+              <span style="color:orange">{{row.Status}}</span>
+            </td>
+          </ng-container>
+          <ng-container *ngIf="row.Status === 'Approved'">
+            <td class="text-center">
+              <span style="color:green">{{row.Status}}</span>
+            </td>
+          </ng-container>
+          <ng-container *ngIf="row.Status === 'Emp Review Completed' || row.Status === 'Manager Review Completed'">
+            <td class="text-center">
+              <span style="color:#072F5F">{{row.Status}}</span>
+            </td>
+          </ng-container>
+          <td class="text-center">
+            <span>{{ row.CreatedDate | date:'dd-MM-yyyy' }}</span>
+          </td>
+          <td class="text-center">
+            <span>{{row.LastUpdatedDate | date:'dd-MM-yyyy'}}</span>
+          </td>
+          <!-- <td class="text-center"><span><i class="fas fa-eye" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                style="color:#072f5f;cursor: pointer;" (click)="onView(row)"></i></span></td> -->
+
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="isTableData == true" class="text-center errorMassage">
+      <span class="text-danger">{{errorMessage}}</span>
+    </div>
+
+  </div>
+
+  <div class="pagination-controls">
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-md-2">
+          <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+          <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control">
+            <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+          </select>
+        </div>
+        <div class="col-md-6 ">
+          <p class="d-none"></p>
+        </div>
+        <div class="col-md-4 mt-3">
+          <pagination-controls (pageChange)="page = $event"></pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</app-card>
+
+<!--============== Modal  Login Details ================== -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body" style="background: linear-gradient(145deg, rgba(255, 255, 255, 0.4), rgba(0, 0, 0, 0.1))">
+        <div class="col-md-12">
+          <h5 class="text-start fw-bold" style="color:black">Login Details </h5>
+          <div class="text-end">
+            <button style="background-color: white;" type="reset" class="btn-close " data-bs-dismiss="modal" #closeModal
+              aria-label="Close" style="background-color: rgb(228, 208, 208);"></button>
+          </div>
+
+          <div class="row mb-1">
+            <div class="col-md-4">
+              <div class="info-item">
+                <span class="text-muted text-truncate">Empolyee Code :</span>
+                <span class="fw-bold text-truncate">{{viewModalData?.EmpCode}}</span>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="info-item">
+                <span class="text-muted text-truncate">Employee Name :</span>
+                <span class="fw-bold text-truncate">{{viewModalData?.EmpName}}</span>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="info-item">
+                <span class="text-muted text-truncate">Employee Description :</span>
+                <span class="fw-bold text-truncate">{{viewModalData?.EDescription}}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <div class="col-md-4">
+              <div class="info-item">
+                <span class="text-muted text-truncate">Employee Review :</span>
+                <span class="fw-bold text-truncate">{{viewModalData?.EmpReview }}</span>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="info-item">
+                <span class="text-muted text-truncate">Manager Description :</span>
+                <span class="fw-bold text-truncate">{{viewModalData?.EmpReview }}</span>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="info-item">
+                <span class="text-muted text-truncate">Manager Review :</span>
+                <span class="fw-bold text-truncate">{{viewModalData?.EmpReview }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <div class="col-md-4">
+              <div class="info-item">
+                <span class="text-muted text-truncate"> Goal :</span>
+                <span class="fw-bold text-truncate">{{viewModalData?.Goal }}</span>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="info-item">
+                <span class="text-muted text-truncate"> Weightage :</span>
+                <span class="fw-bold text-truncate">{{viewModalData?.Weightage }}</span>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="info-item">
+                <span class="text-muted text-truncate"> Status :</span>
+                <span class="fw-bold text-truncate">{{viewModalData?.Status }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

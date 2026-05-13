@@ -1,0 +1,74 @@
+<app-toast-message></app-toast-message>
+<div class="dis-fl-end">
+    <div class="heading-dash-sub">
+        <span>Pay Slip</span>
+        <ol class="breadcrumb fade-left">
+            <li class="breadcrumb-item active dis-fl" aria-current="page">
+                <span class="breadC">Payroll</span><span class="breadC"><i
+                        class="feather icon-chevron-right"></i></span><span class="breadC col-act">Pay Slip</span>
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="divSpinner" *ngIf="isSpinner">
+    <div class="spinner"></div>
+</div>
+<app-card [options]="false">
+    <div class="container-fluid ">
+        <div class="col-md-12">
+            <form [formGroup]="payslipForm">
+                <div class="row">
+                    <div class="form-group floating-label-group col-md-3 inputPadding">
+                        <select class="form-control floating-input" id="yearDDId" [(ngModel)]="selectedYear"
+                            (change)="onYearChange()" formControlName="year"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || payslipForm.get('year')?.touched) && payslipForm.get('year')?.invalid}">
+                            <option value="" disabled>Select Year</option>
+                            <option *ngFor="let y of years" [ngValue]="y">{{ y }}</option>
+                        </select>
+                        <label for="yearDDId" class="floating-label" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || payslipForm.get('year')?.touched) && payslipForm.get('year')?.invalid}">Year*</label>
+                        <div *ngIf="(isFormSubmitted || payslipForm.get('year')?.touched) && payslipForm.get('year')?.invalid "
+                            class="invalid-feedback m-0">
+                            <span *ngIf="payslipForm.get('year')?.errors?.required">
+                                Year is required.
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 inputPadding">
+                        <select class="form-control floating-input" id="monthDDId" [(ngModel)]="selectedMonth"
+                            formControlName="month"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || payslipForm.get('month')?.touched) && payslipForm.get('month')?.invalid}">
+                            <option value="" disabled selected>Select Month</option>
+                            <option *ngFor="let m of months" [ngValue]="m">{{ m.name }}</option>
+                        </select>
+                        <label for="monthDDId" class="floating-label" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || payslipForm.get('month')?.touched) && payslipForm.get('month')?.invalid}">Month*</label>
+                        <div *ngIf="(isFormSubmitted || payslipForm.get('month')?.touched) && payslipForm.get('month')?.invalid "
+                            class="invalid-feedback m-0">
+                            <span *ngIf="payslipForm.get('month')?.errors?.required">
+                                Month is required.
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="d-flex flex-column flex-md-row justify-content-end gap-2">
+                    <button class="HRMS_secondary_button" type="button" (click)="resetData()"> <i
+                            class="feather icon-rotate-ccw"></i> Reset</button>
+                    <button class="HRMS_primary_button" type="button" (click)="generatePayslip($event)">
+                        <i class="feather icon-check"></i>&nbsp;Generate Payslip
+                    </button>
+
+                </div>
+
+            </form>
+
+
+
+        </div>
+    </div>
+
+
+</app-card>

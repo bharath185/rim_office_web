@@ -1,0 +1,39 @@
+// ************this is for custome date*******
+.custom-date-input {
+    position: relative;
+}
+
+.custom-date-input input {
+    // border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 3px 5px;
+    width: 100%;
+    outline: none;
+    font-size: 11px;
+    padding-top: 16px;
+    line-height: 1.6;
+}
+
+.custom-date-input input::placeholder {
+    font-size: 5px;
+    color: #aaa;
+}
+
+.custom-date-input label {
+    position: absolute;
+    color: #888;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.custom-date-input input:focus+label,
+.custom-date-input input:not(:placeholder-shown)+label {
+    top: 1px;
+    left: 5px;
+    font-size: 12px;
+}
+
+// .custom-date-input.is-invalid{
+//     border-color: #ff5370;
+// }
+// ************this is for custome date*******

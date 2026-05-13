@@ -1,0 +1,193 @@
+<app-toast-message></app-toast-message>
+<div class="overlay" *ngIf="isSpinner"></div>
+
+<app-card [options]="false">
+    <div class="col-md-12">
+        <div class="divSpinner" *ngIf="isSpinner">
+            <div class="spinner"></div>
+        </div>
+        <h5 class="text-center py-2 addAccessHeading">Visitor CheckIn/CheckOut</h5>
+        <form [formGroup]="invitePageForm">
+            <div class="row">
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Name*</label>
+                    <input type="text" class="form-control" id="exampleInputAccess" formControlName="contact_name">
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Designation</label>
+                    <input type="text" class="form-control" id="exampleInputAccess" formControlName="designation">
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Company</label>
+                    <input type="text" class="form-control" id="exampleInputAccess" formControlName="company">
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Purpose of Visit</label>
+                    <input type="text" class="form-control" id="exampleInputAccess" formControlName="purpose">
+
+                </div>
+
+                <!-- <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Personal Email ID*</label>
+                    <input type="text" class="form-control" id="exampleInputAccess" formControlName="per_email_id">
+                   
+                </div> -->
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Email ID*</label>
+                    <input type="text" class="form-control" id="exampleInputAccess" formControlName="official_email">
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Mobile Number*</label>
+                    <input type="text" class="form-control" id="exampleInputAccess" formControlName="mobile_number">
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Alternate Mobile Number</label>
+                    <input type="text" class="form-control" id="exampleInputAccess"
+                        formControlName="alter_mobile_number">
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Whom to Meet*</label>
+                    <input type="text" class="form-control" id="exampleInputAccess" formControlName="meet_to">
+                </div>
+
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Facilities</label>
+                    <input type="text" class="form-control" id="exampleInputAccess" formControlName="facilities">
+                </div>
+
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Date</label>
+                    <input type="date" class="form-control" id="exampleInputAccess" formControlName="date" [min]="today"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || invitePageForm.get('date')?.touched) && (invitePageForm.get('date')?.invalid)}">
+                    <div *ngIf="(isFormSubmitted || invitePageForm.get('date')?.touched) && invitePageForm.get('date')?.invalid"
+                        class="invalid-feedback">
+                        <span *ngIf="invitePageForm?.get('date')?.errors?.required">Date is required.</span>
+                    </div>
+                </div>
+
+                <!-- <div class="form-group col-md-3">
+                    <label for="select1" class="p-0 m-0">Select Time</label>
+                    <div id="time-picker">
+                        <select formControlName="hour">
+                            <option *ngFor="let hour of hours" [value]="hour">{{ hour }}</option>
+                        </select> :
+                        <select formControlName="minute">
+                            <option *ngFor="let minute of minutes" [value]="minute">{{ minute }}</option>
+                        </select>
+                        <select formControlName="ampm">
+                            <option *ngFor="let period of ampm" [value]="period">{{ period }}</option>
+                        </select>
+                    </div>
+                </div> -->
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Selected Time</label>
+                    <input type="time" class="form-control" id="timeId" formControlName="Time" >
+                </div>
+
+                <!-- <div class="form-group col-md-3">
+                    <label for="fileInput" class="fileInput">Upload Photo</label>
+                    <input type="file" id="fileInput" (change)="onFileChange($event)" accept=".jpg, .jpeg"
+                        class="form-control" formControlName="uplaodImage">
+                    <div *ngIf="imageSrc" class="form-group">
+                        <img [src]="imageSrc" alt="Uploaded Image" class="img-thumbnail">
+                        <br><i class="fas fa-upload fa-lg uploadIcon" (click)="uploadImage()"
+                            style="cursor: pointer;"></i>
+                    </div>
+                </div> -->
+
+            </div>
+        </form>
+
+        <ng-container>
+            <form [formGroup]="viewDetailsForm">
+                <!-- <div class="form-group col-md-4">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Accessories : </label>
+                    <textarea type="text" class="form-control" id="exampleInputAccess"
+                        formControlName="description"></textarea>
+                </div> -->
+                <div class="row">
+                    <div class="col-md-3" >
+                        <label for="exampleInputEmail1" class="form-label p-0 m-0">Visitor ID Card*
+                            :</label>
+                        <input type="text" class="form-control" id="exampleInputAccess" formControlName="IdCard"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || viewDetailsForm.get('IdCard')?.touched) && (viewDetailsForm.get('IdCard')?.invalid)}">
+                        <div *ngIf="(isFormSubmitted || viewDetailsForm.get('IdCard')?.touched) && viewDetailsForm.get('IdCard')?.invalid"
+                            class="invalid-feedback">
+                            <span *ngIf="viewDetailsForm?.get('IdCard')?.errors?.required">Id Card is required.</span>
+                        </div>
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-4">
+                        <label for="exampleInputEmail1" class="form-label p-0 m-0">Accessories :</label>
+                        <textarea type="text" class="form-control" id="exampleInputAccess"
+                            formControlName="description"></textarea>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="select1" class="p-0 m-0">Photo :</label>
+                        <div class="d-flex align-items-center" *ngIf="isValidPhoto">
+                            <img [src]="patchPhotoUrl" class="img-fluid" style="height: 50px;">
+                        </div>
+                        <ng-container *ngIf="(getQueryParamsdata.VisitorCheckIn !== 'true') && (getQueryParamsdata.VisitorCheckOut === 'false')">
+                            <div class="d-flex align-items-center" *ngIf="!isValidPhoto">
+                                <label for="fileInput" class="fileInput">Choose Photo</label> OR
+                                <label>
+                                  <i class="fas fa-camera fa-lg ml-2" 
+                                     style="cursor: pointer;" 
+                                     (click)="toggleCamera()" 
+                                     [class.disabled]="isPhotoChosen">
+                                  </i>
+                                </label>
+                                <input type="file" 
+                                       id="fileInput" 
+                                       (change)="onFileChange($event)" 
+                                       accept=".jpg" 
+                                       class="form-control"
+                                       formControlName="uploadImage"
+                                       [attr.disabled]="showCamera ? true : null">
+                                
+                                <div *ngIf="imageSrc" class="form-group">
+                                  <img [src]="imageSrc" alt="Uploaded Image" class="img-thumbnail">
+                                  <br>
+                                </div>
+                              
+                                <app-camera (pictureTaken)="handleImage($event)" 
+                                            *ngIf="showCamera" 
+                                            [videoHeight]="videoHeight"
+                                            [videoWidth]="videoWidth">
+                                </app-camera>
+                              
+                                <div class="snapshot" *ngIf="webcamImage">
+                                  <img [src]="webcamImage.imageAsDataUrl" [style.height.px]="imageHeight" [style.width.px]="imageWidth" />
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+                <div style="display: flex;justify-content: end;">
+                    <button class="HRMS_primary_button" type="submit" (click)="visitorCkeckIn()"
+                        *ngIf="(getQueryParamsdata.VisitorCheckIn === 'false') && (getQueryParamsdata.VisitorCheckOut === 'false')">CheckIn</button>
+                    <button class="HRMS_primary_button" type="submit" (click)="visitorCkeckOut()"
+                        *ngIf="(getQueryParamsdata.VisitorCheckIn === 'true') && (getQueryParamsdata.VisitorCheckOut === 'false')">CheckOut</button>
+                </div>
+            </form>
+        </ng-container>
+    </div>
+</app-card>
+
+<!-- <button type="submit" class="HRMS_primary_button"
+*ngIf="(viewdata?.Accept === true) && (viewdata?.Approved === false) && (viewdata?.CheckIn === '') && (viewdata?.CheckOut === '')"
+(click)="checkIn()">Check In</button>
+<button type="submit" class="HRMS_primary_button"
+    *ngIf="(viewdata?.Accept === true) && (viewdata?.Approved === true) && (viewdata?.CheckIn !== ' ') && (viewdata?.CheckOut === '')"
+    (click)="checkOut()">Check Out</button> -->

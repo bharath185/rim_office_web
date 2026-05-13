@@ -1,0 +1,199 @@
+<app-toast-message></app-toast-message>
+
+<div class="dis-fl-end">
+    <div class="heading-dash-sub">
+        <span>Reporting's Attendance</span>
+        <ol class="breadcrumb fade-left">
+            <li class="breadcrumb-item active dis-fl" aria-current="page">
+                <span class="breadC">Attendance</span>
+                <span class="breadC" [routerLink]="['/employee_self_attendance']" style="color:rgb(127, 186, 235)"> <i
+                        class="feather icon-chevron-right"></i>&nbsp;Self Attendance</span>
+                <span class="breadC"><i class="feather icon-chevron-right"></i></span><span
+                    class="breadC col-act">Reporting's Attendance</span>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<app-card [options]="false">
+    <div class="container-fluid p-0">
+        <div class="divSpinner" *ngIf="isSpinner">
+            <div class="spinner"></div>
+        </div>
+
+        <div class="current-month mb-2 d-flex justify-content-between align-items-center">
+            <!-- Current Month Display -->
+            <span>
+                Current Month: <span class="fw-bold">{{ selectedEndMonth }}</span>
+            </span>
+
+            <!-- Attendance Legend (color codes for work and leave types) -->
+            <div class="attendance-legend mb-2 d-flex gap-2 align-items-center">
+                <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                    <span class="circle"
+                        style="width: 12px; height: 12px; border-radius: 50%; background-color: yellow;"></span>
+                    Onsite
+                </div>
+                <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                    <span class="circle"
+                        style="width: 12px; height: 12px; border-radius: 50%; background-color: orange;"></span>
+                    WFH
+                </div>
+                <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                    <span class="circle"
+                        style="width: 12px; height: 12px; border-radius: 50%; background-color: #84994F;"></span>
+                    Half Day
+                </div>
+                <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                    <span class="circle"
+                        style="width: 12px; height: 12px; border-radius: 50%; background-color: red;"></span>
+                    LOP
+                </div>
+                <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                    <span class="circle"
+                        style="width: 12px; height: 12px; border-radius: 50%; background-color: #A3C6FF;"></span>
+                    EL
+                </div>
+                <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                    <span class="circle"
+                        style="width: 12px; height: 12px; border-radius: 50%; background-color: #B172DB;"></span>
+                    CL
+                </div>
+            </div>
+
+            <!-- Search Input -->
+            <div class="text-end" style="max-width: 200px; flex-shrink: 0;">
+                <input type="text" class="form-control rad-50" [(ngModel)]="searchValue" (keyup)="applyFilter()"
+                    placeholder="Search" />
+            </div>
+
+            <!-- Filter Dropdowns -->
+            <div class="d-flex gap-2" style="flex-shrink: 0;">
+                <div>
+                    <select (change)="getSelectedYear($event)" placeholder="Year">
+                        <option value="" selected hidden></option>
+                        <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+                    </select>
+                </div>
+                <div>
+                    <select (change)="getSelectedMonth($event)">
+                        <option value="" selected hidden></option>
+                        <ng-container *ngIf="isdefalutMonth">
+                            <option *ngFor="let month of months" [value]="month">{{ month }}</option>
+                        </ng-container>
+                        <ng-container *ngIf="!isdefalutMonth">
+                            <option *ngFor="let month of allMonths" [value]="month">{{ month }}</option>
+                        </ng-container>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Export Button -->
+            <div class="export-container position-relative">
+                <button class="export-button d-flex align-items-center" (click)="toggleDropdownExport()">
+                    <i class="feather icon-upload me-1"></i> Export
+                </button>
+
+                <div class="dropdown-content position-absolute end-0 mt-1" *ngIf="dropdownVisible"
+                    style="z-index: 999;">
+                    <div class="dropdown-item" (click)="exportFile('excel')">
+                        <i class="fas fa-file-excel me-1"></i> Excel
+                    </div>
+                    <div class="dropdown-item" (click)="exportFile('pdf')">
+                        <i class="fas fa-file-pdf me-1"></i> PDF
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="table-wrapper mt-3">
+            <table class="table table-hover align-middle">
+                <thead class="table-light sticky-header">
+                    <tr class="inner-shadow">
+                        <th class="sticky-column">Name</th>
+                        <th>Code</th>
+                        <ng-container *ngFor="let date of dates">
+                            <th>
+                                {{ date | date:'dd-MM-yy' }}
+                                <br>
+                                <!-- <small>{{ date | date:'EEE' }}</small> -->
+                                <small [ngClass]="{
+    'weekend': (date | date:'EEE') === 'Sat' || (date | date:'EEE') === 'Sun'
+  }">
+                                    {{ date | date:'EEE' }}
+                                </small>
+
+                            </th>
+                        </ng-container>
+                    </tr>
+                </thead>
+                <tbody *ngIf="isTableData === false">
+                    <tr
+                        *ngFor="let employee of filteredEmployees  | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                        <td class="sticky-row" style="background-color:#f3da75; font-size: 12px;color: black;">
+                            {{ employee.EmpName ? employee.EmpName : 'No Name' }}
+                        </td>
+                        <td style="background-color:#f7e49b; font-size: 13px;color: black;">{{ employee.EmpCode }}</td>
+
+                        <ng-container *ngFor="let date of dates">
+                            <!-- <td>
+                                <ng-container *ngIf="attendanceArray[date]">
+                                    <ng-container *ngFor="let record of attendanceArray[date]">
+                                        <span *ngIf="record.EmpId === employee.EmpId" [ngbTooltip]="tooltipTemplate"
+                                            tooltipClass="card-tooltip" container="body" placement="left"
+                                            (mouseenter)="setTooltipContent(employee, record, date)"
+                                            (mouseleave)="clearTooltipContent()"
+                                            [ngClass]="{'bold-on-hover': hoveredCellId === (employee.EmpId + '-' + date)}">
+                                            {{ record.WorkingHours.toString().slice(0, 5) }}
+                                        </span>
+                                    </ng-container>
+                                </ng-container>
+                            </td> -->
+                            <td>
+                                <ng-container *ngIf="attendanceArray[date]">
+                                    <ng-container *ngFor="let record of attendanceArray[date]">
+                                        <span *ngIf="record.EmpId === employee.EmpId" [ngbTooltip]="tooltipTemplate"
+                                            tooltipClass="card-tooltip" container="body" placement="left"
+                                            (mouseenter)="setTooltipContent(employee, record, date)"
+                                            (mouseleave)="clearTooltipContent()"
+                                            [ngClass]="{'bold-on-hover': hoveredCellId === (employee.EmpId + '-' + date)}"
+                                            [ngStyle]="{'background-color': getWorkTypeColor(record.WorkType,record.DaysPresent,record.LeaveType)}">
+                                            {{ record.WorkingHours.toString().slice(0, 5) }}
+                                        </span>
+                                    </ng-container>
+                                </ng-container>
+                            </td>
+
+                        </ng-container>
+                    </tr>
+                </tbody>
+            </table>
+
+            <ng-template #tooltipTemplate>
+                <div [innerHTML]="tooltipContent"></div>
+            </ng-template>
+
+            <div *ngIf="isTableData == true && errorMessage" class="text-center errorMassage">
+                <span class="text-danger">{{ errorMessage }}</span>
+            </div>
+        </div>
+
+        <div class="pagination-controls-wrapper">
+            <div class="row align-items-center" style="padding-top: 1rem;">
+                <div class="col-auto">
+                    <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+                    <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+                        <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+                    </select>
+                </div>
+                <div class="col">
+                </div>
+                <div class="col-auto">
+                    <pagination-controls (pageChange)="page = $event"></pagination-controls>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</app-card>

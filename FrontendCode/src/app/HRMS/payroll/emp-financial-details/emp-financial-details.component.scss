@@ -1,0 +1,114 @@
+::ng-deep .pcoded-content {
+  position: relative;
+  display: block;
+  padding: 0px !important;
+  padding-left: 25px !important;
+  padding-right: 25px !important;
+  padding-top: 5px !important;
+}
+
+@media only screen and (max-width: 991px) {
+  ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+    margin-left: 0px;
+    margin-top: 57px !important;
+  }
+}
+
+////////.top-nav//////////////
+// .top-nav {
+//   margin: 10px 0;
+// }
+.table thead th {
+  padding: 10px 10px !important;
+}
+
+.table tbody td {
+  padding: 5px 10px !important;
+}
+
+.nav-btn {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #072F5F;
+  padding: 5px 12px;
+  font-size: 12px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.nav-btn i {
+  font-size: 14px;
+}
+
+.nav-btn:hover {
+  background: #f3f4f6;
+}
+
+.nav-btn.active {
+  background: #072F5F;
+  /* dark blue/gray */
+  color: #fff;
+  border-color: #374151;
+}
+
+////////.top-nav//////////////
+.spinner1 {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 9px solid;
+  border-color: #dbdcef;
+  border-right-color: #072f5f;
+  animation: spinner-d3wgkg 1s infinite linear;
+}
+
+.divSpinner1 {
+  position: relative;
+
+  .spinner1 {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-top: 10rem;
+    z-index: 9999;
+  }
+}
+
+@keyframes spinner-d3wgkg {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+// search Input Field
+.dropdown-icon {
+    position: absolute;
+    right: 10px;
+    top: 23%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.dropdown {
+    font-size: 12px;
+}
+
+.dropdown-menu {
+    width: 95%;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.dropdown-item {
+    cursor: pointer;
+}
+
+.dropdown .dropdown-item {
+    padding: 5px 6px;
+}
+
+// search Input Field

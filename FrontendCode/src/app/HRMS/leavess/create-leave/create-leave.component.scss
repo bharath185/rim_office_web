@@ -1,0 +1,480 @@
+::ng-deep .pcoded-content {
+    position: relative;
+    display: block;
+    padding: 0px !important;
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+    padding-top: 5px !important;
+}
+
+@media only screen and (max-width: 991px) {
+    ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+        margin-left: 0px;
+        margin-top: 57px !important;
+    }
+}
+
+/* Top button */
+.export-buttons .btn-export-excel,
+.export-buttons .btn-export-pdf {
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 0px 12px;
+    background: transparent;
+    transition: 0.3s ease-in-out;
+}
+
+.floating-input,
+.export-button,
+.btn {
+    height: 38px;
+    /* Consistent height */
+}
+
+.export-buttons .btn-export-excel {
+    border: 2px solid #28a745;
+    color: #28a745;
+}
+
+.export-buttons .btn-export-excel:hover {
+    background: #28a745;
+    color: #fff;
+}
+
+.export-buttons .btn-export-pdf {
+    border: 2px solid #dc3545;
+    color: #dc3545;
+}
+
+.export-buttons .btn-export-pdf:hover {
+    background: #dc3545;
+    color: #fff;
+}
+
+.export-buttons .btn i {
+    margin-right: 6px;
+}
+
+/* Top button */
+
+// this is for export dropdown
+.export-container {
+    position: relative;
+    display: inline-block;
+}
+
+.export-button {
+    background-color: #ffffff;
+    color: #072f5f;
+    border: 1px solid #072f5f;
+    font-size: 14px;
+    padding: 5px 6px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+    border-radius: 5px;
+}
+
+.export-button:hover {
+    background-color: #e6f0ff;
+    border-color: #0056b3;
+}
+
+.export-button i {
+    margin-left: 2px;
+}
+
+.dropdown-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s;
+}
+
+.dropdown-item i {
+    margin-right: 5px;
+}
+
+.dropdown-item:hover {
+    background-color: #072f5f;
+    color: white;
+}
+
+.dropdown-content {
+    position: absolute;
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin-top: 5px;
+    z-index: 1;
+    width: 120px;
+    top: 84%;
+}
+
+// this is for export dropdown
+
+// **********This is for Pannel***********
+.expansion-panel {
+    border: 1px solid #ddd;
+    margin: 10px 0;
+    // overflow: hidden;
+}
+
+.panel-header {
+    background-color: #072f5f;
+    padding: 4px 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-title {
+    flex-grow: 1;
+
+    h5 {
+        color: white;
+        font-size: medium;
+        font-weight: 500;
+    }
+}
+
+.panel-controls {
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.panel-controls span {
+    margin-left: 10px;
+}
+
+.panel-body {
+    padding: 15px;
+    border-top: 1px solid #ddd;
+}
+
+// **********This is for Pannel***********
+
+// this is for delete modal end
+.modal-confirm {
+    color: #636363;
+    width: 400px;
+}
+
+.modal-confirm .modal-content {
+    padding: 20px;
+    border-radius: 5px;
+    border: none;
+    text-align: center;
+    font-size: 14px;
+}
+
+.modal-confirm .modal-header {
+    border-bottom: none;
+    position: relative;
+}
+
+.modal-confirm h4 {
+    text-align: center;
+    font-size: 20px;
+    margin: 10px 0 0px;
+}
+
+.modal-confirm .close {
+    position: absolute;
+}
+
+.modal-confirm .modal-body {
+    color: #999;
+}
+
+.modal-confirm .modal-footer {
+    border: none;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.modal-confirm .modal-footer a {
+    color: #999;
+}
+
+.modal-confirm .icon-box {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    border-radius: 50%;
+    z-index: 9;
+    text-align: center;
+    border: 3px solid #f15e5e;
+}
+
+.modal-confirm .icon-box i {
+    color: #f15e5e;
+    font-size: 46px;
+    display: inline-block;
+    margin-top: 13px;
+}
+
+.modal-confirm .btn,
+.modal-confirm .btn:active {
+    color: #fff;
+    border-radius: 4px;
+    background: #60c7c1;
+    text-decoration: none;
+    transition: all 0.4s;
+    line-height: normal;
+    min-width: 120px;
+    border: none;
+    min-height: 40px;
+    border-radius: 3px;
+    margin: 0 5px;
+}
+
+.modal-confirm .btn-secondary {
+    background: #c1c1c1;
+}
+
+.modal-confirm .btn-secondary:hover,
+.modal-confirm .btn-secondary:focus {
+    background: #a8a8a8;
+}
+
+.modal-confirm .btn-danger {
+    background: #f15e5e;
+}
+
+.modal-confirm .btn-danger:hover,
+.modal-confirm .btn-danger:focus {
+    background: #ee3535;
+}
+
+.trigger-btn {
+    display: inline-block;
+    margin: 100px auto;
+}
+
+.icon-box:before {
+    content: none !important;
+}
+
+.btn-close {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.btn-close:hover {
+    transform: rotate(90deg);
+    opacity: 0.7;
+}
+
+
+.modal-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.checkmark__circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 2;
+    stroke-miterlimit: 10;
+    stroke: #7ac142;
+    fill: none;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards
+}
+
+.checkmark {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: block;
+    stroke-width: 2;
+    stroke: #fff;
+    stroke-miterlimit: 10;
+    margin: 10% auto;
+    box-shadow: inset 0px 0px 0px #7ac142;
+    animation: fill .2s ease-in-out .4s forwards, scale .3s ease-in-out .9s both
+}
+
+.checkmark__check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: stroke 0.2s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards
+}
+
+@keyframes stroke {
+    100% {
+        stroke-dashoffset: 0
+    }
+}
+
+@keyframes scale {
+
+    0%,
+    100% {
+        transform: none
+    }
+
+    50% {
+        transform: scale3d(1.1, 1.1, 1)
+    }
+}
+
+@keyframes fill {
+    100% {
+        box-shadow: inset 0px 0px 0px 30px #7ac142
+    }
+}
+
+// this is for delete modal end
+.custom-multiselect {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    padding: 0.8rem 0.75rem 0.4rem 0.5rem;
+    font-size: 0.875rem;
+    width: 100%;
+    cursor: pointer;
+    position: relative;
+    line-height: 1.8;
+    background-color: white;
+}
+
+.custom-multiselect.is-invalid {
+    border-color: #ff5370;
+}
+
+.selected-items {
+    min-height: 20px;
+    color: #495057;
+}
+
+.dropdown-arrow {
+    position: absolute;
+    top: 14px;
+    right: 10px;
+    pointer-events: none;
+}
+
+.dropdown-list {
+    border: 1px solid #ced4da;
+    border-top: none;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+    position: absolute;
+    z-index: 1000;
+    width: 100%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.checkbox-label {
+    display: block;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-label input {
+    margin-right: 8px;
+}
+
+
+/* Make pagination wrapper sticky inside the scrollable table region */
+.pagination-controls-wrapper {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    z-index: 5;
+    padding: 8px 0;
+    border-top: 1px solid #dee2e6;
+}
+
+.pagination-controls-wrapper .form-control-sm {
+    height: 30px;
+    font-size: 12px;
+    padding: 2px 4px;
+}
+
+.pagination-controls-wrapper .col-auto select {
+    min-width: 80px;
+}
+
+.table-wrapper table,
+.table-wrapper table th,
+.table-wrapper table td {
+   font-weight: unset;
+}
+
+////toggle-switch /////////////
+.toggle-switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    width: auto;
+    cursor: pointer;
+}
+.toggle-switch input {
+    display: none;
+}
+.slider-content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e9ecef;
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    white-space: nowrap;
+}
+.toggle-switch input:checked+.slider-content {
+    background-color: #d1e7dd;
+    /* Light green for active */
+}
+.status-icon {
+    font-size: 14px;
+}
+.status-text {
+    line-height: 1;
+    font-weight: 500;
+}
+////toggle-switch /////////////
+
+/* Remove horizontal overflow hiding on smaller screens */
+@media only screen and (max-width: 991px) {
+    .table-wrapper {
+        overflow-x: auto !important;
+    }
+
+    .pending-table-section {
+        overflow-x: auto !important;
+    }
+
+    .pending-table-section table {
+        min-width: 700px;
+        /* or any minimum width fitting your content */
+    }
+}
+.action-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+  font-size: 14px;
+  margin: 0 4px;
+  cursor: pointer;
+}
+.action-edit {
+  background-color: #cce5ff;
+  color: #004085;
+}
+.action-delete {
+  background-color: #f8d7da;
+  color: #842029;
+}

@@ -1,0 +1,353 @@
+<app-toast-message></app-toast-message>
+<div class="dis-fl-end">
+    <div class="heading-dash-sub">
+        <span>Self Attendance</span>
+        <ol class="breadcrumb fade-left">
+            <li class="breadcrumb-item active dis-fl" aria-current="page">
+                <span class="breadC">Attendance</span><span class="breadC"><i
+                        class="feather icon-chevron-right"></i></span><span class="breadC col-act">Self
+                    Attendance</span>
+            </li>
+        </ol>
+    </div>
+    <div class="top-nav-wrapper">
+        <div class="top-nav d-flex gap-2 mt-2">
+            <button style="height:32px" *ngFor="let tab of tabs; let i = index" class="nav-btn"
+                [class.active]="selectedTab === i" (click)="selectTab(i)" [routerLink]="tab.url">
+                <i [class]="tab.icon"></i> {{ tab.title }}
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<div class="container-fluid p-0">
+    <div class="divSpinner" *ngIf="isSpinner">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="">
+
+        <!-- <div class="row">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body" style="padding: 5px 30px;">
+                        <h5 class="text-center mb-0">Hi, {{ employeeDetails[0]?.FirstName }}</h5>
+                        <div class="d-flex justify-content-center align-items-center py-1">
+                            <img src="./assets/self_employee.svg" alt="Employees" class="img-fluid"
+                                style="max-width: 30%; max-height: 30%;">
+                        </div>
+                        <br>
+                        <div class="card-text">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong class="firstCardlabel">Company Name&nbsp;:&nbsp;</strong>
+                                </div>
+                                <div class="col-6">
+                                    {{ employeeDetails[0]?.Company }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6" style="padding-left: 41px;">
+                                    <strong>EmpCode&nbsp;:&nbsp;</strong>
+                                </div>
+                                <div class="col-6">
+                                    {{ employeeDetails[0]?.EmpCode }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6" style="padding-left: 25px;">
+                                    <strong>Department&nbsp;:&nbsp;</strong>
+                                </div>
+                                <div class="col-6">
+                                    {{ employeeDetails[0]?.DeptName }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6" style="padding-left: 26px;">
+                                    <strong>Designation&nbsp;:&nbsp;</strong>
+                                </div>
+                                <div class="col-6">
+                                    {{ employeeDetails[0]?.Designation }}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-9 row">
+                <span class="fw-bold d-flex justify-content-center align-items-center">Yesterday Work Details</span>
+                <div class="col-md-4" *ngIf="yesterdayAttendance">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="d-flex justify-content-center align-items-center">Login Time</h5>
+                            <div class="card-text">
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <img src="./assets/login_time.svg" alt="Employees" class="img-fluid"
+                                        style="max-width: 30%; max-height: 30%;">
+                                </div><br>
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <strong>Time &nbsp;: &nbsp;</strong> {{ yesterdayAttendance.LogInTime | slice:0:5 }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4" *ngIf="yesterdayAttendance">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="d-flex justify-content-center align-items-center">Logout Time</h5>
+                            <div class="card-text">
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <img src="./assets/logout_time.svg" alt="Employees" class="img-fluid"
+                                        style="max-width: 30%; max-height: 30%;">
+                                </div><br>
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <strong>Time&nbsp;:&nbsp;</strong> {{ yesterdayAttendance.LogOutTime | slice:0:5 }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4" *ngIf="yesterdayAttendance">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="d-flex justify-content-center align-items-center">Working Hours</h5>
+                            <div class="card-text">
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <img src="./assets/working-time.svg" alt="Employees" class="img-fluid"
+                                        style="max-width: 30%; max-height: 30%;">
+                                </div><br>
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <strong>Time&nbsp;:&nbsp;</strong> {{ yesterdayAttendance.WorkingHours | slice:0:5
+                                    }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div> -->
+
+        <div *ngIf=" yesterdayAttendance ">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">
+                        Yesterday's Attendance : {{ yesterdayAttendance?.LogDate | date: 'dd-MM-yyyy' }}
+                    </h5>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <p>Login Time&nbsp;:&nbsp; <strong>{{ yesterdayAttendance.LogInTime }}</strong></p>
+                        </div>
+                        <div class="col-md-3">
+                            <p>Logout Time&nbsp;:&nbsp; <strong>{{ yesterdayAttendance.LogOutTime }}</strong></p>
+                        </div>
+                        <div class="col-md-3">
+                            <p>Working Hours&nbsp;:&nbsp; <strong>{{ yesterdayAttendance.WorkingHours }}</strong></p>
+                        </div>
+                        <div class="col-md-3">
+                            <p>Work Type&nbsp;:&nbsp; <span [ngClass]="{
+                'badge': true,
+                'badge-success': yesterdayAttendance?.WorkType === 'WFH',
+                'combine-type':  yesterdayAttendance?.WorkType &&  yesterdayAttendance?.WorkType.includes('+'),
+                'badge-primary': yesterdayAttendance?.WorkType === 'OnSite',
+                'badge-warning': yesterdayAttendance?.LeaveType === 'EL',
+                'badge-info': yesterdayAttendance?.LeaveType === 'CL',
+                'badge-danger': yesterdayAttendance?.LeaveType === 'LOP'
+            }">
+                                    <strong style="color: black;">{{ yesterdayAttendance.WorkType }}</strong>
+                                </span>
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="table-wrapper mt-2">
+
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span> Current Month: <span class="fw-bold">{{ selectedEndMonth }}</span></span>
+
+                    <div class="attendance-legend  d-flex gap-2 align-items-center">
+                        <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                            <span class="circle"
+                                style="width: 12px; height: 12px; border-radius: 50%; background-color: yellow;"></span>
+                            Onsite
+                        </div>
+                        <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                            <span class="circle"
+                                style="width: 12px; height: 12px; border-radius: 50%; background-color: orange;"></span>
+                            WFH
+                        </div>
+                        <!-- <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                            <span class="circle"
+                                style="width: 12px; height: 12px; border-radius: 50%; background-color: #c79670;"></span>
+                            Manual
+                        </div> -->
+                        <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                            <span class="circle"
+                                style="width: 12px; height: 12px; border-radius: 50%; background-color: #84994F;"></span>
+                            Half Day
+                        </div>
+                        <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                            <span class="circle"
+                                style="width: 12px; height: 12px; border-radius: 50%; background-color: red;"></span>
+                            LOP
+                        </div>
+                        <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                            <span class="circle"
+                                style="width: 12px; height: 12px; border-radius: 50%; background-color: #A3C6FF;"></span>
+                            EL
+                        </div>
+                        <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                            <span class="circle"
+                                style="width: 12px; height: 12px; border-radius: 50%; background-color: #B172DB;"></span>
+                            CL
+                        </div>
+                        <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                            <span class="circle"
+                                style="width: 12px; height: 12px; border-radius: 50%; background-color: #FFE7E9; display: inline-block;">
+                            </span>
+                            RH
+                        </div>
+                        <div class="legend-item" style="display: flex; align-items: center; gap: 5px;">
+                            <span class="circle"
+                                style="width: 12px; height: 12px; border-radius: 50%; background-color: #9edbcf;"></span>
+                            Holiday
+                        </div>
+                    </div>
+
+                    <div>
+                        <span><i class="fas fa-filter"></i> Filter : </span>
+                        <select (change)="getSelectedYear($event)" placeholder="year">
+                            <option value="" selected hidden></option>
+                            <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+                        </select>
+
+                        <select id="selectedMonthId" (change)="getSelectedMonth($event)" style="margin-left: 5px;">
+                            <option value="" selected hidden></option>
+                            <ng-container *ngIf="isdefalutMonth">
+                                <option *ngFor="let month of months" [value]="month">{{ month }}</option>
+                            </ng-container>
+                            <ng-container *ngIf="!isdefalutMonth">
+                                <option *ngFor="let month of allMonths" [value]="month">{{ month }}</option>
+                            </ng-container>
+                        </select>
+                    </div>
+
+                    <button class="ml-auto infoButton" [routerLink]="['/reporting_employee']"
+                        *ngIf="employeeDetails[0].Authorised === true">Reporting's Attendance</button>
+
+                    <div class="export-container position-relative">
+                        <button class="export-button d-flex align-items-center" (click)="toggleDropdownExport()">
+                            <i class="feather icon-upload me-1"></i> Export
+                        </button>
+
+                        <div class="dropdown-content position-absolute end-0 mt-1" *ngIf="dropdownVisible"
+                            style="z-index: 999;">
+                            <div class="dropdown-item" (click)="exportFile('excel')">
+                                <i class="fas fa-file-excel me-1"></i> Excel
+                            </div>
+                            <div class="dropdown-item" (click)="exportFile('pdf')">
+                                <i class="fas fa-file-pdf me-1"></i> PDF
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <table class="table">
+                    <thead style="background-color: #E6E7EB;" class="sticky-header ">
+                        <tr>
+                            <th class="text-center">Date</th>
+                            <th class="text-center">Login Time</th>
+                            <th class="text-center">Logout Time</th>
+                            <th class="text-center">Working Hours</th>
+                            <th class="text-center">Work Type</th>
+                            <th class="text-center">Day</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngIf="!isTableData">
+                        <tr
+                            *ngFor="let day of attendanceData | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                            <td class="text-center">{{ day.AttendaceDate | date:'dd-MM-yyyy' }}</td>
+                            <td class="text-center">
+                                <i class="feather icon-log-in fs-6"></i>&nbsp;{{ day.lstofAttendance[0]?.LogInTime |
+                                slice:0:5 }}
+                            </td>
+                            <td class="text-center">
+                                <i class="feather icon-log-out fs-6"></i>&nbsp;{{ day.lstofAttendance[0]?.LogOutTime |
+                                slice:0:5 }}
+                            </td>
+                            <td class="text-center">
+                                <span [ngbTooltip]="tooltipTemplate" tooltipClass="card-tooltip" container="body"
+                                    placement="left"
+                                    (mouseenter)="setDayTooltip(day.lstofAttendance[0], day.AttendaceDate)"
+                                    (mouseleave)="clearTooltipContent()"
+                                    [ngClass]="{'bold-on-hover': hoveredCellId === day.AttendaceDate}">
+
+                                    <i class="feather icon-clock fs-6"></i>&nbsp;
+                                    {{ day.lstofAttendance[0]?.WorkingHours | slice:0:5 }}
+                                </span>
+                            </td>
+
+                            <td class="text-center" [ngClass]="{
+        'wfh-type': day.lstofAttendance[0]?.WorkType === 'WFH',
+        'onsite-type': day.lstofAttendance[0]?.WorkType === 'OnSite',
+        'combine-type': day.lstofAttendance[0]?.WorkType && day.lstofAttendance[0]?.WorkType.includes('+'),
+        'EL': day.lstofAttendance[0]?.LeaveType === 'EL',
+        'CL': day.lstofAttendance[0]?.LeaveType === 'CL',
+        'RH': day.lstofAttendance[0]?.LeaveType === 'RH',
+        'holiday': day.lstofAttendance[0]?.LeaveType === 'Holiday',
+        'dayspresent': day.lstofAttendance[0]?.DaysPresent === 1
+      }">
+                                {{ day.lstofAttendance[0]?.WorkType || day.lstofAttendance[0]?.LeaveType }}
+                            </td>
+                            <td class="text-center" [ngClass]="{
+        'weekend': (day.AttendaceDate | date:'EEE') === 'Sat' || (day.AttendaceDate | date:'EEE') === 'Sun'
+      }">
+                                {{ day.AttendaceDate | date:'EEEE' }}
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody *ngIf="isTableData">
+                        <tr>
+                            <td colspan="6" class="text-center">{{ errorMessage }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <ng-template #tooltipTemplate>
+                    <div [innerHTML]="tooltipContent"></div>
+                </ng-template>
+
+                <div *ngIf="isTableData == true" class="alert alert-danger" role="alert">
+                    {{ errorMessage }}
+                </div>
+            </div>
+            <div class="pagination-controls-wrapper">
+                <div class="row align-items-center" style="padding-top: 1rem;">
+                    <div class="col-auto">
+                        <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+                        <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+                            <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                    </div>
+                    <div class="col-auto">
+                        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

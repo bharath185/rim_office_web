@@ -1,0 +1,62 @@
+<app-toast-message></app-toast-message>
+<ol class="breadcrumb mx-1 p-1 mb-0 fade-left">
+    <li class="breadcrumb-item active" aria-current="page">
+        <button class="homeBackClass">Performance Portal</button><span>>&nbsp;</span>
+        <strong class="breadcrumb-sub-text">Behavior</strong>
+    </li>
+</ol>
+<app-card [options]="false">
+  <app-spinner *ngIf="loading"></app-spinner>
+  <div class="d-flex justify-content-between align-items-center">
+    <button type="button" class="btn" style="border-color: #072f5f; color: #072f5f; border-radius: 0%;"
+      (click)="addRow()">
+      <i class="feather icon-plus"></i> Add Behavior
+    </button>
+
+    <div>
+      <span>Financial Details : </span>
+      <strong>{{ getFinancialYear[0]?.FinancialDetails }}</strong>
+    </div>
+  </div>
+
+
+  <div class="table-wrapper mt-3">
+    <table class="table table-hover align-middle">
+      <thead class="table-light sticky-header">
+        <tr class="inner-shadow ">
+          <th class="goal-header">Behavior</th>
+          <th class="weitage-header">Weightage {{Weightage}}%</th>
+          <th class="actions-header">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of rows; let i = index">
+          <td>
+            <input *ngIf="row.isEditing" type="text" [(ngModel)]="row.Behaviour" class="form-control">
+            <span *ngIf="!row.isEditing">{{ row.Behaviour }}</span>
+          </td>
+          <td>
+            <input *ngIf="row.isEditing" type="number" [(ngModel)]="row.Weightage" class="form-control" min="20"
+              max="20" (input)="validateWeightage(row)" (paste)="onPaste($event)">
+            <span *ngIf="!row.isEditing">{{ row.Weightage }}</span>
+          </td>
+          <td>
+            <span class="mx-2" *ngIf="row.isEditing" (click)="toggleEdit(row, i)" > <i
+                class="action-icon action-edit feather icon-edit-2 cursor_pointer"></i></span>
+            <span class="mx-2" *ngIf="!row.isEditing" (click)="toggleEdit(row, i)" > <i
+                class="action-icon action-edit feather icon-edit-2 cursor_pointer"></i></span>
+            <span class="mx-2" *ngIf="!row.isEditing" (click)="removeRow(i,row)" > <i
+                class="action-icon action-delete feather icon-trash-2 cursor_pointer" ></i></span>
+            <span class="mx-2" *ngIf="row.isEditing" (click)="cancelEdit(row)">
+              <i class="action-icon action-cancel feather icon-x cursor_pointer" ></i>
+            </span>
+          </td>
+        </tr>
+      </tbody>
+
+    </table>
+  </div>
+  <!-- <div class="text-end">
+    <button type="button" class="btn " style=" background-color: #072f5f; color: #ffffff; border-radius: 0%; "  ><i class="fas fa-check"></i>  Final Submit</button>
+  </div> -->
+</app-card>

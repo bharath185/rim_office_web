@@ -1,0 +1,258 @@
+<app-toast-message></app-toast-message>
+<div class="dis-fl-end">
+    <div class="heading-dash-sub">
+        <span>Upload Attendance</span>
+        <ol class="breadcrumb fade-left">
+            <li class="breadcrumb-item active dis-fl" aria-current="page">
+                <span class="breadC">Attendance</span>
+                <span class="breadC" [routerLink]="['/employee_attendance']"
+                    style="color:rgb(127, 186, 235);cursor: pointer"> <i
+                        class="feather icon-chevron-right"></i>&nbsp;Employee Attendance</span>
+                <span class="breadC"><i class="feather icon-chevron-right"></i></span><span
+                    class="breadC col-act">Upload Attendance</span>
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="divSpinner" *ngIf="isSpinner">
+    <div class="spinner"></div>
+</div>
+
+<app-card [options]="false">
+    <div class="upload-container">
+
+        <!-- Upload -->
+        <label for="fileUpload" class="upload-box" [class.disabled]="isManualSelected">
+            <i class="fas fa-file-excel upload-icon"></i>
+            <span>Choose File</span>
+            <input type="file" id="fileUpload" (change)="onFileSelected($event)" accept=".xlsx" hidden
+                [disabled]="isManualSelected" />
+        </label>
+
+        <!-- Download Sample -->
+        <div class="sample-download mt-2">
+            <a href="javascript:void(0)" (click)="downloadSampleFile()">
+                <i class="fas fa-download me-1"></i>
+                Download Sample File
+            </a>
+        </div>
+
+        <!-- Selected Files -->
+        <div class="file-list mt-2" *ngIf="selectedFiles.length > 0">
+            <div *ngFor="let file of selectedFiles; let i = index" class="file-item">
+                <i class="fas fa-file-excel me-1"></i>
+
+                <!-- Click to open -->
+                <span class="file-name clickable" (click)="openFile(i)">
+                    {{ file.name }}
+                </span>
+
+                <i class="fas fa-trash delete-icon" (click)="removeFile(i)">
+                </i>
+            </div>
+        </div>
+
+        <div class="ms-auto">
+            <button class="uploadButton" (click)="uploadFiles()" [disabled]="selectedFiles.length === 0" [ngClass]="{
+    'btn-enabled': selectedFiles.length > 0,
+    'btn-disabled': selectedFiles.length === 0
+  }">
+                Upload
+            </button>
+
+        </div>
+
+    </div>
+</app-card>
+
+<div class="or-divider">
+    <span>OR</span>
+</div>
+
+<app-card [options]="false">
+    <div class="container-fluid p-0">
+        <div class="col-md-12">
+            <form [formGroup]="uploadAttenForm" class="pt-2">
+                <div class="row ">
+                    <!-- <div class="form-group floating-label-group col-md-2 inputPadding mt-2"
+                        (click)="enableManualEntry()">
+                        <select class="form-control floating-input" formControlName="company" id="companyId"
+                            (change)="calllegalEntity($event)" (change)="getEmployeeSelectEmployee()">
+                            <option value="" selected hidden></option>
+                            <option *ngFor="let company of getDDCompany" [value]="company.CompId">
+                                {{company.Company}}</option>
+                        </select>
+                        <label for="companyId" class="floating-label m-0" style="left: 20px;">Company</label>
+                    </div> -->
+
+                    <!-- <div class="form-group floating-label-group col-md-2 inputPadding mt-2"
+                        (click)="enableManualEntry()">
+                        <select class="form-control floating-input" formControlName="LegalEntity" id="entityId"
+                            (change)="getEmployeeSelectEmployee()">
+                            <option selected hidden value=""></option>
+                            <option *ngFor="let entity of getLegalEntity" [value]="entity.LEId">
+                                {{entity.LegalEntity}}</option>
+                        </select>
+                        <label for="entityId" class="floating-label m-0" style="left: 20px;">Entity</label>
+                    </div> -->
+
+                    <!-- <div class="form-group floating-label-group col-md-2 inputPadding mt-2">
+                        <select class="form-control floating-input" formControlName="BusinessUnit" style="left: 20px;"
+                            id="businessId">
+                            <option disabled selected hidden value=""></option>
+                            <option *ngFor="let unitList of getBusinessUnitlist" [value]="unitList.BUId">
+                                {{unitList.BusinessUnit}}</option>
+                        </select>
+                        <label for="businessId" class="floating-label m-0">Business Unit</label>
+                    </div> -->
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding mt-2"
+                        (click)="enableManualEntry()">
+                        <select class="form-control floating-input" formControlName="Location" style="left: 20px;"
+                            id="locationId" (change)="getEmployeeSelectEmployee()">
+                            <option disabled selected hidden value=""></option>
+                            <option *ngFor="let location of getLocations" [value]="location.LocationId">
+                                {{location.Location}}</option>
+                        </select>
+                        <label for="locationId" class="floating-label m-0">Location</label>
+                    </div>
+
+                    <div class="form-group floating-label-group dropdown col-md-2 inputPadding mt-2"
+                        (click)="enableManualEntry()">
+                        <input type="text" formControlName="emloyee" class="form-control floating-input"
+                            placeholder="Select Employee" [(ngModel)]="searchText" id="employeeNameId"
+                            (focus)="openDropdown()" (input)="filterEmployees()"
+                            (blur)="closeDropdown(); checkValidEmployee()" autocomplete="off"
+                            [ngClass]="{'is-invalid': isFormSubmitted && !isValidEmployee}" />
+                        <label class="floating-label m-0" style="left: 10px;" for="employeeNameId"
+                            [ngClass]="{'text-danger':(isFormSubmitted || uploadAttenForm.get('emloyee')?.touched) && uploadAttenForm.get('emloyee')?.invalid}">Employee*</label>
+                        <ul class="dropdown-menu" [class.show]="isDropdownOpen && filteredEmployees.length >= 0">
+                            <li *ngFor="let employee of filteredEmployees" (click)="selectEmployeee(employee)"
+                                class="dropdown-item">
+                                {{ employee.EmpName }} ({{ employee.EmpCode }})
+                            </li>
+                            <li *ngIf="filteredEmployees.length === 0" class="dropdown-item text-danger">No results
+                                found
+                            </li>
+                        </ul>
+                        <div style="font-size: 10px;" class="text-danger"
+                            *ngIf="(isFormSubmitted || uploadAttenForm.get('emloyee')?.touched) && uploadAttenForm.get('emloyee')?.invalid">
+                            Invalid Employee</div>
+                        <div *ngIf="isFormSubmitted && !isValidEmployee" class="invalid-feedback m-0">Please select a
+                            valid Employee.</div>
+                        <div *ngIf="errorMessageEmpName" class="error-message">{{ errorMessageEmpName }}</div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding mt-2"
+                        (click)="enableManualEntry()">
+                        <input type="text" formControlName="emloyeeCode" id="emloyeeCodeId"
+                            class="form-control floating-input" readonly>
+                        <label class="floating-label m-0" style="left: 10px;" for="emloyeeCodeId">Employee
+                            Code</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-2 mt-2 inputPadding" (click)="enableManualEntry()">
+                        <div class="custom-date-input">
+                            <input class="form-control floating-input" type="date" placeholder=" "
+                                formControlName="date_from" id="startDataId" [max]="today"
+                                (ngModelChange)="onFromDate()"
+                                [ngClass]="{'text-danger': (isFormSubmitted || uploadAttenForm.get('date_from')?.touched) && (uploadAttenForm.get('date_from')?.invalid)}" />
+                            <label for="startDataId" class="floating-label"
+                                [ngClass]="{'text-danger': (isFormSubmitted || uploadAttenForm.get('date_from')?.touched) && (uploadAttenForm.get('date_from')?.invalid)}">Start
+                                Date*</label>
+                            <div *ngIf="(isFormSubmitted || uploadAttenForm.get('date_from')?.touched) && uploadAttenForm.get('date_from')?.invalid"
+                                class="invalid-feedback m-0">
+                                <span *ngIf="uploadAttenForm.get('date_from')?.errors?.required" class="px-1">Date is
+                                    required.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <input class="form-control floating-input" type="text" formControlName="time" id="timeInput"
+                            placeholder="Select Time" (focus)="openTimePicker()" [readonly]="true" />
+                        <label for="timeInput" class="floating-label">Time</label>
+                    </div> -->
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding mt-2" (click)="enableManualEntry()">
+                        <input type="time" #startTimeInput class="form-control floating-input"
+                            (input)="onTimeInputChange()" placeholder=" " formControlName="startTime" id="starttime"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || uploadAttenForm.get('startTime')?.touched) && (uploadAttenForm.get('startTime')?.invalid)}">
+                        <label for="starttime" class="floating-label" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || uploadAttenForm.get('startTime')?.touched) && (uploadAttenForm.get('startTime')?.invalid)}">Worked
+                            Hours*</label>
+                        <div *ngIf="(isFormSubmitted || uploadAttenForm.get('startTime')?.touched) && uploadAttenForm.get('startTime')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="uploadAttenForm.get('startTime')?.errors?.required" class="px-1">Worked Hours
+                                is
+                                required.</span>
+                        </div>
+                    </div>
+
+
+                </div>
+                 <div >
+                        <div style="display: flex;justify-content: end;">
+                            <button class="HRMS_secondary_button" type="reset"
+                                (click)="resetData(); $event.stopPropagation()">
+                                <i class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+                            <button class="HRMS_primary_button" type="submit" (click)="submitFormData()">
+                                <i class="feather icon-filter"></i>&nbsp;Submit</button>
+                        </div>
+                    </div>
+            </form>
+
+            <!-- <app-timepicker (onChange)="onTimeChange($event)" *ngIf="isTimePickerVisible"
+                (close)="closeTimePicker()"></app-timepicker> -->
+
+        </div>
+    </div>
+
+    <div class="table-wrapper mt-3">
+        <table class="table table-hover align-middle">
+            <thead class="table-light sticky-header">
+                <tr class="inner-shadow ">
+                    <th class="">Company</th>
+                    <th class="">Entity</th>
+                    <th class="">Location</th>
+                    <th class="">Employee</th>
+                    <th class="">Code</th>
+                    <th class="">Date</th>
+                    <th class="">Time</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="isTableData == false && rows.length > 0">
+                <tr *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                    <td>{{row.Company}}</td>
+                    <td>{{row.LegalEntity}}</td>
+                    <td>{{row.Location}}</td>
+                    <td>{{row.FullName}}</td>
+                    <td>{{row.EmpCode}}</td>
+                    <td>{{ row.Date | date:'dd-MM-yy' }}</td>
+                    <td>{{ row.WorkedHrs | slice:0:5 }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="isTableData && errorMessage" class="text-center errorMassage">
+            <span class="text-danger">{{ errorMessage }}</span>
+        </div>
+
+
+    </div>
+    <div class="pagination-controls-wrapper">
+        <div class="row align-items-center" style="padding-top: 1rem;">
+            <div class="col-auto">
+                <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+                <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+                    <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+                </select>
+            </div>
+            <div class="col">
+            </div>
+            <div class="col-auto">
+                <pagination-controls (pageChange)="page = $event"></pagination-controls>
+            </div>
+        </div>
+    </div>
+
+</app-card>

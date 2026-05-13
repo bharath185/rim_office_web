@@ -1,0 +1,24 @@
+<app-toast-message></app-toast-message>
+<div class="overlay" *ngIf="isSpinner"></div>
+<div class="divSpinner" *ngIf="isSpinner">
+    <div class="spinner"></div>
+  </div>
+<app-card [options]="false">
+    <div class="container">
+        <div class="col-md-12">
+            <h5 class="text-center py-2 addAccessHeading">Please Verify OTP </h5>
+            <div class="text-center" style="display: flex;justify-content: center;">
+                <form [formGroup]="otpForm" (ngSubmit)="onSubmit()">
+                    <ng-otp-input [formCtrl]="otp" [config]="config" (onInputChange)="checkOtpValidity($event)"></ng-otp-input>
+                    <div class="mt-5 mb-4">
+                        <button type="submit" class="text-center text-bold HRMS_primary_button"
+                            [disabled]="otpForm.invalid" [ngClass]="{'disabled': otpForm.invalid}"
+                            >
+                            submit
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</app-card>

@@ -1,0 +1,293 @@
+
+::ng-deep.pcoded-content {
+  position: relative;
+  display: block;
+  padding: 0px !important;
+  padding-left: 25px !important;
+  padding-right: 25px !important;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.fileInput {
+  background: white;
+  color: #072f5f;
+  padding: 3px;
+  border: 1px solid #072f5f;
+  cursor: pointer;
+}
+.table-wrapper {
+  max-height: 520px !important;
+}
+
+.table thead th {
+  padding: 10px 10px !important;
+}
+
+.table tbody td {
+  padding: 4px 10px !important;
+}
+.was-validated .date-time-picker:invalid, .date-time-picker.is-invalid{
+  border-color: #ff5370;
+  padding: 0px !important;
+}
+
+.modal-header {
+  position: relative;
+  background-color: #F8F9FA;
+  h1 {
+    color: rgb(37, 37, 37);
+  }
+  button {
+    color: red($color: #000000);
+    background: white;
+  }
+}
+.modal-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.btn-close {
+  position: absolute;
+  left: 92%;
+}
+.info-item {
+  display: flex;
+}
+
+.info-item span {
+  display: inline-block;
+}
+
+.text-muted {
+  width: 110px;
+  text-align: right;
+  margin-right: 5px;
+}
+
+.fw-bold {
+  font-weight: bold;
+}
+
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.spinner1 {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 9px solid;
+  border-color: #dbdcef;
+  border-right-color: #072f5f;
+  animation: spinner-d3wgkg 1s infinite linear;
+}
+
+.divSpinner1 {
+  position: relative;
+
+  .spinner1 {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-top: 10rem;
+    z-index: 2;
+  }
+}
+
+@keyframes spinner-d3wgkg {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.error-message {
+  font-size: 10px;
+}
+
+.was-validated .date-time-picker:invalid,
+.date-time-picker.is-invalid {
+  border-color: #ff5370;
+  padding: 2px;
+}
+
+.highlight-today {
+  font-weight: bold;
+}
+
+// ************this is for custome date*******
+.custom-date-input {
+  position: relative;
+}
+
+.custom-date-input input {
+  // border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 3px 5px;
+  width: 100%;
+  outline: none;
+  font-size: 11px;
+  padding-top: 16px;
+  line-height: 1.9;
+}
+
+.custom-date-input input::placeholder {
+  font-size: 5px;
+  color: #aaa;
+}
+
+.custom-date-input label {
+  position: absolute;
+  color: #888;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.custom-date-input input:focus+label,
+.custom-date-input input:not(:placeholder-shown)+label {
+  top: 1px;
+  left: 5px;
+  font-size: 12px;
+}
+
+// ************this is for custome date*******
+
+.inner-shadow {
+  .action {
+    width: 12%;
+  }
+}
+
+// search Input Field
+.dropdown-icon {
+  position: absolute;
+  right: 10px;
+  top: 23%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.dropdown{
+  font-size: 12px;
+}
+.dropdown-menu {
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.dropdown-item {
+  cursor: pointer;
+}
+
+.dropdown .dropdown-item {
+  padding: 5px 6px;
+}
+
+@media only screen and (max-width: 991px) {
+  ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+      margin-left: 0px;
+      margin-top: 57px !important;
+  }
+}
+
+//this is for upload file
+.upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.upload-box:hover {
+  background: #eef0ff;
+}
+
+.upload-icon {
+  font-size: 20px;
+  color: #6c63ff;
+}
+
+.file-list {
+  width: 150px;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f1f3f5;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.file-item i {
+  font-size: 14px;
+  color: #6c63ff;
+}
+
+.delete-icon {
+  cursor: pointer;
+  color: #dc3545;
+}
+
+.delete-icon:hover {
+  color: #a71d2a;
+}
+
+.preview-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+}
+
+.pdf-preview .pdf-name {
+  color: #6c63ff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.pdf-preview .pdf-name:hover {
+  color: #4838d1;
+}
+
+.file-preview {
+  margin-bottom: 15px;
+}
+
+.upload-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 25px;
+  background: #f1f3f5;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+  font-size: 14px;
+}
+
+.upload-box:hover {
+  background: #eef0ff;
+}
+
+.upload-icon {
+  font-size: 16px;
+  color: #6c63ff;
+}
+
+//this is for upload file
+.table-wrapper {
+  max-height: 400px !important;
+}

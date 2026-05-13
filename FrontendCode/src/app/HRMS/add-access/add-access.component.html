@@ -1,0 +1,128 @@
+
+<!-- This is New Access Policy -->
+<app-toast-message></app-toast-message>
+<div class="dis-fl-end">
+  <div class="heading-dash-sub">
+    <span>Access</span>
+    <ol class="breadcrumb fade-left">
+      <li class="breadcrumb-item active dis-fl" aria-current="page">
+        <span class="breadC">Access Policy</span><span class="breadC"><i
+            class="feather icon-chevron-right"></i></span><span class="breadC col-act">Add Access</span>
+      </li>
+    </ol>
+  </div>
+</div>
+
+<app-card [options]="false">
+  <div class="col-md-12">
+    <form [formGroup]="addAccessForm">
+      <div class="row">
+        <div class="form-group floating-label-group col-md-3 inputPadding">
+          <select class="form-control floating-input" aria-label="Default select example" formControlName="department"
+            (change)="callRoleApi()" id="departmentSelect"
+            [ngClass]="{'is-invalid': (isFormSubmitted || addAccessForm.get('department')?.touched) && addAccessForm.get('department')?.invalid}">
+            <option style="width:fit-content" *ngFor="let option of getDepartementName" [value]="option.DeptId">
+              {{ option.DeptName.length > 20 ? (option.DeptName | slice: 0:20) + '...' : option.DeptName
+              }}
+            </option>
+          </select>
+          <label for="departmentSelect" class="floating-label" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || addAccessForm.get('department')?.touched) && addAccessForm.get('department')?.invalid}">
+            Department*
+          </label>
+          <div
+            *ngIf="(isFormSubmitted || addAccessForm.get('department')?.touched) && addAccessForm.get('department')?.invalid"
+            class="invalid-feedback m-0">
+            <span *ngIf="addAccessForm.get('department')?.errors?.required">Department is required.</span>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 inputPadding">
+          <select class="form-control floating-input" aria-label="Default select example" formControlName="role"
+            id="roleSelect" (change)="onModuleSelect($event)"
+            [ngClass]="{'is-invalid': (isFormSubmitted || addAccessForm.get('role')?.touched) && addAccessForm.get('role')?.invalid}">
+            <option value="" disabled hidden></option>
+            <option *ngFor="let option of getDepartementRole" [value]="option.RoleId">
+              {{ option.RoleName.length > 28 ? (option.RoleName | slice: 0:28) + '...' : option.RoleName
+              }}
+            </option>
+          </select>
+          <label for="roleSelect" class="floating-label" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || addAccessForm.get('role')?.touched) && addAccessForm.get('role')?.invalid}">
+            Role*
+          </label>
+          <div *ngIf="(isFormSubmitted || addAccessForm.get('role')?.touched) && addAccessForm.get('role')?.invalid"
+            class="invalid-feedback m-0">
+            <span *ngIf="addAccessForm.get('role')?.errors?.required">Role is required.</span>
+          </div>
+        </div>
+
+
+      </div>
+    </form>
+  </div>
+
+  <div>
+    <!-- *ngIf="isAccessTableShow" -->
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-md-9">
+          <h5 class="mb-0 form-heading">Add Access</h5>
+        </div>
+        <div class="col-md-3 text-end">
+          <input type="text" class="form-control rad-50" placeholder="Search" [(ngModel)]="globalFilter"
+            (input)="applyGlobalFilter()" />
+        </div>
+      </div>
+    </div>
+    
+    <div class="table-wrapper mt-3">
+      <table class="table table-hover align-middle">
+        <thead class="table-light sticky-header">
+          <tr>
+            <th>
+              <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleAll()" />
+            </th>
+            <th>Module</th>
+            <th>SubModule</th>
+            <th>PageModule</th>
+            <th>
+              <input type="checkbox" [(ngModel)]="selectAllView" (change)="toggleView()" /> View
+            </th>
+            <th>
+              <input type="checkbox" [(ngModel)]="selectAllAdd" (change)="toggleAdd()" /> Add
+            </th>
+            <th>
+              <input type="checkbox" [(ngModel)]="selectAllDelete" (change)="toggleDelete()" /> Delete
+            </th>
+            <th>
+              <input type="checkbox" [(ngModel)]="selectAllUpdate" (change)="toggleUpdate()" /> Update
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let page of pagesData">
+            <td>
+              <input type="checkbox" [(ngModel)]="page.selected" (change)="toggleRowPermissions(page)" />
+            </td>
+            <td>{{ page.ModuleName }}</td>
+            <td>{{ page.SubModuleName }}</td>
+            <td>{{ page.PageName }}</td>
+            <td><input type="checkbox" [(ngModel)]="page.canView" /></td>
+            <td><input type="checkbox" [(ngModel)]="page.canAdd" /></td>
+            <td><input type="checkbox" [(ngModel)]="page.canDelete" /></td>
+            <td><input type="checkbox" [(ngModel)]="page.canUpdate" /></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="text-end pt-4">
+      <button class="HRMS_primary_button " (click)="submitSelected()" type="submit"><i class="feather icon-check"></i>&nbsp;Submit</button>
+      <!-- <button class="HRMS_secondary_button" (click)="editAccess()" type="submit"><i class="feather icon-check"></i>&nbsp;Update</button>
+      <button style="background-color: red;" class="HRMS_primary_button" (click)="deleteAccess()"
+        type="submit"> <i class="feather icon-trash-2"></i>&nbsp;Delete</button> -->
+    </div>
+  </div>
+
+
+</app-card>

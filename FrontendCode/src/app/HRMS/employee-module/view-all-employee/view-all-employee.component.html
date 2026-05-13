@@ -1,0 +1,611 @@
+<app-toast-message></app-toast-message>
+
+<div class="dis-fl-end">
+    <div class="heading-dash-sub">
+        <span>Employee</span>
+        <ol class="breadcrumb fade-left">
+            <li class="breadcrumb-item active dis-fl" aria-current="page">
+                <span class="breadC">Employee Module</span><span class="breadC"><i
+                        class="feather icon-chevron-right"></i></span><span class="breadC col-act">Employee</span>
+            </li>
+        </ol>
+    </div>
+
+    <div class="top-nav d-flex gap-2 mt-2">
+        <button style="height:32px" *ngFor="let tab of tabs; let i = index" class="nav-btn"
+            [class.active]="selectedTab === i" (click)="selectTab(i)" [routerLink]="tab.url">
+            <i [class]="tab.icon"></i> {{ tab.title }}
+        </button>
+    </div>
+
+</div>
+
+<div class="col-md-12">
+    <div class="row justify-content-between card-empalt">
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="card c-d-3">
+                <div class="col-md-12">
+                    <div class="row m-0">
+                        <div class="col-md-6">
+                            <span class="tot">{{ totalEmployees }}</span>
+                            <p class="card_header m-0">Total</p>
+                            <div class="spinner-border spinner-border-sm" *ngIf="isSpinner">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-center align-items-center py-1">
+                            <i class="feather icon-users"></i>
+                        </div>
+                    </div>
+                    <hr class="m-0">
+                    <div class="text-center mt-2">
+                        <a class="cursor-pointer" (click)="viewAll('total')">View all</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="card c-d-1">
+                <div class="col-md-12">
+                    <div class="row m-0">
+                        <div class="col-md-6">
+                            <span class="tot">{{ activeEmployeeDetails?.length }}</span>
+
+                            <p class="card_header m-0">Active</p>
+                            <div class="spinner-border spinner-border-sm" *ngIf="isSpinner">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-center align-items-center py-1">
+                            <i class="feather icon-user-check"></i>
+                        </div>
+                    </div>
+                    <hr class="m-0">
+                    <div class="text-center mt-2">
+                        <a class="cursor-pointer" (click)="viewAll('active')">View</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="card c-d-2">
+                <div class="col-md-12">
+                    <div class="row m-0">
+                        <div class="col-md-6">
+                            <span class="tot">{{ inactiveEmployeeDetails?.length }}</span>
+
+                            <p class="card_header m-0">Deactive</p>
+                            <div class="spinner-border spinner-border-sm" *ngIf="isSpinner">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-center align-items-center py-1">
+                            <i class="feather icon-user-x"></i>
+                        </div>
+                    </div>
+                    <hr class="m-0">
+                    <div class="text-center mt-2">
+                        <a class="cursor-pointer" (click)="viewAll('inactive')">View</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="card c-d-6">
+                <div class="col-md-12">
+                    <div class="row m-0">
+                        <div class="col-md-6">
+                            <span class="tot">{{ relievedEmployeeDetails?.length }}</span>
+
+                            <p class="card_header m-0">Relieved</p>
+                            <div class="spinner-border spinner-border-sm" *ngIf="isSpinner">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-center align-items-center py-1">
+                            <i class="feather icon-user-x"></i>
+                        </div>
+                    </div>
+                    <hr class="m-0">
+                    <div class="text-center mt-2">
+                        <a class="cursor-pointer" (click)="viewAll('relieved')">View</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- <div class="col-12 col-sm-6 col-md-2">
+            <div class="card c-d-4">
+                <div class="col-md-12">
+                    <div class="row m-0">
+                        <div class="col-md-6">
+                            <span class="tot">{{ maleEmployeeDetails?.length }}</span>
+
+                            <p class="card_header m-0">Male</p>
+                            <div class="spinner-border spinner-border-sm" *ngIf="isSpinner">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-center align-items-center py-1">
+                            <i class="feather icon-user"></i>
+                        </div>
+                    </div>
+                    <hr class="m-0">
+                    <div class="text-center mt-2">
+                        <a class="cursor-pointer" (click)="viewAll('male')">View</a>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+
+        <!-- <div class="col-12 col-sm-6 col-md-2">
+            <div class="card c-d-5">
+                <div class="col-md-12">
+                    <div class="row m-0">
+                        <div class="col-md-6">
+                            <span class="tot">{{ femaleEmployeeDetails?.length }}</span>
+
+                            <p class="card_header m-0">Female</p>
+                            <div class="spinner-border spinner-border-sm" *ngIf="isSpinner">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-center align-items-center py-1">
+                            <i class="feather icon-user"></i>
+                        </div>
+                    </div>
+                    <hr class="m-0">
+                    <div class="text-center mt-2">
+                        <a class="cursor-pointer" (click)="viewAll('female')">View</a>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+    </div>
+    <div class="divSpinner" *ngIf="isSpinner1">
+        <div class="spinner"></div>
+    </div>
+
+    <fieldset class="border p-3 mb-3 custom-fieldset">
+        <div [formGroup]="employeeFilterForm">
+            <div class="row">
+                <!-- <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="company" id="companyId"
+                        (change)="calllegalEntity($event)">
+                        <option value="" selected hidden></option>
+                        <option *ngFor="let company of getDDCompany" [value]="company.CompId">
+                            {{company.Company}}</option>
+                    </select>
+                    <label for="companyId" class="floating-label m-0" style="left: 20px;">Company</label>
+                </div> -->
+
+                <!-- <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="LegalEntity" id="entityId"
+                        (change)="getBusinessUnit()" (change)="callLocation()">
+                        <option selected hidden value=""></option>
+                        <option *ngFor="let entity of getLegalEntity" [value]="entity.LEId">
+                            {{entity.LegalEntity}}</option>
+                    </select>
+                    <label for="entityId" class="floating-label m-0" style="left: 20px;">Entity</label>
+                </div> -->
+
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="BusinessUnit" id="businessId">
+                        <!-- (change)="callLocation()" -->
+                        <option disabled selected hidden value=""></option>
+                        <option *ngFor="let unitList of getBusinessUnitlist" [value]="unitList.BUId">
+                            {{unitList.BusinessUnit}}</option>
+                    </select>
+                    <label for="businessId" class="floating-label m-0" style="left: 20px;">Business Unit</label>
+                </div>
+
+
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="Location" id="locationId">
+                        <option disabled selected hidden value=""></option>
+                        <option *ngFor="let location of getLocations" [value]="location.LocationId">
+                            {{location.Location}}</option>
+                    </select>
+                    <label for="locationId" class="floating-label m-0" style="left: 20px;">Location</label>
+                </div>
+
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="DeptName" id="depNameId"
+                        (focus)="onFocus($event)" (blur)="onBlur($event)" (change)="callDDDesignation()">
+                        <option value="" selected hidden></option>
+                        <option *ngFor="let option of getDepartementName" [value]="option['DeptId']">
+                            {{ option['DeptName']['length'] > 20 ? (option['DeptName'] | slice: 0:20) + '...' :
+                            option['DeptName'] }}
+                        </option>
+                    </select>
+                    <label for="depNameId" class="floating-label m-0" style="left: 20px;">Department</label>
+                </div>
+
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="Designation" id="designationId"
+                        (focus)="onFocus($event)" (blur)="onBlur($event)">
+                        <option value="" selected hidden></option>
+                        <option *ngFor="let option of getDepartementRole" [value]="option['DesignationId']">
+                            {{ option.Designation.length > 17 ? (option.Designation | slice: 0:17) + '...' :
+                            option.Designation }}
+                        </option>
+                    </select>
+                    <label for="designationId" class="floating-label m-0" style="left: 20px;">Designation</label>
+                </div>
+
+                <div class="form-group floating-label-group col-md-2 inputPadding ">
+                    <div class="custom-date-input  ">
+                        <input type="date" formControlName="date_from" class="form-control floating-input"
+                            id="carrFromDateId" (ngModelChange)="onFromDateCareer()" [max]="yesterday"
+                            [ngClass]="{'is-invalid': isFromDateInvalidEmpForm()}" />
+                        <label for="carrFromDateId" class="floating-label"
+                            [ngClass]="{'text-danger': (isFormSubmitted || employeeFilterForm.get('date_from')?.touched) && employeeFilterForm.get('date_from')?.invalid}">
+                            From Date
+                        </label>
+                        <!-- <div *ngIf="isFromDateInvalidEmpForm()" class="invalid-feedback m-0">
+                            <span *ngIf="employeeFilterForm.get('date_from')?.errors?.required">From Date is
+                                required.</span>
+                        </div> -->
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-2">
+                    <div class="custom-date-input ">
+                        <input type="date" formControlName="date_to" class="form-control floating-input"
+                            id="carrToDateId" (ngModelChange)="onToDateCareer()" [max]="yesterday" [min]="minDateCareer"
+                            [ngClass]="{'is-invalid': isToDateInvalidEmpForm() || dateRangeErrorEmpForm}" />
+                        <label for="carrToDateId" class="floating-label"
+                            [ngClass]="{'text-danger': (isFormSubmitted || employeeFilterForm.get('date_to')?.touched) && employeeFilterForm.get('date_to')?.invalid}">
+                            To Date
+                        </label>
+                        <div *ngIf="isToDateInvalidEmpForm() || dateRangeErrorEmpForm" class="invalid-feedback m-0">
+                            <!-- <span *ngIf="employeeFilterForm.get('date_to')?.errors?.required">To Date is
+                                required.</span> -->
+                            <span *ngIf="dateRangeErrorEmpForm">To Date must be after From Date.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="statusEmpForm" id="statusEmpFormId">
+                        <option value="" selected hidden></option>
+                        <option value="JOINED">Joined</option>
+                        <option value="RELIEVED">Relieved</option>
+                        <option value="BOTH">Both</option>
+                    </select>
+                    <label for="statusEmpFormId" class="floating-label m-0" style="left: 20px;">Status</label>
+                </div>
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <select class="form-control floating-input" formControlName="employeeType" (focus)="onFocus($event)"
+                        (blur)="onBlur($event)" id="employeeTypeId">
+                        <option value="" selected disabled hidden></option>
+                        <option *ngFor="let employeeType of getEmployeeTypeList" [value]="employeeType.EmpTypeId">
+                            {{employeeType.EmpType}}</option>
+                    </select>
+                    <label for="employeeTypeId" class="floating-label m-0" style="left: 20px;">Employee type</label>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-end">
+                        <button class="HRMS_secondary_button" type="reset" (click)="resetData()">
+                            <i class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+                        <button class="HRMS_primary_button" type="button" (click)="submitFilterData()">
+
+                            <span *ngIf="!isSpinner">
+                                <i class="feather icon-filter"></i>&nbsp;Filter
+                            </span>
+
+                            <span *ngIf="isSpinner">
+                                <i class="fa fa-spinner fa-spin"></i>&nbsp;Filtering...
+                            </span>
+
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </fieldset>
+
+    <app-card [options]="false" style="height: 100vh;">
+        <div class="divSpinner" *ngIf="isSpinner">
+            <div class="spinner"></div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-9 d-flex">
+                    <div class="col-md-2">
+                        <h5 class="mb-0 form-heading">Employee List</h5>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center gap-2">
+
+                        <!-- Search -->
+                        <input type="text" class="form-control rad-50" #inputValue (keyup)="applyFilter($event)"
+                            placeholder="Search" id="serachInputId" />
+
+                        <!-- Export Button -->
+                        <div class="export-container position-relative">
+                            <button class="export-button d-flex align-items-center" (click)="toggleDropdownExport()">
+                                <i class="feather icon-upload me-1"></i> Export
+                            </button>
+
+                            <div class="dropdown-content position-absolute end-0 mt-1" *ngIf="dropdownVisible"
+                                style="z-index: 999;">
+                                <div class="dropdown-item" (click)="exportFile('excel')">
+                                    <i class="fas fa-file-excel me-1"></i> Excel
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="table-wrapper pt-2">
+            <table class="table table-hover align-middle">
+                <thead class="table-light sticky-header">
+                    <tr class="inner-shadow ">
+                        <th>Sl No.</th>
+                        <th *ngIf="showJoiningDate">Joining Date</th>
+                        <th *ngIf="showRelievedDate">Relieved Date</th>
+                        <th class="">Name</th>
+                        <th class="">Department</th>
+                        <th class="">Designation</th>
+                        <!-- <th class="">Email Id</th> -->
+                        <th class="">Emp Code</th>
+                        <th class="">Company</th>
+                        <th class="">Rept.Manager</th>
+                        <th class="">Employment</th>
+                        <th class="text-center">Action</th>
+                        <th class="text-end me-2"
+                            *ngIf="(controlAccessPage?.UpdateAccess === true || controlAccessPage?.DeleteAccess === true)">
+                            Manage</th>
+                        <th>Relieved</th>
+                    </tr>
+                </thead>
+                <tbody *ngIf="isTableData == false">
+                    <tr
+                        *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page } ;let i = index;">
+                        <td>
+                            {{ i + 1 }}
+                        </td>
+                        <!-- Joining Date -->
+                        <td *ngIf="showJoiningDate">
+                            <span *ngIf="row.EmpStatus !== 'Relieved'">
+                                {{ row.JoiningDate | date:'dd-MM-yyyy' }}
+                            </span>
+                        </td>
+
+                        <!-- Relieved Date -->
+                        <td *ngIf="showRelievedDate">
+                            <span *ngIf="row.EmpStatus === 'Relieved'">
+                                {{ row.RelievedDate | date:'dd-MM-yyyy' }}
+                            </span>
+                        </td>
+                        <td class="">
+                            <span>{{row.FirstName}} {{row.MiddleName}} {{row.LastName}}</span>
+                        </td>
+                        <td class="">
+                            <span>{{row.DeptName}}</span>
+                        </td>
+                        <td class="">
+                            <span>{{row.Designation}}</span>
+                        </td>
+                        <!-- <td class="">
+                            <span>{{row.EmailId}}</span>
+                        </td> -->
+                        <td class="">
+                            <span>{{row.EmpCode}}</span>
+                        </td>
+                        <td class="">
+                            <span>{{row.Company}}</span>
+                        </td>
+                        <td class="">
+                            <span>{{row.ReportEmpCode}}</span>
+                        </td>
+                        <td>
+                            <span class="status-badge" [ngClass]="{
+          'status-active': row.EmpStatus === 'Active',
+          'status-inactive': row.EmpStatus === 'Inactive' || row.EmpStatus === 'Deactive' || row.EmpStatus === '0',
+          'status-relieved': row.EmpStatus === 'Relieved'
+        }">
+                                {{ row.EmpStatus }}
+                            </span>
+                        </td>
+                        <td class="align-middle p-0 m-0">
+                            <label class="toggle-switch m-0"
+                                [ngClass]="{'disabled-switch': row.EmpStatus === 'Relieved'}">
+                                <input type="checkbox" [ngClass]="{
+                 'active': row.EmpStatus === 'Active',
+                 'inactive': row.EmpStatus === 'Inactive' || row.EmpStatus === 'Deactive'
+               }" [disabled]="row.EmpStatus === 'Relieved'" (click)="toggleState(row)">
+                                <span class="slider-content">
+                                    <i class="status-icon" [ngClass]="
+                 row.EmpStatus === 'Active' ? 'fas fa-check-circle text-success' :
+                 (row.EmpStatus === 'Inactive' || row.EmpStatus === 'Deactive') ? 'fas fa-times-circle text-danger' :
+                 'fas fa-ban text-secondary'
+               ">
+                                    </i>
+                                    <span class="status-text ms-1">
+                                        {{ row.EmpStatus === 'Active' ? 'Active' :
+                                        (row.EmpStatus === 'Inactive' || row.EmpStatus === 'Deactive') ? 'Inactive' :
+                                        'Relieved' }}
+                                    </span>
+                                </span>
+                            </label>
+                        </td>
+
+                        <td class="text-end me-2"
+                            *ngIf="(controlAccessPage?.UpdateAccess === true) || (controlAccessPage?.DeleteAccess === true)">
+                            <ng-container *ngIf="controlAccessPage?.UpdateAccess === true">
+                                <span><i class="action-icon action-edit feather icon-edit-2" (click)="onViewEdit(row)"
+                                        ></i></span>
+                                        <!-- [class.disabled-icon]="row.EmpStatus === 'Relieved'" -->
+                            </ng-container>
+                            <!-- <ng-container *ngIf="controlAccessPage?.DeleteAccess === true">
+                                <span><i class="action-icon action-delete feather icon-trash-2"
+                                        (click)="onViewDelete(row)" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModal"></i></span>
+                            </ng-container> -->
+                        </td>
+                        <td class="text-center" (click)="row.EmpStatus !== 'Relieved' && onViewRelieved(row)"
+                            [attr.data-bs-toggle]="row.EmpStatus !== 'Relieved' ? 'modal' : null"
+                            [attr.data-bs-target]="row.EmpStatus !== 'Relieved' ? '#exampleRelieved' : null">
+
+                            <i class="action-icon action-delete feather icon-user-x text-secondary"
+                                [class.disabled-icon]="row.EmpStatus === 'Relieved'" title="Relieved">
+                            </i>
+                        </td>
+
+                    </tr>
+                </tbody>
+
+            </table>
+            <div *ngIf="isTableData == true" class="text-center errorMassage">
+                <span class="text-danger">{{errorMessage}}</span>
+            </div>
+        </div>
+
+        <div class="pagination-controls-wrapper">
+            <div class="row align-items-center" style="padding-top: 1rem;">
+                <div class="col-auto">
+                    <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+                    <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+                        <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+                    </select>
+                </div>
+                <div class="col">
+                </div>
+                <div class="col-auto">
+                    <pagination-controls (pageChange)="page = $event"></pagination-controls>
+                </div>
+            </div>
+        </div>
+    </app-card>
+</div>
+
+
+<!-- Modal Delete-->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-confirm">
+        <div class="modal-content">
+            <div class="text-end">
+                <button type="reset" class="btn-close " data-bs-dismiss="modal" aria-label="Close" #closeModal
+                    style="background-color: rgb(228, 208, 208);" (click)="resetDeleteForm()"></button>
+            </div>
+            <div class="modal-header flex-column py-0">
+                <div class="icon-box" *ngIf="!isRecordDeleted">
+                    <i class="fas fa-times checkmark_check"></i>
+                </div>
+                <div class="modal-wrapper" *ngIf="isRecordDeleted"> <svg class="checkmark"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                </div>
+                <h4 class="modal-title w-100">Are you sure?</h4>
+            </div>
+            <div class="modal-body py-0">
+                <p>Do you really want to delete these records?This process cannot be undone.</p>
+                <div class="descrption w-100">
+                    <p class="m-0">Reason&nbsp;:&nbsp;</p>
+                    <form [formGroup]="deleteForm">
+                        <textarea type="text" (focus)="onFocus($event)" (blur)="onBlur($event)" formControlName="reason"
+                            id="nameInput" placeholder=" " class="wider-textarea"></textarea>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                    (click)="resetDeleteForm()">Cancel</button>
+                <button type="submit" class="btn btn-danger" (click)="deleteEmployee()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Relieved-->
+<div class="modal fade" id="exampleRelieved" tabindex="-1" aria-labelledby="exampleRelievedLabel"
+    data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="divSpinner1" *ngIf="isSpinner1">
+                <div class="spinner1"></div>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    <div class="text-end">
+                        <button type="reset" class="btn-close " data-bs-dismiss="modal" #closeModalRelieve
+                            aria-label="Close"></button>
+                    </div>
+                    <form [formGroup]="RelieveForm">
+                        <div class="row">
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <div class="custom-date-input">
+                                    <input type="date" placeholder=" " id="addStartDateId" formControlName="date_from"
+                                        class="form-control floating-input" (ngModelChange)="onFromDate()"
+                                        [ngClass]="{'is-invalid': isFromDateInvalid()}" />
+                                    <label for="addStartDateId" class="floating-label" style="left: 20px;"
+                                        [ngClass]="{'text-danger': (isFormSubmitted || RelieveForm.get('date_from')?.touched) && (RelieveForm.get('date_from')?.invalid)}">Effective
+                                        Date*</label>
+                                    <div *ngIf="isFromDateInvalid()" class="invalid-feedback m-0">
+                                        <span *ngIf="RelieveForm.get('date_from')?.errors?.required">Effective
+                                            Date is
+                                            required.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 inputPadding">
+                                <div class="custom-date-input">
+                                    <input type="date" placeholder=" " id="addEndDateId" formControlName="date_to"
+                                        class="form-control floating-input" (ngModelChange)="onToDate()" [min]="minDate"
+                                        [ngClass]="{'is-invalid': isToDateInvalid() || dateRangeError}" />
+                                    <label for="addEndDateId" class="floating-label" style="left: 20px;"
+                                        [ngClass]="{'text-danger': (isFormSubmitted || RelieveForm.get('date_to')?.touched) && (RelieveForm.get('date_to')?.invalid)}">Relieving
+                                        Date*</label>
+                                    <div *ngIf="isToDateInvalid() || dateRangeError" class="invalid-feedback m-0">
+                                        <span *ngIf="RelieveForm.get('date_to')?.errors?.required">Relieving Date is
+                                            required.</span>
+                                        <span *ngIf="dateRangeError">Relieving Date must be after Effective
+                                            Date.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group col-md-3 ">
+                                <input type="text" class="form-control floating-input  "
+                                    formControlName="relievingReason" id="nameInput" placeholder=" ">
+                                <label for="nameInput" class="floating-label" style="left: 20px;">Reason</label>
+                            </div>
+
+                            <div class="form-check col-md-3 mt-2">
+                                <input type="checkbox" class="form-check-input" formControlName="isRelieved"
+                                    id="isRelieved" />
+                                <label class="form-check-label" for="isRelieved">
+                                    Relieve
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+
+
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                    (click)="resetRelieve()">Cancel</button>
+                <button type="submit" class="btn btn-danger" (click)="relieveSubmit()">Relieve</button>
+            </div>
+        </div>
+    </div>
+</div>

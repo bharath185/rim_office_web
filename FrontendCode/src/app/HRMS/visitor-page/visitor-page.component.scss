@@ -1,0 +1,127 @@
+select:focus {
+    outline: none;
+    box-shadow: none;
+    border-color: #ccc;
+  
+  }
+  
+   select:focus-visible {
+    outline: none;
+    box-shadow: none;
+    border-color: #666;
+   
+  }
+
+.custom-file-upload-wrapper {
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    margin-top: 24px;
+  }
+  
+  input[type="file"] {
+    display: none;
+  }
+  
+  .custom-file-upload {
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    background-color: #072f5f;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    text-align: center;
+  }
+  
+  .custom-file-upload:hover {
+    background-color: #072f5f;
+  }
+  
+  .image-preview {
+    margin-top: 10px;
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .image-preview img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+  
+  .autocomplete {
+    position: relative;
+  }
+  
+  .suggestions-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    border: 1px solid #ccc;
+    background: white;
+    z-index: 1000;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 150px; /* Adjust this value as needed */
+    overflow-y: auto;  /* Enable vertical scrolling */
+  }
+  
+  .suggestions-list li {
+    padding: 8px;
+    cursor: pointer;
+  }
+  
+  .suggestions-list li:hover {
+    background-color: #eee;
+  }
+  
+  #time-picker {
+    // background-color: #fff;
+    padding: 6px;
+    border-radius: 5px;
+    // box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    select {
+        font-size: 15px;
+        margin: 0 1px;
+    }
+  }
+
+/* image-upload.component.css */
+.img-thumbnail {
+  max-width: 50%;
+  height: auto;
+  // margin-top: 10px;
+}
+
+.fileInput{
+  background: #072f5f;
+  color: white;
+  border-radius: 3px;
+  padding: 3px
+}
+.uploadIcon{
+  text-align: center;
+  margin: 0px;
+  margin-top: 7px;
+  margin-left: 8px;
+  color: #072f5f;
+  font-size: 1.1rem;
+}
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+}
+.disabled-icon {
+  opacity: 0.5;
+  pointer-events: none; /* Prevents clicks */
+  cursor: not-allowed; /* Change cursor to indicate disabled state */
+}

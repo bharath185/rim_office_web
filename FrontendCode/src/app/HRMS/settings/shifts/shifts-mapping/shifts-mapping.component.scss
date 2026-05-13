@@ -1,0 +1,103 @@
+::ng-deep .pcoded-content {
+    position: relative;
+    display: block;
+    padding: 0px !important;
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+
+}
+
+.pcoded-header {
+    .card {
+        margin: 0px !important;
+    }
+}
+
+.table thead th {
+    padding: 10px 10px !important;
+}
+
+.table tbody td {
+    padding: 5px 10px !important;
+}
+
+// ************This is for Table Hover Things********
+.shift-name {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+::ng-deep .tooltip-inner {
+    color: white;
+    background-color: rgb(68, 68, 240) !important;
+    text-align: center;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+// ************This is for Table Hover Things********
+
+.addShift {
+    // display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    a {
+        background: white;
+        color: #072f5f;
+        padding: 3px;
+        border: 1px solid #072f5f;
+        cursor: pointer;
+        margin-bottom: 8px;
+    }
+}
+
+.infoButton {
+    background: white;
+    color: #072f5f;
+    padding: 3px;
+    border: 1px solid #072f5f;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+/* Right Modal Slide-In */
+.modal.fade .modal-end {
+    position: fixed;
+    z-index: 1055;
+    top: 0;
+    right: 0;
+    margin: 0;
+    width: 100%;
+    transform: translate3d(100%, 0, 0);
+    transition: transform .3s cubic-bezier(.25, .8, .25, 1);
+}
+
+.modal.fade.show .modal-end {
+    transform: translate3d(0, 0, 0);
+}
+
+/* Remove border */
+.modal-content,
+.modal-footer,
+.modal-header {
+    border: none;
+}
+
+
+.btn-light {
+    color: #212529;
+    background-color: #f5f5f6;
+    border-color: #f5f5f6;
+}
+
+@media only screen and (max-width: 991px) {
+    ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+        margin-left: 0px;
+        margin-top: 57px !important;
+    }
+}
+
+.table-wrapper {
+    max-height: 450px !important;
+}

@@ -1,0 +1,608 @@
+
+<div class="dis-fl-end">
+    <div class="heading-dash-sub">
+        <span>Review Form</span>
+        <ol class="breadcrumb fade-left">
+            <li class="breadcrumb-item active dis-fl" aria-current="page">
+                <span class="breadC">Performance Portal</span><span class="breadC"><i
+                        class="feather icon-chevron-right"></i></span><span class="breadC col-act">Review Form</span>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<app-card [options]="false">
+    <div class="d-flex justify-content-between align-items-center w-100">
+        <button type="button" class="btn" [ngStyle]="{ 'background-color': showform ? '#072f5f' : 'white' }"
+            [ngClass]="{ 'text-white': showform }" style="border-color: #072f5f; color: #072f5f; border-radius: 0%;"
+            (click)="reviewformbutton()">
+            <i class="fas fa-file"></i> Fill Review Form
+        </button>
+
+        <div>
+            <span>Financial Details: </span>
+            <strong>{{ getFinancialYear[0]?.FinancialDetails }}</strong>
+        </div>
+    </div>
+
+    <app-toast-message></app-toast-message>
+    <div class="mt-2" *ngIf="showform">
+        <div *ngIf="tab1">
+            <div class="row">
+                <div class="col-9">
+                    <div class="form-section">
+                        <h4 class="text-center" style="color: #072f5f;">Performance Appraisal Form</h4>
+                        <p style="color: #072f5f;">
+                            This form has been designed to set the goals & document the progress of the employee
+                            throughout the year &
+                            also to review the adoption to the Company values.
+                        </p>
+                    </div>
+                    <div class="form-guidelines" style="color: #072f5f;">
+                        <h6 style="color: #072f5f;">Guidelines for the review process:</h6>
+                        <div style="padding-left: 20px;">
+                            <p>1. Employee has to set goals at the beginning of the year in line with the business plans
+                                and discuss
+                                with manager.
+                            <p>2. This is applicable for existing employees & new joiners have to set goals within 1
+                                month from the date
+                                of joining.</p>
+                            <p>3. Please note that the goals can be moderately appended/modified in October based on the
+                                business
+                                direction.</p>
+                            <p>4. Manager has to review goal progress once in 3 months & provide continual feedback.</p>
+                        </div>
+
+                    </div>
+
+                    <div class="goals-section" style="color: #072f5f;">
+                        <h6 style="color: #072f5f;">Goals (80%)</h6>
+                        <ol>
+                            <li> SMART goals (Specific, Measurable, Attainable, Relevant, Time-bound) to be set by
+                                employee.</li>
+                            <li> Number of goals to be set - minimum 3 goals & maximum 5 goals.</li>
+                            <li> Goals can further have multiple measures. For example:
+                                <ul>
+                                    <li> Cost per unit (INR)</li>
+                                    <li> Production cost variance (%)</li>
+                                    <li> Actual vs budgeted cost variance (INR)</li>
+                                </ul>
+                            </li>
+                            <li> Weightage should be assigned based on the business impact of the objective.</li>
+                            <li> Goals to be finalized in alignment with Manager.</li>
+                            <li> Goals shall be reviewed & rated once in 6 months (April & Oct).</li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="table-wrapper mt-3">
+                        <table class="table table-hover align-middl">
+                            <thead class="table-light sticky-header">
+                                <tr class="inner-shadow">
+                                    <th>Rating</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="rating-badge unsatisfactory">1</span></td>
+                                    <td>Unsatisfactory</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rating-badge needs-improvement">2</span></td>
+                                    <td>Needs improvement</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rating-badge meets-expectation">3</span></td>
+                                    <td>Meets expectation</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rating-badge exceeds-expectation">4</span></td>
+                                    <td>Exceeds expectation</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rating-badge outstanding">5</span></td>
+                                    <td>Outstanding</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="text-end mt-3">
+                <button type="button" class="HRMS_primary_button"
+                    (click)="tabVisibility('tab1')"><i class="fas fa-check"></i> NEXT</button>
+            </div>
+        </div>
+
+        <div *ngIf="tab2">
+            <div class="row">
+                <div class="col-9">
+                    <div class="values-section">
+                        <h4 class="text-center" style="color: #072f5f;">3DCAD Values</h4>
+                        <p>
+                            At 3DCAD, we believe that the values are the fundamental principles that guide our
+                            Organisation. They are
+                            the norms, values, attitudes, and practices that form the collective identity of the
+                            company. To achieve
+                            this, everyone has to inculcate the following values, continuously access and improve the
+                            process.
+                        </p>
+                    </div>
+
+                    <div class="values-list" style="color: #072f5f;">
+                        <h6 style="color: #072f5f;">VALUES</h6>
+                        <ul>
+                            <li>Integrity</li>
+                            <li>Quality</li>
+                            <li>Safety</li>
+                            <li>Teamwork</li>
+                        </ul>
+                    </div>
+
+                    <div class="behaviour-section" style="color: #072f5f;">
+                        <h6 style="color: #072f5f;">BEHAVIOUR (20%)</h6>
+                        <p style="color: #072f5f;">
+                            We trust that the behavior of team members & managers is also a factor, leading to higher
+                            productivity and
+                            performance by the team and the individual, which should be measured as well.
+                        </p>
+                        <ul>
+                            <li>Customer focus
+                                <i class="fas fa-exclamation-circle" style="color: coral;"
+                                    (mouseover)="showInfo1 = true" (mouseleave)="showInfo1 = false"
+                                    (click)="customerfocus()">
+                                </i>
+                                <span *ngIf="showInfo1" class="info-tooltip">Click for more info</span>
+                            </li>
+
+                            <li>Accountability & Ownership
+                                <i class="fas fa-exclamation-circle" style="color: coral;"
+                                    (mouseover)="showInfo2 = true" (mouseleave)="showInfo2 = false"
+                                    (click)="customerfocus()">
+                                </i>
+                                <span *ngIf="showInfo2" class="info-tooltip">Click for more info</span>
+                            </li>
+                            <li>Innovation
+                                <i class="fas fa-exclamation-circle" style="color: coral;"
+                                    (mouseover)="showInfo3 = true" (mouseleave)="showInfo3 = false"
+                                    (click)="customerfocus()">
+                                </i>
+                                <span *ngIf="showInfo3" class="info-tooltip">Click for more info</span>
+                            </li>
+                            <li>Flexibility in work
+                                <i class="fas fa-exclamation-circle" style="color: coral;"
+                                    (mouseover)="showInfo4 = true" (mouseleave)="showInfo4 = false"
+                                    (click)="customerfocus()">
+                                </i>
+                                <span *ngIf="showInfo4" class="info-tooltip">Click for more info</span>
+                            </li>
+                            <li>Safety focus
+                                <i class="fas fa-exclamation-circle" style="color: coral;"
+                                    (mouseover)="showInfo5 = true" (mouseleave)="showInfo5 = false"
+                                    (click)="customerfocus()">
+                                </i>
+                                <span *ngIf="showInfo5" class="info-tooltip">Click for more info</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+                <div class="col-3">
+                    <div class="rating-card">
+                        <table class="table table-responsive">
+                            <thead>
+                                <tr>
+                                    <th>Rating</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="rating-badge unsatisfactory">1</span></td>
+                                    <td>Unsatisfactory</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rating-badge needs-improvement">2</span></td>
+                                    <td>Needs improvement</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rating-badge meets-expectation">3</span></td>
+                                    <td>Meets expectation</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rating-badge exceeds-expectation">4</span></td>
+                                    <td>Exceeds expectation</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rating-badge outstanding">5</span></td>
+                                    <td>Outstanding</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col mt-2" *ngIf="showcustomerFocus">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Behavioral Indicator</th>
+                                <th>Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="rating-badge unsatisfactory">1</span> Unsatisfactory</td>
+                                <td>Rarely seeks feedback from customers. Fails to address customer complaints or
+                                    concerns. Demonstrates a
+                                    lack of empathy towards customer</td>
+                            </tr>
+                            <tr>
+                                <td><span class="rating-badge needs-improvement">2</span> Needs improvement</td>
+                                <td>Occasionally seeks feedback from customers. Addresses customer complaints or
+                                    concerns inconsistently.
+                                    Demonstrates sufficient empathy towards customers</td>
+                            </tr>
+                            <tr>
+                                <td><span class="rating-badge meets-expectation">3</span> Meets expectation</td>
+                                <td>Occasionally seeks feedback from customers. Addresses customer complaints or
+                                    concerns inconsistently.
+                                    Demonstrates sufficient empathy towards customers</td>
+                            </tr>
+                            <tr>
+                                <td> <span class="rating-badge exceeds-expectation">4</span> Exceeds expectation</td>
+                                <td>Proactively seeks feedback from customers. Addresses customer complaints or concerns
+                                    efficiently.
+                                    Demonstrates consistent empathy towards customers |</td>
+                            </tr>
+                            <tr>
+                                <td> <span class="rating-badge outstanding">5</span> Outstanding</td>
+                                <td>Regularly solicits feedback from customers. Resolves customer complaints or concerns
+                                    effectively.
+                                    Demonstrates exceptional empathy towards customers</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="text-end mt-3">
+                <button type="button" class="HRMS_secondary_button "
+                    (click)="tabVisibility('tab2prev')"><i class="feather icon-arrow-left"></i> PREV</button>
+                <button type="button" class=" HRMS_primary_button"
+                    (click)="tabVisibility('tab2next')"><i class="feather icon-check"></i>&nbsp;NEXT</button>
+            </div>
+        </div>
+        <div *ngIf="tab3">
+            <div>
+                <div class="text-end">
+                    <i class="fas fa-exclamation-circle" style="color: coral;" (click)="showPopup2 = true"></i> Help
+                </div>
+                <div class="container-fluid text-center">
+                    <span style=" background-color: #ffffff; color: #072f5f; border-radius: 0%; ">
+                        <h4 class=" mb-4" style="color: #072f5f;">Goals Review Form</h4>
+                    </span>
+                    <div class="row justify-content-center">
+                        <div class="row justify-content-center">
+                            <div class="table-wrapper mt-3">
+                                <table class="table table-hover align-middle">
+                                    <tbody class="table-light sticky-header">
+                                        <tr class="inner-shadow">
+                                            <th colspan="3" class="text-center">Employee Information</th>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Emp Name:</strong> {{ employeeData[0]?.FirstName }} {{
+                                                employeeData[0]?.MiddleName }} {{ employeeData[0]?.LastName }}</td>
+                                            <td><strong>Emp ID:</strong> {{ employeeData[0]?.EmpCode }}</td>
+                                            <td><strong>Job Title:</strong> {{ employeeData[0]?.Designation }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Department:</strong> {{ employeeData[0]?.DeptName }}</td>
+                                            <td><strong>DOJ:</strong> {{ employeeData[0]?.JoiningDate }}</td>
+                                            <td colspan="3"><strong>Email Address:</strong> {{ employeeData[0]?.EmailId
+                                                }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                        <div class="table-wrapper mt-3">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light sticky-header">
+                                    <tr class=" inner-shadow ">
+                                        <th>S.No</th>
+                                        <th style="width: 50%;">Goal</th>
+                                        <th>Weightage</th>
+                                        <th style="width: 10%;">Employee Rating</th>
+                                        <th>Achievements</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ng-container *ngFor="let goal of goals; let i = index">
+                                        <tr>
+                                            <td>{{ i + 1 }}</td>
+                                            <td><span type="button" class="btn btn-sm"
+                                                    style="color: #072f5f; outline:#072f5f;">{{ goal.Goal }}</span>
+                                            </td>
+                                            <td>{{ goal.Weightage }}</td>
+                                            <td>
+                                                <input type="text" class="form-control" [(ngModel)]="goal.EmpReview"
+                                                    [ngStyle]="{'background-color': getBackgroundColor(goal.EmpReview)}"
+                                                    min="1" max="5" (input)="validateInput($event)"
+                                                    (paste)="onPaste($event)" (keypress)="handleAlphaChar($event)">
+                                            </td>
+
+                                            <td><input type="text" class="form-control" [(ngModel)]="goal.EDescription">
+                                                <input type="text" hidden [(ngModel)]="goal.GoalId"
+                                                    class="form-control">
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="selectedGoal === goal.GoalId">
+                                            <td colspan="5">
+                                                <div class="details">
+                                                    <h3>Tasks</h3>
+                                                    <table>
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Task Name</th>
+                                                                <th>Quarter</th>
+                                                                <th>Status</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr *ngFor="let task of tasks">
+                                                                <td>{{ task.taskName }}</td>
+                                                                <td>{{ task.quarter }}</td>
+                                                                <td>{{ task.status }}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </ng-container>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-end mt-3">
+                <button type="button" class="HRMS_secondary_button"
+                    (click)="tabVisibility('tab3prev')"><i class="feather icon-arrow-left"></i> PREV</button>
+                <button type="button" class="HRMS_primary_button"
+                    (click)="tabVisibility('tab3next')"><i class="feather icon-check"></i>&nbsp;NEXT</button>
+            </div>
+        </div>
+        <div *ngIf="tab4">
+            <!-- app.component.html -->
+            <div>
+                <div class="text-end">
+                    <i class="fas fa-exclamation-circle" style="color: coral;" (mouseover)="showInfo7 = true"
+                        (mouseleave)="showInfo7 = false" (click)="showPopup = true"></i> Help
+                </div>
+                <div class="container-fluid text-center">
+                    <button type="button" class="btn"
+                        style=" background-color: #ffffff; color: #072f5f; border-radius: 0%; ">
+                        <h4 class=" mb-4" style="color: #072f5f;">Behavior Review Form</h4>
+                    </button>
+                    <div class="row justify-content-center">
+                        <div class="row justify-content-center">
+                            <div class="table-wrapper mt-3">
+                                <table class="table table-hover align-middle">
+                                    <tbody class="table-light sticky-header">
+                                        <tr class="inner-shadow">
+                                            <th colspan="3" class="text-center">Employee Information</th>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Emp Name:</strong> {{ employeeData[0]?.FirstName }} {{
+                                                employeeData[0]?.MiddleName }} {{ employeeData[0]?.LastName }}</td>
+                                            <td><strong>Emp ID:</strong> {{ employeeData[0]?.EmpCode }}</td>
+                                            <td><strong>Job Title:</strong> {{ employeeData[0]?.Designation }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Department:</strong> {{ employeeData[0]?.DeptName }}</td>
+                                            <td><strong>DOJ:</strong> {{ employeeData[0]?.JoiningDate }}</td>
+                                            <td colspan="3"><strong>Email Address:</strong> {{ employeeData[0]?.EmailId
+                                                }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+
+                            </div>
+                        </div>
+                        <div class="table-wrapper mt-3">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light sticky-header">
+                                    <tr class=" inner-shadow ">
+                                        <th>S.No</th>
+                                        <th style="width: 50%;">Behavioral Indicator</th>
+                                        <th>Weightage</th>
+                                        <th style="width: 10%;">Emplyee Rating</th>
+                                        <th>Employee Comments</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let behavior of behavior; let i = index">
+                                        <td>{{ i + 1 }}</td>
+                                        <td>{{ behavior.Behaviour }}</td>
+                                        <td>{{ behavior.Weightage }}</td>
+                                        <td><input type="number" class="form-control " [(ngModel)]="behavior.EmpReview"
+                                                [ngStyle]="{'background-color': getBackgroundColor(behavior.EmpReview)}"
+                                                (keypress)="handleAlphaChar($event)" min="1" max="5"
+                                                (paste)="onPaste($event)" [disabled]="isSubmitted"
+                                                (input)="validateInput($event)">
+                                            <input type="text" hidden [(ngModel)]="behavior.Id" class="form-control"
+                                                (keypress)="handleAlphaChar($event)" min="1" max="5">
+                                        </td>
+                                        <td><input type="text" [(ngModel)]="behavior.EDescription" class="form-control"
+                                                [disabled]="isSubmitted">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-end mt-3">
+                    <button type="button" class="HRMS_secondary_button"
+                        (click)="tabVisibility('tab4prev')"><i class="feather icon-arrow-left"></i>&nbsp;PREV</button>
+                    <button type="button" class="HRMS_primary_button" (click)="finalReviewSubmit()"> 
+                        <i class="feather icon-check"></i>&nbsp;Final Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="!showform">
+        <h5 class="text-center mb-4" style="color: #072f5f;">Recent Review Forms List</h5>
+        <div class="row">
+            <div class="col">
+                <div class="table-wrapper mt-3">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light sticky-header">
+                            <tr class="inner-shadow">
+                                <th style="width: 10%;">SL NO</th>
+                                <th style="width: 60%;">Review Period</th>
+                                <th style="width: 20%;">Review Status</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let review of ReviewDetails; let i = index">
+                                <td>{{ i + 1 }}</td>
+                                <td>{{ review.Period }}</td>
+                                <td>
+                                    <span [ngClass]="{
+                      'badge bg-success': review.ReviewedByManager === true,
+                      'badge bg-warning': review.ReviewedByEmp === true
+                    }">
+                                        {{ review.ReviewedByManager ? 'Approved' : (review.ReviewedByEmp ? 'Pending' :
+                                        '') }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm">
+                                        <i class="feather icon-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sticky-popup row col-8 text-center " style="background-color: #d0d0d0;" *ngIf="showPopup"
+        (mousedown)="startDrag($event)" (document:mouseup)="endDrag()" (document:mousemove)="movePopup($event)">
+        <div class="text-end">
+            <span class="close-btn" (click)="closePopup()"><i class="fas fa-times close-icon"></i></span>
+        </div>
+        <div class="row">
+            <div class="popup-content text-center">
+                <div class="text-center">
+                    <button style=" background-color: #ffffff; color: #072f5f; border-radius: 10px; "
+                        (click)="stickypop()">
+                        Customer Focus <i class="fas fa-exclamation-circle"></i></button>
+                    <button class=" mx-2" style=" background-color: #ffffff; color: #072f5f; border-radius: 10px; "
+                        (click)="stickypop()"> Accountability & Ownership <i
+                            class="fas fa-exclamation-circle"></i></button>
+                    <button class=" mx-2" style=" background-color: #ffffff; color: #072f5f; border-radius: 10px; "
+                        (click)="stickypop()"> Innovation <i class="fas fa-exclamation-circle"></i></button>
+                    <button class=" mx-2" style=" background-color: #ffffff; color: #072f5f; border-radius: 10px; "
+                        (click)="stickypop()"> Flexibility in work <i class="fas fa-exclamation-circle"></i></button>
+                    <button class=" mx-2 " style=" background-color: #ffffff; color: #072f5f; border-radius: 10px; "
+                        (click)="stickypop()"> Safety Focus <i class="fas fa-exclamation-circle"></i></button>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <table class="mt-2" *ngIf="cusomerfocusFlag">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Behavioral Indicator</th>
+                            <th>Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="rating-badge unsatisfactory">1</span> Unsatisfactory</td>
+                            <td>Rarely seeks feedback from customers. Fails to address customer complaints or concerns.
+                                Demonstrates a
+                                lack of empathy towards customer</td>
+                        </tr>
+                        <tr>
+                            <td><span class="rating-badge needs-improvement">2</span> Needs improvement</td>
+                            <td>Occasionally seeks feedback from customers. Addresses customer complaints or concerns
+                                inconsistently.
+                                Demonstrates sufficient empathy towards customers</td>
+                        </tr>
+                        <tr>
+                            <td><span class="rating-badge meets-expectation">3</span> Meets expectation</td>
+                            <td>Occasionally seeks feedback from customers. Addresses customer complaints or concerns
+                                inconsistently.
+                                Demonstrates sufficient empathy towards customers</td>
+                        </tr>
+                        <tr>
+                            <td> <span class="rating-badge exceeds-expectation">4</span> Exceeds expectation</td>
+                            <td>Proactively seeks feedback from customers. Addresses customer complaints or concerns
+                                efficiently.
+                                Demonstrates consistent empathy towards customers |</td>
+                        </tr>
+                        <tr>
+                            <td> <span class="rating-badge outstanding">5</span> Outstanding</td>
+                            <td>Regularly solicits feedback from customers. Resolves customer complaints or concerns
+                                effectively.
+                                Demonstrates exceptional empathy towards customers</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="sticky-popup row col-3 text-center " style="background-color: #d0d0d0;" *ngIf="showPopup2"
+        (mousedown)="startDrag($event)" (document:mouseup)="endDrag()" (document:mousemove)="movePopup($event)">
+        <div class="text-end">
+            <span class="close-btn" (click)="closePopup2()"><i class="fas fa-times close-icon"></i></span>
+        </div>
+        <div class="row">
+            <div class="row justify-content-center">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rating</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="rating-badge unsatisfactory">1</span></td>
+                            <td>Unsatisfactory</td>
+                        </tr>
+                        <tr>
+                            <td><span class="rating-badge needs-improvement">2</span></td>
+                            <td>Needs improvement</td>
+                        </tr>
+                        <tr>
+                            <td><span class="rating-badge meets-expectation">3</span></td>
+                            <td>Meets expectation</td>
+                        </tr>
+                        <tr>
+                            <td><span class="rating-badge exceeds-expectation">4</span></td>
+                            <td>Exceeds expectation</td>
+                        </tr>
+                        <tr>
+                            <td><span class="rating-badge outstanding">5</span></td>
+                            <td>Outstanding</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</app-card>

@@ -1,0 +1,121 @@
+<app-toast-message></app-toast-message>
+<div class="divSpinner" *ngIf="isSpinner">
+    <div class="spinner"></div>
+</div>
+<div class="border p-3 mb-3 rounded bg-light">
+    <form [formGroup]="insuranceForm" (ngSubmit)="submitForm()">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="form-group floating-label-group col-md-3 inputPadding">
+                    <input type="text" class="form-control floating-input" formControlName="insuranceProvider"
+                        id="insuranceProviderId" placeholder=" "
+                        [ngClass]="{'is-invalid': (isFormSubmitted || insuranceForm.get('insuranceProvider')?.touched) && (insuranceForm.get('insuranceProvider')?.invalid)}">
+                    <label for="insuranceProviderId" class="floating-label" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || insuranceForm.get('insuranceProvider')?.touched) && insuranceForm.get('insuranceProvider')?.invalid}">Insurance
+                        Provider*</label>
+                    <div *ngIf="(isFormSubmitted || insuranceForm.get('insuranceProvider')?.touched) && insuranceForm.get('insuranceProvider')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="insuranceForm?.get('insuranceProvider')?.errors?.required" class="px-1">Insurance
+                            Provider is
+                            required.</span>
+                        <span *ngIf="insuranceForm?.get('insuranceProvider')?.errors?.pattern" class="px-1">Invalid
+                            Insurance Provider</span>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3 inputPadding">
+                    <select class="form-control floating-input" formControlName="policyType" id="policyTypeId"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || insuranceForm.get('policyType')?.touched) && (insuranceForm.get('policyType')?.invalid)}">
+                        <option selected hidden value="" disabled></option>
+                        <option value="Health">Health</option>
+                        <option value="Life">Life</option>
+                        <option value="Term">Term</option>
+                        <option value="Others">Others</option>
+                    </select>
+                    <label for="policyTypeId" class="floating-label" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || insuranceForm.get('policyType')?.touched) && (insuranceForm.get('policyType')?.invalid)}">Policy
+                        Type*</label>
+                    <div *ngIf="(isFormSubmitted || insuranceForm.get('policyType')?.touched) && insuranceForm.get('policyType')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="insuranceForm.get('policyType')?.errors?.['required']" class="px-1 ">Policy Type
+                            is required.</span>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3 inputPadding">
+                    <input type="text" class="form-control floating-input  " formControlName="policyNumber"
+                        id="policyNumberId" placeholder=" "
+                        [ngClass]="{'is-invalid': (isFormSubmitted || insuranceForm.get('policyNumber')?.touched) && (insuranceForm.get('policyNumber')?.invalid)}">
+                    <label for="policyNumberId" class="floating-label" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || insuranceForm.get('policyNumber')?.touched) && insuranceForm.get('policyNumber')?.invalid}">Policy
+                        Number*</label>
+                    <div *ngIf="(isFormSubmitted || insuranceForm.get('policyNumber')?.touched) && insuranceForm.get('policyNumber')?.invalid"
+                        class="invalid-feedback m-0">
+                        <span *ngIf="insuranceForm?.get('policyNumber')?.errors?.required" class="px-1">Policy Number
+                            required.</span>
+                    </div>
+                </div>
+
+                <div class="form-group col-md-3 ">
+                    <div class="input-group">
+                        <select formControlName="currency" class="form-select" style="max-width: 90px;">
+                            <option *ngFor="let cur of currencies" [value]="cur.code" style="font-size: 12px;">
+                                {{ cur.symbol }}-{{ cur.code }}
+                            </option>
+                        </select>
+
+                        <input type="text" class="form-control floating-input" formControlName="coverageAmount"
+                            placeholder=" "
+                            [ngClass]="{'is-invalid': (isFormSubmitted || insuranceForm.get('coverageAmount')?.touched) && insuranceForm.get('coverageAmount')?.invalid}">
+                        <label for="coverageAmountId" class="floating-label" style="left: 95px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || insuranceForm.get('coverageAmount')?.touched) && insuranceForm.get('coverageAmount')?.invalid}">
+                            Coverage Amount*</label>
+                        <div *ngIf="(isFormSubmitted || insuranceForm.get('coverageAmount')?.touched) && insuranceForm.get('coverageAmount')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="insuranceForm.get('coverageAmount')?.errors?.['required']">Coverage Amount
+                                required.</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="custom-date-input col-md-3">
+                    <input type="date" placeholder=" " id="addStartDateId" formControlName="date_from"
+                        class="form-control floating-input" (ngModelChange)="onFromDate()" [max]="maxStartDate"
+                        [ngClass]="{'is-invalid': isFromDateInvalid()}" />
+
+                    <label for="addStartDateId" style="left: 20px;" class="floating-label"
+                        [ngClass]="{'text-danger': (isFormSubmitted || insuranceForm.get('date_from')?.touched) && (insuranceForm.get('date_from')?.invalid)}">Start
+                        Date*</label>
+                    <div *ngIf="isFromDateInvalid()" class="invalid-feedback m-0">
+                        <span *ngIf="insuranceForm.get('date_from')?.errors?.required">Start
+                            Date is
+                            required.</span>
+                    </div>
+                </div>
+
+                <div class="custom-date-input col-md-3">
+                    <input type="date" placeholder=" " id="addEndDateId" formControlName="date_to"
+                        class="form-control floating-input" (ngModelChange)="onToDate()" [min]="minStartDate"
+                        [ngClass]="{'is-invalid': isToDateInvalid() || dateRangeError}" />
+                    <label for="addEndDateId" style="left: 20px;" class="floating-label"
+                        [ngClass]="{'text-danger': (isFormSubmitted || insuranceForm.get('date_to')?.touched) && (insuranceForm.get('date_to')?.invalid)}">End
+                        Date*</label>
+                    <div *ngIf="isToDateInvalid() || dateRangeError" class="invalid-feedback m-0">
+                        <span *ngIf="insuranceForm.get('date_to')?.errors?.required">End Date is
+                            required.</span>
+                        <span *ngIf="dateRangeError">End Date must be after Start
+                            Date.</span>
+                    </div>
+                </div>
+
+                <div style="display: flex;justify-content: end;">
+                    <button class="HRMS_secondary_button" type="button" (click)="resetData()"><i class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+                    <button class="HRMS_primary_button " type="submit"
+                    *ngIf="controlAccessPage?.AddAccess === true"><i class="feather icon-check"></i>&nbsp;Submit</button>
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>

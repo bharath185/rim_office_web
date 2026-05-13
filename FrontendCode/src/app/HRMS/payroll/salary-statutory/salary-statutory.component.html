@@ -1,0 +1,364 @@
+<app-toast-message></app-toast-message>
+<div class="dis-fl-end">
+    <div class="heading-dash-sub">
+        <span>Salary Management</span>
+        <ol class="breadcrumb fade-left">
+            <li class="breadcrumb-item active dis-fl" aria-current="page">
+                <span class="breadC">Payroll</span><span class="breadC"><i
+                        class="feather icon-chevron-right"></i></span><span class="breadC col-act">Salary
+                    Management</span>
+            </li>
+        </ol>
+    </div>
+
+    <div class="top-nav d-flex gap-2 mt-2">
+        <button *ngFor="let tab of tabs; let i = index" class="nav-btn" [class.active]="selectedTab === i"
+            (click)="selectTab(i)">
+            <i [class]="tab.icon"></i> {{ tab.label }}
+        </button>
+    </div>
+
+</div>
+
+
+<div class="divSpinner" *ngIf="isSpinner">
+    <div class="spinner"></div>
+</div>
+
+<fieldset class="border p-3 mb-3 custom-fieldset" *ngIf="selectedTab === 0">
+    <div class="col-md-12">
+        <form [formGroup]="salaryForm">
+            <div class="row">
+
+                <div class="form-group floating-label-group col-md-3 inputPadding">
+                    <select class="form-control floating-input" id="yearDDId" [(ngModel)]="selectedYear"
+                        (change)="onYearChange()" formControlName="year"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || salaryForm.get('year')?.touched) && salaryForm.get('year')?.invalid}">
+                        <option value="" disabled>Select Year</option>
+                        <option *ngFor="let y of years" [ngValue]="y">{{ y }}</option>
+                    </select>
+                    <label for="yearDDId" class="floating-label" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || salaryForm.get('year')?.touched) && salaryForm.get('year')?.invalid}">Year*</label>
+                    <div *ngIf="(isFormSubmitted || salaryForm.get('year')?.touched) && salaryForm.get('year')?.invalid "
+                        class="invalid-feedback m-0">
+                        <span *ngIf="salaryForm.get('year')?.errors?.required">
+                            Year is required.
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group col-md-3 inputPadding">
+                    <select class="form-control floating-input" id="monthDDId" [(ngModel)]="selectedMonth"
+                        formControlName="month"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || salaryForm.get('month')?.touched) && salaryForm.get('month')?.invalid}">
+                        <option value="" disabled selected>Select Month</option>
+                        <option *ngFor="let m of months" [ngValue]="m">{{ m.name }}</option>
+                    </select>
+                    <label for="monthDDId" class="floating-label" style="left: 20px;"
+                        [ngClass]="{'text-danger': (isFormSubmitted || salaryForm.get('month')?.touched) && salaryForm.get('month')?.invalid}">Month*</label>
+                    <div *ngIf="(isFormSubmitted || salaryForm.get('month')?.touched) && salaryForm.get('month')?.invalid "
+                        class="invalid-feedback m-0">
+                        <span *ngIf="salaryForm.get('month')?.errors?.required">
+                            Month is required.
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group floating-label-group dropdown col-md-3">
+                    <input type="text" formControlName="emloyee" class="form-control floating-input"
+                        placeholder="Select Employee" [(ngModel)]="searchText" id="employeeNameId"
+                        (focus)="openDropdown()" (input)="filterEmployees()"
+                        (blur)="closeDropdown(); checkValidEmployee()" autocomplete="off"
+                        [ngClass]="{'is-invalid': isFormSubmitted && !isValidEmployee}" />
+                    <label class="floating-label m-0" for="employeeNameId"
+                        [ngClass]="{'text-danger':(isFormSubmitted || salaryForm.get('emloyee')?.touched) && salaryForm.get('emloyee')?.invalid}">Employee</label>
+                    <ul class="dropdown-menu" [class.show]="isDropdownOpen && filteredEmployees.length >= 0">
+                        <li *ngFor="let employee of filteredEmployees" (click)="selectEmployeee(employee)"
+                            class="dropdown-item">
+                            {{ employee.EmpName }} ({{ employee.EmpCode }})
+                        </li>
+                        <li *ngIf="filteredEmployees.length === 0" class="dropdown-item text-danger">No results found
+                        </li>
+                    </ul>
+                    <div style="font-size: 10px;" class="text-danger"
+                        *ngIf="(isFormSubmitted || salaryForm.get('emloyee')?.touched) && salaryForm.get('emloyee')?.invalid">
+                        Invalid Employee</div>
+                    <div *ngIf="isFormSubmitted && !isValidEmployee" class="invalid-feedback m-0">Please select a valid
+                        Employee.</div>
+                    <div *ngIf="errorMessageEmpName" class="error-message">{{ errorMessageEmpName }}</div>
+                </div>
+
+                <div class="form-group floating-label-group dropdown col-md-3 d-none">
+                    <input type="text" formControlName="emloyeeCode" id="emloyeeCodeId"
+                        class="form-control floating-input" readonly>
+                    <label class="floating-label m-0" style="left: 10px;" for="emloyeeCodeId">Employee Code</label>
+                </div>
+
+                <div class="text-end col-md-3">
+                    <button class="HRMS_secondary_button" type="button" (click)="resetData()"> <i
+                            class="feather icon-rotate-ccw"></i> Reset</button>
+                    <button class="HRMS_primary_button" type="submit" *ngIf="controlAccessPage?.AddAccess === true"
+                        (click)="submit()">
+                        <i class="feather icon-check"></i>&nbsp;Calculate CTC
+                    </button>
+                </div>
+
+            </div>
+
+        </form>
+
+        <app-card [options]="false" *ngIf="isShowTable">
+            <div class="container-fluid p-1">
+
+                <!-- Employee Info -->
+                <div class="mb-3">
+                    <h5><strong>Employee Code:</strong> {{ employeeCTC[0]?.EmpCode }}</h5>
+                    <h6>
+                        <strong>Name:</strong>
+                        {{ employeeCTC[0]?.FirstName }} {{ employeeCTC[0]?.MiddleName }}
+                        {{ employeeCTC[0]?.LastName }}
+                    </h6>
+                </div>
+
+                <!-- Loop Payout Types -->
+                <div *ngFor="let payout of groupedData">
+
+                    <fieldset class="border p-3 mb-4 custom-fieldset">
+                        <legend class="w-auto px-2 custom-legend">
+                            {{ payout.payoutName }}
+                        </legend>
+
+                        <!-- Loop Segments -->
+                        <div class="row">
+                            <div class="col-md-12 mb-3" *ngFor="let seg of payout.segments">
+
+                                <h6 class="fw-bold mb-3 text-decoration-underline">
+                                    {{ seg.segmentName }}
+                                </h6>
+
+                                <!-- If segment has no components -->
+                                <div *ngIf="seg.components.length === 0" class="text-center text-danger">
+                                    No data found for this record
+                                </div>
+
+                                <!-- Segment Table -->
+                                <div *ngIf="seg.components.length > 0" class="table-wrapper mt-2">
+                                    <table class="table table-hover align-middle">
+
+                                        <thead class="table-light sticky-header">
+                                            <tr class="inner-shadow">
+                                                <th>Component</th>
+                                                <th>Code</th>
+                                                <th>Value</th>
+                                                <th>Arrear Value</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <tr *ngFor="let comp of seg.components">
+
+                                            <tr *ngFor="let comp of seg.components">
+
+                                                <td>{{ comp.ComponentName }}</td>
+                                                <td>{{ comp.ComponentCode }}</td>
+                                                <td>₹ {{ comp.ComponentValue }}</td>
+
+                                                <!-- NEW COLUMN -->
+                                                <td>
+                                                    ₹ {{ arrearMap[comp.ComponentId] || 0 }}
+                                                </td>
+
+                                            </tr>
+
+
+                                        </tbody>
+
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </fieldset>
+
+                </div>
+
+                <!-- No Data -->
+                <div *ngIf="isTableData" class="text-center p-3 text-danger">
+                    {{ errorMessage }}
+                </div>
+
+            </div>
+        </app-card>
+
+
+    </div>
+</fieldset>
+
+
+
+<div *ngIf="selectedTab === 1" class="my-3">
+    <app-salary-structure></app-salary-structure>
+</div>
+
+<div *ngIf="selectedTab === 2" class="my-3">
+    <app-pay-slip-section></app-pay-slip-section>
+</div>
+
+<div *ngIf="selectedTab === 3" class="my-3">
+    <app-add-emp-sal></app-add-emp-sal>
+</div>
+
+<div *ngIf="selectedTab === 4" class="my-3">
+    <app-mapping></app-mapping>
+</div>
+<div *ngIf="selectedTab === 5" class="my-3">
+    <app-emp-sal-summary></app-emp-sal-summary>
+</div>
+<div *ngIf="selectedTab === 6" class="my-3">
+    <app-variable-histroy></app-variable-histroy>
+</div>
+<!-- this is  modal -->
+<!-- data-bs-toggle="modal" data-bs-target="#exampleModal"
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-confirm modal-ml">
+        <div class="modal-content">
+            <div class="text-end">
+                <button type="reset" class="btn-close " data-bs-dismiss="modal" aria-label="Close" #closeModalDelete
+                    style="background-color: rgb(228, 208, 208);"></button>
+            </div>
+            
+           
+            
+        </div>
+    </div>
+</div> -->
+<!-- this is end of modal -->
+
+
+
+
+<!-- {
+    "lstofComponentDetails": [
+        {
+            "EmpId": 751,
+            "EmpCode": "RIM-906",
+            "FirstName": "RAMA SUNDARA",
+            "MiddleName": "PANDIYAN",
+            "LastName": "THANGAPANDIYAN",
+            "LoginId": 149,
+            "ComponentId": 1,
+            "ComponentName": "CTC",
+            "ComponentCode": "CTC",
+            "ComponentValue": "2400000",
+            "PayoutTypeId": 1,
+            "PayoutTypeName": "Fixed & Component",
+            "FrequencyId": 0,
+            "Frequency": "Yearly",
+            "SegmentId": 1,
+            "SegmentName": "Salary Basics",
+            "ConditionId": 1,
+            "ConditionExpression": null,
+            "ConditionResultPFESI": null,
+            "LogicId": 1,
+            "Percentage": null,
+            "Value": null,
+            "ComponentId1": null,
+            "ComponentName1": null,
+            "EffectiveFrom": "/Date(1763317800000)/",
+            "EffectiveTo": "/Date(1767033000000)/",
+            "LCtrue": 0
+        },
+        {
+            "EmpId": 751,
+            "EmpCode": "RIM-906",
+            "FirstName": "RAMA SUNDARA",
+            "MiddleName": "PANDIYAN",
+            "LastName": "THANGAPANDIYAN",
+            "LoginId": 149,
+            "ComponentId": 2,
+            "ComponentName": "Monthly CTC",
+            "ComponentCode": "MCTC",
+            "ComponentValue": "200000",
+            "PayoutTypeId": 1,
+            "PayoutTypeName": "Fixed & Component",
+            "FrequencyId": 0,
+            "Frequency": "Yearly",
+            "SegmentId": 1,
+            "SegmentName": "Salary Basics",
+            "ConditionId": 2,
+            "ConditionExpression": "CTC  /  12",
+            "ConditionResultPFESI": null,
+            "LogicId": 2,
+            "Percentage": null,
+            "Value": null,
+            "ComponentId1": null,
+            "ComponentName1": null,
+            "EffectiveFrom": "/Date(1763317800000)/",
+            "EffectiveTo": "/Date(1767033000000)/",
+            "LCtrue": 0
+        },
+
+    ],
+    "lstofArrearComponentDetails": [
+        
+        {
+            "EmpId": 751,
+            "EmpCode": "RIM-906",
+            "FirstName": "RAMA SUNDARA",
+            "MiddleName": "PANDIYAN",
+            "LastName": "THANGAPANDIYAN",
+            "LoginId": 149,
+            "ComponentId": 16,
+            "ComponentName": "Indian Allowance",
+            "ComponentCode": "IA",
+            "ComponentValue": "50000",
+            "PayoutTypeId": 1,
+            "PayoutTypeName": "Arrear Adjustment",
+            "FrequencyId": 0,
+            "Frequency": "Monthly",
+            "SegmentId": 0,
+            "SegmentName": "Arrear Adjustment",
+            "ConditionId": 16,
+            "ConditionExpression": "GS  -  BS  -  HRA  -  Con",
+            "ConditionResultPFESI": null,
+            "LogicId": 16,
+            "Percentage": 0,
+            "Value": 0,
+            "ComponentId1": 0,
+            "ComponentName1": "",
+            "EffectiveFrom": "/Date(1763317800000)/",
+            "EffectiveTo": "/Date(1767033000000)/",
+            "LCtrue": 0
+        },
+        {
+            "EmpId": 751,
+            "EmpCode": "RIM-906",
+            "FirstName": "RAMA SUNDARA",
+            "MiddleName": "PANDIYAN",
+            "LastName": "THANGAPANDIYAN",
+            "LoginId": 149,
+            "ComponentId": 11,
+            "ComponentName": "Gross Salary",
+            "ComponentCode": "GS",
+            "ComponentValue": "100000",
+            "PayoutTypeId": 1,
+            "PayoutTypeName": "Arrear Adjustment",
+            "FrequencyId": 0,
+            "Frequency": "Monthly",
+            "SegmentId": 0,
+            "SegmentName": "Arrear Adjustment",
+            "ConditionId": 11,
+            "ConditionExpression": "MCTC  -  SB",
+            "ConditionResultPFESI": null,
+            "LogicId": 11,
+            "Percentage": 0,
+            "Value": 0,
+            "ComponentId1": 0,
+            "ComponentName1": "",
+            "EffectiveFrom": "/Date(1763317800000)/",
+            "EffectiveTo": "/Date(1767033000000)/",
+            "LCtrue": 0
+        }
+    ]
+} -->

@@ -1,0 +1,154 @@
+// search Input Field
+.dropdown-icon {
+    position: absolute;
+    right: 10px;
+    top: 23%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.dropdown {
+    font-size: 12px;
+}
+
+.dropdown-menu {
+    width: 95%;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.dropdown-item {
+    cursor: pointer;
+}
+
+.dropdown .dropdown-item {
+    padding: 5px 6px;
+}
+
+// search Input Field
+
+// ************this is for custome date*******
+.custom-date-input {
+    position: relative;
+}
+
+.custom-date-input input {
+    // border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 3px 5px;
+    width: 100%;
+    outline: none;
+    font-size: 11px;
+    padding-top: 16px;
+    line-height: 1.6;
+}
+
+.custom-date-input input::placeholder {
+    font-size: 5px;
+    color: #aaa;
+}
+
+.custom-date-input label {
+    position: absolute;
+    color: #888;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.custom-date-input input:focus+label,
+.custom-date-input input:not(:placeholder-shown)+label {
+    top: 1px;
+    left: 5px;
+    font-size: 12px;
+}
+
+// .custom-date-input.is-invalid{
+//     border-color: #ff5370;
+// }
+// ************this is for custome date*******
+
+
+.spinner1 {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 9px solid;
+    border-color: #dbdcef;
+    border-right-color: #072f5f;
+    animation: spinner-d3wgkg 1s infinite linear;
+}
+
+.divSpinner1 {
+    position: relative;
+
+    .spinner1 {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-top: 10rem;
+        z-index: 9999;
+    }
+}
+
+@keyframes spinner-d3wgkg {
+    to {
+        transform: rotate(1turn);
+    }
+}
+.table thead th {
+  padding: 10px 10px !important;
+}
+
+.table tbody td {
+  padding: 5px 10px !important;
+}
+
+/* Right Modal Slide-In */
+.modal.fade .modal-end {
+  position: fixed;
+  z-index: 1055;
+  top: 0;
+  right: 0;
+  margin: 0;
+  width: 100%;
+  transform: translate3d(100%, 0, 0);
+  transition: transform .3s cubic-bezier(.25, .8, .25, 1);
+}
+
+.modal.fade.show .modal-end {
+  transform: translate3d(0, 0, 0);
+}
+
+.modal-content,
+.modal-footer,
+.modal-header {
+  border: none;
+}
+
+.modal-body {
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+}
+/* Right Modal Slide-In */
+
+.custom-input-modal .modal-dialog {
+  max-width: 600px;   /* change as needed */
+  width: 60%;
+}
+
+.modal-confirm .icon-box {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    border-radius: 50%;
+    z-index: 9;
+    text-align: center;
+    border: 3px solid #5ef177;
+}
+
+.modal-confirm .icon-box i {
+    color: #5ef177;
+    font-size: 46px;
+    display: inline-block;
+    margin-top: 13px;
+}

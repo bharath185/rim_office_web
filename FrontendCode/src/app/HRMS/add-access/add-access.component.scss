@@ -1,0 +1,70 @@
+@media only screen and (max-width: 991px) {
+  ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+    margin-left: 0px;
+    margin-top: 57px !important;
+  }
+}
+
+.table-wrapper {
+  max-height: 520px !important;
+  overflow-y: auto;
+  position: relative;
+}
+
+.table-wrapper table,
+.table-wrapper table th,
+.table-wrapper table td {
+  border: none !important;
+  font-weight: unset;
+}
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  z-index: 1000;
+}
+::ng-deep.ngx-pagination .current {
+  padding: .1875rem .625rem;
+  background-color: #072f5f !important;
+  color: #fefefe;
+  cursor: default;
+}
+
+::ng-deep.ngx-pagination a,
+.ngx-pagination button {
+  color: #0a0a0a;
+  display: block;
+  padding: .1875rem .525rem;
+  border-radius: 0;
+}
+
+::ng-deep input[type="text"]::-webkit-clear-button,
+input[type="text"]::-webkit-inner-spin-button,
+input[type="text"]::-webkit-outer-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+}
+
+/* For Mozilla Firefox */
+::ng-deep input[type="text"]::-moz-clear-button {
+  display: none;
+}
+
+/* For Internet Explorer and Edge */
+::ng-deep input[type="text"]::-ms-clear {
+  display: none;
+}
+
+::ng-deep .pcoded-content {
+  position: relative;
+  display: block;
+  padding: 0px !important;
+  padding-left: 25px !important;
+  padding-right: 25px !important;
+}
+
+.pcoded-header {
+  .card {
+    margin: 0px !important;
+  }
+}

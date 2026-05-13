@@ -1,0 +1,554 @@
+/* Resetting margin and padding for all elements */
+html,
+body {
+  overflow: hidden;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.row {
+  text-align: center;
+  align-items: center;
+}
+
+
+
+// .image {
+//   background-image: url('../../../../assets/vector.png');
+//   width: auto;
+//   height: 500px;
+// }
+
+
+
+/* Animation styles */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.15);
+  /* Stronger shadow on hover */
+  transform: translateY(-3px);
+  /* Slight lift effect */
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.4), rgba(0, 0, 0, 0.1));
+  z-index: -1;
+}
+
+.loader-icon {
+  border: 8px solid rgba(0, 0, 0, 0.1);
+  /* Light gray border */
+  border-top: 8px solid #007bff;
+  /* Blue border on top */
+  border-radius: 50%;
+  width: 10px;
+  height: 0px;
+  animation: spin 1s linear infinite;
+  /* Rotate animation */
+  margin: auto;
+  /* Center the loader */
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.btn-outline-secondary {
+  border: none;
+  background-color: #ffffff;
+}
+
+.input-field input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  outline: none;
+  border-radius: 3px;
+}
+
+.input-field input::placeholder {
+  color: #9f9f9f;
+}
+
+.input-field .icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.input-field {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.input-field .invalid-feedback {
+  color: red;
+  position: absolute;
+  top: 100%;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.input-field .is-invalid {
+  border: 1px solid red !important;
+}
+
+.view-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.fa-eye,
+.fa-eye-slash {
+  font-size: 1em;
+  color: #9f9f9f;
+}
+
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+.btn-close {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.btn-close:hover {
+  transform: rotate(90deg);
+  opacity: 0.7;
+}
+
+.next-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #072f5f;
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  border-radius: 5px;
+}
+
+.next-button:hover {
+  background-color: #0a4a8f;
+  transform: scale(1.05);
+}
+
+.next-button:active {
+  background-color: #051e3e;
+  transform: scale(0.95);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.modal-backdrop {
+  z-index: 1040 !important;
+}
+
+.modal-content {
+  z-index: 1050 !important;
+  animation: fadeInUp 1.5s ease-in-out;
+}
+
+
+/* Extra Small Devices (Mobile Phones, Portrait Mode) */
+@media (max-width: 576px) {
+  .showPasswordIcon {
+    position: absolute;
+    top: 48%;
+    left: 87%;
+    color: #072f5f;
+  }
+}
+
+/* Small Devices (Mobile Phones, Landscape Mode) */
+@media (min-width: 577px) and (max-width: 767px) {
+  .showPasswordIcon {
+    position: absolute;
+    top: 50%;
+    left: 90%;
+    color: #072f5f;
+  }
+}
+
+/* Medium Devices (Tablets) */
+@media (min-width: 768px) and (max-width: 992px) {
+  .showPasswordIcon {
+    position: absolute;
+    top: 44%;
+    left: 74%;
+    color: #072f5f;
+  }
+}
+
+/* Large Devices (Small Laptops) */
+@media (min-width: 993px) and (max-width: 1200px) {
+  .showPasswordIcon {
+    position: absolute;
+    top: 44%;
+    left: 76%;
+    color: #072f5f;
+  }
+}
+
+/* Extra Large Devices (Laptops and Desktops) */
+@media (min-width: 1201px) and (max-width: 1400px) {
+  .showPasswordIcon {
+    position: absolute;
+    top: 45%;
+    left: 71%;
+    color: #072f5f;
+  }
+}
+
+/* 2XL Devices (Ultra-Wide Screens) */
+@media (min-width: 1401px) {
+  .showPasswordIcon {
+    position: absolute;
+    top: 48%;
+    left: 65%;
+    color: #072f5f;
+  }
+}
+
+@media (min-width: 1400px) and (max-width: 1564px) {
+  .showPasswordIcon {
+    position: absolute;
+    top: 45%;
+    left: 70%;
+    color: #072f5f;
+  }
+}
+
+.username,
+.password {
+  background: none;
+  display: block;
+  margin: 10px auto;
+  text-align: center;
+  border: 2px solid #072f5f;
+  padding: 10px 10px;
+  width: 100%;
+  max-width: 250px;
+  outline: none;
+  color: white;
+  border-radius: 24px;
+  transition: 0.25s;
+}
+
+.username:focus,
+.password:focus {
+  width: 100%;
+  max-width: 300px;
+  border-color: #2ecc71;
+}
+
+.login-btn {
+  background: none;
+  display: block;
+  margin: 20px auto;
+  text-align: center;
+  border: 2px solid #2ecc71;
+  padding: 14px 40px;
+  outline: none;
+  color: white;
+  border-radius: 24px;
+  transition: 0.25s;
+  cursor: pointer;
+}
+
+.login-btn:hover {
+  background: #072f5f;
+  border: 2px solid #072f5f;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+
+  .username,
+  .password,
+  .login-btn {
+    max-width: 100%;
+  }
+}
+
+.forgotPassword {
+  a {
+    font-size: 12px;
+    cursor: pointer;
+    color: white;
+    text-decoration: underline !important;
+
+  }
+
+  a:hover {
+    color: #072f5f;
+  }
+}
+
+input::placeholder {
+  color: black;
+  opacity: 1;
+}
+
+input::-ms-input-placeholder {
+  /* IE */
+  color: black;
+  opacity: 1;
+
+}
+
+input:-ms-input-placeholder {
+  /* Edge */
+  color: black;
+  opacity: 1;
+
+}
+
+.login-page {
+  height: 100vh;
+  overflow: hidden;
+  width: 100%;
+  .col-md-5 {
+    background: #000000d4;
+    padding: 0;
+    height: 100%;
+  }
+
+  .col-md-7 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    height: 100%;
+    background: #465269;
+  }
+}
+
+.login-page .row {
+  height: 100%;
+  margin: 0;
+}
+
+/* ✅ Fix: make image fill entire left section properly */
+.left-side {
+  position: relative;
+  height: 85%;
+  width: 85%;
+  border-radius: 10px 0 0 10px;
+  // background-image: url('/assets/image (9).png');
+  /* rename to remove spaces */
+  background-size: cover;
+  /* fills entire div */
+  background-position: center;
+  /* centers image */
+  background-repeat: no-repeat;
+  overflow: hidden;
+
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  h1,
+  p {
+    color: #fff;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Optional: add overlay to improve text visibility */
+
+}
+
+.login-form {
+  background-color: #1c1c1c;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 50px;
+  height: 85%;
+  width: 85%;
+  border-radius: 0 10px 10px 0;
+
+  h2 {
+    color: white !important;
+  }
+
+  input {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+  }
+
+  button {
+    background: linear-gradient(135deg, #455168 0%, #606e84 100%);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  a {
+    color: #ffffff;
+    margin-top: 0.7rem;
+    text-decoration: none;
+  }
+}
+
+/* ✅ Mobile Optimization for Login Page */
+@media (max-width: 576px) {
+  .login-page {
+    height: auto;
+    overflow-y: auto;
+  }
+
+  .login-page .row {
+    flex-direction: column;
+  }
+
+  .col-md-7, .col-md-5 {
+    width: 100% !important;
+    height: auto !important;
+    padding: 20px !important;
+  }
+.left-side,
+  .login-form {
+    width: 100% !important;
+    height: auto !important;
+    border-radius: 0 !important;
+    padding: 20px !important;
+    box-shadow: none !important;
+  }
+
+   .left-side h1,
+  .left-side p {
+    text-align: center;
+  }
+
+ 
+
+  .login-form h2 {
+    font-size: 1.5rem;
+  }
+
+  .login-form input {
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  .login-form button {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+  }
+
+  .login-form a {
+    font-size: 0.9rem;
+    display: inline-block;
+    margin-top: 10px;
+  }
+
+  .forgotPassword a {
+    display: inline-block;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+/* ✅ Mobile Optimization for Login Page */
+
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-input {
+  width: 100%;
+  padding: 10px 40px 10px 12px; /* space for icon */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  height: 40px; /* normal height */
+  box-sizing: border-box;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 40%;
+  transform: translateY(-50%);
+  color: #555;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.password-toggle:hover {
+  color: #000;
+}
+
+.login-links {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.login-links a {
+  font-size: 12px;
+  cursor: pointer;
+  color: white;
+  text-decoration: underline !important;
+}
+
+.login-links a:hover {
+  color: #0a4a8f;
+}

@@ -1,0 +1,281 @@
+<app-toast-message></app-toast-message>
+<div class="overlay" *ngIf="isSpinner"></div>
+<div class="dis-fl-end">
+  <div class="heading-dash-sub">
+    <span>Direct Check-In</span>
+    <ol class="breadcrumb fade-left">
+      <li class="breadcrumb-item active dis-fl" aria-current="page">
+        <span class="breadC">Visitor Module</span>
+        <span class="breadC" [routerLink]="['/visitor']" style="color:rgb(127, 186, 235);cursor: pointer"> <i
+            class="feather icon-chevron-right"></i>&nbsp;Visitor</span>
+        <span class="breadC"><i class="feather icon-chevron-right"></i></span><span class="breadC col-act"> Direct
+          Check-In</span>
+      </li>
+    </ol>
+  </div>
+</div>
+<app-card [options]="false">
+  <div class="col-md-12">
+    <div class="divSpinner" *ngIf="isSpinner">
+      <div class="spinner"></div>
+    </div>
+
+    <form [formGroup]="directCheckinForm">
+
+      <div class="col-md-12 d-flex justify-content-end align-items-center">
+        <!-- <label for="fileInput" class="fileInput" [style.cursor]="isPhotoChosen ? 'not-allowed' : 'pointer'"
+          [class.disabled]="isPhotoChosen">Choose Photo</label> -->
+        <label label for="fileInput" class="fileInput" [style.cursor]="isPhotoChosen ? 'not-allowed' : 'pointer'"
+          [class.disabled]="isPhotoChosen" class="upload-box" style="cursor: pointer;">
+          <i class="fas fa-camera upload-icon"></i>
+          <span>Choose Photo</span>
+        </label>
+
+        &nbsp;OR&nbsp;
+        <i class="fas fa-camera fa-lg ml-2" style="cursor: pointer;" (click)="toggleCamera()"
+          [class.disabled]="isFileUploaded" id="cameraToggleFor"
+          [style.cursor]="isFileUploaded ? 'not-allowed' : 'pointer'"></i>
+        <input type="file" id="fileInput" (change)="onFileChange($event)" accept=".jpg" class="form-control"
+          formControlName="uploadImage" [attr.disabled]="isPhotoChosen || showCamera ? true : null" />
+        <img *ngIf="imageSrc" [src]="imageSrc" class="uploaded-image-preview" alt="Uploaded Preview" />
+      </div>
+
+      <app-camera *ngIf="showCamera" (pictureTaken)="handleImage($event)" [videoHeight]="videoHeight"
+        [videoWidth]="videoWidth"></app-camera>
+      <div *ngIf="webcamImage" class="d-flex align-items-center justify-content-end">
+        <img [src]="webcamImage.imageAsDataUrl" [style.height.px]="imageHeight" [style.width.px]="imageWidth"
+          class="uploaded-image-preview" alt="" />
+      </div>
+
+      <!-- <div class="col-md-12 d-flex justify-content-end" style="display: flex; align-items: center;">
+        <label for="fileInput" class="fileInput" style="cursor: pointer;">Choose Photo </label> &nbsp;OR &nbsp;
+        <label>
+          <i class="fas fa-camera fa-lg ml-2" style="cursor: pointer;" (click)="toggleCamera()"
+            [class.disabled]="isPhotoChosen">
+          </i>
+        </label>
+        <input type="file" id="fileInput" (change)="onFileChange($event)" accept=".jpg" class="form-control"
+          formControlName="uploadImage" [attr.disabled]="showCamera ? true : null">
+        <div *ngIf="imageSrc">
+          <img [src]="imageSrc" style="max-width: 5%; height: auto; margin-top: 3px; margin-left: 10px;">
+          <br>
+        </div>
+        <app-camera (pictureTaken)="handleImage($event)" *ngIf="showCamera" [videoHeight]="videoHeight"
+          [videoWidth]="videoWidth">
+        </app-camera>
+
+        <div class="snapshot" *ngIf="webcamImage">
+          <img [src]="webcamImage.imageAsDataUrl" [style.height.px]="imageHeight" [style.width.px]="imageWidth" />
+        </div>
+      </div> -->
+
+      <div class="row mt-2">
+        <div class="form-group floating-label-group col-md-3 inputPadding">
+          <input type="text" class="form-control floating-input  " (focus)="onFocus($event)" (blur)="onBlur($event)"
+            formControlName="contact_name" id="nameInputId" placeholder=" " (input)="convertToUppercase($event,'contact_name')"
+            [ngClass]="{'is-invalid': (isFormSubmitted || directCheckinForm.get('contact_name')?.touched) && (directCheckinForm.get('contact_name')?.invalid)}">
+          <label for="nameInputId" class="floating-label" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || directCheckinForm.get('contact_name')?.touched) && directCheckinForm.get('contact_name')?.invalid}">
+            Name*</label>
+          <div
+            *ngIf="(isFormSubmitted || directCheckinForm.get('contact_name')?.touched) && directCheckinForm.get('contact_name')?.invalid"
+            class="invalid-feedback m-0">
+            <span *ngIf="directCheckinForm.get('contact_name')?.errors?.required" class="px-1 ">Name is
+              required.</span>
+            <span *ngIf="directCheckinForm.get('contact_name')?.errors?.pattern">Only alphabets
+              and
+              spaces are allowed.</span>
+            <span
+              *ngIf="(directCheckinForm.get('contact_name')?.errors?.minlength || directCheckinForm.get('contact_name')?.errors?.maxlength)">2
+              to 50 Charater are allowed.</span>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 inputPadding">
+          <input type="text" class="form-control floating-input  " (focus)="onFocus($event)" (blur)="onBlur($event)"
+            formControlName="designation" id="designationId" placeholder=" "
+            [ngClass]="{'is-invalid': (isFormSubmitted || directCheckinForm.get('designation')?.touched) && (directCheckinForm.get('designation')?.invalid)}">
+          <label for="designationId" class="floating-label" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || directCheckinForm.get('designation')?.touched) && directCheckinForm.get('designation')?.invalid}">Designation
+          </label>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 inputPadding">
+          <input type="text" class="form-control floating-input  " (focus)="onFocus($event)" (blur)="onBlur($event)"
+            formControlName="company" id="companyId" placeholder=" "
+            [ngClass]="{'is-invalid': (isFormSubmitted || directCheckinForm.get('company')?.touched) && (directCheckinForm.get('company')?.invalid)}">
+          <label for="companyId" class="floating-label" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || directCheckinForm.get('company')?.touched) && directCheckinForm.get('company')?.invalid}">Company
+          </label>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 ">
+          <input type="text" class="form-control floating-input  " (focus)="onFocus($event)" (blur)="onBlur($event)"
+            formControlName="purpose" id="purposeId" placeholder=" "
+            [ngClass]="{'is-invalid': (isFormSubmitted || directCheckinForm.get('purpose')?.touched) && (directCheckinForm.get('purpose')?.invalid)}">
+          <label for="purposeId" class="floating-label" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || directCheckinForm.get('purpose')?.touched) && directCheckinForm.get('purpose')?.invalid}">Purpose
+          </label>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 inputPadding">
+          <input type="text" class="form-control floating-input  " id="emailId" placeholder=" "
+            (focus)="onFocus($event)" (blur)="onBlur($event)" formControlName="official_email"
+            [ngClass]="{'is-invalid': (isFormSubmitted || directCheckinForm.get('official_email')?.touched) && (directCheckinForm.get('official_email')?.invalid)}">
+          <label for="emailId" class="floating-label" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || directCheckinForm.get('official_email')?.touched) && (directCheckinForm.get('official_email')?.invalid)}">
+            Email Id*</label>
+          <div
+            *ngIf="(isFormSubmitted || directCheckinForm.get('official_email')?.touched) && directCheckinForm.get('official_email')?.invalid"
+            class="invalid-feedback m-0">
+            <span *ngIf="directCheckinForm?.get('official_email')?.errors?.required">Email
+              ID is required.</span>
+            <span *ngIf="directCheckinForm?.get('official_email')?.errors?.pattern">Invalid Email
+              ID</span>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 inputPadding">
+          <input type="text" class="form-control floating-input  " id="mobileNoId" placeholder=" "
+            (focus)="onFocus($event)" (blur)="onBlur($event)" formControlName="mobile_number"
+            (keypress)="handleAlphaChar($event)" minlength="10" maxlength="10"
+            [ngClass]="{'is-invalid': (isFormSubmitted || directCheckinForm.get('mobile_number')?.touched) && (directCheckinForm.get('mobile_number')?.invalid)}">
+          <label for="mobileNoId" class="floating-label" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || directCheckinForm.get('mobile_number')?.touched) && (directCheckinForm.get('mobile_number')?.invalid)}">Mobile
+            Number*</label>
+          <div
+            *ngIf="(isFormSubmitted || directCheckinForm.get('mobile_number')?.touched) && directCheckinForm.get('mobile_number')?.invalid"
+            class="invalid-feedback m-0">
+            <span *ngIf="directCheckinForm?.get('mobile_number')?.errors?.required">Mobile Number is
+              required.</span>
+            <span *ngIf="directCheckinForm?.get('mobile_number')?.errors?.pattern">Invalid Mobile
+              Number.</span>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 inputPadding">
+          <input type="text" class="form-control floating-input  " (focus)="onFocus($event)" (blur)="onBlur($event)"
+            formControlName="alter_mobile_number" id="alter_Mob_Id" placeholder=" " (keypress)="handleAlphaChar($event)"
+            minlength="10" maxlength="10"
+            [ngClass]="{'is-invalid': (directCheckinForm.get('alter_mobile_number')?.invalid) && (directCheckinForm.get('alter_mobile_number')?.hasError('pattern'))}">
+          <label for="alter_Mob_Id" class="floating-label" style="left: 20px;">Alternate Mobile
+            Number</label>
+          <div
+            *ngIf="(directCheckinForm.get('alter_mobile_number')?.invalid) && (directCheckinForm.get('alter_mobile_number')?.hasError('pattern'))"
+            class="invalid-feedback m-0">
+            <span *ngIf="directCheckinForm.get('alter_mobile_number')?.hasError('pattern')" class="px-1">Enter
+              Valid Phone Number.</span>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 ">
+          <select class="form-control floating-input" formControlName="facilities" id="facilitySelectId"
+            (focus)="onFocus($event)" (blur)="onBlur($event)"
+            [ngClass]="{'is-invalid': (isFormSubmitted || directCheckinForm.get('facilities')?.touched) && (directCheckinForm.get('facilities')?.invalid)}">
+            <option value="" selected hidden></option>
+            <option *ngFor="let option of getFacalities" [value]="option.CompName">{{option.CompName}}</option>
+
+          </select>
+          <label for="facilitySelectId" class="floating-label m-0" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || directCheckinForm.get('facilities')?.touched) && directCheckinForm.get('facilities')?.invalid}">Facilities*</label>
+          <div
+            *ngIf="(isFormSubmitted || directCheckinForm.get('facilities')?.touched) && directCheckinForm.get('facilities')?.invalid"
+            class="invalid-feedback m-0">
+            <span *ngIf="directCheckinForm.get('facilities')?.errors?.required">Facilities is
+              required.</span>
+          </div>
+          <div *ngIf="errorMessageFacility" class="error-message">
+            {{ errorMessageFacility }}
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 inputPadding">
+          <div class="dropdown">
+            <input type="text" formControlName="meet_to" class="form-control floating-input"
+              placeholder="Select Employee" [(ngModel)]="searchText" id="employeeNameId" (focus)="openDropdown()"
+              (input)="filterEmployees()" (blur)="closeDropdown(); checkValidEmployee()" autocomplete="off"
+              [ngClass]="{'is-invalid': isFormSubmitted && !isValidEmployee}" />
+            <label class="floating-label m-0" style="left: 10px;" for="employeeNameId"
+              [ngClass]="{'text-danger':(isFormSubmitted || directCheckinForm.get('meet_to')?.touched) && directCheckinForm.get('meet_to')?.invalid}">Contact
+              Person*</label>
+            <i class="fas fa-chevron-down dropdown-icon"></i>
+            <ul class="dropdown-menu" [class.show]="isDropdownOpen && filteredEmployees.length >= 0">
+              <li *ngFor="let employee of filteredEmployees" (click)="selectEmployeee(employee)" class="dropdown-item">
+                {{ employee.EmpName }} ({{ employee.EmpCode }})
+              </li>
+              <li *ngIf="filteredEmployees.length === 0" class="dropdown-item text-danger">
+                No results found
+              </li>
+            </ul>
+            <div style="font-size: 10px;" class="text-danger"
+              *ngIf="(isFormSubmitted || directCheckinForm.get('meet_to')?.touched) && directCheckinForm.get('meet_to')?.invalid">
+              Invalid contact person
+            </div>
+            <div *ngIf="isFormSubmitted && !isValidEmployee" class="invalid-feedback m-0">
+              Please select a valid contact person.
+            </div>
+          </div>
+        </div>
+
+        <!-- (keydown)="preventKeyboardInput($event)" (keypress)="preventKeyboardInput($event)" (paste)="preventPaste($event)" -->
+        <div class="form-group floating-label-group col-md-3 inputPadding">
+          <div class="custom-date-input">
+            <input type="date" formControlName="date" [min]="today" [max]="today" id="dateId"
+              class="form-control floating-input"
+              [ngClass]="{'is-invalid': (isFormSubmitted || directCheckinForm.get('date')?.touched) && (directCheckinForm.get('date')?.invalid)}">
+            <label for="dateId" class="floating-label"
+              [ngClass]="{'text-danger': (isFormSubmitted || directCheckinForm.get('date')?.touched) && (directCheckinForm.get('date')?.invalid)}">
+              Date*
+            </label>
+            <div
+              *ngIf="(isFormSubmitted || directCheckinForm.get('date')?.touched) && directCheckinForm.get('date')?.invalid"
+              class="invalid-feedback m-0">
+              <span *ngIf="directCheckinForm.get('date')?.errors?.required" class="px-1">Date is required.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 inputPadding">
+          <input type="time" #timeInput class="form-control floating-input" (focus)="onFocus($event)"
+            (blur)="onBlur($event)" (input)="onTimeInputChange()" placeholder=" " formControlName="Time" id="timeInput"
+            [ngClass]="{'is-invalid': (isFormSubmitted || directCheckinForm.get('Time')?.touched) && (directCheckinForm.get('Time')?.invalid)}">
+          <label for="timeInput" class="floating-label" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || directCheckinForm.get('Time')?.touched) && (directCheckinForm.get('Time')?.invalid)}">Time*</label>
+          <div
+            *ngIf="(isFormSubmitted || directCheckinForm.get('Time')?.touched) && directCheckinForm.get('Time')?.invalid"
+            class="invalid-feedback m-0">
+            <span *ngIf="directCheckinForm.get('Time')?.errors?.required" class="px-1">Time is required.</span>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3">
+          <input type="text" type="text" class="form-control floating-input" (focus)="onFocus($event)"
+            (blur)="onBlur($event)" formControlName="IdCard" id="idCardId"
+            [ngClass]="{'is-invalid': (isFormSubmitted || directCheckinForm.get('IdCard')?.touched) && (directCheckinForm.get('IdCard')?.invalid)}">
+          <label for="idCardId" class="floating-label" style="left: 20px;"
+            [ngClass]="{'text-danger': (isFormSubmitted || directCheckinForm.get('IdCard')?.touched) && (directCheckinForm.get('IdCard')?.invalid)}">ID
+            Card*</label>
+          <div
+            *ngIf="(isFormSubmitted || directCheckinForm.get('IdCard')?.touched) && directCheckinForm.get('IdCard')?.invalid"
+            class="invalid-feedback">
+            <span *ngIf="directCheckinForm?.get('IdCard')?.errors?.required">Id Card is required.</span>
+          </div>
+        </div>
+
+        <div class="form-group floating-label-group col-md-3 inputPadding">
+          <textarea type="text" class="form-control floating-input  " (focus)="onFocus($event)" (blur)="onBlur($event)"
+            formControlName="description" id="descriptionId" placeholder=" "></textarea>
+          <label for="descriptionId" class="floating-label" style="left: 20px;">Accessories</label>
+        </div>
+
+        <div style="display: flex;justify-content: end;">
+          <button class="HRMS_secondary_button mx-2" type="button" (click)="resetFormData()"><i
+              class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+          <button class="HRMS_primary_button" type="submit" (click)="submitForm()"
+            *ngIf="controlAccessPage?.AddAccess === true"><i class="fas fa-sign-in-alt"></i>&nbsp;Check In</button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</app-card>

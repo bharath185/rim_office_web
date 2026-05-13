@@ -1,0 +1,165 @@
+<app-toast-message></app-toast-message>
+
+<ol class="breadcrumb mx-1 p-1 mb-0 fade-left">
+    <li class="breadcrumb-item active" aria-current="page">
+        <button class="homeBackClass">Employee Details</button><span>>&nbsp;</span>
+        <strong class="breadcrumb-sub-text">View Employee</strong>
+    </li>
+</ol>
+
+<app-card [options]="false" style="height: 100vh;">
+    <div class="divSpinner" *ngIf="isSpinner">
+        <div class="spinner"></div>
+    </div>
+    <div class="text-right hrms_search_field ">
+        <input (keyup)="applyFilter($event)" placeholder="Search" />
+    </div>
+    <div class="table-wrapper">
+        <table class="table table-bordered mt-2">
+            <thead class="sticky-header">
+                <tr class="inner-shadow ">
+                    <th class="text-center">Name</th>
+                    <th class="text-center">Department</th>
+                    <th class="text-center">Designation</th>
+                    <th class="text-center">Email Id</th>
+                    <th class="text-center">Emp Code</th>
+                    <th class="text-center">Company</th>
+                    <th class="text-center">Action</th>
+                    <th class="text-center">Status</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="!errorMessage">
+                <tr *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page } ;let i = index;">
+                    <td class="text-center">
+                        <span>{{row.FirstName}}</span>
+                    </td>
+                    <td class="text-center">
+                        <span>{{row.DeptName}}</span>
+                    </td>
+                    <td class="text-center">
+                        <span>{{row.Designation}}</span>
+                    </td>
+                    <td class="text-center">
+                        <span>{{row.EmailId}}</span>
+                    </td>
+                    <td class="text-center">
+                        <span>{{row.EmpCode}}</span>
+                    </td>
+                    <td class="text-center">
+                        <span>{{row.Company}}</span>
+                    </td>
+                    <td class="text-center" >
+                        <span><i class="fas fa-pen fa-lg mx-2" style="color:#072f5f;cursor: pointer;"
+                                (click)="onViewEdit(row)"></i></span>
+                        <span class="mx-2"><i class="fas fa-trash fa-lg " style="color:#072f5f;cursor: pointer;"
+                                (click)="onViewDelete(row)" data-bs-toggle="modal"
+                                data-bs-target="#exampleModal"></i></span>
+                    </td>
+                    <td class="text-center">
+                        <div class="toggle-btn" 
+                             [ngClass]="{'active': row.EmpStatus === 'Active', 'inactive': row.EmpStatus === 'Inactive'}"
+                             (click)="toggleState(row)">
+                            <span>{{ row.EmpStatus === 'Active' ? 'Active' : 'Inactive' }}</span>
+                            <i class="fa" [ngClass]="row.EmpStatus === 'Active' ? 'fa-toggle-on' : 'fa-toggle-off'"></i>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+
+            <!-- <tbody *ngIf="!errorMessage">
+                <tr *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index;">
+                    <td class="text-center">
+                        <span>{{row.FirstName}}</span>
+                    </td>
+                    <td class="text-center">
+                        <span>{{row.DeptName}}</span>
+                    </td>
+                    <td class="text-center">
+                        <span>{{row.Designation}}</span>
+                    </td>
+                    <td class="text-center">
+                        <span>{{row.EmailId}}</span>
+                    </td>
+                    <td class="text-center">
+                        <span>{{row.EmpCode}}</span>
+                    </td>
+                    <td class="text-center">
+                        <span>{{row.Company}}</span>
+                    </td>
+                    <td class="text-center">
+                        <span><i class="fas fa-pen fa-lg mx-2" style="color:#072f5f;cursor: pointer;"
+                                (click)="onViewEdit(row)"></i></span>
+                        <span class="mx-2"><i class="fas fa-trash fa-lg " style="color:#072f5f;cursor: pointer;"
+                                (click)="onViewDelete(row)" data-bs-toggle="modal"
+                                data-bs-target="#exampleModal"></i></span>
+                    </td>
+                    <td class="text-center">
+                        <div class="toggle-btn" [ngClass]="{'active': row.isActive, 'inactive': !row.isActive}"
+                            (click)="toggleState(row)">
+                            <span>{{ row.isActive ? 'Active' : 'Inactive' }}</span>
+                            <i class="fa" [ngClass]="row.isActive ? 'fa-toggle-on' : 'fa-toggle-off'"></i>
+                        </div>
+                    </td>
+                </tr>
+            </tbody> -->
+            
+        </table>
+        <div *ngIf="errorMessage" class="text-center errorMassage">
+            <span class="text-danger">{{errorMessage}}</span>
+        </div>
+    </div>
+
+    <div class="pagination-controls">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-2">
+                    <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+                    <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control">
+                        <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+                    </select>
+                </div>
+                <div class="col-md-6 ">
+                    <p class="d-none"></p>
+                </div>
+                <div class="col-md-4 mt-3">
+                    <pagination-controls (pageChange)="page = $event"></pagination-controls>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-card>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title fs-5" id="exampleModalLabel" style="color: white;">Are You Sure You Want To
+                    Delete?</h3>
+                <button type="button" class="btn-close modal_close_button" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="deleteForm">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="form-group floating-label-group col-md-6 mb-3">
+                                <textarea type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" formControlName="reason" id="nameInput"
+                                    placeholder=" "></textarea>
+                                <label for="nameInput" class="floating-label" style="left: 20px;">Reason</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer p-0">
+                <button type="button" class="HRMS_secondary_button" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="HRMS_primary_button" data-bs-dismiss="modal"
+                    (click)="deleteEmployee()">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,257 @@
+<app-toast-message></app-toast-message>
+<div class="divSpinner" *ngIf="isSpinner">
+    <div class="spinner"></div>
+</div>
+<div class="container-fluid">
+    <div class="col-md-12">
+        <form [formGroup]="payslipSectionForm" > 
+            <fieldset class="border p-3 mb-3 custom-fieldset">
+                <legend class="w-auto px-2 custom-legend">Payslip Section</legend>
+                <div class="row">
+
+                    <div class="form-group floating-label-group col-md-3 inputPadding">
+                        <select class="form-control floating-input" id="PayoutTypeId" formControlName="PayoutType"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || payslipSectionForm.get('PayoutType')?.touched) && payslipSectionForm.get('PayoutType')?.invalid}">
+                            <option selected hidden value="" disabled></option>
+                            <option *ngFor="let type of getDDOfPayoutType" [ngValue]="type.PayoutTypeId">
+                                {{type.PayoutTypeName }}</option>
+                        </select>
+                        <label for="PayoutTypeId" class="floating-label" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || payslipSectionForm.get('PayoutType')?.touched) && payslipSectionForm.get('PayoutType')?.invalid}">Payout
+                            Type*</label>
+                        <div *ngIf="(isFormSubmitted || payslipSectionForm.get('PayoutType')?.touched) && payslipSectionForm.get('PayoutType')?.invalid "
+                            class="invalid-feedback m-0">
+                            <span *ngIf="payslipSectionForm.get('PayoutType')?.errors?.required">
+                                Payout Type is required.
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 inputPadding">
+                        <select class="form-control floating-input" id="payslipSectionId"
+                            formControlName="payslipSection" (change)="onPayslipSectionChange($event)"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || payslipSectionForm.get('payslipSection')?.touched) && payslipSectionForm.get('payslipSection')?.invalid}">
+                            <option selected hidden value="" disabled></option>
+                            <option value="createNew">Create New</option>
+                            <option *ngFor="let type of getDDOfPayslipSection" [ngValue]="type.SectionId">
+                                {{type.SectionName}}
+                            </option>
+                        </select>
+                        <label for="payslipSectionId" class="floating-label" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || payslipSectionForm.get('payslipSection')?.touched) && payslipSectionForm.get('payslipSection')?.invalid}">Payslip
+                            Section*</label>
+                        <div *ngIf="(isFormSubmitted || payslipSectionForm.get('payslipSection')?.touched) && payslipSectionForm.get('payslipSection')?.invalid "
+                            class="invalid-feedback m-0">
+                            <span *ngIf="payslipSectionForm.get('payslipSection')?.errors?.required">
+                                Payslip Section is required.
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <button type="button" class="btn me-2" (click)="addComponentRow()"
+                    style="border-color:#072f5f;color:#072f5f;border-radius:0%;">
+                    <i class="feather icon-plus"></i>
+                </button>
+
+                <div formArrayName="components">
+                    <div class="row mb-2 mt-3" *ngFor="let group of componentsFormArray.controls; let i=index"
+                        [formGroupName]="i">
+
+                        <!-- Component -->
+                        <div class="form-group floating-label-group col-md-3 inputPadding">
+                            <select class="form-control floating-input" id="componentDDId" formControlName="componentDD"
+                                [ngClass]="{ 'is-invalid': (isFormSubmitted || group.get('componentDD')?.touched)  && group.get('componentDD')?.invalid}">
+                                <option selected hidden value="" disabled></option>
+                                <option *ngFor="let type of getDDOfComponent" [ngValue]="type"
+                                    [disabled]="isComponentDisabled(type, i)">
+                                    {{ type.ComponentName }}
+                                </option>
+                            </select>
+                            <label for="componentDDId" class="floating-label" style="left: 20px;"
+                                [ngClass]="{'text-danger': (isFormSubmitted || group.get('componentDD')?.touched) && group.get('componentDD')?.invalid}">Component*</label>
+                            <div *ngIf="(isFormSubmitted || group.get('componentDD')?.touched) && group.get('componentDD')?.invalid"
+                                class="invalid-feedback">
+                                <span> Component is required.
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Sequence -->
+                        <div class="form-group floating-label-group col-md-3 inputPadding">
+                            <input type="number" class="form-control floating-input" formControlName="SequenceNo"
+                                [readonly]="true">
+                            <label for="SequenceNoId" class="floating-label" style="left: 20px;">Sequence No*</label>
+                        </div>
+
+                        <!-- Remove button -->
+                        <div class="col-md-1 d-flex align-items-center" *ngIf="i === componentsFormArray.length - 1">
+                            <button type="button" class="btn btn-danger btn-sm" (click)="removeRow(i)">
+                                <i class="feather icon-trash"></i>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="text-end">
+                    <button class="HRMS_secondary_button" type="button" (click)="resetData()"> <i
+                            class="feather icon-rotate-ccw"></i> Reset</button>
+                    <button class="HRMS_primary_button" type="submit" (click)="submit()">
+                        <i class="feather icon-check"></i>&nbsp;Submit
+                    </button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+<!-- this is end of Form modal -->
+<div class="modal fade" id="payslipSectionModal" tabindex="-1" aria-labelledby="payslipSectionModalLabel"
+    data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="text-end">
+                <button type="reset" class="btn-close m-1" data-bs-dismiss="modal" aria-label="Close"
+                    (click)="closeModal()"></button>
+            </div>
+
+            <div class="modal-header flex-column py-0">
+
+                <h4 class="modal-title w-100">
+                    Add
+                </h4>
+            </div>
+
+            <div class="modal-body py-2">
+                <div class="divSpinner1" *ngIf="isSpinner1">
+                    <div class="spinner1"></div>
+                </div>
+                <form [formGroup]="addForm">
+                    <div class="row">
+
+                        <div class="form-group floating-label-group col-md-3 inputPadding">
+                            <input type="text" id="SectiontNameId" class="form-control floating-input"
+                                formControlName="SectionName"
+                                [ngClass]="{'is-invalid': (isFormSubmittedAddForm || addForm.get('SectionName')?.touched) && addForm.get('SectionName')?.invalid}" />
+                            <label for="SectiontNameId" class="floating-label"
+                                [ngClass]="{'text-danger': (isFormSubmittedAddForm || addForm.get('SectionName')?.touched) && addForm.get('SectionName')?.invalid}">Sectiont
+                                Name*</label>
+                            <div *ngIf="(isFormSubmittedAddForm || addForm.get('SectionName')?.touched) &&addForm.get('SectionName')?.invalid "
+                                class="invalid-feedback m-0">
+                                <span *ngIf="addForm.get('SectionName')?.errors?.required">
+                                    Sectiont Name is required.
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </form>
+                <div class="col-md-12 d-flex flex-column pending-table-section mt-2">
+                    <div class="table-responsive table-wrapper flex-grow-1" style="overflow-y: auto;">
+                        <table class="table table-hover align-middle">
+                            <thead class="sticky-header table-light">
+                                <tr class="inner-shadow">
+                                    <th class="">Name</th>
+                                    <!-- <th class="">Sequence No.</th> -->
+                                    <th class="">Manage</th>
+                                </tr>
+                            </thead>
+                            <tbody *ngIf="isTableData == false && getListOfPayslipSection.length > 0">
+                                <tr
+                                    *ngFor="let row of getListOfPayslipSection | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                                    <td>{{row.SectionName}}</td>
+                                    <!-- <td>{{row.SequenceNo}}</td> -->
+                                    <td style="cursor: pointer;" class="">
+                                        <i class="action-icon action-edit feather icon-edit-2" title="Edit"
+                                            (click)="patchVlaues(row,true)"></i>
+                                        <i class="action-icon action-delete feather icon-trash-2"
+                                            *ngIf="controlAccessPage?.DeleteAccess === true" data-bs-toggle="modal"
+                                            data-bs-target="#deleteModal" title="Delete"
+                                            (click)="confirmDelete(row)"></i>
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                            <div *ngIf="isTableData == true" class="text-center errorMassage">
+                                <span class="text-danger text-center">{{errorMessage}}</span>
+                            </div>
+                        </table>
+                    </div>
+                </div>
+
+
+                <div class="pagination-controls-wrapper">
+                    <div class="row align-items-center" style="padding-top: 1rem;">
+                        <div class="col-auto">
+                            <label for="pageSizeSelect" style="font-size: smaller;">Records per
+                                page:</label>
+                            <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+                                <option *ngFor="let size of pageSizes" [value]="size">{{ size }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col">
+                        </div>
+                        <div class="col-auto">
+                            <pagination-controls (pageChange)="page = $event"></pagination-controls>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="HRMS_secondary_button" data-bs-dismiss="modal"
+                    (click)="closeModalReset()"><i class="feather icon-slash"></i>&nbsp;Cancel</button>
+                <button type="submit" class="HRMS_primary_button" *ngIf="!isEdited" (click)="submitAddForm()">
+                    <span *ngIf="controlAccessPage?.AddAccess === true"><i
+                            class="feather icon-plus"></i>&nbsp;Add</span>
+                </button>
+                <button type="submit" class="HRMS_primary_button" *ngIf="isEdited" (click)="updateAddForm()">
+                    <span><i class="feather icon-check"></i>&nbsp;Update</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- this is end of Form modal -->
+
+<!-- this is delete modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-confirm">
+        <div class="modal-content">
+            <div class="text-end">
+                <button type="reset" class="btn-close" data-bs-dismiss="modal" aria-label="Close" #closeModalDelete
+                    style="background-color: rgb(228, 208, 208);"></button>
+            </div>
+            <div class="modal-header flex-column py-0 ">
+                <div class="icon-box" *ngIf="!isRecordDeletedCommon">
+                    <i class="fas fa-times checkmark_check"></i>
+                </div>
+                <div class="modal-wrapper" *ngIf="isRecordDeletedCommon"> <svg class="checkmark"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                </div>
+                <h4 class="modal-title w-100 text-center">Are you sure?</h4>
+            </div>
+            <div class="modal-body py-0 text-center">
+                <p>Do you really want to <strong>delete </strong>these records?. This process cannot be undone.</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger" (click)="deleteRecord()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- this is end of delete modal -->
+
+
+
+

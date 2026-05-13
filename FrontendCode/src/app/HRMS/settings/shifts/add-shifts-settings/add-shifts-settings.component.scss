@@ -1,0 +1,71 @@
+
+
+::ng-deep .pcoded-content {
+    position: relative;
+    display: block;
+    padding: 0px !important;
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+
+}
+
+.pcoded-header {
+    .card {
+        margin: 0px !important;
+    }
+}
+
+.invalid-feedback {
+    font-size: 10px;
+}
+.table thead th {
+  padding: 10px 10px !important;
+}
+
+.table tbody td {
+  padding: 5px 10px !important;
+}
+
+.input-group {
+    display: flex;
+    /* Ensure flex display for input and select */
+    width: 100%;
+    /* Full width of the parent */
+}
+
+.input-group .form-control {
+    flex: 1;
+    /* Allow input to take available space */
+    margin-right: 0;
+    /* Remove any default margins */
+}
+
+.input-group-append .form-control {
+    height: calc(2.5rem + 6px);
+}
+
+select:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: initial;
+    /* Keep the border color consistent */
+}
+
+/* Remove background for autofilled inputs */
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    box-shadow: 0 0 0 30px white inset !important;
+}
+
+/* Remove the default yellow text color for autofilled inputs */
+input:-webkit-autofill {
+    -webkit-text-fill-color: black !important;
+}
+
+@media only screen and (max-width: 991px) {
+    ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+        margin-left: 0px;
+        margin-top: 57px !important;
+    }
+}
+

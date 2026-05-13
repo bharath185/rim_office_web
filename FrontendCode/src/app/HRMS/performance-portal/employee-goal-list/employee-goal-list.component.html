@@ -1,0 +1,103 @@
+<app-toast-message></app-toast-message>
+<ol class="breadcrumb mx-1 p-1 mb-0 fade-left">
+    <li class="breadcrumb-item active" aria-current="page">
+        <button class="homeBackClass">Performance Portal</button><span>>&nbsp;</span>
+        <strong class="breadcrumb-sub-text">Employee Goal List</strong>
+    </li>
+</ol>
+<!-- <app-spinner *ngIf="loading"></app-spinner> -->
+<app-card [options]="false" #!detailView>
+  <div class="text-start" *ngIf="buttonView">
+    <button class="btn btn-primary  mx-2"
+      style="background-color: #072f5f; color: white; border-radius: 0%; border: none;" (click)="returnPage()"><i
+        class="fas fa-undo"></i> Return</button>
+    <!-- <button class="btn btn-primary  mx-2" style="background-color: #072f5f; color: white; border-radius: 0%; border: none;" ><i class="fas fa-check"></i> Approve</button> -->
+  </div>
+  <!-- <h5 class="text-center mb-4" style="color: #072f5f;">EMPLOYEE GOAL LIST</h5> -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h5 class="text-center flex-grow-1 m-0" style="color: #072f5f;">EMPLOYEE REVIEW LIST</h5>
+    <div class="text-end ms-3" style="white-space: nowrap;">
+      <span>Financial Details : </span>
+      <strong>{{ getFinancialYear[0]?.FinancialDetails }}</strong>
+    </div>
+  </div>
+
+  <div *ngIf="!isDetailView; else detailView">
+    <div class="row">
+      <div class="col">
+        <div class="table-responsive">
+          <table class="table table-bordered table-rounded">
+            <thead>
+              <tr>
+                <th style="width: 10%;">Employee ID</th>
+                <th style="width: 60%;">Employee Name</th>
+                <th style="width: 20%;">Goal Status</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="isTableData == false">
+              <tr *ngFor="let goal of employeeGoals">
+                <td>{{ goal.EmpCode }}</td>
+                <td>{{ goal.EmpName }}</td>
+                <td>
+                  <span
+                    [ngClass]="{'badge bg-success': goal.Status === 'Approved', 'badge bg-warning': goal.Status === 'Pending'}">
+                    {{ goal.Status }}
+                  </span>
+                </td>
+                <td class="text-center">
+                  <button class="btn btn-sm"
+                    style="background-color: #072f5f; border-radius: 5px; color: #ffffff; outline: #072f5f;"
+                    (click)="viewGoal(goal.EmpId )">
+                    <i class="fas fa-eye"></i>
+                  </button>
+
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="isTableData == true" class="text-center errorMassage">
+            <span class="text-danger">{{getAllGoalEmpError}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #detailView>
+
+
+    <div class="card-body">
+
+      <table class="table table-bordered table-rounded mt-2">
+        <thead>
+          <tr>
+            <th>Sl No</th>
+            <th>Goal Name</th>
+            <th>Weightage{{goal.Weightage}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let goal of goalDetails; let i = index">
+            <td style="width: 10%;">{{i+1}}</td>
+            <td style="width: 50%;">
+              <input type="text" [(ngModel)]="goal.Goal" #goalInput class="form-control" />
+            </td>
+            <td style="width: 10%;">
+              <input type="text" style="width: 50%;" [(ngModel)]="goal.Weightage" #weightageInput
+                class="form-control" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="text-end">
+        <!-- <button class="btn btn-primary  mx-2" (click)="ApprpveGoal(); logGoalWeightages()"
+          style="background-color: #072f5f; color: white; border-radius: 0%; border: none;"><i
+            class="fas fa-check"  ></i> Approve</button> -->
+        <button class="btn btn-primary  mx-2" (click)="ApprpveGoal();logGoalWeightages()"
+          style="background-color: #072f5f; color: white; border-radius: 0%; border: none;"><i class="fas fa-check"></i>
+          Approve</button>
+      </div>
+    </div>
+  </ng-template>
+</app-card>

@@ -1,0 +1,166 @@
+::ng-deep .pcoded-content {
+  position: relative;
+  display: block;
+  padding: 0px !important;
+  padding-left: 25px !important;
+  padding-right: 25px !important;
+
+}
+
+.pcoded-header {
+  .card {
+    margin: 0px !important;
+  }
+}
+
+::ng-deep.ngx-pagination .current {
+  padding: .1875rem .625rem;
+  // background-color: #072f5f !important;
+  color: #fefefe;
+  cursor: default;
+}
+
+@media only screen and (max-width: 991px) {
+  ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+    margin-left: 0px;
+    margin-top: 57px !important;
+  }
+}
+
+.spinner1 {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 9px solid;
+  border-color: #dbdcef;
+  border-right-color: #072f5f;
+  animation: spinner-d3wgkg 1s infinite linear;
+}
+
+.divSpinner1 {
+  position: relative;
+
+  .spinner1 {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-top: 10rem;
+    z-index: 100;
+  }
+}
+
+@keyframes spinner-d3wgkg {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.btn-group .btn.active {
+  background-color: white;
+  border: 1px solid black;
+}
+
+.nextPrevButton {
+  border: 1px solid lightgray;
+}
+
+
+.clickable-date {
+  cursor: pointer;
+  color: #007bff;
+  text-decoration: underline;
+}
+
+
+// ************this is for custome date*******
+.custom-date-input {
+  position: relative;
+}
+
+.custom-date-input input {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 3px 5px;
+  width: 100%;
+  outline: none;
+  font-size: 11px;
+  padding-top: 17px;
+  line-height: 1.6;
+}
+
+.custom-date-input input::placeholder {
+  font-size: 5px;
+  color: #aaa;
+}
+
+.custom-date-input label {
+  position: absolute;
+  color: #888;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.custom-date-input input:focus + label,
+.custom-date-input input:not(:placeholder-shown) + label {
+  top: 1px;
+  left: 5px;
+  font-size: 12px;
+}
+
+// ************this is for custome date*******
+
+.note-box {
+  background-color: #fffbea;
+  border-left: 6px solid #f7c948;
+  padding: 15px 20px;
+  margin: 20px 0;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.note-title {
+  margin: 0 0 10px;
+  color: #8a6d3b;
+  font-weight: 600;
+}
+
+.note-list {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin: 0;
+  color: #555;
+}
+
+.note-list li {
+  margin-bottom: 5px;
+}
+
+
+///////////// this is modal ///////////
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-content {
+  animation: fadeInUp 1.5s ease-in-out;
+}
+
+.btn-close {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.btn-close:hover {
+  transform: rotate(90deg);
+  opacity: 0.7;
+}
+
+////////////

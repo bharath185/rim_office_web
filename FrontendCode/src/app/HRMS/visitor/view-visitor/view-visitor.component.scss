@@ -1,0 +1,216 @@
+
+::ng-deep.pcoded-content {
+  position: relative;
+  display: block;
+  padding: 0px !important;
+  padding-left: 25px !important;
+  padding-right: 25px !important;
+}
+.pcoded-header {
+  .card {
+    margin: 0px !important;
+  }
+}
+.table-wrapper {
+  max-height: 480px !important;
+}
+.table thead th {
+  padding: 5px 6px !important;
+}
+
+.table tbody td {
+  padding: 3px 6px !important;
+}
+::ng-deep input[type="text"]::-webkit-clear-button,
+input[type="text"]::-webkit-inner-spin-button,
+input[type="text"]::-webkit-outer-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+}
+::ng-deep input[type="text"]::-moz-clear-button {
+  display: none;
+}
+::ng-deep input[type="text"]::-ms-clear {
+  display: none;
+}
+.modal-header {
+  position: relative;
+  background-color: #072f5f;
+  h1 {
+    color: white;
+  }
+  button {
+    color: red($color: #000000);
+    background: white;
+  }
+}
+.modal-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.btn-close {
+  position: absolute;
+  left: 92%;
+}
+.info-item {
+  display: flex;
+}
+.info-item span {
+  display: inline-block;
+}
+.text-muted {
+  width: 110px;
+  text-align: right;
+  margin-right: 5px;
+  font-size: 12px;
+}
+.fw-bold {
+  font-weight: bold;
+}
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+}
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.spinner1 {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 9px solid;
+  border-color: #dbdcef;
+  border-right-color: #072f5f;
+  animation: spinner-d3wgkg 1s infinite linear;
+}
+.divSpinner1 {
+  position: relative;
+  .spinner1 {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-top: 10rem;
+    z-index: 2;
+  }
+}
+@keyframes spinner-d3wgkg {
+  to {
+    transform: rotate(1turn);
+  }
+}
+input[type="file"] {
+  display: none;
+}
+.img-thumbnail {
+  max-width: 50%;
+  height: auto;
+}
+.fileInput {
+  background: #072f5f;
+  color: white;
+  border-radius: 3px;
+  padding: 3px
+}
+.was-validated .date-time-picker:invalid,
+.date-time-picker.is-invalid {
+  border-color: #ff5370;
+  padding: 2px;
+}
+.export-container {
+  position: relative;
+  display: inline-block;
+}
+.export-button {
+  background-color: #ffffff;
+  color: #072f5f;
+  border: 1px solid #072f5f;
+  font-size: 14px;
+  padding: 5px 6px;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+  border-radius: 3px;
+}
+.export-button:hover {
+  background-color: #e6f0ff; 
+  border-color: #0056b3; 
+}
+.export-button i {
+  margin-left: 2px; 
+}
+.dropdown-item {
+  padding: 10px 16px; 
+  cursor: pointer;
+  display: flex; 
+  align-items: center; 
+  transition: background-color 0.3s; 
+}
+.dropdown-item i {
+  margin-right: 5px; 
+}
+.dropdown-item:hover {
+  background-color: #072f5f; 
+  color: white;
+}
+.dropdown-content {
+  position: absolute;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin-top: 5px;
+  z-index: 1;
+  width: 120px;
+  top: 84%;
+}
+.highlight-today {
+  font-weight: bold !important;
+}
+
+// ************This is for Floating********
+.floating-input {
+  line-height: 2;
+}
+.form-group{
+  margin-bottom: 0px !important;
+}
+// ************This is for Floating********
+
+// ************this is for custome date*******
+.custom-date-input {
+  position: relative;
+}
+.custom-date-input input {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 3px 5px;
+  width: 100%;
+  outline: none;
+  font-size: 11px;
+  padding-top: 16px;
+  line-height: 1.8;
+}
+.custom-date-input input::placeholder {
+  font-size: 5px;
+  color: #aaa;
+}
+.custom-date-input label {
+  position: absolute;
+  color: #888;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+.custom-date-input input:focus+label,
+.custom-date-input input:not(:placeholder-shown)+label {
+  top: 1px;
+  left: 5px;
+  font-size: 12px;
+}
+// ************this is for custome date*******
+
+@media only screen and (max-width: 991px) {
+  ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+      margin-left: 0px;
+      margin-top: 57px !important;
+  }
+}

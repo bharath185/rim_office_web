@@ -1,0 +1,53 @@
+// .nav-tabs .nav-link.active {
+//   font-weight: bold;
+//   border-bottom: 2px solid #4a78fa;
+//   color: black;
+// }
+
+////////.top-nav//////////////
+.top-nav {
+  display: flex;
+  flex-wrap: wrap;     
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .nav-btn {
+    flex: 1 1 45%;      
+  }
+}
+@media (max-width: 480px) {
+  .nav-btn {
+    flex: 1 1 100%;     
+  }
+}
+
+.nav-btn {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #072F5F;
+  padding: 5px 12px;
+  font-size: 14px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+ 
+}
+
+.nav-btn i {
+  font-size: 14px;
+}
+
+.nav-btn:hover {
+  background: #f3f4f6;
+}
+
+.nav-btn.active {
+  background: #072F5F;  
+  color: #fff;
+  border-color: #374151;
+}
+////////.top-nav//////////////

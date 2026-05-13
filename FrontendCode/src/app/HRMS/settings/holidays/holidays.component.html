@@ -1,0 +1,393 @@
+<app-toast-message></app-toast-message>
+
+<!-- <app-card [options]="false"> -->
+<div class="container-fluid my-2">
+    <div class="col-md-12 mb-2">
+        <div class="row align-items-center">
+            <div class="col-md-1 p-0 mt-0" style="background-color: white;">
+                <div class="btn-group" role="group" style="margin-top: 4px;">
+                    <button type="button" class="btn toggleButton" [class.active]="viewMode === 'list'"
+                        (click)="setView('list')">
+                        <i class="fas fa-list fa-lg"></i>
+                    </button>
+                    <button type="button" class="btn toggleButton" [class.active]="viewMode === 'calendar'"
+                        (click)="setView('calendar')">
+                        <i class="fas fa-calendar-plus fa-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+
+            <div class="col-md-2">
+                <select class="form-select " style="width: auto; background-color: white;"
+                    (change)="getSelectedHoliday($event)" *ngIf="showTableDropdowm">
+                    <option>General Holidays</option>
+                    <option>RH Holidays</option>
+                    <option>Weekly Holidays</option>
+                </select>
+            </div>
+            <div class="col-md-9 d-flex justify-content-end align-items-center gap-2">
+                <button class="HRMS_Create_Close" (click)="openModal();" *ngIf="controlAccessPage?.AddAccess === true">
+                    <i class="feather icon-plus"></i>&nbsp;Add Holiday </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- </app-card> -->
+
+
+<div class="divSpinner" *ngIf="isSpinner">
+    <div class="spinner"></div>
+</div>
+
+<!-- Display area List Table Data -->
+<app-card [options]="false" *ngIf="viewMode === 'list'">
+    <div *ngIf="viewMode === 'list'">
+        <div class="container-fluid p-1">
+            <div class="row">
+                <div class="col-md-9">
+                    <h5 class="mb-0 form-heading">Available Holidays</h5>
+                </div>
+                <div class="col-md-3 text-end">
+                    <input type="text" class="form-control rad-50" #inputValue (keyup)="applyFilter($event)"
+                        placeholder="Search" id="serachInputId" />
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-wrapper mt-3">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light sticky-header">
+                        <tr class="inner-shadow">
+                            <th class="">Location</th>
+                            <th class="">Year</th>
+                            <th class=" fw-bold" *ngIf="isDatePresent">Date</th>
+                            <th class=" fw-bold" *ngIf="isDayPresent">Day</th>
+                            <th class="">Title</th>
+                            <th class="">Description</th>
+                            <th class=""
+                                *ngIf="(controlAccessPage?.UpdateAccess === true) || (controlAccessPage?.DeleteAccess === true)">
+                                Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody *ngIf="isTableData == false">
+                        <tr
+                            *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                            <td class=" ">
+                                <!-- badge bg-light text-dark border fw-bold -->
+                                <span>{{row.Location}}</span>
+                            </td>
+                            <td class="">
+                                <span>{{row.Year}}</span>
+                            </td>
+                            <td class=" fw-bold" *ngIf="(row.Date != null)">
+                                <span>{{row.Date | date:'dd-MM-yyyy' }}</span>
+                            </td>
+                            <td class=" fw-bold" *ngIf="(row.Date == null)">
+                                <span>{{row.Day }}</span>
+                            </td>
+                            <td class="">
+                                <span>{{row.Title}}</span>
+                            </td>
+                            <td class="">
+                                <span>{{row.Description}}</span>
+                            </td>
+                            
+                            <td style="cursor: pointer;" class="d-flex" *ngIf="(controlAccessPage?.UpdateAccess === true) || (controlAccessPage?.DeleteAccess === true)">
+                                <i class="action-icon action-edit feather icon-edit-2 " title="Edit"
+                                    (click)="editData(row,true)" *ngIf="controlAccessPage?.UpdateAccess ==  true"></i>
+                                <i class="action-icon action-delete feather icon-trash-2 "
+                                        (click)="onView(row)" data-bs-toggle="modal" data-bs-target="#exampleModalDeleteHoliday"
+                                        *ngIf="controlAccessPage?.DeleteAccess === true"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+                <div *ngIf="isTableData == true" class="text-center errorMassage">
+                    <span class="text-danger">{{errorMessage}}</span>
+                </div>
+
+            </div>
+
+            <div class="pagination-controls-wrapper">
+                <div class="row align-items-center" style="padding-top: 1rem;">
+                    <div class="col-auto">
+                        <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+                        <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+                            <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                    </div>
+                    <div class="col-auto">
+                        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</app-card>
+
+<!-- Display area Calendar Data -->
+<div *ngIf="viewMode === 'calendar'" class="calendar-container">
+    <!-- Header -->
+    <div class="calendar-header d-flex justify-content-between align-items-center mb-2">
+        <div class="d-flex align-items-center gap-2">
+            <button class="btn nextPrevButton" (click)="prevMonth()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+
+            <select class="form-select" [(ngModel)]="currentMonth" (change)="generateCalendar()">
+                <option *ngFor="let m of monthNames; let i = index" [value]="i">{{ m }}</option>
+            </select>
+
+            <select class="form-select" [(ngModel)]="currentYear" (change)="generateCalendar()">
+                <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+            </select>
+
+            <button class="btn nextPrevButton" (click)="nextMonth()">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Weekday Labels -->
+    <div class="calendar-weekdays">
+        <div *ngFor="let day of weekDays" class="weekday">{{ day }}</div>
+    </div>
+
+    <!-- Calendar Days -->
+    <div class="calendar-grid">
+        <div *ngFor="let day of flatCalendar" class="calendar-day" [ngClass]="getDayClass(day)">
+            <div *ngIf="day > 0" class="day-number">{{ day }}</div>
+
+            <div class="events" *ngIf="day > 0">
+                <ng-container *ngFor="let event of getEventsForDay(day); let i = index">
+                    <div *ngIf="i < 2" class="event" [ngClass]="{
+        'event-general': event.type === 'General Holidays',
+        'event-rh': event.type === 'RH Holidays'
+      }" [title]="event.title + ' - ' + event.type">
+                        <div class="event-title">
+                            {{ event.title.length > 15 ? (event.title | slice:0:15) + '...' : event.title }}
+                        </div>
+                        <div class="event-type">{{ event.type }}</div>
+                    </div>
+                </ng-container>
+                <div *ngIf="getEventsForDay(day).length > 2" class="more">
+                    +{{ getEventsForDay(day).length - 2 }}
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<!-- This is side Modal with forms-->
+<div class="modal fade" id="modal-right" tabindex="-1" aria-labelledby="modal-right-label" data-bs-backdrop="static"
+    aria-hidden="false">
+    <div class="modal-dialog modal-end w-xl">
+        <div class="modal-content vh-100 no-radius">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-right-label">Add Holidays</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" #closeModal
+                    (click)="resetData()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    <form [formGroup]="holidaysForm" *ngIf="(controlAccessPage?.AddAccess === true)">
+                        <div class="row ">
+
+                            <div class="form-group floating-label-group">
+                                <select class="form-control floating-input" formControlName="holidayTypes"
+                                    style="left: 20px;" id="holidayTypesId" (focus)="onFocus($event)"
+                                    (blur)="onBlur($event)" (change)="selectedHolidayForm($event)"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || holidaysForm.get('holidayTypes')?.touched) && (holidaysForm.get('holidayTypes')?.invalid)}">
+                                    <option disabled selected hidden value=""></option>
+                                    <option>General Holidays</option>
+                                    <option>RH Holidays</option>
+                                    <option>Weekly Holidays</option>
+                                </select>
+                                <label for="holidayTypesId" class="floating-label m-0" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || holidaysForm.get('holidayTypes')?.touched) && (holidaysForm.get('holidayTypes')?.invalid)}">Holiday
+                                    Type*</label>
+                                <div *ngIf="(isFormSubmitted || holidaysForm.get('holidayTypes')?.touched) && holidaysForm.get('holidayTypes')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="holidaysForm.get('holidayTypes')?.errors?.required" class="px-1">
+                                        Holiday Types Is required</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="dropdown">
+                                    <label class="floating-label" style="left:5px !important">Location*</label>
+                                    <button #dropdownLocationBtn class="form-control text-start dropdown-toggle"
+                                        style="font-size: 12px;top:-10px !important" type="button" (click)="toggleLocationDropdown()">
+                                        {{ selectedLocation.length ? selectedLocation.join(', ') : '' }}
+                                    </button>
+                                    <ul #dropdownLocationMenu class="dropdown-menu w-100 p-2"
+                                        style="max-height: 200px; overflow-y: auto;">
+                                        <li *ngFor="let location of getLocations">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox"
+                                                    [id]="location.LocationId" [value]="location.Location"
+                                                    (change)="onLocationCheckboxChange($event)"
+                                                    [checked]="selectedLocation.includes(location.Location)" />
+                                                <label class="form-check-label"
+                                                    [for]="location.LocationId">{{location.Location }}</label>
+                                                <div *ngIf="(isFormSubmitted || holidaysForm.get('Location')?.touched) && holidaysForm.get('Location')?.invalid"
+                                                    class="invalid-feedback m-0">
+                                                    <span *ngIf="holidaysForm.get('Location')?.errors?.required"
+                                                        class="px-1">
+                                                        Location is required
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group">
+                                <select class="form-control floating-input" formControlName="year" style="left: 20px;"
+                                    id="yearId" (focus)="onFocus($event)" (blur)="onBlur($event)"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || holidaysForm.get('year')?.touched) && (holidaysForm.get('year')?.invalid)}">
+                                    <option disabled selected hidden value=""></option>
+                                    <!-- <option value="2026">2026</option> -->
+                                    <option *ngFor="let Year of getYears" [value]="Year.Year">
+                                        {{Year.Year}}</option>
+                                </select>
+                                <label for="yearId" class="floating-label m-0" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || holidaysForm.get('year')?.touched) && (holidaysForm.get('year')?.invalid)}">Year*</label>
+                                <div *ngIf="(isFormSubmitted || holidaysForm.get('year')?.touched) && holidaysForm.get('year')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="holidaysForm.get('year')?.errors?.required" class="px-1"> Year Is
+                                        required</span>
+                                </div>
+                            </div>
+
+                            <div class="custom-date-input" *ngIf="showDateField">
+                                <input type="date" placeholder=" " formControlName="date" id="dateInputIdFrom"
+                                    class="form-control floating-input"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || holidaysForm.get('date')?.touched) && (holidaysForm.get('date')?.invalid)}" />
+                                <label for="dateInputIdFrom" class="floating-label m-0" 
+                                    [ngClass]="{'text-danger': (isFormSubmitted || holidaysForm.get('date')?.touched) && (holidaysForm.get('date')?.invalid)}">
+                                    Date*</label>
+                                <div *ngIf="(isFormSubmitted || holidaysForm.get('date')?.touched) && holidaysForm.get('date')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="holidaysForm.get('date')?.errors?.required" class="px-1"> Date Is
+                                        required</span>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group floating-label-group mt-3" *ngIf="showWeeksField">
+                                <div class="dropdown">
+                                    <label class="floating-label " style="left:5px !important">Days*</label>
+                                    <button #dropdownBtn class="form-control text-start dropdown-toggle" type="button"
+                                        style="font-size: 12px;" (click)="toggleDropdown()">
+                                        {{ selectedDays.length ? selectedDays.join(', ') : '' }}
+                                    </button>
+                                    <ul #dropdownMenu class="dropdown-menu w-100 p-2"
+                                        style="max-height: 200px; overflow-y: auto;">
+                                        <li *ngFor="let day of weekDaysDDForm">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" [value]="day"
+                                                    (change)="onCheckboxChange($event)"
+                                                    [checked]="selectedDays.includes(day)" />
+                                                <label class="form-check-label" [for]="day">{{ day }}</label>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group">
+                                <input type="text" class="form-control floating-input" id="departmentId" placeholder=" "
+                                    (focus)="onFocus($event)" (blur)="onBlur($event)" formControlName="titleName"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || holidaysForm.get('titleName')?.touched) && holidaysForm.get('titleName')?.invalid}">
+                                <label for="departmentId" class="floating-label" style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || holidaysForm.get('titleName')?.touched) && holidaysForm.get('titleName')?.invalid}">
+                                    Title Name*</label>
+                                <div *ngIf="(isFormSubmitted || holidaysForm.get('titleName')?.touched) && holidaysForm.get('titleName')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="holidaysForm?.get('titleName')?.errors?.required">Title Name is
+                                        required.</span>
+                                    <span
+                                        *ngIf="(holidaysForm.get('titleName')?.errors?.minlength || holidaysForm.get('titleName')?.errors?.maxlength)">2
+                                        to 50 Charater are allowed.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group floating-label-group">
+                                <input type="text" class="form-control floating-input" id="depShortId" placeholder=" "
+                                    (focus)="onFocus($event)" (blur)="onBlur($event)" formControlName="Description"
+                                    [ngClass]="{'is-invalid': (isFormSubmitted || holidaysForm.get('Description')?.touched) && holidaysForm.get('Description')?.invalid}">
+                                <label for="depShortId" class="floating-label " style="left: 20px;"
+                                    [ngClass]="{'text-danger': (isFormSubmitted || holidaysForm.get('Description')?.touched) && holidaysForm.get('Description')?.invalid}">
+                                    Description*</label>
+                                <div *ngIf="(isFormSubmitted || holidaysForm.get('Description')?.touched) && holidaysForm.get('Description')?.invalid"
+                                    class="invalid-feedback m-0">
+                                    <span *ngIf="holidaysForm?.get('Description')?.errors?.required">Description is
+                                        required.</span>
+                                    <span *ngIf="holidaysForm?.get('Description')?.errors?.Description">Invalid
+                                        Description.</span>
+                                    <span
+                                        *ngIf="(holidaysForm.get('Description')?.errors?.minlength || holidaysForm.get('Description')?.errors?.maxlength)">2
+                                        to 50 Charater are allowed.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="HRMS_secondary_button" type="button" (click)="resetData()"><i class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+                <button class="HRMS_primary_button " style="margin-right: 5px;" type="submit" (click)="submitFormdata()"
+                    *ngIf="!isEdited">
+                    <span *ngIf="controlAccessPage?.AddAccess === true"><i class="feather icon-check"></i>&nbsp;Submit</span></button>
+                <button class="HRMS_primary_button" type="submit" (click)="updateholidaysForm()"
+                    style="margin-right: 5px;" *ngIf="isEdited"><i class="feather icon-check"></i>&nbsp;Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- This is end side Modal -->
+
+
+<!-- this is delete modal -->
+<div class="modal fade" id="exampleModalDeleteHoliday" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-confirm">
+        <div class="modal-content">
+            <div class="text-end">
+                <button type="reset" class="btn-close " data-bs-dismiss="modal" aria-label="Close" #closeModalDelete
+                    style="background-color: rgb(228, 208, 208);"></button>
+            </div>
+            <div class="modal-header flex-column py-0">
+                <div class="icon-box" *ngIf="!isRecordDeleted">
+                    <i class="fas fa-times checkmark_check"></i>
+                </div>
+                <div class="modal-wrapper" *ngIf="isRecordDeleted"> <svg class="checkmark"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                </div>
+                <h4 class="modal-title w-100">Are you sure?</h4>
+            </div>
+            <div class="modal-body py-0">
+                <p>Do you really want to delete these records?This process cannot be undone.</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger" (click)="deleteHolidaysData()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- this is end of delete modal -->

@@ -1,0 +1,243 @@
+<app-toast-message></app-toast-message>
+<div class="overlay" *ngIf="isSpinner"></div>
+
+<app-card [options]="false">
+    <div class="col-md-12">
+        <div class="divSpinner" *ngIf="isSpinner">
+            <div class="spinner"></div>
+        </div>
+        <h5 class="text-center py-2 addAccessHeading">Visitor Page</h5>
+        <form [formGroup]="invitePageForm">
+            <div class="row">
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Name*</label>
+                    <input type="text" class="form-control" id="exampleInputAccess" formControlName="contact_name"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || invitePageForm.get('contact_name')?.touched) && (invitePageForm.get('contact_name')?.invalid)}">
+                    <div class="invalid-feedback">
+                        <span *ngIf="invitePageForm?.get('contact_name')?.errors?.required">Conatct Name is
+                            required.</span>
+                        <span *ngIf="invitePageForm?.get('contact_name')?.errors?.pattern">Invalid Conatct Name.</span>
+                    </div>
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Designation*</label>
+                    <input type="text" class="form-control" id="exampleInputAccess" formControlName="designation"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || invitePageForm.get('designation')?.touched) && (invitePageForm.get('designation')?.invalid)}">
+                    <div class="invalid-feedback">
+                        <span *ngIf="invitePageForm?.get('designation')?.errors?.required">Designation is
+                            required.</span>
+                        <span *ngIf="invitePageForm?.get('designation')?.errors?.pattern">Invalid Designation.</span>
+                    </div>
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Company*</label>
+                    <input type="text" class="form-control" id="exampleInputAccess" formControlName="company"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || invitePageForm.get('company')?.touched) && (invitePageForm.get('company')?.invalid)}">
+                    <div class="invalid-feedback">
+                        <span *ngIf="invitePageForm?.get('company')?.errors?.required">Company is
+                            required.</span>
+                        <span *ngIf="invitePageForm?.get('company')?.errors?.pattern">Invalid Company Name.</span>
+                    </div>
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Purpose of Visit*</label>
+                    <input type="text" class="form-control" id="exampleInputAccess" formControlName="purpose"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || invitePageForm.get('purpose')?.touched) && (invitePageForm.get('purpose')?.invalid)}">
+                    <div class="invalid-feedback">
+                        <span *ngIf="invitePageForm?.get('purpose')?.errors?.required">Purpose of Visit is
+                            required.</span>
+                        <span *ngIf="invitePageForm?.get('purpose')?.errors?.pattern">Invalid Purpose</span>
+                    </div>
+                </div>
+
+                <!-- <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Personal Email ID*</label>
+                    <input type="text" class="form-control" id="exampleInputAccess" formControlName="per_email_id"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || invitePageForm.get('per_email_id')?.touched) && (invitePageForm.get('per_email_id')?.invalid)}">
+                    <div *ngIf="(isFormSubmitted || invitePageForm.get('per_email_id')?.touched) && invitePageForm.get('per_email_id')?.invalid"
+                        class="invalid-feedback">
+                        <span *ngIf="invitePageForm?.get('per_email_id')?.errors?.required">Personal Email ID is
+                            required.</span>
+                        <span *ngIf="invitePageForm?.get('per_email_id')?.errors?.pattern">Invalid Personal Email ID
+                            .</span>
+                    </div>
+                </div> -->
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Email ID*</label>
+                    <input type="text" class="form-control" id="exampleInputAccess" formControlName="official_email"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || invitePageForm.get('official_email')?.touched) && (invitePageForm.get('official_email')?.invalid)}">
+                    <div *ngIf="(isFormSubmitted || invitePageForm.get('official_email')?.touched) && invitePageForm.get('official_email')?.invalid"
+                        class="invalid-feedback">
+                        <span *ngIf="invitePageForm?.get('official_email')?.errors?.required">Officail Email ID is
+                            required.</span>
+                        <span *ngIf="invitePageForm?.get('official_email')?.errors?.pattern">Invalid Officail Email ID
+                            .</span>
+                    </div>
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Mobile Number*</label>
+                    <input type="text" class="form-control" id="exampleInputAccess" formControlName="mobile_number"
+                        (keypress)="handleAlphaChar($event)" min="10" max="10"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || invitePageForm.get('mobile_number')?.touched) && (invitePageForm.get('mobile_number')?.invalid)}">
+                    <div *ngIf="(isFormSubmitted || invitePageForm.get('mobile_number')?.touched) && invitePageForm.get('mobile_number')?.invalid"
+                        class="invalid-feedback">
+                        <span *ngIf="invitePageForm?.get('mobile_number')?.errors?.required">Mobile Number is
+                            required.</span>
+                        <span *ngIf="invitePageForm?.get('mobile_number')?.errors?.pattern">Invalid Mobile
+                            Number.</span>
+                    </div>
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputAccess" class="form-label p-0 m-0">Alternate Mobile Number</label>
+                    <input type="text" class="form-control" id="exampleInputAccess"
+                        formControlName="alter_mobile_number" (keypress)="handleAlphaChar($event)" minlength="10"
+                        maxlength="10"
+                        [ngClass]="{'is-invalid': (invitePageForm.get('alter_mobile_number')?.invalid) && (invitePageForm.get('alter_mobile_number')?.hasError('pattern'))}">
+                    <div *ngIf="(invitePageForm.get('alter_mobile_number')?.invalid) && (invitePageForm.get('alter_mobile_number')?.hasError('pattern'))"
+                        class="invalid-feedback">
+                        <span *ngIf="invitePageForm.get('alter_mobile_number')?.hasError('pattern')">Enter Valid Phone
+                            Number.</span>
+                    </div>
+                </div>
+
+                <!-- <div class="form-group col-md-3">
+                    <div class="autocomplete">
+                        <label for="exampleInputEmail1" class="form-label p-0 m-0">Whom to Meet</label>
+                        <input type="text" class="form-control" id="exampleInputAccess" [(ngModel)]="userInput"
+                            (input)="onInputChange()" placeholder="Search here" formControlName="meet_to"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || invitePageForm.get('meet_to')?.touched) && (invitePageForm.get('meet_to')?.invalid)}" />
+                        <ul class="suggestions-list" *ngIf="showSuggestions && filteredSuggestions.length > 0">
+                            <li *ngFor="let suggestion of employees" (click)="selectSuggestion(suggestion)"
+                                [value]="suggestion.EmpId">
+                                {{ suggestion['EmpName'] }}
+                            </li>
+                        </ul>
+                        <div *ngIf="(isFormSubmitted || invitePageForm.get('meet_to')?.touched) && invitePageForm.get('meet_to')?.invalid"
+                            class="invalid-feedback">
+                            <span *ngIf="invitePageForm?.get('meet_to')?.errors?.required">Whom to Meet is
+                                required.</span>
+                        </div>
+                    </div>
+                </div> -->
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Whom to Meet*</label>
+                    <input type="text" class="form-control" id="exampleInputAccess" formControlName="meet_to">
+                </div>
+
+                <!-- <div class="form-group col-md-3">
+                    <label for="select1" class="p-0 m-0">Facilities</label>
+                    <select class="form-select" aria-label="Default select example" formControlName="facilities"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || invitePageForm.get('facilities')?.touched) && invitePageForm.get('facilities')?.invalid}">
+                        <option *ngFor="let option of getFacalities" [value]="option.CompId">{{option.CompName}}
+                        </option>
+                    </select>
+                    <div *ngIf="(isFormSubmitted || invitePageForm.get('facilities')?.touched) && invitePageForm.get('facilities')?.invalid"
+                        class="invalid-feedback">
+                        <span *ngIf="invitePageForm.get('facilities')?.errors?.required">Facilities is required.</span>
+                    </div>
+                </div> -->
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Facilities*</label>
+                    <input type="text" class="form-control" id="exampleInputAccess" formControlName="facilities">
+                </div>
+
+                <!-- <div class="col-md-3">
+                    <div class="custom-file-upload-wrapper">
+                        <input type="file" id="fileInput" (change)="onFileSelected($event)"
+                            formControlName="uplaodImage" />
+                        <label for="fileInput" class="custom-file-upload">
+                            Choose File
+                        </label>
+                        <div *ngIf="selectedImage" class="image-preview">
+                            <img [src]="selectedImage" alt="Uploaded Image" />
+                        </div>
+                    </div>
+                </div> -->
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Date</label>
+                    <input type="date" class="form-control" id="exampleInputAccess" formControlName="date" [min]="today"
+                        [ngClass]="{'is-invalid': (isFormSubmitted || invitePageForm.get('date')?.touched) && (invitePageForm.get('date')?.invalid)}">
+                    <div *ngIf="(isFormSubmitted || invitePageForm.get('date')?.touched) && invitePageForm.get('date')?.invalid"
+                        class="invalid-feedback">
+                        <span *ngIf="invitePageForm?.get('date')?.errors?.required">Date is required.</span>
+                    </div>
+                </div>
+
+                <!-- <div class="form-group col-md-3">
+                    <label for="select1" class="p-0 m-0">Select Time</label>
+                    <div id="time-picker">
+                        <select formControlName="hour">
+                            <option *ngFor="let hour of hours" [value]="hour">{{ hour }}</option>
+                        </select> :
+                        <select formControlName="minute">
+                            <option *ngFor="let minute of minutes" [value]="minute">{{ minute }}</option>
+                        </select>
+                        <select formControlName="ampm">
+                            <option *ngFor="let period of ampm" [value]="period">{{ period }}</option>
+                        </select>
+                    </div>
+                </div> -->
+
+                <div class="form-group col-md-3">
+                    <label for="exampleInputEmail1" class="form-label p-0 m-0">Selected Time</label>
+                    <input type="time" class="form-control" id="timeId" formControlName="Time" >
+                </div>
+
+                <div class="form-group col-md-3 mt-4" *ngIf="!isValidPhoto">
+                    <label for="fileInput" class="fileInput">Choose Photo</label> OR
+                    <label>
+                      <i class="fas fa-camera fa-lg ml-2" 
+                         style="cursor: pointer;" 
+                         (click)="toggleCamera()" 
+                         [class.disabled]="isPhotoChosen">
+                      </i>
+                    </label>
+                    <input type="file" 
+                           id="fileInput" 
+                           (change)="onFileChange($event)" 
+                           accept=".jpg" 
+                           class="form-control"
+                           formControlName="uploadImage"
+                           [attr.disabled]="showCamera ? true : null">
+                    
+                    <div *ngIf="imageSrc" class="form-group">
+                      <img [src]="imageSrc" alt="Uploaded Image" class="img-thumbnail">
+                      <br>
+                    </div>
+                  
+                    <app-camera (pictureTaken)="handleImage($event)" 
+                                *ngIf="showCamera" 
+                                [videoHeight]="videoHeight"
+                                [videoWidth]="videoWidth">
+                    </app-camera>
+                  
+                    <div class="snapshot" *ngIf="webcamImage">
+                      <img [src]="webcamImage.imageAsDataUrl" [style.height.px]="imageHeight" [style.width.px]="imageWidth" />
+                    </div>
+                  </div>
+
+                <div class="form-group col-md-3" *ngIf="isValidPhoto">
+                    <label>Uploaded Photo</label>
+                    <img [src]="patchPhotoUrl" alt="" class="img-fluid" style="height: 60px; margin: 3px;">
+                </div>
+
+                <div style="display: flex;justify-content: end;">
+                    <button class="HRMS_primary_button" type="submit" (click)="submitForm()">Submit</button>
+                    <!-- <button class="HRMS_primary_button" type="submit" (click)="editFormData()" *ngIf="isEdited">Edit</button> -->
+                    <!-- <button class="HRMS_secondary_button mx-2" type="button" (click)="resetFormData()">reset</button> -->
+                </div>
+
+            </div>
+        </form>
+    </div>
+</app-card>

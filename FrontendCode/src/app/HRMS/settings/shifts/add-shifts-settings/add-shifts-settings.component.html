@@ -1,0 +1,238 @@
+<app-toast-message></app-toast-message>
+
+<div class="text-end mb-2">
+    <button class="HRMS_Create_Close text-end" type="button" (click)="toggleButton()">
+        <i class="feather" [ngClass]="isCardOpen ? 'icon-x' : 'icon-plus'"></i>&nbsp;
+        {{ isCardOpen ? 'Close' : 'Create' }}
+    </button>
+</div>
+
+<div class="divSpinner" *ngIf="isSpinner">
+    <div class="spinner"></div>
+</div>
+
+<app-card [options]="false" *ngIf="isCardOpen">
+
+    <div class="container-fluid ">
+        <div class="col-md-12">
+            <h5 class="mb-3 form-heading text-start">Add Shifts</h5>
+            <form [formGroup]="addShiftForm">
+                <div class="row">
+                    <div class="form-group floating-label-group col-md-2 inputPadding ">
+                        <input type="text" class="form-control floating-input  " (focus)="onFocus($event)"
+                            (blur)="onBlur($event)" formControlName="shiftName" id="shiftNameId" placeholder=" "
+                            [ngClass]="{'is-invalid': (isFormSubmitted || addShiftForm.get('shiftName')?.touched) && (addShiftForm.get('shiftName')?.invalid)}">
+                        <label for="shiftNameId" class="floating-label" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || addShiftForm.get('shiftName')?.touched) && (addShiftForm.get('shiftName')?.invalid)}">Shift
+                            Name*</label>
+                        <div *ngIf="(isFormSubmitted || addShiftForm.get('shiftName')?.touched) && addShiftForm.get('shiftName')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="addShiftForm.get('shiftName')?.errors?.required" class="px-1 ">Shift Name is
+                                required.</span>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <input type="time" #startTimeInput class="form-control floating-input" (focus)="onFocus($event)"
+                            (blur)="onBlur($event)" (input)="onTimeInputChange()" placeholder=" "
+                            formControlName="startTime" id="starttime"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || addShiftForm.get('startTime')?.touched) && (addShiftForm.get('startTime')?.invalid)}">
+                        <label for="starttime" class="floating-label" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || addShiftForm.get('startTime')?.touched) && (addShiftForm.get('startTime')?.invalid)}">Start
+                            Time*</label>
+                        <div *ngIf="(isFormSubmitted || addShiftForm.get('startTime')?.touched) && addShiftForm.get('startTime')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="addShiftForm.get('startTime')?.errors?.required" class="px-1">Start Time is
+                                required.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <input type="time" #endTimeInput class="form-control floating-input" (focus)="onFocus($event)"
+                            (blur)="onBlur($event)" (input)="onEndTimeInputChange()" placeholder=" "
+                            formControlName="endTime" id="endtime"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || addShiftForm.get('endTime')?.touched) && (addShiftForm.get('endTime')?.invalid)}">
+                        <label for="endtime" class="floating-label" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || addShiftForm.get('endTime')?.touched) && (addShiftForm.get('endTime')?.invalid)}">End
+                            Time*</label>
+                        <div *ngIf="(isFormSubmitted || addShiftForm.get('endTime')?.touched) && addShiftForm.get('endTime')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="addShiftForm.get('endTime')?.errors?.required" class="px-1">End Time is
+                                required.</span>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <select class="form-control floating-input" formControlName="clockHours" id="clockHoursId"
+                            (focus)="onFocus($event)" (blur)="onBlur($event)"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || addShiftForm.get('clockHours')?.touched) && (addShiftForm.get('clockHours')?.invalid)}">
+                            <option value="" selected hidden disabled></option>
+                            <option *ngFor="let hour of clockedHoursArray" [value]="hour">{{hour}}</option>
+                        </select>
+                        <label for="clockHoursId" class="floating-label m-0" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || addShiftForm.get('clockHours')?.touched) && (addShiftForm.get('clockHours')?.invalid)}">
+                            Clocked Hours*
+                        </label>
+                        <div *ngIf="(isFormSubmitted || addShiftForm.get('clockHours')?.touched) && addShiftForm.get('clockHours')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="addShiftForm.get('clockHours')?.errors?.required" class="px-1 ">Clocked Hours
+                                is
+                                required.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-2 inputPadding">
+                        <select class="form-control floating-input" formControlName="workDays" id="workDaysId"
+                            (focus)="onFocus($event)" (blur)="onBlur($event)"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || addShiftForm.get('workDays')?.touched) && (addShiftForm.get('workDays')?.invalid)}">
+                            <option value="" selected hidden disabled></option>
+                            <option *ngFor="let day of workedDaysArray" [value]="day">{{day}}</option>
+                        </select>
+                        <label for="workDaysId" class="floating-label m-0" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || addShiftForm.get('workDays')?.touched) && (addShiftForm.get('workDays')?.invalid)}">
+                            Worked Days*
+                        </label>
+                        <div *ngIf="(isFormSubmitted || addShiftForm.get('workDays')?.touched) && addShiftForm.get('workDays')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="addShiftForm.get('workDays')?.errors?.required" class="px-1 ">Worked Days is
+                                required.</span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex;justify-content: end;">
+                        <ng-container>
+                            <button class="HRMS_secondary_button" type="button" (click)="resetData()"><i
+                                    class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+                            <button class="HRMS_primary_button" type="submit" (click)="submitFormData()"
+                                *ngIf="!isEdited" style="margin-right: 10px;">
+                                <i class="feather icon-check"></i>&nbsp;Submit</button>
+                        </ng-container>
+                        <button class="HRMS_primary_button" type="submit" (click)="updateShiftType()" *ngIf="isEdited"
+                            style="margin-right: 10px;"><i class="feather icon-check"></i>&nbsp;Update</button>
+                    </div>
+
+                </div>
+            </form>
+
+
+        </div>
+    </div>
+
+</app-card>
+
+
+<app-card [options]="false">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-9 text-start">
+                <h5 class="mb-0 form-heading">Available Shifts</h5>
+            </div>
+            <div class="col-md-3 text-end">
+                <input type="text" class="form-control rad-50" #inputValue (keyup)="applyFilter($event)"
+                    placeholder="Search" id="serachInputId" />
+            </div>
+        </div>
+    </div>
+    <div class="table-wrapper mt-3">
+        <table class="table table-hover align-middle">
+            <thead class="table-light sticky-header">
+                <tr class="inner-shadow ">
+                    <th class="">Shift Name</th>
+                    <th class="">Start Time</th>
+                    <th class="">End Time</th>
+                    <th class="">Clocked Hours</th>
+                    <th class="">Worked Days</th>
+                    <th class="text-end me-2">Action</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="isTableData == false">
+                <tr *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                    <td class="">
+                        <span>{{row.ShiftName}}</span>
+                    </td>
+                    <td class="">
+                        <span>{{ row.StartTime?.Hours }}:{{ row.StartTime?.Minutes}}</span>
+                    </td>
+                    <td class="">
+                        <span>{{ row.EndTime?.Hours }}:{{ row.EndTime?.Minutes}}</span>
+                    </td>
+                    <td class="">
+                        <span>
+                            {{
+                            (row.ClkHrs.includes(":") && row.ClkHrs.split(":").length >= 2)
+                            ? row.ClkHrs.split(":")[0] + ":" + row.ClkHrs.split(":")[1]
+                            : row.ClkHrs || "N/A"
+                            }}
+                        </span>
+                    </td>
+
+                    <td class="">
+                        <span>{{ row.Days }}</span>
+                    </td>
+                    <td class="text-end" style="cursor: pointer;">
+                        <span class=""> <i class="action-icon action-edit feather icon-edit-2"
+                                (click)="editPatchData(row,true)"></i></span>
+
+                        <span class=""> <i class="action-icon action-delete feather icon-trash-2 "
+                                data-bs-toggle="modal" (click)="onView(row)" data-bs-target="#exampleModal"></i></span>
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="isTableData == true" class="text-center errorMassage">
+            <span class="text-danger">{{errorMessage}}</span>
+        </div>
+    </div>
+
+    <div class="pagination-controls-wrapper">
+        <div class="row align-items-center" style="padding-top: 1rem;">
+            <div class="col-auto">
+                <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+                <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+                    <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+                </select>
+            </div>
+            <div class="col">
+            </div>
+            <div class="col-auto">
+                <pagination-controls (pageChange)="page = $event"></pagination-controls>
+            </div>
+        </div>
+    </div>
+</app-card>
+
+
+<!-- Modal -->
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-confirm">
+        <div class="modal-content">
+            <div class="text-end">
+                <button type="reset" class="btn-close " data-bs-dismiss="modal" aria-label="Close" #closeChangeModal
+                    style="background-color: rgb(228, 208, 208);"></button>
+            </div>
+            <div class="modal-header flex-column py-0">
+                <div class="icon-box" *ngIf="!isRecordDeleted">
+                    <i class="fas fa-times checkmark_check"></i>
+                </div>
+                <div class="modal-wrapper" *ngIf="isRecordDeleted"> <svg class="checkmark"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                </div>
+                <h4 class="modal-title w-100">Are you sure?</h4>
+            </div>
+            <div class="modal-body py-0">
+                <p>Do you really want to delete these records?This process cannot be undone.</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger" (click)="deleteShiftTypeData()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>

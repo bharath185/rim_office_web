@@ -1,0 +1,385 @@
+<app-toast-message></app-toast-message>
+
+<div class="dis-fl-end">
+    <div class="heading-dash-sub">
+        <span>Contract Attendance</span>
+        <ol class="breadcrumb fade-left">
+            <li class="breadcrumb-item active dis-fl" aria-current="page">
+                <span class="breadC">Attendance</span><span class="breadC"><i
+                        class="feather icon-chevron-right"></i></span><span class="breadC col-act">Contract
+                    Attendance</span>
+            </li>
+        </ol>
+    </div>
+</div>
+<app-card [options]="false">
+    <div class="col-md-12 ">
+        <div class="divSpinner" *ngIf="isSpinner">
+            <div class="spinner"></div>
+        </div>
+
+        <form [formGroup]="contractAttendanceForm" class="pt-2">
+            <div class="row">
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <div class="custom-date-input">
+                        <input class="form-control floating-input" type="date" placeholder=" "
+                            formControlName="date_from" id="startDataId" [max]="today" (ngModelChange)="onFromDate()" />
+                        <label for="startDataId" class="floating-label">Start Date</label>
+                    </div>
+                </div>
+                <div class="form-group floating-label-group col-md-2 inputPadding">
+                    <div class="custom-date-input">
+                        <input class="form-control floating-input" type="date" placeholder=" " formControlName="date_to"
+                            id="endDataId" [min]="minDate" [max]="today" [ngClass]="{'is-invalid': dateRangeError}" />
+                        <label for="endDataId" class="floating-label">End Date</label>
+                        <div *ngIf="dateRangeError" class="invalid-feedback m-0">
+                            <span *ngIf="dateRangeError">End Date must be after Start
+                                Date.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group floating-label-group col-md-2 ">
+                    <select class="form-control floating-input" formControlName="project" id="projectId">
+                        <option selected hidden value=""></option>
+                        <option *ngFor="let project of getDDProjectList" [value]="project.ProjectId">
+                            {{project.ProjectCode}}-({{project.Project}})
+                        </option>
+                    </select>
+                    <label for="projectId" class="floating-label" style="left: 20px;"> Project</label>
+                </div>
+                <div class="form-group floating-label-group col-md-2 ">
+                    <select class="form-control floating-input" formControlName="vendar" id="vendarId">
+                        <option selected hidden value=""></option>
+                        <option *ngFor="let vendor of getVendorList" [value]="vendor.VendorId">
+                            {{vendor.VendorCode}}-({{vendor.Vendor}})
+                        </option>
+                    </select>
+                    <label for="vendarId" class="floating-label m-0" style="left: 20px;">Vendor</label>
+                </div>
+                <div class="form-group floating-label-group col-md-2 ">
+                    <select class="form-control floating-input" formControlName="status" id="statusId">
+                        <option value="" selected hidden></option>
+                        <option value="APPROVED">APPROVED</option>
+                        <option value="PENDING">PENDING</option>
+                        <option value="ALL">ALL</option>
+                    </select>
+                    <label for="statusId" class="floating-label m-0" style="left: 20px;">Status</label>
+                </div>
+                <!-- <div class="col-md-2">
+
+                </div> -->
+            </div>
+            <div class="mb-2" style="display: flex;justify-content: end;">
+                <button class="HRMS_secondary_button" type="reset" (click)="resetData()">
+                    <i class="feather icon-rotate-ccw"></i>&nbsp;Reset</button>
+                <button class="HRMS_primary_button" type="submit" (click)="submitFilterData()">
+                    <i class="feather icon-filter"></i>&nbsp;Filter</button>
+            </div>
+        </form>
+
+        <div class="row align-items-center mb-3">
+            <div class="col-md-6">
+                <h5 class="mb-0 form-heading">Contract Attendance List</h5>
+            </div>
+            <div
+                class="col-md-6 d-flex flex-wrap justify-content-md-end justify-content-start align-items-center gap-2">
+                <!-- Search Box -->
+                <input type="text" class="form-control rad-50" [(ngModel)]="searchValue" (keyup)="applyFilter()"
+                    placeholder="Search" id="searchInputId" />
+
+                <!-- Approve Button -->
+                <button class="btn btn-sm btn-outline-success custom-button" (click)="approve()">
+                    <i class="fas fa-check"></i> Approve
+                </button>
+
+                <div class="export-container position-relative">
+                    <button class="export-button d-flex align-items-center" (click)="toggleDropdownExport()">
+                        <i class="feather icon-upload me-1"></i> Export
+                    </button>
+                    <div class="dropdown-content position-absolute end-0 mt-1" *ngIf="dropdownVisible"
+                        style="z-index: 999;">
+                        <div class="dropdown-item" (click)="exportFile('excel')">
+                            <i class="fas fa-file-excel me-1"></i> Excel
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="table-wrapper mt-3">
+            <table class="table table-hover align-middle">
+                <thead class="table-light sticky-header">
+                    <tr class="inner-shadow">
+                        <th style="width:40px">
+                            <input type="checkbox" [(ngModel)]="isAllSelected" (change)="toggleAllSelection()" />
+                        </th>
+                        <th class="">Date</th>
+                        <th class="">Project</th>
+                        <th class="">Resource Name(Code)</th>
+                        <th class="">Manager</th>
+                        <th class="">Mobile</th>
+                        <th class="">Work Duration</th>
+                        <th class="">Active Hours</th>
+                        <th class="">Adjust Hour</th>
+                        <th class="">Manage</th>
+                        <th class="">Status</th>
+                        <th class="">View</th>
+                    </tr>
+                </thead>
+                <tbody *ngIf="!isTableData">
+                    <tr
+                        *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index">
+                        <td>
+                            <input type="checkbox" [disabled]="row.IsApproved" [(ngModel)]="row.isSelected"
+                                (change)="onRowSelectionChange()" />
+                        </td>
+                        <td class=" fw-bold">
+                            <span>{{ row.Date | date:'dd-MM-yyyy' }}</span>
+                        </td>
+                        <td><span>
+                                {{row.Project}}
+                            </span></td>
+                        <td class="">
+                            <span>{{ row.EmpName }}({{ row.EmpCode }})</span>
+                        </td>
+                        <td class="">
+                            <span>{{ row.ManagerName }}</span>
+                        </td>
+                        <td class="">
+                            <span>{{ row.Mobile }}</span>
+                        </td>
+                        <td>
+                            <ng-container *ngIf="row.LoginTimeFormatted; else noTime">
+                                {{ row.LoginTimeFormatted }}
+                                <span *ngIf="row.LogoutTimeFormatted">
+                                    - {{ row.LogoutTimeFormatted }}
+                                </span>
+                            </ng-container>
+
+                            <ng-template #noTime>-</ng-template>
+                        </td>
+                        <td>
+                            <ng-container *ngIf="row.ActivehrsFormatted; else noActive">
+                                {{ row.ActivehrsFormatted }}
+                            </ng-container>
+
+                            <ng-template #noActive>
+                                00:00
+                            </ng-template>
+                        </td>
+                        <td (dblclick)="enableEdit(row)">
+
+                            <!-- Normal View -->
+                            <span *ngIf="!row.isEditing">
+                                <ng-container *ngIf="row.ApprovedhrsFormatted; else defaultTime">
+                                    {{ row.ApprovedhrsFormatted }}
+                                </ng-container>
+
+                                <ng-template #defaultTime>
+                                    00:00
+                                </ng-template>
+                            </span>
+
+                            <!-- Edit Mode -->
+                            <input *ngIf="row.isEditing" type="time" class="adjust-input" [(ngModel)]="row.AdjustHour"
+                                (blur)="saveAdjustHour(row)" (keydown.enter)="saveAdjustHour(row)" />
+
+                        </td>
+                        <td>
+                            <button class="logout-btn" [disabled]="row.IsLogout"
+                                [ngClass]="{'disabled-btn': row.IsLogout}" (click)="onLogout(row)">
+                                <i class="fas fa-sign-out-alt"></i>
+                                {{ row.IsLogout ? 'Logged Out' : 'Logout' }}
+                            </button>
+                        </td>
+                        <td>
+                            <span class="status-badge" [ngClass]="row.IsApproved ? 'approved' : 'pending'">
+                                {{ row.IsApproved ? 'Approved' : 'Pending' }}
+                            </span>
+                        </td>
+                        <td class="">
+                            <span>
+                                <i class="action-icon action-edit feather icon-eye" data-bs-toggle="modal"
+                                    (click)="onModalView(row)" data-bs-target="#exampleModal">
+                                </i>
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div *ngIf="isTableData == true" class="text-center errorMassage">
+                <span class="text-danger">{{errorMessage}}</span>
+            </div>
+
+        </div>
+
+        <div class="pagination-controls-wrapper">
+            <div class="row align-items-center" style="padding-top: 1rem;">
+                <div class="col-auto">
+                    <label for="pageSizeSelect" style="font-size: smaller;">Records per page:</label>
+                    <select id="pageSizeSelect" [(ngModel)]="pageSize" class="form-control form-control-sm">
+                        <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+                    </select>
+                </div>
+                <div class="col">
+                </div>
+                <div class="col-auto">
+                    <pagination-controls (pageChange)="page = $event"></pagination-controls>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-card>
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-body" *ngIf="viewdata">
+                <div class="text-end">
+                    <button type="reset" class="btn-close" data-bs-dismiss="modal" aria-label="Close" #closeModal
+                        style="background-color: rgb(228, 208, 208);"></button>
+                </div>
+
+                <div class="row mb-1">
+
+                    <div class="col-md-4">
+                        <div class="info-item">
+                            <span class="text-muted text-truncate">Date&nbsp;:&nbsp;</span>
+                            <span class="fw-bold text-truncate">{{viewdata?.Date}}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-item">
+                            <span class="text-muted text-truncate"> Project&nbsp;:&nbsp;</span>
+                            <span class="fw-bold text-truncate">{{viewdata?.Project}}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-item">
+                            <span class="text-muted text-truncate">Project Code&nbsp;:&nbsp;</span>
+                            <span class="fw-bold text-truncate">{{viewdata?.ProjectCode}}</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row mb-1">
+                    <div class="col-md-4">
+                        <div class="info-item">
+                            <span class="text-muted text-truncate">Vendor&nbsp;:&nbsp;</span>
+                            <span class="fw-bold text-truncate">{{viewdata?.Vendor}}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-item">
+                            <span class="text-muted text-truncate">Resource Name&nbsp;:&nbsp;</span>
+                            <span class="fw-bold text-truncate">{{viewdata?.EmpName}}({{viewdata?.EmpCode}})</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-item">
+                            <span class="text-muted text-truncate">Mail&nbsp;:&nbsp;</span>
+                            <span class="fw-bold text-truncate">{{viewdata?.Mail}}</span>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="row mb-1">
+                    <div class="col-md-4">
+                        <div class="info-item">
+                            <span class="text-muted text-truncate">Mobile&nbsp;:&nbsp;</span>
+                            <span class="fw-bold text-truncate">{{viewdata?.Mobile}}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-item">
+                            <span class="text-muted text-truncate">Manager Name&nbsp;:&nbsp;</span>
+                            <span class="fw-bold text-truncate">{{viewdata?.ManagerName}}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-item">
+                            <span class="text-muted text-truncate">Manager Code&nbsp;:&nbsp;</span>
+                            <span class="fw-bold text-truncate">{{viewdata?.ManagerEmpCode}}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-1">
+                    <div class="col-md-4">
+                        <div class="info-item">
+                            <span class="text-muted text-truncate">Position&nbsp;:&nbsp;</span>
+                            <span class="fw-bold text-truncate">{{viewdata?.Skill}}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-item">
+                            <span class="text-muted text-truncate">Site&nbsp;:&nbsp;</span>
+                            <span class="fw-bold text-truncate">{{viewdata?.Site}}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-item">
+                            <!-- *ngIf="viewdata?.SiteDetails !== null && viewdata?.SiteDetails !=='' " -->
+                            <span class="text-muted text-truncate">Site Desc&nbsp;:&nbsp;</span>
+                            <span class="fw-bold text-truncate">{{viewdata?.SiteDetails}}</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row mb-1">
+                    <div class="col-md-4">
+                        <div class="info-item">
+                            <span class="text-muted text-truncate">Login Time&nbsp;:&nbsp;</span>
+                            <span class="fw-bold text-truncate"
+                                *ngIf="viewdata?.LoginTime?.Hours != null || viewdata?.LoginTime?.Minutes != null">
+                                {{ viewdata?.LoginTime?.Hours }}:{{ viewdata?.LoginTime?.Minutes }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-item">
+                            <span class="text-muted text-truncate">Logout Time&nbsp;:&nbsp;</span>
+                            <span class="fw-bold text-truncate"
+                                *ngIf="viewdata?.LogoutTime?.Hours != null || viewdata?.LogoutTime?.Minutes != null">
+                                {{ viewdata?.LogoutTime?.Hours }}:{{ viewdata?.LogoutTime?.Minutes }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-item">
+                            <span class="text-muted text-truncate">Active Hours&nbsp;:&nbsp;</span>
+                            <span class="fw-bold text-truncate"
+                                *ngIf="viewdata?.Activehrs?.Hours != null || viewdata?.Activehrs?.Minutes != null">
+                                {{ viewdata?.Activehrs?.Hours }}:{{ viewdata?.Activehrs?.Minutes }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-1">
+                    <div class="col-md-4">
+                        <div class="info-item">
+                            <span class="text-muted text-truncate">Work Desc&nbsp;:&nbsp;</span>
+                            <span class="fw-bold text-truncate">{{viewdata?.Description}}</span>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="row mb-1">
+                    <div class="info-item">
+                        <span class="text-muted text-truncate">Address&nbsp;:&nbsp;</span>
+                        <span class="fw-bold text-truncate">{{viewdata?.LoginAddress}}</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

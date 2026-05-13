@@ -1,0 +1,54 @@
+.goal-header {
+    width: 70%; /* Adjust the width of the Goal header */
+  }
+  
+  .weitage-header {
+    width: 20%; /* Adjust the width of the Weitage header */
+  }
+  
+  .actions-header {
+    width: 10%; /* Adjust the width of the Actions header */
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+   
+}
+th, td {
+    padding: 8px;
+    text-align: left;
+ border-bottom: 1px solid #ddd;
+
+}
+th {
+    background-color: #072f5f; /* Blue background for table header */
+    color: #ffffff;
+ 
+}
+tr:nth-child(even) {
+    background-color: #f2f2f2; /* Light grey background for even rows */
+}
+// .inner-shadow {
+//     box-shadow: rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset, rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset, rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+// }
+::ng-deep .pcoded-header {
+    .card {
+        margin: 0px !important;
+    }
+}
+
+::ng-deep .pcoded-content {
+    position: relative;
+    display: block;
+    padding: 0px !important;
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+    padding-top: 5px !important;
+}
+
+@media only screen and (max-width: 991px) {
+    ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+        margin-left: 0px;
+        margin-top: 57px !important;
+    }
+}

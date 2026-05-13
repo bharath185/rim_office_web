@@ -1,0 +1,181 @@
+
+
+// this is for export dropdown
+.export-container {
+    position: relative;
+    display: inline-block;
+}
+
+.export-button {
+    background-color: #ffffff;
+    color: #072f5f;
+    border: 1px solid #072f5f;
+    font-size: 14px;
+    padding: 5px 6px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+    border-radius: 5px;
+}
+
+.export-button:hover {
+    background-color: #e6f0ff;
+    border-color: #0056b3;
+}
+
+.export-button i {
+    margin-left: 2px;
+}
+
+.dropdown-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s;
+}
+
+.dropdown-item i {
+    margin-right: 5px;
+}
+
+.dropdown-item:hover {
+    background-color: #072f5f;
+    color: white;
+}
+
+.dropdown-content {
+    position: absolute;
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin-top: 5px;
+    z-index: 1;
+    width: 120px;
+    top: 84%;
+}
+
+// this is for export dropdown
+
+/* Wrapper for responsive scroll table */
+.custom-table tbody td.long-text {
+  max-width: 150px; /* adjust width as needed */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.custom-table-wrapper {
+  overflow-x: auto;
+  margin-top: 10px;
+  border-radius: 8px;
+}
+
+.table-wrapper {
+    max-height: 485px !important;
+}
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1200px; 
+  font-family: 'Arial', sans-serif;
+}
+
+.custom-table thead th {
+  background-color: #4CAF50;
+  color: #fff;
+  padding: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  position: sticky;
+  z-index: 5;
+//   text-align: center;
+  border: 1px solid #ddd;
+}
+
+.custom-table tbody td {
+  padding: 2px;
+//   text-align: center;
+  border: 1px solid #ddd;
+  font-size: 12px;
+}
+
+.custom-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Make the sticky top offset per header row */
+.custom-table thead tr:nth-child(1) th {
+  top: 0px; /* Department Name row */
+  z-index: 7; /* highest so it stays above lower rows */
+}
+
+.custom-table thead tr:nth-child(2) th {
+  top: 25px; /* adjust height to match first row */
+  z-index: 6;
+}
+
+.custom-table thead tr:nth-child(3) th {
+  top: 50px; /* adjust height to match first+second row */
+  z-index: 5;
+}
+
+.custom-no-data {
+  text-align: center;
+  padding: 20px;
+  color: #777;
+  font-size: 16px;
+}
+
+.table-wrapper table,
+.table-wrapper table th,
+.table-wrapper table td {
+  border: 1px solid #e5d7d7 !important;
+  font-weight: unset;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+  .custom-table thead th,
+  .custom-table tbody td {
+    padding: 6px;
+    font-size: 12px;
+  }
+
+  .custom-table {
+    min-width: 800px; 
+  }
+}
+/* Wrapper for responsive scroll table */
+// ************this is for custome date*******
+.custom-date-input {
+  position: relative;
+}
+
+.custom-date-input input {
+  border-radius: 4px;
+  padding: 3px 5px;
+  width: 100%;
+  outline: none;
+  font-size: 11px;
+  padding-top: 16px;
+  line-height: 1.9;
+}
+
+.custom-date-input input::placeholder {
+  font-size: 5px;
+  color: #aaa;
+}
+
+.custom-date-input label {
+  position: absolute;
+  color: #888;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.custom-date-input input:focus+label,
+.custom-date-input input:not(:placeholder-shown)+label {
+  top: 1px;
+  left: 20px;
+  font-size: 12px;
+}
+// ************this is for custome date*******

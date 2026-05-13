@@ -1,0 +1,186 @@
+<div class="m-header">
+  <div class="menu mobile-menu-toggle"><a href="javascript:" class="" id="mobile-collapse1" title="Open Menu"
+      (click)="this.NavCollapsedMob.emit()" style="color: #1b2b5e"><i class="feather icon-menu"></i></a>
+  </div>
+
+  <a [routerLink]="['/dashboard/analytics']" class="b-brand">
+    <img id="main-logo" src="assets/logo-office connect.svg" alt="OfficeConnect Logo" class="logo" />
+  </a>
+  
+  <div class="header-right-actions">
+    <a class="mob-toggler" [ngClass]="{ on: this.menuClass }" href="javascript:" (click)="toggleMobOption()">
+      <i class="feather icon-more-vertical"></i>
+    </a>
+  </div>
+  
+  <!-- Search Input -->
+  <div class="header-search"
+    *ngIf="employeeDetails[0].Authorised && employeeDetails[0].DeptName?.toLowerCase() === 'human resource'">
+
+    <div class="search-results" *ngIf="showDropdown">
+      <!-- Loader -->
+      <div class="loader" *ngIf="isEmployeeLoading">
+        <i class="feather icon-loader spin"></i>
+        <span>Loading employees...</span>
+      </div>
+
+      <!-- Results -->
+      <ng-container *ngIf="!isEmployeeLoading">
+        <div class="employee-item" *ngFor="let emp of searchResults">
+          <div class="employee-info">
+            <b>{{emp.FirstName}} {{emp.LastName}}</b>
+            <div class="emp-sub">{{emp.EmpCode}} • {{emp.Designation}}</div>
+          </div>
+          <button class="view-btn" (click)="openEmployee(emp)">
+            <i class="feather icon-eye"></i>
+          </button>
+        </div>
+
+        <!-- No results -->
+        <div class="no-results" *ngIf="searchResults.length === 0">
+          No records found.
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="header-search" *ngIf="!employeeDetails[0].Authorised && employeeDetails[0].DeptName?.toLowerCase() !== 'human resource'">
+    <div class="search-container"></div>
+    <div class="search-results"></div>
+  </div>
+</div>
+
+<div class="collapse navbar-collapse" [style.display]="this.collapseStyle">
+  <app-nav-left class="me-auto"></app-nav-left>
+  <app-nav-right class="ms-auto"></app-nav-right>
+</div>
+
+
+<div class="modal-overlay" *ngIf="showModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Employee Details</h3>
+      <button (click)="closeModal()">✕</button>
+    </div>
+
+    <div class="modal-body mt-2" *ngIf="selectedEmployee">
+      <div class="info-grid">
+        <!-- Personal Info -->
+        <div class="info-card">
+          <div class="info-icon personal">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="info-content">
+            <span class="info-label">Personal Info</span>
+            <div class="info-row">
+              <span class="label">Resource Name&nbsp;:&nbsp;</span>
+              <span class="value">
+                {{selectedEmployee.FirstName}} {{selectedEmployee.LastName}}
+              </span>
+            </div>
+            <div class="info-row">
+              <span class="label">Resource Code&nbsp;:&nbsp;</span>
+              <span class="value">{{selectedEmployee.EmpCode}}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">DOB&nbsp;:&nbsp;</span>
+              <span class="value">{{ formatDotNetDate(selectedEmployee?.DOB) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Work Info -->
+        <div class="info-card">
+          <div class="info-icon host">
+            <i class="fas fa-briefcase"></i>
+          </div>
+          <div class="info-content">
+            <span class="info-label">Work Info</span>
+            <div class="info-row">
+              <span class="label">Designation&nbsp;:&nbsp;</span>
+              <span class="value">{{selectedEmployee.Designation}}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Department&nbsp;:&nbsp;</span>
+              <span class="value">{{selectedEmployee.DeptName}}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Approver&nbsp;:&nbsp;</span>
+              <span class="value">{{selectedEmployee.Approver}}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Organization -->
+        <div class="info-card">
+          <div class="info-icon contact">
+            <i class="fas fa-building"></i>
+          </div>
+          <div class="info-content">
+            <span class="info-label">Organization</span>
+            <div class="info-row">
+              <span class="label">Company&nbsp;:&nbsp;</span>
+              <span class="value">{{selectedEmployee.Company}}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Entity&nbsp;:&nbsp;</span>
+              <span class="value">{{selectedEmployee.LegalEntity}}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">BU&nbsp;:&nbsp;</span>
+              <span class="value">{{selectedEmployee.BusinessUnit}}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Location&nbsp;:&nbsp;</span>
+              <span class="value">{{selectedEmployee.Location}}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="info-card">
+          <div class="info-icon contact">
+            <i class="fas fa-phone"></i>
+          </div>
+          <div class="info-content">
+            <span class="info-label">Contact</span>
+            <div class="info-row">
+              <span class="label">Phone&nbsp;:&nbsp;</span>
+              <span class="value">{{selectedEmployee.MobileNo}}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Blood Group&nbsp;:&nbsp;</span>
+              <span class="value">{{selectedEmployee.BloodGroup}}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Gender&nbsp;:&nbsp;</span>
+              <span class="value">{{selectedEmployee.Gender}}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Employment -->
+        <div class="info-card">
+          <div class="info-icon time">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="info-content">
+            <span class="info-label">Employment</span>
+            <div class="info-row">
+              <span class="label">Joining Date&nbsp;:&nbsp;</span>
+              <span class="value">{{ formatDotNetDate(selectedEmployee?.JoiningDate) || '-'}}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Employee Type&nbsp;:&nbsp;</span>
+              <span class="value">{{selectedEmployee.EmpType}}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Contract End&nbsp;:&nbsp;</span>
+              <span class="value">{{ formatDotNetDate(selectedEmployee?.CEndDate) || '-'}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,215 @@
+<app-toast-message></app-toast-message>
+<app-card [options]="false">
+    <div class="attendance-header">
+
+        <div class="header-right">
+            <img src="assets/image_3dcad.png" alt="Company Logo" class="company-logo">
+        </div>
+
+        <div class="header-left">
+            <h4>Contract Attendance</h4>
+            <span>Fill in the details below to mark attendance</span>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="divSpinner" *ngIf="isSpinner">
+            <div class="spinner"></div>
+        </div>
+        <div class="col-md-12">
+            <form [formGroup]="contractAttendanceForm">
+                <div *ngIf="!showFullForm" class="first-step">
+                    <div class="form-group floating-label-group">
+                        <input type="text" class="form-control floating-input" id="mobileNoId" placeholder=" "
+                            formControlName="mobile_number" (keypress)="handleAlphaChar($event)" minlength="10"
+                            maxlength="10"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || contractAttendanceForm.get('mobile_number')?.touched) && (contractAttendanceForm.get('mobile_number')?.invalid)}">
+                        <label for="mobileNoId" class="floating-label">Mobile Number*</label>
+                        <div *ngIf="(isFormSubmitted || contractAttendanceForm.get('mobile_number')?.touched) && contractAttendanceForm.get('mobile_number')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="contractAttendanceForm?.get('mobile_number')?.errors?.required">Mobile Number
+                                is required.</span>
+                            <span *ngIf="contractAttendanceForm?.get('mobile_number')?.errors?.pattern">Invalid Mobile
+                                Number.</span>
+                        </div>
+                    </div>
+                    <button type="button" class="HRMS_primary_button" (click)="onCheckStatus()">OK</button>
+                </div>
+
+
+                <div *ngIf="showFullForm" class="row mt-3">
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <select class="form-control floating-input" formControlName="vendar" id="vendarId"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || contractAttendanceForm.get('vendar')?.touched) && (contractAttendanceForm.get('vendar')?.invalid)}">
+                            <option selected hidden value=""></option>
+                            <option *ngFor="let vendor of getVendorList" [ngValue]="vendor">
+                                {{vendor.VendorCode}}
+                            </option>
+                        </select>
+                        <label for="vendarId" class="floating-label m-0" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || contractAttendanceForm.get('vendar')?.touched) && contractAttendanceForm.get('vendar')?.invalid}">
+                            Vendor Code*</label>
+                        <div *ngIf="(isFormSubmitted || contractAttendanceForm.get('vendar')?.touched) && contractAttendanceForm.get('vendar')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="contractAttendanceForm.get('vendar')?.errors?.required"> Vendor is
+                                required.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <input type="text" class="form-control floating-input" formControlName="employee_name"
+                            id="employee_nameId" placeholder=" " (input)="convertToUppercase($event,'employee_name')"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || contractAttendanceForm.get('employee_name')?.touched) && (contractAttendanceForm.get('employee_name')?.invalid)}">
+                        <label for="employee_nameId" class="floating-label" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || contractAttendanceForm.get('employee_name')?.touched) && (contractAttendanceForm.get('employee_name')?.invalid)}">Resource
+                            Name*</label>
+                        <div *ngIf="(isFormSubmitted || contractAttendanceForm.get('employee_name')?.touched) && contractAttendanceForm.get('employee_name')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="contractAttendanceForm?.get('employee_name')?.errors?.required">Resource Name
+                                is
+                                required.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <input type="text" class="form-control floating-input" formControlName="code" id="codeId"
+                            placeholder=" ">
+                        <label for="codeId" class="floating-label" style="left: 20px;">Resource Code</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <select class="form-control floating-input" formControlName="project" id="projectId"
+                            (change)="onProjectChange()"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || contractAttendanceForm.get('project')?.touched) && (contractAttendanceForm.get('project')?.invalid)}">
+                            <option selected hidden value=""></option>
+                            <option *ngFor="let project of getDDProjectList" [ngValue]="project">
+                                {{project.ProjectCode}}
+                            </option>
+                        </select>
+                        <label for="projectId" class="floating-label" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || contractAttendanceForm.get('project')?.touched) && contractAttendanceForm.get('project')?.invalid}">
+                            Project Code*</label>
+                        <div *ngIf="(isFormSubmitted || contractAttendanceForm.get('project')?.touched) && contractAttendanceForm.get('project')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="contractAttendanceForm.get('project')?.errors?.required"> Project is
+                                required.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <input type="text" class="form-control floating-input" formControlName="manager" id="managerId"
+                            placeholder=" " readonly>
+                        <label for="managerId" class="floating-label" style="left: 20px;">Project Manager</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <input type="text" class="form-control floating-input" formControlName="managerCode"
+                            id="managerCodeId" placeholder=" " readonly>
+                        <label for="managerCodeId" class="floating-label" style="left: 20px;">Manager Code</label>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <select class="form-control floating-input" formControlName="site" id="siteId"
+                            (change)="onSiteChange()"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || contractAttendanceForm.get('site')?.touched) && (contractAttendanceForm.get('site')?.invalid)}">
+                            <option selected hidden value=""></option>
+                            <option *ngFor="let site of getSiteList" [ngValue]="site">
+                                {{site.Site}}
+                            </option>
+                        </select>
+                        <label for="siteId" class="floating-label" style="left: 20px;"
+                            [ngClass]="{'text-danger': (isFormSubmitted || contractAttendanceForm.get('site')?.touched) && contractAttendanceForm.get('site')?.invalid}">
+                            Site*</label>
+                        <div *ngIf="(isFormSubmitted || contractAttendanceForm.get('site')?.touched) && contractAttendanceForm.get('site')?.invalid"
+                            class="invalid-feedback m-0">
+                            <span *ngIf="contractAttendanceForm.get('site')?.errors?.required">Site is
+                                required.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-label-group col-md-3" *ngIf="showOtherInput">
+                        <input type="text" class="form-control floating-input" formControlName="otherName"
+                            id="otherNameId" placeholder=" " [ngClass]="{'is-invalid': (isFormSubmitted || contractAttendanceForm.get('otherName')?.touched) 
+                   && contractAttendanceForm.get('otherName')?.invalid}">
+                        <label for="otherNameId" class="floating-label" style="left: 20px;" [ngClass]="{'text-danger': (isFormSubmitted || contractAttendanceForm.get('otherName')?.touched) 
+                   && contractAttendanceForm.get('otherName')?.invalid}">
+                            Other Site Name*
+                        </label>
+                        <div *ngIf="(isFormSubmitted || contractAttendanceForm.get('otherName')?.touched) 
+            && contractAttendanceForm.get('otherName')?.invalid" class="invalid-feedback m-0">
+                            Other Site Name is required.
+                        </div>
+                    </div>
+
+                    <!-- <div class="form-group floating-label-group col-md-3 ">
+                        <input type="text" class="form-control floating-input" formControlName="skills" id="skillsId"
+                            placeholder=" ">
+                        <label for="skillsId" class="floating-label" style="left: 20px;">Skills</label>
+                    </div> -->
+
+                    <div class="form-group floating-label-group col-md-3 ">
+                        <input type="text" class="form-control floating-input  " id="emailId" placeholder=" "
+                            formControlName="official_email"
+                            [ngClass]="{'is-invalid': (isFormSubmitted || contractAttendanceForm.get('official_email')?.touched) && (contractAttendanceForm.get('official_email')?.invalid)}">
+                        <label for="emailId" class="floating-label" style="left: 20px;">
+                            Email Id</label>
+                    </div>
+
+                    <div class="col-md-3 form-group floating-label-group"
+                        *ngIf="getLoginStatusValue.LoginStatus === 'LOGIN'">
+                        <label class="floating-label" style="left: 20px;">Login Time</label>
+                        <p class="my-2 mx-2">
+                            <strong>
+                                {{ formatTo12Hour(getLoginStatusValue.LoginTime.Hours,
+                                getLoginStatusValue.LoginTime.Minutes) }}
+                            </strong>
+                        </p>
+                    </div>
+
+                    <div style="display: flex;justify-content: end;">
+                        <button class="HRMS_primary_button" type="submit"
+                            *ngIf="getLoginStatusValue.LoginStatus === 'LOGIN'" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal"><i class="fas fa-sign-out-alt"></i>&nbsp;Logout</button>
+                        <button class="HRMS_primary_button" type="submit"
+                            *ngIf="getLoginStatusValue.LoginStatus === 'No Data'" (click)="submitLoginForm()"><i
+                                class="fas fa-sign-in-alt"></i>&nbsp;Login</button>
+                        <!-- <button class="HRMS_secondary_button mx-2" type="button" (click)="resetFormData()"><i
+                                class="feather icon-rotate-ccw"></i>&nbsp;Reset</button> -->
+                    </div>
+                </div>
+
+
+            </form>
+
+        </div>
+    </div>
+
+</app-card>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-confirm">
+        <div class="modal-content">
+            <div class="text-end">
+                <button type="reset" class="btn-close " data-bs-dismiss="modal" aria-label="Close" #closeModal
+                    style="background-color: rgb(228, 208, 208);"></button>
+            </div>
+            <div class="modal-header flex-column py-0">
+                <h4 class="modal-title w-100">Are you sure? want to Logout</h4>
+            </div>
+            <div class="modal-body py-0 text-center">
+                <div class="col-12">
+                    <textarea class="form-control" [(ngModel)]="logoutDescription" name="logoutDesc" rows="3"
+                        placeholder="Enter work description" required #desc="ngModel"></textarea>
+                    <div *ngIf="desc.invalid && desc.touched" class="text-danger mt-1">
+                        Description is required.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="submit" class="btn btn-danger" (click)="logOut()" [disabled]="!logoutDescription">
+                    <i class="feather icon-check"></i>&nbsp;Submit</button>
+            </div>
+        </div>
+    </div>
+</div>

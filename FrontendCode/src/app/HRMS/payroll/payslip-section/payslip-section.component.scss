@@ -1,0 +1,39 @@
+fieldset {
+    border: 1px solid #ddd !important;
+    border-radius: 6px;
+}
+
+legend {
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+}
+
+.custom-fieldset {
+    position: relative;
+    border: 1px solid #072f5f;
+    border-radius: 5px;
+    padding-top: 1.5em;
+}
+
+
+.custom-legend {
+    font-weight: bold;
+    color: #072f5f;
+    padding: 0 10px;
+    text-align: left;
+    width: auto;
+    margin: 0;
+    position: absolute;
+    top: -0.7em;
+    left: 8%;
+    transform: translateX(-50%);
+    background: white;
+}
+.table thead th {
+  padding: 10px 10px !important;
+}
+
+.table tbody td {
+  padding: 5px 10px !important;
+}

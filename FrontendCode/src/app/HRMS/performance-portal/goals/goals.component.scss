@@ -1,0 +1,87 @@
+.goal-header {
+    width: 70%; /* Adjust the width of the Goal header */
+  }
+  
+  .weitage-header {
+    width: 20%; /* Adjust the width of the Weitage header */
+  }
+  
+  .actions-header {
+    width: 10%; /* Adjust the width of the Actions header */
+  }
+
+// .inner-shadow {
+//     box-shadow: rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset, rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset, rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+// }
+
+.toast {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1200;
+}
+
+::ng-deep .pcoded-header {
+    .card {
+        margin: 0px !important;
+    }
+}
+
+::ng-deep .pcoded-content {
+    position: relative;
+    display: block;
+    padding: 0px !important;
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+    padding-top: 5px !important;
+}
+
+@media only screen and (max-width: 991px) {
+    ::ng-deep .pcoded-navbar.navbar-collapsed~.pcoded-main-container {
+        margin-left: 0px;
+        margin-top: 57px !important;
+    }
+}
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.custom-tooltip {
+  visibility: hidden;
+  width: 100px;
+  background-color: #072f5f;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; /* Position the tooltip above the icon */
+  left: 50%;
+  margin-left: -50px; /* Center the tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.custom-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%; /* Arrow at the bottom of the tooltip */
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #072f5f transparent transparent transparent;
+}
+
+.tooltip-container:hover .custom-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.cursor_pointer{
+    cursor: pointer;
+}
