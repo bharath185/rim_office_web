@@ -1747,7 +1747,7 @@ public class EmployeeController {
     @PostMapping("/DDEmpList")
     public ResponseEntity<?> ddEmpList(@RequestBody Map<String, Object> model) {
         try {
-            List<Map<String, Object>> result = employeeService.getDDEmployeeList();
+            List<Map<String, Object>> result = employeeService.getDDEmpList(model);
             return ResponseEntity.ok(result);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

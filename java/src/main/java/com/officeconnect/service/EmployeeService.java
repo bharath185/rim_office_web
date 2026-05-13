@@ -1283,6 +1283,41 @@ public class EmployeeService {
             .collect(Collectors.toList());
     }
 
+    public List<Map<String, Object>> getDDEmpList(Map<String, Object> model) {
+        Integer loginId = parseInteger(model.get("LoginId"));
+        if (loginId == null || loginId == 0) {
+            throw new RuntimeException("LoginId is Missing");
+        }
+
+        Integer compId = parseInteger(model.get("CompId"));
+        Integer leId = parseInteger(model.get("LEId"));
+        Integer buId = parseInteger(model.get("BUId"));
+        Integer locationId = parseInteger(model.get("LocationId"));
+
+        return employeeMasterRepository.findByIsActiveAndIsDeleted(true, false).stream()
+            .filter(emp -> "ACTIVE".equalsIgnoreCase(emp.getEmpStatus()))
+            .filter(emp -> compId == null || compId <= 0 || (emp.getCompId() != null && emp.getCompId().equals(compId)))
+            .filter(emp -> leId == null || leId <= 0 || (emp.getLeId() != null && emp.getLeId().equals(leId)))
+            .filter(emp -> buId == null || buId <= 0 || (emp.getBuId() != null && emp.getBuId().equals(buId)))
+            .filter(emp -> locationId == null || locationId <= 0 || (emp.getLocationId() != null && emp.getLocationId().equals(locationId)))
+            .map(emp -> {
+                Map<String, Object> m = new HashMap<>();
+                m.put("EmpId", emp.getEmpId());
+                String empName = (emp.getFirstName() != null ? emp.getFirstName() : "")
+                    + " " + (emp.getMiddleName() != null ? emp.getMiddleName() : "")
+                    + " " + (emp.getLastName() != null ? emp.getLastName() : "");
+                m.put("EmpName", empName.trim().replaceAll("\\s+", " "));
+                m.put("EmpCode", emp.getUserName());
+                return m;
+            })
+            .sorted((a, b) -> {
+                String na = (String) a.getOrDefault("EmpName", "");
+                String nb = (String) b.getOrDefault("EmpName", "");
+                return na.compareToIgnoreCase(nb);
+            })
+            .collect(Collectors.toList());
+    }
+
     public List<EmployeeMasterViewModel> dashboardEmployee(EmployeeMasterViewModel model) {
         if (model.getLoginId() == null || model.getLoginId() == 0) {
             throw new RuntimeException("LoginId is Missing");
@@ -6424,6 +6459,20 @@ public class EmployeeService {
                 throw new RuntimeException("Date is required");
             }
 
+            List<EmployeeMaster> empList = employeeMasterRepository.findByEmpCodeAndIsActiveAndIsDeleted(empCode, true, false);
+            if (empList.isEmpty()) {
+                throw new RuntimeException("Employee with EmpCode '" + empCode + "' not found");
+            }
+
+            TempManualAttendance temp = new TempManualAttendance();
+            temp.setEmpCode(empCode);
+            temp.setDate(dateStr);
+            temp.setTime(time);
+            temp.setStatus(status);
+            tempManualAttendanceRepository.save(temp);
+
+            long totalRecords = tempManualAttendanceRepository.count();
+
             SimpleDateFormat sdf;
             if (dateStr.contains("-") && dateStr.split("-")[0].length() == 2) {
                 sdf = new SimpleDateFormat("dd-MM-yyyy");
@@ -6431,32 +6480,6 @@ public class EmployeeService {
                 sdf = new SimpleDateFormat("yyyy-MM-dd");
             }
             Date date = sdf.parse(dateStr);
-
-            List<EmployeeMaster> empList = employeeMasterRepository.findByEmpCodeAndIsActiveAndIsDeleted(empCode, true, false);
-            if (empList.isEmpty()) {
-                throw new RuntimeException("Employee with EmpCode '" + empCode + "' not found");
-            }
-            EmployeeMaster emp = empList.get(0);
-
-            List<ManualAttendance> existing = manualAttendanceRepository.findByEmpCodeAndDate(empCode, date);
-            if (!existing.isEmpty()) {
-                throw new RuntimeException("Attendance already exists for " + empCode + " on " + dateStr);
-            }
-
-            TempManualAttendance temp = new TempManualAttendance();
-            temp.setEmpCode(empCode);
-            temp.setDate(date);
-            temp.setTime(time);
-            temp.setStatus(status);
-            temp.setRecordStatus(true);
-            temp.setCreatedBy(loginId);
-            temp.setCreatedDate(new Date());
-            temp.setIsActive(true);
-            temp.setIsUpdated(false);
-            temp.setIsDeleted(false);
-            tempManualAttendanceRepository.save(temp);
-
-            int totalRecords = tempManualAttendanceRepository.findByIsActiveAndIsDeleted(true, false).size();
 
             ManualAttendance manualAtt = new ManualAttendance();
             manualAtt.setEmpCode(empCode);
@@ -6473,7 +6496,7 @@ public class EmployeeService {
 
             tempManualAttendanceRepository.deleteAll();
 
-            result.put("TotalRecords", totalRecords);
+            result.put("TotalRecords", (int) totalRecords);
             result.put("InsertedRecords", 1);
             result.put("FailedRecords", 0);
             result.put("Exceptions", new ArrayList<>());
