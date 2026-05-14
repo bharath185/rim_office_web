@@ -427,7 +427,7 @@ public class PayrollController {
         try {
             Integer loginId = parseSafeInt(model.getLoginId());
             if (loginId == null) model.setLoginId(0);
-            List<PayslipSectionComponentViewModel> result = payrollService.getAllPayslipSectionComponent(model);
+            List<Map<String, Object>> result = payrollService.getAllPayslipSectionComponent(model);
             return ResponseEntity.ok(result);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

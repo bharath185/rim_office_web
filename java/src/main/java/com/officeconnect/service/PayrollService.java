@@ -801,47 +801,76 @@ public class PayrollService {
 
     // ===== Payslip Section Components =====
 
-    public List<PayslipSectionComponentViewModel> getAllPayslipSectionComponent(PayslipSectionComponentViewModel model) {
+    public List<Map<String, Object>> getAllPayslipSectionComponent(PayslipSectionComponentViewModel model) {
         Integer loginId = (model != null && model.getLoginId() != null && model.getLoginId() != 0) ? model.getLoginId() : 0;
         if (loginId == 0) throw new RuntimeException("LoginId is Missing");
 
-        List<PayslipSectionComponents> details = payslipSectionComponentsRepository.findAll().stream()
-            .filter(s -> Boolean.TRUE.equals(s.getIsActive()) && Boolean.FALSE.equals(s.getIsDeleted()))
-            .collect(Collectors.toList());
+        // Preload all reference data for efficient lookup
+        List<PayrollPayoutType> allPayoutTypes = payrollPayoutTypeRepository.findAll();
+        List<PayslipSection> allSections = payslipSectionRepository.findAll();
+        List<PayrollComponent> allComponents = payrollComponentRepository.findAll();
+        List<PayslipSectionComponents> allSecComps = payslipSectionComponentsRepository.findAll();
 
-        if (details.isEmpty()) throw new RuntimeException("Section Component Details Not Found");
+        // Build the nested structure matching .NET
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (PayrollPayoutType payout : allPayoutTypes) {
+            if (!Boolean.TRUE.equals(payout.getIsActive()) || Boolean.TRUE.equals(payout.getIsDeleted())) continue;
 
-        return details.stream().map(s -> {
-            PayslipSectionComponentViewModel vm = new PayslipSectionComponentViewModel();
-            vm.setSectionComponentId(s.getSectionComponentId());
-            vm.setPayoutTypeId(s.getPayoutTypeId());
-            vm.setSectionId(s.getSectionId());
-            vm.setComponentId(s.getComponentId());
-            vm.setSequenceNo(s.getSequenceNo());
-            vm.setEffectiveFrom(formatDate(s.getEffectiveFrom()));
-            vm.setEffectiveTo(formatDate(s.getEffectiveTo()));
-            vm.setCreatedBy(s.getCreatedBy());
-            vm.setCreatedDate(formatDate(s.getCreatedDate()));
-            vm.setLastUpdatedBy(s.getLastUpdatedBy());
-            vm.setLastUpdatedDate(formatDate(s.getLastUpdatedDate()));
-            vm.setIsActive(s.getIsActive());
-            vm.setIsUpdated(s.getIsUpdated());
-            vm.setIsDeleted(s.getIsDeleted());
-            if (s.getPayoutTypeId() != null) {
-                PayrollPayoutType pt = payrollPayoutTypeRepository.findById(s.getPayoutTypeId()).orElse(null);
-                vm.setPayoutTypeName(pt != null ? pt.getPayoutTypeName() : "");
+            Map<String, Object> payoutMap = new HashMap<>();
+            payoutMap.put("PayoutTypeId", payout.getPayoutTypeId());
+            payoutMap.put("PayoutTypeName", payout.getPayoutTypeName());
+
+            List<Map<String, Object>> sectionList = new ArrayList<>();
+            for (PayslipSection sec : allSections) {
+                if (!Boolean.TRUE.equals(sec.getIsActive()) || Boolean.TRUE.equals(sec.getIsDeleted())) continue;
+
+                // Get components for this payout type and section
+                List<PayslipSectionComponents> secComps = allSecComps.stream()
+                    .filter(sc -> payout.getPayoutTypeId().equals(sc.getPayoutTypeId())
+                        && sec.getSectionId().equals(sc.getSectionId())
+                        && Boolean.TRUE.equals(sc.getIsActive()) && Boolean.FALSE.equals(sc.getIsDeleted()))
+                    .sorted(Comparator.comparing(PayslipSectionComponents::getSequenceNo,
+                        Comparator.nullsLast(Comparator.naturalOrder())))
+                    .collect(Collectors.toList());
+
+                if (secComps.isEmpty()) continue;
+
+                List<Map<String, Object>> compList = new ArrayList<>();
+                for (PayslipSectionComponents sc : secComps) {
+                    Map<String, Object> compMap = new HashMap<>();
+                    compMap.put("SectionComponentId", sc.getSectionComponentId());
+                    compMap.put("ComponentId", sc.getComponentId());
+                    compMap.put("SequenceNo", sc.getSequenceNo());
+                    compMap.put("EffectiveFrom", sc.getEffectiveFrom() != null ? "/Date(" + sc.getEffectiveFrom().getTime() + ")/" : null);
+                    compMap.put("EffectiveTo", sc.getEffectiveTo() != null ? "/Date(" + sc.getEffectiveTo().getTime() + ")/" : null);
+                    compMap.put("RecordStatus", sc.getRecordStatus());
+
+                    // Resolve component name/code (matching .NET left join)
+                    if (sc.getComponentId() != null) {
+                        PayrollComponent comp = allComponents.stream()
+                            .filter(c -> sc.getComponentId().equals(c.getComponentId())
+                                && Boolean.TRUE.equals(c.getIsActive()) && Boolean.FALSE.equals(c.getIsDeleted()))
+                            .findFirst().orElse(null);
+                        compMap.put("ComponentName", comp != null ? comp.getComponentName() : null);
+                        compMap.put("ComponentCode", comp != null ? comp.getComponentCode() : null);
+                    } else {
+                        compMap.put("ComponentName", null);
+                        compMap.put("ComponentCode", null);
+                    }
+                    compList.add(compMap);
+                }
+
+                Map<String, Object> secMap = new HashMap<>();
+                secMap.put("SectionId", sec.getSectionId());
+                secMap.put("SectionName", sec.getSectionName());
+                secMap.put("Components", compList);
+                sectionList.add(secMap);
             }
-            if (s.getSectionId() != null) {
-                PayslipSection sec = payslipSectionRepository.findById(s.getSectionId()).orElse(null);
-                vm.setSectionName(sec != null ? sec.getSectionName() : "");
-            }
-            if (s.getComponentId() != null) {
-                PayrollComponent comp = payrollComponentRepository.findById(s.getComponentId()).orElse(null);
-                vm.setComponentName(comp != null ? comp.getComponentName() : "");
-                vm.setComponentCode(comp != null ? comp.getComponentCode() : "");
-            }
-            return vm;
-        }).collect(Collectors.toList());
+
+            payoutMap.put("Sections", sectionList);
+            result.add(payoutMap);
+        }
+        return result;
     }
 
     public PayslipSectionComponentViewModel getPayslipSectionComponent(PayslipSectionComponentViewModel model) {
