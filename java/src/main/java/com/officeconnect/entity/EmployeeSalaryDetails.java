@@ -39,6 +39,54 @@ public class EmployeeSalaryDetails {
     @Column(name = "IsAppraised")
     private Boolean isAppraised;
 
+    @Column(name = "PerviousCTC")
+    private BigDecimal perviousCtc;
+
+    @Column(name = "RecordStatus")
+    private Boolean recordStatus;
+
+    @Column(name = "IsFixed")
+    private Boolean isFixed;
+
+    @Column(name = "IsVariable")
+    private Boolean isVariable;
+
+    @Column(name = "Period")
+    private Integer period;
+
+    @Column(name = "VariableId")
+    private Integer variableId;
+
+    @Column(name = "VariableName")
+    private String variableName;
+
+    @Column(name = "VariableCode")
+    private String variableCode;
+
+    @Column(name = "VariableAmt")
+    private String variableAmt;
+
+    @Column(name = "IsArrear")
+    private Boolean isArrear;
+
+    @Column(name = "ArrearAmt")
+    private String arrearAmt;
+
+    @Column(name = "IsClearArrear")
+    private Boolean isClearArrear;
+
+    @Column(name = "PendingMonth")
+    private Integer pendingMonth;
+
+    @Column(name = "ArrearYear")
+    private Integer arrearYear;
+
+    @Column(name = "ArrearMonth")
+    private Integer arrearMonth;
+
+    @Column(name = "DescriptionforArrear")
+    private String descriptionforArrear;
+
     @Column(name = "IsActive")
     private Boolean isActive;
 
@@ -133,6 +181,39 @@ public class EmployeeSalaryDetails {
     public void setIsAppraised(Boolean isAppraised) {
         this.isAppraised = isAppraised;
     }
+
+    public BigDecimal getPerviousCtc() { return perviousCtc; }
+    public void setPerviousCtc(BigDecimal perviousCtc) { this.perviousCtc = perviousCtc; }
+    public Boolean getRecordStatus() { return recordStatus; }
+    public void setRecordStatus(Boolean recordStatus) { this.recordStatus = recordStatus; }
+    public Boolean getIsFixed() { return isFixed; }
+    public void setIsFixed(Boolean isFixed) { this.isFixed = isFixed; }
+    public Boolean getIsVariable() { return isVariable; }
+    public void setIsVariable(Boolean isVariable) { this.isVariable = isVariable; }
+    public Integer getPeriod() { return period; }
+    public void setPeriod(Integer period) { this.period = period; }
+    public Integer getVariableId() { return variableId; }
+    public void setVariableId(Integer variableId) { this.variableId = variableId; }
+    public String getVariableName() { return variableName; }
+    public void setVariableName(String variableName) { this.variableName = variableName; }
+    public String getVariableCode() { return variableCode; }
+    public void setVariableCode(String variableCode) { this.variableCode = variableCode; }
+    public String getVariableAmt() { return variableAmt; }
+    public void setVariableAmt(String variableAmt) { this.variableAmt = variableAmt; }
+    public Boolean getIsArrear() { return isArrear; }
+    public void setIsArrear(Boolean isArrear) { this.isArrear = isArrear; }
+    public String getArrearAmt() { return arrearAmt; }
+    public void setArrearAmt(String arrearAmt) { this.arrearAmt = arrearAmt; }
+    public Boolean getIsClearArrear() { return isClearArrear; }
+    public void setIsClearArrear(Boolean isClearArrear) { this.isClearArrear = isClearArrear; }
+    public Integer getPendingMonth() { return pendingMonth; }
+    public void setPendingMonth(Integer pendingMonth) { this.pendingMonth = pendingMonth; }
+    public Integer getArrearYear() { return arrearYear; }
+    public void setArrearYear(Integer arrearYear) { this.arrearYear = arrearYear; }
+    public Integer getArrearMonth() { return arrearMonth; }
+    public void setArrearMonth(Integer arrearMonth) { this.arrearMonth = arrearMonth; }
+    public String getDescriptionforArrear() { return descriptionforArrear; }
+    public void setDescriptionforArrear(String descriptionforArrear) { this.descriptionforArrear = descriptionforArrear; }
 
     public Integer getCreatedBy() {
         return createdBy;

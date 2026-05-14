@@ -65,6 +65,54 @@ public class EmployeeSalaryDetailsViewModel {
     @JsonProperty("IsAppraised")
     private Boolean isAppraised;
 
+    @JsonProperty("PerviousCTC")
+    private java.math.BigDecimal perviousCtc;
+
+    @JsonProperty("RecordStatus")
+    private Boolean recordStatus;
+
+    @JsonProperty("IsFixed")
+    private Boolean isFixed;
+
+    @JsonProperty("IsVariable")
+    private Boolean isVariable;
+
+    @JsonProperty("Period")
+    private Integer period;
+
+    @JsonProperty("VariableId")
+    private Integer variableId;
+
+    @JsonProperty("VariableName")
+    private String variableName;
+
+    @JsonProperty("VariableCode")
+    private String variableCode;
+
+    @JsonProperty("VariableAmt")
+    private String variableAmt;
+
+    @JsonProperty("IsArrear")
+    private Boolean isArrear;
+
+    @JsonProperty("ArrearAmt")
+    private String arrearAmt;
+
+    @JsonProperty("IsClearArrear")
+    private Boolean isClearArrear;
+
+    @JsonProperty("PendingMonth")
+    private Integer pendingMonth;
+
+    @JsonProperty("ArrearYear")
+    private Integer arrearYear;
+
+    @JsonProperty("ArrearMonth")
+    private Integer arrearMonth;
+
+    @JsonProperty("DescriptionforArrear")
+    private String descriptionforArrear;
+
     @JsonProperty("CreatedBy")
     private Integer createdBy;
 
@@ -138,6 +186,40 @@ public class EmployeeSalaryDetailsViewModel {
     public void setEffectiveToDate(String effectiveToDate) { this.effectiveToDate = effectiveToDate; }
     public Boolean getIsAppraised() { return isAppraised; }
     public void setIsAppraised(Boolean isAppraised) { this.isAppraised = isAppraised; }
+
+    public java.math.BigDecimal getPerviousCtc() { return perviousCtc; }
+    public void setPerviousCtc(java.math.BigDecimal perviousCtc) { this.perviousCtc = perviousCtc; }
+    public Boolean getRecordStatus() { return recordStatus; }
+    public void setRecordStatus(Boolean recordStatus) { this.recordStatus = recordStatus; }
+    public Boolean getIsFixed() { return isFixed; }
+    public void setIsFixed(Boolean isFixed) { this.isFixed = isFixed; }
+    public Boolean getIsVariable() { return isVariable; }
+    public void setIsVariable(Boolean isVariable) { this.isVariable = isVariable; }
+    public Integer getPeriod() { return period; }
+    public void setPeriod(Integer period) { this.period = period; }
+    public Integer getVariableId() { return variableId; }
+    public void setVariableId(Integer variableId) { this.variableId = variableId; }
+    public String getVariableName() { return variableName; }
+    public void setVariableName(String variableName) { this.variableName = variableName; }
+    public String getVariableCode() { return variableCode; }
+    public void setVariableCode(String variableCode) { this.variableCode = variableCode; }
+    public String getVariableAmt() { return variableAmt; }
+    public void setVariableAmt(String variableAmt) { this.variableAmt = variableAmt; }
+    public Boolean getIsArrear() { return isArrear; }
+    public void setIsArrear(Boolean isArrear) { this.isArrear = isArrear; }
+    public String getArrearAmt() { return arrearAmt; }
+    public void setArrearAmt(String arrearAmt) { this.arrearAmt = arrearAmt; }
+    public Boolean getIsClearArrear() { return isClearArrear; }
+    public void setIsClearArrear(Boolean isClearArrear) { this.isClearArrear = isClearArrear; }
+    public Integer getPendingMonth() { return pendingMonth; }
+    public void setPendingMonth(Integer pendingMonth) { this.pendingMonth = pendingMonth; }
+    public Integer getArrearYear() { return arrearYear; }
+    public void setArrearYear(Integer arrearYear) { this.arrearYear = arrearYear; }
+    public Integer getArrearMonth() { return arrearMonth; }
+    public void setArrearMonth(Integer arrearMonth) { this.arrearMonth = arrearMonth; }
+    public String getDescriptionforArrear() { return descriptionforArrear; }
+    public void setDescriptionforArrear(String descriptionforArrear) { this.descriptionforArrear = descriptionforArrear; }
+
     public Integer getCreatedBy() { return createdBy; }
     public void setCreatedBy(Integer createdBy) { this.createdBy = createdBy; }
     public String getCreatedDate() { return createdDate; }
