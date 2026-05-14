@@ -18,9 +18,6 @@ public class PayrollComponentCondition {
     @Column(name = "SNo")
     private Integer sno;
 
-    @Column(name = "ConditionName")
-    private String conditionName;
-
     @Column(name = "ConditionExpression")
     private String conditionExpression;
 
@@ -58,10 +55,6 @@ public class PayrollComponentCondition {
 
     public Integer getSno() { return sno; }
     public void setSno(Integer sno) { this.sno = sno; }
-
-    public String getConditionName() { return conditionName; }
-    public void setConditionName(String conditionName) { this.conditionName = conditionName; }
-
     public String getConditionExpression() { return conditionExpression; }
     public void setConditionExpression(String conditionExpression) { this.conditionExpression = conditionExpression; }
 

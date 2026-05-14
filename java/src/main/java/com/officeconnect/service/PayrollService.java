@@ -10,10 +10,12 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -1229,15 +1231,32 @@ public class PayrollService {
         Integer loginId = (model != null && model.getLoginId() != null && model.getLoginId() != 0) ? model.getLoginId() : 0;
         if (loginId == 0) throw new RuntimeException("LoginId is Missing");
 
-        List<EmployeeMaster> employees = employeeMasterRepository.findByIsActiveAndIsDeleted(true, false);
+        // Get employees with active salary details (matching .NET: join with EmployeeSalaryDetails where RecordStatus=true AND IsActive=true)
+        List<EmployeeSalaryDetails> activeSalaries = employeeSalaryDetailsRepository.findAll().stream()
+            .filter(s -> Boolean.TRUE.equals(s.getIsActive()) && Boolean.FALSE.equals(s.getIsDeleted()))
+            .collect(Collectors.toList());
+        List<String> salaryEmpCodes = activeSalaries.stream()
+            .map(EmployeeSalaryDetails::getEmpCode)
+            .filter(Objects::nonNull)
+            .map(String::toUpperCase)
+            .collect(Collectors.toList());
 
-        return employees.stream().map(e -> {
-            DDPayrollEmpListViewModel vm = new DDPayrollEmpListViewModel();
-            vm.setEmpId(e.getEmpId());
-            vm.setEmpName(e.getFirstName() + " " + e.getMiddleName() + " " + e.getLastName());
-            vm.setEmpCode(e.getUserName());
-            return vm;
-        }).collect(Collectors.toList());
+        return employeeMasterRepository.findByIsActiveAndIsDeleted(true, false).stream()
+            .filter(e -> "ACTIVE".equalsIgnoreCase(e.getEmpStatus()))
+            .filter(e -> e.getEmpCode() != null && salaryEmpCodes.contains(e.getEmpCode().toUpperCase()))
+            .sorted(Comparator.comparing(EmployeeMaster::getEmpId, Comparator.reverseOrder()))
+            .map(e -> {
+                DDPayrollEmpListViewModel vm = new DDPayrollEmpListViewModel();
+                vm.setEmpId(e.getEmpId());
+                String fn = e.getFirstName() != null ? e.getFirstName().trim() : "";
+                String mn = e.getMiddleName() != null ? e.getMiddleName().trim() : "";
+                String ln = e.getLastName() != null ? e.getLastName().trim() : "";
+                String ec = e.getEmpCode() != null ? e.getEmpCode().trim() : "";
+                vm.setEmpName(fn + " " + mn + " " + ln + " (" + ec + ")");
+                vm.setEmpCode(ec);
+                return vm;
+            })
+            .collect(Collectors.toList());
     }
 
     // ===== CTC Calculation (matches DotNetCode implementation) =====
@@ -1270,7 +1289,7 @@ public class PayrollService {
 
             // Get LOP (LeaveTypeId == 0) for the employee in this month (matching DotNetCode)
             List<EmpLeaveApplication> lopList = empLeaveApplicationRepository.findAll().stream()
-                .filter(l -> loginId.equals(l.getEmpId()) && Integer.valueOf(0).equals(l.getLeaveTypeId())
+                .filter(l -> empId.equals(l.getEmpId()) && Integer.valueOf(0).equals(l.getLeaveTypeId())
                     && l.getFromDate() != null && l.getFromDate().compareTo(startDate) >= 0
                     && l.getToDate() != null && l.getToDate().compareTo(endDate) <= 0
                     && Boolean.TRUE.equals(l.getIsActive()) && Boolean.FALSE.equals(l.getIsDeleted()))
@@ -1387,6 +1406,16 @@ public class PayrollService {
 
             if (components.isEmpty()) throw new RuntimeException("Component details are not found");
 
+            // Pre-load payout type and segment lookup maps (matching DotNetCode joins)
+            Map<Integer, PayrollPayoutType> payoutTypeMap = new HashMap<>();
+            for (PayrollPayoutType pt : payrollPayoutTypeRepository.findAll()) {
+                payoutTypeMap.put(pt.getPayoutTypeId(), pt);
+            }
+            Map<Integer, PayrollSegment> segmentMap = new HashMap<>();
+            for (PayrollSegment seg : payrollSegmentRepository.findAll()) {
+                segmentMap.put(seg.getSegmentId(), seg);
+            }
+
             // Process each component (matching DotNetCode logic)
             List<Map<String, Object>> lstofCompvalue = new ArrayList<>();
             for (PayrollComponent c : components) {
@@ -1402,6 +1431,16 @@ public class PayrollService {
                 compMap.put("ComponentName", c.getComponentName());
                 compMap.put("ComponentCode", c.getComponentCode());
 
+                // Add PayoutTypeName, FrequencyId, Frequency, SegmentId, SegmentName (matching DotNetCode joins)
+                PayrollPayoutType pt = payoutTypeMap.get(c.getPayoutTypeId());
+                compMap.put("PayoutTypeName", pt != null ? pt.getPayoutTypeName() : "");
+                compMap.put("FrequencyId", 0);
+                compMap.put("Frequency", pt != null && pt.getFrequency() != null ? pt.getFrequency() : "");
+                PayrollSegment seg = segmentMap.get(c.getSegmentId());
+                compMap.put("SegmentId", c.getSegmentId());
+                compMap.put("SegmentName", seg != null ? seg.getSegmentName() : "");
+                compMap.put("LCtrue", 0);
+
                 // Get logic for this component
                 List<PayrollComponentLogic> logics = payrollComponentLogicRepository
                     .findByComponentIdAndIsActiveTrueAndIsDeletedFalseOrderBySno(c.getComponentId());
@@ -1415,6 +1454,8 @@ public class PayrollService {
                     compMap.put("Value", cal.getValue());
                     compMap.put("ComponentId1", cal.getComponentId1());
                     compMap.put("ComponentName1", cal.getComponentName1());
+                    compMap.put("EffectiveFrom", cal.getEffectiveFrom() != null ? "/Date(" + cal.getEffectiveFrom().getTime() + ")/" : null);
+                    compMap.put("EffectiveTo", cal.getEffectiveTo() != null ? "/Date(" + cal.getEffectiveTo().getTime() + ")/" : null);
 
                     // Calculate based on value or percentage (matching DotNetCode)
                     if (cal.getValue() != null) {
@@ -1432,7 +1473,7 @@ public class PayrollService {
                         computed = (cal.getPercentage().doubleValue() / 100.0) * operandValue;
                     }
 
-                    // Check condition (matching DotNetCode)
+                    // Check condition (matching DotNetCode: evaluate arithmetic and boolean expressions)
                     List<PayrollComponentCondition> conditions = payrollComponentConditionRepository
                         .findByComponentIdAndIsActiveTrueAndIsDeletedFalse(cal.getComponentId());
                     if (!conditions.isEmpty()) {
@@ -1442,8 +1483,27 @@ public class PayrollService {
                         compMap.put("ConditionResultPFESI", cond.getConditionResultPFESI());
 
                         if (cond.getConditionExpression() != null && !cond.getConditionExpression().isEmpty()) {
-                            boolean condOk = evaluateCondition(cond.getConditionExpression(), computedValues);
-                            if (!condOk) computed = 0.0;
+                            String expr = cond.getConditionExpression();
+                            
+                            // Evaluate the expression to get computed value (matching DotNetCode cvalue mechanism)
+                            Double exprResult = evaluateConditionExpression(expr, computedValues);
+                            
+                            // If expression has (OR), use the computed value (matching DotNetCode cvalue logic)
+                            if (expr.contains("(OR)") || expr.contains("(or)")) {
+                                if (exprResult != null) {
+                                    computed = exprResult;
+                                }
+                            } else if (!expr.contains(">") && !expr.contains("<") && !expr.contains("==") && !expr.contains("!=") && !expr.contains("(OR)")) {
+                                // Pure arithmetic expression - use result as computed value
+                                if (exprResult != null) {
+                                    computed = exprResult;
+                                }
+                            } else {
+                                // Boolean condition - only set to 0 if condition fails
+                                if (exprResult == null || exprResult == 0.0) {
+                                    computed = 0.0;
+                                }
+                            }
                         }
                     }
                 }
@@ -1519,25 +1579,170 @@ public class PayrollService {
         return result;
     }
 
-    // Helper method to evaluate condition expressions (matching DotNetCode)
-    private boolean evaluateCondition(String condExpr, Map<String, Double> computedValues) {
-        if (condExpr == null || condExpr.trim().isEmpty()) return true;
+    // Simple arithmetic expression evaluator (replaces Nashorn JS engine - removed in Java 15+)
+    private double evalSimple(String expr) {
+        expr = expr.trim();
+        // Handle parentheses
+        while (expr.contains("(")) {
+            int open = expr.lastIndexOf("(");
+            int close = expr.indexOf(")", open);
+            if (close == -1) break;
+            String sub = expr.substring(open + 1, close);
+            double val = evalSimple(sub);
+            expr = expr.substring(0, open) + val + expr.substring(close + 1);
+        }
+        // Handle addition/subtraction (lowest precedence)
+        int pos = findOutsideParens(expr, '+');
+        if (pos > 0) return evalSimple(expr.substring(0, pos)) + evalSimple(expr.substring(pos + 1));
+        pos = findOutsideParens(expr, '-');
+        if (pos > 0) return evalSimple(expr.substring(0, pos)) - evalSimple(expr.substring(pos + 1));
+        // Handle multiplication/division (higher precedence)
+        pos = findOutsideParens(expr, '*');
+        if (pos > 0) return evalSimple(expr.substring(0, pos)) * evalSimple(expr.substring(pos + 1));
+        pos = findOutsideParens(expr, '/');
+        if (pos > 0) {
+            double left = evalSimple(expr.substring(0, pos));
+            double right = evalSimple(expr.substring(pos + 1));
+            if (right == 0) return 0;
+            return left / right;
+        }
+        return Double.parseDouble(expr.trim());
+    }
 
+    private int findOutsideParens(String expr, char op) {
+        int depth = 0;
+        for (int i = expr.length() - 1; i >= 0; i--) {
+            char c = expr.charAt(i);
+            if (c == ')') depth++;
+            else if (c == '(') depth--;
+            else if (c == op && depth == 0 && i > 0) return i;
+        }
+        return -1;
+    }
+
+    // Evaluate condition expression and return computed value (matching DotNetCode EvaluateCondition with cvalue)
+    private Double evaluateConditionExpression(String condExpr, Map<String, Double> computedValues) {
+        if (condExpr == null || condExpr.trim().isEmpty()) return null;
         try {
-            // Replace variable names with their values
-            String replaced = condExpr;
-            for (Map.Entry<String, Double> entry : computedValues.entrySet()) {
-                replaced = replaced.replaceAll("\\b" + entry.getKey() + "\\b", entry.getValue().toString());
-            }
+            String expr = condExpr.replace("(OR)", "||").replace("(or)", "||");
+            String[] orParts = expr.split("\\|\\|");
+            for (String part : orParts) {
+                String p = part.trim();
+                if (p.isEmpty()) continue;
 
-            // Use JavaScript engine for arithmetic evaluation
-            javax.script.ScriptEngineManager mgr = new javax.script.ScriptEngineManager();
-            javax.script.ScriptEngine engine = mgr.getEngineByName("JavaScript");
-            Object evalResult = engine.eval(replaced);
-            double val = Double.parseDouble(evalResult.toString());
-            return val != 0;
+                String replaced = p;
+                List<String> keys = new ArrayList<>(computedValues.keySet());
+                keys.sort((a, b) -> Integer.compare(b.length(), a.length()));
+                for (String key : keys) {
+                    replaced = replaced.replaceAll("\\b" + key + "\\b", String.valueOf(computedValues.get(key)));
+                }
+
+                // Check for range: left <= VAR <= right
+                java.util.regex.Matcher rangeMatcher = java.util.regex.Pattern.compile(
+                    "^\\s*([\\d\\.]+)\\s*(<=|<)\\s*([A-Za-z_][A-Za-z0-9_]*)\\s*(<=|<)\\s*([\\d\\.]+)\\s*$").matcher(replaced);
+                if (rangeMatcher.matches()) {
+                    double left = Double.parseDouble(rangeMatcher.group(1));
+                    String varName = rangeMatcher.group(3);
+                    double right = Double.parseDouble(rangeMatcher.group(5));
+                    double varVal = computedValues.getOrDefault(varName, 0.0);
+                    if (varVal >= left && varVal <= right) return 1.0;
+                    continue;
+                }
+
+                // Check for comparison operators
+                String[] operators = {"<=", ">=", "==", "!=", "<", ">"};
+                String usedOp = null;
+                int opIdx = -1;
+                for (String op : operators) {
+                    int idx = replaced.indexOf(op);
+                    if (idx > 0) { usedOp = op; opIdx = idx; break; }
+                }
+                if (usedOp != null) {
+                    double left = evalSimple(replaced.substring(0, opIdx));
+                    double right = evalSimple(replaced.substring(opIdx + usedOp.length()));
+                    boolean result = false;
+                    switch (usedOp) {
+                        case ">": result = left > right; break;
+                        case "<": result = left < right; break;
+                        case ">=": result = left >= right; break;
+                        case "<=": result = left <= right; break;
+                        case "==": result = Math.abs(left - right) < 0.000001; break;
+                        case "!=": result = Math.abs(left - right) > 0.000001; break;
+                    }
+                    if (result) return left; // Return the left operand value as cvalue
+                    continue;
+                }
+
+                // Pure arithmetic - evaluate and return value (matching .NET cvalue)
+                return evalSimple(replaced);
+            }
+            return 0.0;
         } catch (Exception e) {
-            return true; // Default to true if evaluation fails
+            return null;
+        }
+    }
+    private Double evaluateArithmetic(String expr, Map<String, Double> computedValues) {
+        if (expr == null || expr.trim().isEmpty()) return null;
+        try {
+            String replaced = expr;
+            List<String> keys = new ArrayList<>(computedValues.keySet());
+            keys.sort((a, b) -> Integer.compare(b.length(), a.length()));
+            for (String key : keys) {
+                replaced = replaced.replaceAll("\\b" + key + "\\b", String.valueOf(computedValues.get(key)));
+            }
+            return evalSimple(replaced);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    // Helper to evaluate boolean condition expression (matching DotNetCode EvaluateCondition)
+    private boolean evaluateBooleanCondition(String condExpr, Map<String, Double> computedValues) {
+        if (condExpr == null || condExpr.trim().isEmpty()) return true;
+        try {
+            String expr = condExpr.replace("(OR)", "||").replace("(or)", "||");
+            String[] orParts = expr.split("\\|\\|");
+            for (String part : orParts) {
+                String p = part.trim();
+                if (p.isEmpty()) continue;
+
+                String replaced = p;
+                List<String> keys = new ArrayList<>(computedValues.keySet());
+                keys.sort((a, b) -> Integer.compare(b.length(), a.length()));
+                for (String key : keys) {
+                    replaced = replaced.replaceAll("\\b" + key + "\\b", String.valueOf(computedValues.get(key)));
+                }
+
+                // Handle comparison operators
+                String[] operators = {"<=", ">=", "==", "!=", "<", ">"};
+                String usedOp = null;
+                int opIdx = -1;
+                for (String op : operators) {
+                    int idx = replaced.indexOf(op);
+                    if (idx > 0) { usedOp = op; opIdx = idx; break; }
+                }
+                if (usedOp != null) {
+                    double left = evalSimple(replaced.substring(0, opIdx));
+                    double right = evalSimple(replaced.substring(opIdx + usedOp.length()));
+                    boolean result = false;
+                    switch (usedOp) {
+                        case ">": result = left > right; break;
+                        case "<": result = left < right; break;
+                        case ">=": result = left >= right; break;
+                        case "<=": result = left <= right; break;
+                        case "==": result = Math.abs(left - right) < 0.000001; break;
+                        case "!=": result = Math.abs(left - right) > 0.000001; break;
+                    }
+                    if (result) return true;
+                } else {
+                    // Pure arithmetic expression in OR context
+                    double val = evalSimple(replaced);
+                    if (val != 0) return true;
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            return true;
         }
     }
 
