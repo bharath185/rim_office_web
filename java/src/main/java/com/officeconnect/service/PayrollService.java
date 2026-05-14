@@ -1125,16 +1125,19 @@ public class PayrollService {
         vm.setEmpCode(s.getEmpCode());
         vm.setCtc(s.getCtc());
         vm.setMctc(s.getMCTC());
-        vm.setEffectiveFromDate(formatDate(s.getEffectiveFromDate()));
-        vm.setEffectiveToDate(formatDate(s.getEffectiveToDate()));
+        // Use /Date(timestamp)/ format for frontend parsing (matching .NET JavaScriptSerializer)
+        vm.setEffectiveFromDate(s.getEffectiveFromDate() != null ? "/Date(" + s.getEffectiveFromDate().getTime() + ")/" : null);
+        vm.setEffectiveToDate(s.getEffectiveToDate() != null ? "/Date(" + s.getEffectiveToDate().getTime() + ")/" : null);
         vm.setIsAppraised(s.getIsAppraised());
         vm.setIsActive(s.getIsActive());
         vm.setIsUpdated(s.getIsUpdated());
         vm.setIsDeleted(s.getIsDeleted());
         vm.setCreatedBy(s.getCreatedBy());
-        vm.setCreatedDate(formatDate(s.getCreatedDate()));
+        vm.setCreatedDate(s.getCreatedDate() != null ? "/Date(" + s.getCreatedDate().getTime() + ")/" : null);
         vm.setLastUpdatedBy(s.getLastUpdatedBy());
-        vm.setLastUpdatedDate(formatDate(s.getLastUpdatedDate()));
+        vm.setLastUpdatedDate(s.getLastUpdatedDate() != null ? "/Date(" + s.getLastUpdatedDate().getTime() + ")/" : null);
+        // Add fields that may not exist in Java entity but are expected by frontend
+        vm.setIncrementPercent(s.getIncrementPercent() != null ? java.math.BigDecimal.valueOf(s.getIncrementPercent()) : null);
         if (s.getEmpId() != null) {
             EmployeeMaster emp = employeeMasterRepository.findByEmpIdAndActive(s.getEmpId());
             if (emp != null) {
