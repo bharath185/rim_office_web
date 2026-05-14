@@ -570,8 +570,12 @@ public class PayrollService {
         Integer loginId = (model.getLoginId() != null && model.getLoginId() != 0) ? model.getLoginId() : 0;
         if (loginId == 0) throw new RuntimeException("LoginId is Missing");
 
+        Integer payoutTypeId = (model.getPayoutTypeId() != null && model.getPayoutTypeId() != 0) ? model.getPayoutTypeId() : 0;
+
         List<PayrollComponent> details = payrollComponentRepository.findAll().stream()
             .filter(c -> Boolean.TRUE.equals(c.getIsActive()) && Boolean.FALSE.equals(c.getIsDeleted()))
+            .filter(c -> payoutTypeId == 0 || (c.getPayoutTypeId() != null && c.getPayoutTypeId().equals(payoutTypeId)))
+            .sorted((a, b) -> Integer.compare(b.getSegmentId(), a.getSegmentId()))
             .collect(Collectors.toList());
 
         if (details.isEmpty()) throw new RuntimeException("Component Details Not Found");
@@ -579,7 +583,7 @@ public class PayrollService {
         return details.stream().map(c -> {
             DDPayrollComponentViewModel vm = new DDPayrollComponentViewModel();
             vm.setComponentId(c.getComponentId());
-            vm.setComponentName(c.getComponentName());
+            vm.setComponentName(c.getComponentCode() != null ? c.getComponentCode() : "");
             return vm;
         }).collect(Collectors.toList());
     }
