@@ -884,28 +884,61 @@ public class LeaveService {
     }
 
     public CompOffRequestViewModel compOffLeave(CompOffRequestViewModel model) {
+        Integer loginId = model.getLoginId();
+        if (loginId == null || loginId == 0) throw new RuntimeException("EmpId is Mismatching");
+
+        // Validate employee exists and is active
+        EmployeeMaster emp = employeeMasterRepository.findById(model.getEmpId())
+            .orElseThrow(() -> new RuntimeException("Employee not found"));
+        if (emp.getEmpStatus() != null && !"ACTIVE".equalsIgnoreCase(emp.getEmpStatus()))
+            throw new RuntimeException("Employee is not active");
+
+        // Check for duplicate request (same EmpId + Date, matching .NET)
+        List<CompOffRequest> existing = compOffRequestRepository.findByEmpIdAndIsDeletedFalse(model.getEmpId()).stream()
+            .filter(c -> c.getDate() != null && c.getDate().equals(model.getDate()))
+            .collect(Collectors.toList());
+        if (!existing.isEmpty()) {
+            CompOffRequest existingReq = existing.get(0);
+            if (Boolean.TRUE.equals(existingReq.getIsApproved()))
+                throw new RuntimeException("A CompOff request for this date has already been approved.");
+            if (Boolean.TRUE.equals(existingReq.getIsRejected()))
+                throw new RuntimeException("A CompOff request for this date has already been rejected.");
+            if (Boolean.TRUE.equals(existingReq.getIsRequested()))
+                throw new RuntimeException("A CompOff request for this date is already pending approval.");
+            throw new RuntimeException("A CompOff record already exists for this date.");
+        }
+
+        // Get report manager
+        Integer reportId = emp.getReportId() != null && emp.getReportId() != 0 ? emp.getReportId() : 0;
+
         CompOffRequest cor = new CompOffRequest();
         cor.setEmpId(model.getEmpId());
         cor.setEmpCode(model.getEmpCode());
+        cor.setManagerId(model.getManagerId() != null ? model.getManagerId() : reportId);
+        cor.setManagerCode(model.getManagerCode());
         cor.setDate(model.getDate());
+        cor.setProjectId(0);
         cor.setProject(model.getProject());
+        cor.setTaskId(0);
         cor.setTask(model.getTask());
         cor.setHrs(model.getHrs());
         cor.setActualHrs(model.getActualHrs());
         cor.setWorkMode(model.getWorkMode());
-        cor.setReason(model.getReason());
         cor.setIsRequested(true);
         cor.setIsApproved(false);
         cor.setIsRejected(false);
+        cor.setIsUsed(false);
         cor.setIsActive(true);
         cor.setIsUpdated(false);
         cor.setIsDeleted(false);
+        cor.setCreatedBy(loginId);
         cor.setCreatedDate(new Date());
-        
+        cor.setLastUpdatedBy(loginId);
+        cor.setLastUpdatedDate(new Date());
         cor = compOffRequestRepository.save(cor);
-        
+
         model.setCompOffReqId(cor.getCompOffReqId());
-        model.setMsg("Comp off leave applied successfully");
+        model.setMsg("CompOff Requested");
         return model;
     }
 
@@ -1322,17 +1355,21 @@ public class LeaveService {
         vm.setIsRejected(cor.getIsRejected());
         vm.setReason(cor.getReason());
         vm.setAppliedDate(cor.getCreatedDate());
-        
+        vm.setIsActive(cor.getIsActive());
+
         // Get employee name
+        String empName = "";
         if (cor.getEmpId() != null) {
             Optional<EmployeeMaster> empOpt = employeeMasterRepository.findById(cor.getEmpId());
             if (empOpt.isPresent()) {
                 EmployeeMaster emp = empOpt.get();
-                vm.setEmployeeName(emp.getFirstName() + " " + emp.getLastName());
+                String fn = emp.getFirstName() != null ? emp.getFirstName().trim() : "";
+                String mn = emp.getMiddleName() != null ? " " + emp.getMiddleName().trim() : "";
+                String ln = emp.getLastName() != null ? " " + emp.getLastName().trim() : "";
+                empName = (fn + mn + ln).trim();
             }
         }
-        
-        vm.setIsActive(cor.getIsActive());
+        vm.setEmployeeName(empName);
         return vm;
     }
 

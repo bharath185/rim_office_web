@@ -10,6 +10,10 @@ public class CompOffRequestViewModel {
     @JsonAlias({"compOffReqId", "CompOffReqId", "CompOffId", "compOffId"})
     private Integer compOffReqId;
 
+    @JsonProperty("LoginId")
+    @JsonAlias({"loginId", "LoginId"})
+    private Integer loginId;
+
     @JsonProperty("EmpId")
     @JsonAlias({"empId", "EmpId"})
     private Integer empId;
@@ -94,6 +98,9 @@ public class CompOffRequestViewModel {
     // Getters and Setters
     public Integer getCompOffReqId() { return compOffReqId; }
     public void setCompOffReqId(Integer compOffReqId) { this.compOffReqId = compOffReqId; }
+
+    public Integer getLoginId() { return loginId; }
+    public void setLoginId(Integer loginId) { this.loginId = loginId; }
 
     public Integer getEmpId() { return empId; }
     public void setEmpId(Integer empId) { this.empId = empId; }
