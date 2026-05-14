@@ -337,6 +337,9 @@ public class EmployeeService {
     }
 
     public List<NewDDLegalEntityViewModel> getNewDDLegalEntity(NewDDLegalEntityViewModel model) {
+        Integer loginId = model.getLoginId();
+        if (loginId == null || loginId == 0) throw new RuntimeException("EmpId is Missing");
+
         Integer compId = model.getCompId();
         if (compId != null && compId != 0) {
             return legalEntityMasterRepository.findByCompIdAndIsActiveAndIsDeleted(compId, true, false).stream()
@@ -3932,36 +3935,40 @@ public class EmployeeService {
         return result;
     }
 
-    public List<Map<String, Object>> getAllPages() {
-        List<Map<String, Object>> result = new ArrayList<>();
+    public List<Map<String, Object>> getAllPages(Map<String, Object> model) {
+        Integer empId = model.get("EmpId") != null ? Integer.parseInt(model.get("EmpId").toString()) : 0;
+        Integer deptId = model.get("DeptId") != null ? Integer.parseInt(model.get("DeptId").toString()) : 0;
+        Integer roleId = model.get("RoleId") != null ? Integer.parseInt(model.get("RoleId").toString()) : 0;
 
         List<PageModuleMaster> pageModules = pageModuleMasterRepository.findByIsDeleted(false);
         List<ModuleMaster> modules = moduleMasterRepository.findByIsDeleted(false);
         List<SubModuleMaster> subModules = subModuleMasterRepository.findByIsDeleted(false);
 
-        for (PageModuleMaster pm : pageModules) {
-            Map<String, Object> m = new HashMap<>();
+        // If both DeptId and RoleId provided, get existing access policies for this combination
+        List<AccessPolicy> existingPolicies = new ArrayList<>();
+        if (deptId != 0 && roleId != 0) {
+            existingPolicies = accessPolicyRepository.findByDeptIdAndRoleIdAndIsDeleted(deptId, roleId, false);
+        }
 
-            // Get Module
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (PageModuleMaster pm : pageModules) {
             ModuleMaster module = modules.stream()
                 .filter(mod -> mod.getModuleId().equals(pm.getModuleId()))
                 .findFirst().orElse(null);
-
-            // Get SubModule
             SubModuleMaster subModule = subModules.stream()
                 .filter(sm -> sm.getSubModuleId().equals(pm.getSubModuleId()))
                 .findFirst().orElse(null);
 
-            // Get AccessPolicy for this page module
-            List<AccessPolicy> policies = accessPolicyRepository.findByModuleIdAndIsDeleted(pm.getModuleId(), false);
-            AccessPolicy policy = policies.stream()
+            // Find matching access policy for this page module
+            AccessPolicy policy = existingPolicies.stream()
                 .filter(p -> pm.getPageModuleId().equals(p.getPageModuleId()))
                 .findFirst().orElse(null);
 
-            m.put("DeptId", null);
+            Map<String, Object> m = new HashMap<>();
+            m.put("DeptId", deptId != 0 ? deptId : null);
             m.put("DeptName", null);
-            m.put("PageAccess", true);
-            m.put("RoleId", null);
+            m.put("PageAccess", policy != null || (deptId == 0 || roleId == 0));
+            m.put("RoleId", roleId != 0 ? roleId : null);
             m.put("PageModuleId", pm.getPageModuleId());
             m.put("ModuleId", pm.getModuleId());
             m.put("ModuleName", module != null ? module.getModuleName() : "");
@@ -3969,10 +3976,10 @@ public class EmployeeService {
             m.put("SubModuleName", subModule != null ? subModule.getSubModuleName() : "");
             m.put("PageName", pm.getPageName());
             m.put("PageModuleName", null);
-            m.put("AddAccess", policy != null && policy.getAddAccess() != null ? policy.getAddAccess() : false);
-            m.put("UpdateAccess", policy != null && policy.getUpdateAccess() != null ? policy.getUpdateAccess() : false);
-            m.put("DeleteAccess", policy != null && policy.getDeleteAccess() != null ? policy.getDeleteAccess() : false);
-            m.put("ViewAccess", policy != null && policy.getViewAccess() != null ? policy.getViewAccess() : false);
+            m.put("AddAccess", policy != null && Boolean.TRUE.equals(policy.getAddAccess()));
+            m.put("UpdateAccess", policy != null && Boolean.TRUE.equals(policy.getUpdateAccess()));
+            m.put("DeleteAccess", policy != null && Boolean.TRUE.equals(policy.getDeleteAccess()));
+            m.put("ViewAccess", policy != null && Boolean.TRUE.equals(policy.getViewAccess()));
             m.put("msg", null);
             m.put("CreatedBy", pm.getCreatedBy());
             m.put("CreatedDate", pm.getCreatedDate() != null ? "\\/Date(" + pm.getCreatedDate().getTime() + ")\\/" : null);

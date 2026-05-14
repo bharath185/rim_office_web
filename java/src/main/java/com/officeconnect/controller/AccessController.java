@@ -24,7 +24,7 @@ public class AccessController {
     @PostMapping("/GetAllPages")
     public ResponseEntity<?> getAllPages(@RequestBody Map<String, Object> model) {
         try {
-            List<Map<String, Object>> result = employeeService.getAllPages();
+            List<Map<String, Object>> result = employeeService.getAllPages(model);
             return ResponseEntity.ok(result);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
