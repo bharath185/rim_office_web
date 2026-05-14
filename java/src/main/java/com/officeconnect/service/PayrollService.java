@@ -584,42 +584,84 @@ public class PayrollService {
         }).collect(Collectors.toList());
     }
 
-    public List<PayrollALLComponentViewModel> getAllComponentDetails(PayrollALLComponentViewModel model) {
+    public List<Map<String, Object>> getAllComponentDetails(PayrollALLComponentViewModel model) {
         Integer loginId = (model.getLoginId() != null && model.getLoginId() != 0) ? model.getLoginId() : 0;
         if (loginId == 0) throw new RuntimeException("LoginId is Missing");
 
-        List<PayrollComponent> components = payrollComponentRepository.findAll().stream()
-            .filter(c -> Boolean.TRUE.equals(c.getIsActive()) && Boolean.FALSE.equals(c.getIsDeleted()))
+        // Get all active payout types (matching .NET)
+        List<PayrollPayoutType> payoutTypes = payrollPayoutTypeRepository.findAll().stream()
+            .filter(p -> Boolean.TRUE.equals(p.getIsActive()) && Boolean.FALSE.equals(p.getIsDeleted()))
+            .sorted(Comparator.comparing(PayrollPayoutType::getPayoutTypeId))
             .collect(Collectors.toList());
 
-        if (components.isEmpty()) throw new RuntimeException("Component Details Not Found");
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (PayrollPayoutType payout : payoutTypes) {
+            Map<String, Object> payoutMap = new HashMap<>();
+            payoutMap.put("PayoutId", payout.getPayoutTypeId());
+            payoutMap.put("PayoutName", payout.getPayoutTypeName());
 
-        return components.stream().map(c -> {
-            PayrollALLComponentViewModel vm = new PayrollALLComponentViewModel();
-            vm.setComponentId(c.getComponentId());
-            vm.setComponentName(c.getComponentName());
-            vm.setComponentCode(c.getComponentCode());
-            vm.setPayoutTypeId(c.getPayoutTypeId());
-            vm.setSegmentId(c.getSegmentId());
-            if (c.getPayoutTypeId() != null) {
-                PayrollPayoutType pt = payrollPayoutTypeRepository.findById(c.getPayoutTypeId()).orElse(null);
-                vm.setPayoutTypeName(pt != null ? pt.getPayoutTypeName() : "");
+            // Get segments for this payout type
+            List<PayrollSegment> segments = payrollSegmentRepository.findAll().stream()
+                .filter(s -> payout.getPayoutTypeId().equals(s.getPayoutTypeId())
+                    && Boolean.TRUE.equals(s.getIsActive()) && Boolean.FALSE.equals(s.getIsDeleted()))
+                .sorted(Comparator.comparing(PayrollSegment::getSegmentId))
+                .collect(Collectors.toList());
+
+            List<Map<String, Object>> segmentList = new ArrayList<>();
+            for (PayrollSegment seg : segments) {
+                Map<String, Object> segMap = new HashMap<>();
+                segMap.put("SegmentId", seg.getSegmentId());
+                segMap.put("SegmentName", seg.getSegmentName());
+
+                // Get components for this segment and payout type
+                List<PayrollComponent> components = payrollComponentRepository.findAll().stream()
+                    .filter(c -> payout.getPayoutTypeId().equals(c.getPayoutTypeId())
+                        && seg.getSegmentId().equals(c.getSegmentId())
+                        && Boolean.TRUE.equals(c.getIsActive()) && Boolean.FALSE.equals(c.getIsDeleted()))
+                    .sorted(Comparator.comparing(PayrollComponent::getComponentId))
+                    .collect(Collectors.toList());
+
+                List<Map<String, Object>> componentList = new ArrayList<>();
+                for (PayrollComponent comp : components) {
+                    Map<String, Object> compMap = new HashMap<>();
+                    compMap.put("ComponentId", comp.getComponentId());
+                    compMap.put("ComponentName", comp.getComponentName());
+                    compMap.put("ComponentCode", comp.getComponentCode());
+                    compMap.put("ComponentValue", "");
+
+                    // Get logic conditions for this component (matching .NET: join by ComponentId and SNo)
+                    List<PayrollComponentLogic> logics = payrollComponentLogicRepository
+                        .findByComponentIdAndIsActiveTrueAndIsDeletedFalseOrderBySno(comp.getComponentId());
+
+                    List<Map<String, Object>> logicList = new ArrayList<>();
+                    for (PayrollComponentLogic logic : logics) {
+                        Map<String, Object> logicMap = new HashMap<>();
+                        logicMap.put("ComponentId", comp.getComponentId());
+                        logicMap.put("LogicId", logic.getLogicId());
+                        logicMap.put("Percentage", logic.getPercentage());
+                        logicMap.put("Value", logic.getValue());
+                        logicMap.put("ComponentId1", logic.getComponentId1());
+                        logicMap.put("ComponentName1", logic.getComponentName1());
+
+                        // Get matching condition by ComponentId and SNo (matching .NET join)
+                        PayrollComponentCondition cond = payrollComponentConditionRepository
+                            .findByComponentIdAndSNo(comp.getComponentId(), logic.getSno());
+                        logicMap.put("ConditionId", cond != null ? cond.getConditionId() : 0);
+                        logicMap.put("ConditionExpression", cond != null ? cond.getConditionExpression() : null);
+                        logicMap.put("ConditionResultPFESI", cond != null ? cond.getConditionResultPFESI() : null);
+
+                        logicList.add(logicMap);
+                    }
+                    compMap.put("LogicConditions", logicList);
+                    componentList.add(compMap);
+                }
+                segMap.put("Components", componentList);
+                segmentList.add(segMap);
             }
-            if (c.getSegmentId() != null) {
-                PayrollSegment seg = payrollSegmentRepository.findById(c.getSegmentId()).orElse(null);
-                vm.setSegmentName(seg != null ? seg.getSegmentName() : "");
-            }
-            List<PayrollComponentLogic> logics = payrollComponentLogicRepository.findByComponentIdAndIsActiveTrueAndIsDeletedFalseOrderBySno(c.getComponentId());
-            List<PayrollALLComponentLogicConditionViewModel> lstLC = logics.stream().map(l -> {
-                PayrollALLComponentLogicConditionViewModel lvm = new PayrollALLComponentLogicConditionViewModel();
-                lvm.setComponentId(l.getComponentId());
-                lvm.setLogicId(l.getLogicId());
-                lvm.setEffectiveFrom(l.getEffectiveFrom());
-                return lvm;
-            }).collect(Collectors.toList());
-            vm.setLstofLC(lstLC);
-            return vm;
-        }).collect(Collectors.toList());
+            payoutMap.put("Segments", segmentList);
+            result.add(payoutMap);
+        }
+        return result;
     }
 
     // ===== Payslip Section =====

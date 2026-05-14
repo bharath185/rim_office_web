@@ -308,7 +308,7 @@ public class PayrollController {
         try {
             Integer loginId = parseSafeInt(model.getLoginId());
             if (loginId == null) model.setLoginId(0);
-            List<PayrollALLComponentViewModel> result = payrollService.getAllComponentDetails(model);
+            List<Map<String, Object>> result = payrollService.getAllComponentDetails(model);
             return ResponseEntity.ok(result);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
