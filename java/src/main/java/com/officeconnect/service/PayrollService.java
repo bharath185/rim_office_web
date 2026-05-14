@@ -88,6 +88,9 @@ public class PayrollService {
     @Autowired
     private VariableHistoryRepository variableHistoryRepository;
 
+    @Autowired
+    private PayrollVariableRepository payrollVariableRepository;
+
     private String formatDate(Date d) {
         if (d == null) return null;
         return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(d);
@@ -2279,23 +2282,43 @@ public class PayrollService {
     }
 
     public Map<String, Object> getPayrollVariable(Map<String, Object> model) {
+        Integer variableId = parseSafeInt(model.get("VariableId"));
+        if (variableId == 0) throw new RuntimeException("VariableId is Missing");
+        PayrollVariable pv = payrollVariableRepository.findById(variableId)
+            .orElseThrow(() -> new RuntimeException("Variable not found"));
         Map<String, Object> result = new HashMap<>();
-        result.put("VariableId", model.get("VariableId"));
-        result.put("VariableName", "Sample Variable");
+        result.put("VariableId", pv.getVariableId());
+        result.put("VariableName", pv.getVariableName());
+        result.put("VariableCode", pv.getVariableCode());
         result.put("StatusCode", 200);
         return result;
     }
 
     public List<Map<String, Object>> getAllPayrollVariable(Map<String, Object> model) {
-        List<Map<String, Object>> result = new ArrayList<>();
-        result.add(Map.of("VariableId", 1, "VariableName", "Sample Variable", "StatusCode", 200));
-        return result;
+        return payrollVariableRepository.findByIsActiveAndIsDeleted(true, false).stream()
+            .map(pv -> {
+                Map<String, Object> m = new HashMap<>();
+                m.put("VariableId", pv.getVariableId());
+                m.put("VariableName", pv.getVariableName());
+                m.put("VariableCode", pv.getVariableCode());
+                m.put("StatusCode", 200);
+                return m;
+            }).collect(Collectors.toList());
     }
 
     public List<Map<String, Object>> ddPayrollVariable(Map<String, Object> model) {
-        List<Map<String, Object>> result = new ArrayList<>();
-        result.add(Map.of("VariableId", 1, "VariableName", "Sample Variable", "StatusCode", 200));
-        return result;
+        Integer loginId = parseSafeInt(model.get("LoginId"));
+        if (loginId == 0) throw new RuntimeException("LoginId is Missing");
+
+        return payrollVariableRepository.findByIsActiveAndIsDeleted(true, false).stream()
+            .filter(pv -> Boolean.TRUE.equals(pv.getStatus()))
+            .map(pv -> {
+                Map<String, Object> m = new HashMap<>();
+                m.put("VariableId", pv.getVariableId());
+                m.put("VariableName", pv.getVariableName());
+                m.put("VariableCode", pv.getVariableCode());
+                return m;
+            }).collect(Collectors.toList());
     }
 
     public List<Map<String, Object>> payrollVariableHistory(Map<String, Object> model) {
