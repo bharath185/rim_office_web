@@ -6513,7 +6513,26 @@ public class EmployeeService {
             ManualAttendance manualAtt = new ManualAttendance();
             manualAtt.setEmpCode(empCode);
             manualAtt.setDate(date);
-            manualAtt.setTime(date);
+            // Parse time string (e.g., "09:30" or "09:30:00") into a Date object for the Time column
+            if (time != null && !time.isEmpty()) {
+                String timeStr = time.trim();
+                if (!timeStr.contains(":")) {
+                    throw new RuntimeException("Invalid time format: " + timeStr);
+                }
+                // Pad to HH:mm:ss if needed
+                String[] parts = timeStr.split(":");
+                String paddedTime;
+                if (parts.length == 2) {
+                    paddedTime = String.format("%02d:%02d:00", Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
+                } else if (parts.length == 3) {
+                    paddedTime = String.format("%02d:%02d:%02d", Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
+                } else {
+                    paddedTime = timeStr;
+                }
+                SimpleDateFormat timeSdf = new SimpleDateFormat("HH:mm:ss");
+                Date timeDate = timeSdf.parse(paddedTime);
+                manualAtt.setTime(timeDate);
+            }
             manualAtt.setStatus(status);
             manualAtt.setRecordStatus(true);
             manualAtt.setCreatedBy(loginId);
