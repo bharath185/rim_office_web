@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -75,6 +76,18 @@ public class PayrollService {
     @Autowired
     private PayrollSymbolMasterRepository payrollSymbolMasterRepository;
 
+    @Autowired
+    private DeptMasterRepository deptMasterRepository;
+
+    @Autowired
+    private LeaveTypeMasterRepository leaveTypeMasterRepository;
+
+    @Autowired
+    private BusinessUnitMasterRepository businessUnitMasterRepository;
+
+    @Autowired
+    private VariableHistoryRepository variableHistoryRepository;
+
     private String formatDate(Date d) {
         if (d == null) return null;
         return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(d);
@@ -97,6 +110,11 @@ public class PayrollService {
         }
         if (value instanceof Number) return ((Number) value).intValue();
         return 0;
+    }
+
+    private String parseString(Object value) {
+        if (value == null) return "";
+        return value.toString();
     }
 
     // ===== Payout Type =====
@@ -2048,10 +2066,181 @@ public class PayrollService {
         return result;
     }
 
-    public Map<String, Object> payrollReportforALL(Map<String, Object> model) {
-        Map<String, Object> result = new HashMap<>();
-        result.put("msg", "Payroll report generated");
+    public List<Map<String, Object>> payrollReportforALL(Map<String, Object> model) {
+        Integer loginId = parseSafeInt(model.get("LoginId"));
+        Integer empId = parseSafeInt(model.get("EmpId"));
+        Integer leId = parseSafeInt(model.get("LEId"));
+        Integer locationId = parseSafeInt(model.get("LocationId"));
+        Integer deptId = parseSafeInt(model.get("DeptId"));
+        Integer desigId = parseSafeInt(model.get("DesignationId"));
+        Integer year = parseSafeInt(model.get("Year"));
+        Integer monthNo = parseSafeInt(model.get("MonthNo"));
+
+        if (loginId == 0) throw new RuntimeException("LoginId is Missing");
+        if (year == 0) year = Calendar.getInstance().get(Calendar.YEAR);
+        if (monthNo == 0) monthNo = Calendar.getInstance().get(Calendar.MONTH); // .NET: DateTime.Now.AddMonths(-1).Month
+
+        int currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+
+        if (currentMonth == monthNo && currentYear == year) {
+            throw new RuntimeException("Unable to load data for the current month. Loading current-month records is not supported on this page.");
+        }
+
+        String monthName = new java.text.DateFormatSymbols().getMonths()[monthNo - 1];
+        if (monthName.length() > 3) monthName = monthName.substring(0, 3);
+
+        Calendar startCal = Calendar.getInstance();
+        startCal.set(year, monthNo - 1, 1, 0, 0, 0);
+        Date startDate = startCal.getTime();
+
+        int totalDays = startCal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        Calendar endCal = Calendar.getInstance();
+        endCal.set(year, monthNo - 1, totalDays, 23, 59, 59);
+        Date endDate = endCal.getTime();
+
+        // Get all active employees with salary, company, dept, designation (matching .NET join)
+        List<EmployeeMaster> allEmployees = employeeMasterRepository.findByIsActiveAndIsDeleted(true, false).stream()
+            .filter(e -> "ACTIVE".equalsIgnoreCase(e.getEmpStatus()))
+            .collect(Collectors.toList());
+
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        for (EmployeeMaster emp : allEmployees) {
+            // Apply filters (matching .NET)
+            if (leId != 0 && (emp.getLeId() == null || !emp.getLeId().equals(leId))) continue;
+            if (locationId != 0 && (emp.getLocationId() == null || !emp.getLocationId().equals(locationId))) continue;
+            if (deptId != 0 && (emp.getCategoryId() == null || !emp.getCategoryId().equals(deptId))) continue;
+            if (desigId != 0 && (emp.getDesignationId() == null || !emp.getDesignationId().equals(desigId))) continue;
+            if (empId != 0 && !emp.getEmpId().equals(empId)) continue;
+
+            // Get salary for this period (EffectiveFromDate within the month)
+            List<EmployeeSalaryDetails> salaries = employeeSalaryDetailsRepository.findAll().stream()
+                .filter(s -> emp.getEmpId().equals(s.getEmpId())
+                    && s.getEffectiveFromDate() != null
+                    && !s.getEffectiveFromDate().before(startDate)
+                    && !s.getEffectiveFromDate().after(endDate)
+                    && Boolean.TRUE.equals(s.getIsActive()) && Boolean.FALSE.equals(s.getIsDeleted()))
+                .collect(Collectors.toList());
+
+            if (salaries.isEmpty()) continue;
+
+            EmployeeSalaryDetails sal = salaries.get(0);
+            double ctcValue = sal.getCtc() != null ? sal.getCtc().doubleValue() : 0.0;
+
+            // Get LOP (LeaveTypeId == 0) for this employee in this month
+            List<EmpLeaveApplication> lopLeaves = empLeaveApplicationRepository.findAll().stream()
+                .filter(l -> emp.getEmpId().equals(l.getEmpId())
+                    && Integer.valueOf(0).equals(l.getLeaveTypeId())
+                    && l.getFromDate() != null && !l.getFromDate().before(startDate)
+                    && l.getToDate() != null && !l.getToDate().after(endDate)
+                    && Boolean.TRUE.equals(l.getIsActive()) && Boolean.FALSE.equals(l.getIsDeleted()))
+                .collect(Collectors.toList());
+
+            double lopDuration = lopLeaves.stream()
+                .mapToDouble(l -> l.getNoOfDays() != null ? l.getNoOfDays().doubleValue() : 0.0).sum();
+
+            double workingDays = totalDays - lopDuration;
+
+            // Get CL and EL durations
+            double clDuration = getLeaveDurationByShortName(emp.getEmpId(), "CL", startDate, endDate);
+            double elDuration = getLeaveDurationByShortName(emp.getEmpId(), "EL", startDate, endDate);
+
+            // Resolve names
+            String companyName = "";
+            if (emp.getCompId() != null) {
+                Optional<CompanyMaster> compOpt = companyMasterRepository.findById(emp.getCompId());
+                if (compOpt.isPresent()) companyName = compOpt.get().getCompany() != null ? compOpt.get().getCompany() : "";
+            }
+
+            String legalEntityName = "";
+            if (emp.getLeId() != null) {
+                Optional<LegalEntityMaster> leOpt = legalEntityMasterRepository.findById(emp.getLeId());
+                if (leOpt.isPresent()) legalEntityName = leOpt.get().getLegalEntity() != null ? leOpt.get().getLegalEntity() : "";
+            }
+
+            String businessUnitName = "";
+            if (emp.getBuId() != null) {
+                Optional<BusinessUnitMaster> buOpt = businessUnitMasterRepository.findById(emp.getBuId());
+                if (buOpt.isPresent()) businessUnitName = buOpt.get().getBusinessUnit() != null ? buOpt.get().getBusinessUnit() : "";
+            }
+
+            String locationName = "";
+            if (emp.getLocationId() != null) {
+                Optional<LocationMaster> locOpt = locationMasterRepository.findById(emp.getLocationId());
+                if (locOpt.isPresent()) locationName = locOpt.get().getLocation() != null ? locOpt.get().getLocation() : "";
+            }
+
+            String deptName = "";
+            if (emp.getCategoryId() != null) {
+                Optional<DeptMaster> deptOpt = deptMasterRepository.findById(emp.getCategoryId());
+                if (deptOpt.isPresent()) deptName = deptOpt.get().getDeptName() != null ? deptOpt.get().getDeptName() : "";
+            }
+
+            String designationName = "";
+            if (emp.getDesignationId() != null) {
+                Optional<DesignationMaster> desigOpt = designationMasterRepository.findById(emp.getDesignationId());
+                if (desigOpt.isPresent()) designationName = desigOpt.get().getDesignation() != null ? desigOpt.get().getDesignation() : "";
+            }
+
+            // Calculate LOP amount (matching .NET: perday = CTC / totalDays, lopday = perday * lopDuration)
+            double perDay = totalDays > 0 ? ctcValue / totalDays : 0;
+            double lopAmt = perDay * lopDuration;
+
+            Map<String, Object> m = new HashMap<>();
+            m.put("LoginId", loginId);
+            m.put("Month", monthName);
+            m.put("MonthNo", monthNo);
+            m.put("Year", year);
+            m.put("EmpId", emp.getEmpId());
+            m.put("EmpCode", emp.getEmpCode());
+            String fn = emp.getFirstName() != null ? emp.getFirstName().trim() : "";
+            String mn = emp.getMiddleName() != null ? " " + emp.getMiddleName().trim() : "";
+            String ln = emp.getLastName() != null ? " " + emp.getLastName().trim() : "";
+            m.put("EmpName", (fn + mn + ln).trim());
+            m.put("CompId", emp.getCompId());
+            m.put("Company", companyName);
+            m.put("LEId", emp.getLeId());
+            m.put("LegalEntity", legalEntityName);
+            m.put("BUId", emp.getBuId());
+            m.put("BusinessUnit", businessUnitName);
+            m.put("LocationId", emp.getLocationId());
+            m.put("Location", locationName);
+            m.put("DeptId", emp.getCategoryId());
+            m.put("Department", deptName);
+            m.put("DesignationId", emp.getDesignationId());
+            m.put("Designation", designationName);
+            m.put("TotalDays", (double) totalDays);
+            m.put("WorkingDays", workingDays);
+            m.put("PaidLeaveDaysEL", elDuration);
+            m.put("PaidLeaveDaysCL", clDuration);
+            m.put("LOPDays", lopDuration);
+            m.put("Arrears", 0.0);
+            m.put("LOPAmt", lopAmt);
+
+            result.add(m);
+        }
+
         return result;
+    }
+
+    // Helper to get leave duration for a specific short name (CL, EL, etc.)
+    private double getLeaveDurationByShortName(Integer empId, String shortName, Date startDate, Date endDate) {
+        List<LeaveTypeMaster> leaveTypes = leaveTypeMasterRepository.findByIsActiveAndIsDeleted(true, false);
+        Integer leaveTypeId = leaveTypes.stream()
+            .filter(lt -> shortName.equalsIgnoreCase(lt.getShortName()))
+            .map(LeaveTypeMaster::getLeaveTypeId)
+            .findFirst().orElse(null);
+        if (leaveTypeId == null) return 0.0;
+
+        return empLeaveApplicationRepository.findAll().stream()
+            .filter(l -> empId.equals(l.getEmpId())
+                && leaveTypeId.equals(l.getLeaveTypeId())
+                && l.getFromDate() != null && !l.getFromDate().before(startDate)
+                && l.getToDate() != null && !l.getToDate().after(endDate)
+                && Boolean.TRUE.equals(l.getIsActive()) && Boolean.FALSE.equals(l.getIsDeleted()))
+            .mapToDouble(l -> l.getNoOfDays() != null ? l.getNoOfDays().doubleValue() : 0.0)
+            .sum();
     }
 
     public List<Map<String, Object>> getDDPayrollSymbols() {
@@ -2109,22 +2298,158 @@ public class PayrollService {
         return result;
     }
 
+    public List<Map<String, Object>> payrollVariableHistory(Map<String, Object> model) {
+        Integer loginId = parseSafeInt(model.get("LoginId"));
+        if (loginId == 0) throw new RuntimeException("LoginId is Missing");
+
+        Integer leId = parseSafeInt(model.get("LEId"));
+        Integer buId = parseSafeInt(model.get("BUId"));
+        Integer locId = parseSafeInt(model.get("LocationId"));
+        Integer deptId = parseSafeInt(model.get("DeptId"));
+        Integer desigId = parseSafeInt(model.get("DesignationId"));
+        Integer reporterId = parseSafeInt(model.get("ReporterId"));
+        Integer empId = parseSafeInt(model.get("EmpId"));
+        Integer year = parseSafeInt(model.get("Year"));
+        Integer month = parseSafeInt(model.get("Month"));
+
+        List<VariableHistory> allHistory = variableHistoryRepository.findAll().stream()
+            .filter(h -> Boolean.FALSE.equals(h.getIsDeleted()))
+            .sorted((a, b) -> {
+                if (a.getCreatedDate() == null && b.getCreatedDate() == null) return 0;
+                if (a.getCreatedDate() == null) return 1;
+                if (b.getCreatedDate() == null) return -1;
+                return b.getCreatedDate().compareTo(a.getCreatedDate());
+            })
+            .collect(Collectors.toList());
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (VariableHistory h : allHistory) {
+            if (h.getEmpId() == null) continue;
+
+            EmployeeMaster emp = employeeMasterRepository.findByEmpIdAndActive(h.getEmpId());
+            if (emp == null) continue;
+
+            // Apply filters
+            if (leId != 0 && (emp.getLeId() == null || !emp.getLeId().equals(leId))) continue;
+            if (buId != 0 && (emp.getBuId() == null || !emp.getBuId().equals(buId))) continue;
+            if (locId != 0 && (emp.getLocationId() == null || !emp.getLocationId().equals(locId))) continue;
+            if (deptId != 0 && (emp.getCategoryId() == null || !emp.getCategoryId().equals(deptId))) continue;
+            if (desigId != 0 && (emp.getDesignationId() == null || !emp.getDesignationId().equals(desigId))) continue;
+            if (reporterId != 0 && (emp.getReportId() == null || !emp.getReportId().equals(reporterId))) continue;
+            if (empId != 0 && !emp.getEmpId().equals(empId)) continue;
+            if (year != 0 && (h.getYear() == null || !h.getYear().equals(year))) continue;
+            if (month != 0 && (h.getMonth() == null || !h.getMonth().equals(month))) continue;
+
+            Map<String, Object> m = new HashMap<>();
+            m.put("VariableHistoryId", h.getVariableHistoryId());
+            m.put("EmpId", h.getEmpId());
+            m.put("EmpCode", h.getEmpCode());
+            m.put("EmpName", (emp.getFirstName() != null ? emp.getFirstName() : "") + " "
+                + (emp.getMiddleName() != null ? emp.getMiddleName() : "") + " "
+                + (emp.getLastName() != null ? emp.getLastName() : ""));
+            m.put("EmpCTC", h.getEmpCtc());
+            m.put("VariableId", h.getVariableId());
+            m.put("VariableName", h.getVariableName());
+            m.put("VariableCode", h.getVariableCode());
+            m.put("VariableAmt", h.getVariableAmt());
+            m.put("Year", h.getYear());
+            m.put("Month", h.getMonth());
+            m.put("Status", h.getStatus());
+            m.put("CreatedBy", h.getCreatedBy());
+            m.put("CreatedDate", h.getCreatedDate() != null ? "/Date(" + h.getCreatedDate().getTime() + ")/" : null);
+            m.put("LastUpdatedBy", h.getLastUpdatedBy());
+            m.put("LastUpdatedDate", h.getLastUpdatedDate() != null ? "/Date(" + h.getLastUpdatedDate().getTime() + ")/" : null);
+            m.put("IsActive", h.getIsActive());
+            m.put("IsUpdated", h.getIsUpdated());
+            m.put("IsDeleted", h.getIsDeleted());
+            result.add(m);
+        }
+        return result;
+    }
+
     public Map<String, Object> addPayrollVariableHistory(Map<String, Object> model) {
-        return Map.of("msg", "Added", "StatusCode", 200);
+        Integer loginId = parseSafeInt(model.get("LoginId"));
+        if (loginId == 0) throw new RuntimeException("LoginId is Missing");
+
+        Integer empId = parseSafeInt(model.get("EmpId"));
+        if (empId == 0) throw new RuntimeException("EmpId is Missing");
+
+        Integer year = parseSafeInt(model.get("Year"));
+        Integer month = parseSafeInt(model.get("Month"));
+
+        // Check if record already exists (matching .NET)
+        boolean exists = variableHistoryRepository.findAll().stream()
+            .anyMatch(h -> empId.equals(h.getEmpId()) && year.equals(h.getYear()) && month.equals(h.getMonth())
+                && Boolean.FALSE.equals(h.getIsDeleted()));
+        if (exists) throw new RuntimeException("Record already exists for this employee in the selected month/year.");
+
+        VariableHistory h = new VariableHistory();
+        h.setEmpId(empId);
+        h.setEmpCode(parseString(model.get("EmpCode")));
+        h.setEmpCtc(parseString(model.get("EmpCTC")));
+        h.setVariableId(parseSafeInt(model.get("VariableId")));
+        h.setVariableName(parseString(model.get("VariableName")));
+        h.setVariableCode(parseString(model.get("VariableCode")));
+        h.setVariableAmt(parseString(model.get("VariableAmt")));
+        h.setYear(year);
+        h.setMonth(month);
+        h.setStatus(true);
+        h.setCreatedBy(loginId);
+        h.setCreatedDate(new Date());
+        h.setLastUpdatedBy(loginId);
+        h.setLastUpdatedDate(new Date());
+        h.setIsActive(true);
+        h.setIsUpdated(false);
+        h.setIsDeleted(false);
+        variableHistoryRepository.save(h);
+
+        return Map.of("msg", "Added");
     }
 
     public Map<String, Object> updatePayrollVariableHistory(Map<String, Object> model) {
-        return Map.of("msg", "Updated", "StatusCode", 200);
+        Integer loginId = parseSafeInt(model.get("LoginId"));
+        if (loginId == 0) throw new RuntimeException("LoginId is Missing");
+
+        Integer vhId = parseSafeInt(model.get("VariableHistoryId"));
+        if (vhId == 0) throw new RuntimeException("VariableHistoryId is Missing");
+
+        VariableHistory h = variableHistoryRepository.findById(vhId)
+            .orElseThrow(() -> new RuntimeException("Variable history not found"));
+
+        h.setEmpId(parseSafeInt(model.get("EmpId")));
+        h.setEmpCode(parseString(model.get("EmpCode")));
+        h.setEmpCtc(parseString(model.get("EmpCTC")));
+        h.setVariableId(parseSafeInt(model.get("VariableId")));
+        h.setVariableName(parseString(model.get("VariableName")));
+        h.setVariableCode(parseString(model.get("VariableCode")));
+        h.setVariableAmt(parseString(model.get("VariableAmt")));
+        h.setYear(parseSafeInt(model.get("Year")));
+        h.setMonth(parseSafeInt(model.get("Month")));
+        h.setLastUpdatedBy(loginId);
+        h.setLastUpdatedDate(new Date());
+        h.setIsUpdated(true);
+        variableHistoryRepository.save(h);
+
+        return Map.of("msg", "Updated");
     }
 
     public Map<String, Object> deletePayrollVariableHistory(Map<String, Object> model) {
-        return Map.of("msg", "Deleted", "StatusCode", 200);
-    }
+        Integer loginId = parseSafeInt(model.get("LoginId"));
+        if (loginId == 0) throw new RuntimeException("LoginId is Missing");
 
-    public List<Map<String, Object>> payrollVariableHistory(Map<String, Object> model) {
-        List<Map<String, Object>> result = new ArrayList<>();
-        result.add(Map.of("HistoryId", 1, "VariableId", 1, "OldValue", "100", "NewValue", "150", "StatusCode", 200));
-        return result;
+        Integer vhId = parseSafeInt(model.get("VariableHistoryId"));
+        if (vhId == 0) throw new RuntimeException("VariableHistoryId is Missing");
+
+        VariableHistory h = variableHistoryRepository.findById(vhId)
+            .orElseThrow(() -> new RuntimeException("Variable history not found"));
+
+        h.setIsUpdated(true);
+        h.setIsDeleted(true);
+        h.setLastUpdatedBy(loginId);
+        h.setLastUpdatedDate(new Date());
+        variableHistoryRepository.save(h);
+
+        return Map.of("msg", "Deleted");
     }
 
     public List<Map<String, Object>> getAllPayrollPayoutTypeSegment(Map<String, Object> model) {
