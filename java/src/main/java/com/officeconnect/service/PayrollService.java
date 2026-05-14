@@ -989,13 +989,49 @@ public class PayrollService {
         Integer loginId = (model != null && model.getLoginId() != null && model.getLoginId() != 0) ? model.getLoginId() : 0;
         if (loginId == 0) throw new RuntimeException("LoginId is Missing");
 
-        List<EmployeeSalaryDetails> details = employeeSalaryDetailsRepository.findAll().stream()
+        Integer leId = model.getLEId() != null && model.getLEId() > 0 ? model.getLEId() : null;
+        Integer buId = model.getBUId() != null && model.getBUId() > 0 ? model.getBUId() : null;
+        Integer locId = model.getLocId() != null && model.getLocId() > 0 ? model.getLocId() : null;
+        Integer deptId = model.getDeptId() != null && model.getDeptId() > 0 ? model.getDeptId() : null;
+        Integer designationId = model.getDesignationId() != null && model.getDesignationId() > 0 ? model.getDesignationId() : null;
+        Integer reportId = model.getReportId() != null && model.getReportId() > 0 ? model.getReportId() : null;
+        Integer empId = model.getEmpId() != null && model.getEmpId() > 0 ? model.getEmpId() : null;
+
+        // Get all active salary details
+        List<EmployeeSalaryDetails> allDetails = employeeSalaryDetailsRepository.findAll().stream()
             .filter(s -> Boolean.TRUE.equals(s.getIsActive()) && Boolean.FALSE.equals(s.getIsDeleted()))
             .collect(Collectors.toList());
 
-        if (details.isEmpty()) return new ArrayList<>();
+        // Join with EmployeeMaster for filtering and name resolution
+        List<EmployeeSalaryDetailsViewModel> result = new ArrayList<>();
+        for (EmployeeSalaryDetails s : allDetails) {
+            if (s.getEmpId() == null) continue;
+            EmployeeMaster emp = employeeMasterRepository.findByEmpIdAndActive(s.getEmpId());
+            if (emp == null) continue;
 
-        return details.stream().map(s -> mapSalaryDetail(s)).collect(Collectors.toList());
+            // Apply filters (matching .NET)
+            if (leId != null && (emp.getLeId() == null || !leId.equals(emp.getLeId()))) continue;
+            if (buId != null && (emp.getBuId() == null || !buId.equals(emp.getBuId()))) continue;
+            if (locId != null && (emp.getLocationId() == null || !locId.equals(emp.getLocationId()))) continue;
+            if (deptId != null && (emp.getCategoryId() == null || !deptId.equals(emp.getCategoryId()))) continue;
+            if (designationId != null && (emp.getDesignationId() == null || !designationId.equals(emp.getDesignationId()))) continue;
+            if (reportId != null && (emp.getReportId() == null || !reportId.equals(emp.getReportId()))) continue;
+            if (empId != null && !empId.equals(s.getEmpId())) continue;
+
+            EmployeeSalaryDetailsViewModel vm = mapSalaryDetail(s);
+            // Ensure employee info from joined EmployeeMaster
+            vm.setFirstName(emp.getFirstName());
+            vm.setMiddleName(emp.getMiddleName());
+            vm.setLastName(emp.getLastName());
+            result.add(vm);
+        }
+
+        // Sort by SalaryId descending (matching .NET)
+        result.sort((a, b) -> Integer.compare(
+            b.getSalaryId() != null ? b.getSalaryId() : 0,
+            a.getSalaryId() != null ? a.getSalaryId() : 0));
+
+        return result;
     }
 
     public EmployeeSalaryDetailsViewModel getEmployeeSalaryDetails(EmployeeSalaryDetailsViewModel model) {
@@ -1292,8 +1328,20 @@ public class PayrollService {
         }).collect(Collectors.toList());
     }
 
-    public List<DDLocationViewModel> getDDLocation() {
-        return locationMasterRepository.findByIsActiveAndIsDeleted(true, false).stream()
+    public List<DDLocationViewModel> getDDLocation(Integer loginId, String authorisedEntity) {
+        if (loginId == 0) throw new RuntimeException("LoginId is Missing");
+
+        List<Integer> authorisedEntities = new ArrayList<>();
+        if (authorisedEntity != null && !authorisedEntity.isEmpty()) {
+            for (String s : authorisedEntity.split(",")) {
+                try { authorisedEntities.add(Integer.parseInt(s.trim())); } catch (NumberFormatException e) {}
+            }
+        }
+
+        List<LocationMaster> allLocations = locationMasterRepository.findByIsActiveAndIsDeleted(true, false);
+
+        return allLocations.stream()
+            .filter(loc -> loc.getLeId() != null && (authorisedEntities.isEmpty() || authorisedEntities.contains(loc.getLeId())))
             .map(loc -> {
                 DDLocationViewModel vm = new DDLocationViewModel();
                 vm.setLocationId(loc.getLocationId());

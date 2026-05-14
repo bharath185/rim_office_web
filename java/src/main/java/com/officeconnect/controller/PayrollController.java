@@ -662,7 +662,9 @@ public class PayrollController {
     @PostMapping("/DDLocation")
     public ResponseEntity<?> ddLocation(@RequestBody Map<String, Object> model) {
         try {
-            List<DDLocationViewModel> result = payrollService.getDDLocation();
+            Integer loginId = model.get("LoginId") != null ? parseSafeInt(model.get("LoginId")) : 0;
+            String authorisedEntity = model.get("AuthorisedEntity") != null ? model.get("AuthorisedEntity").toString() : null;
+            List<DDLocationViewModel> result = payrollService.getDDLocation(loginId, authorisedEntity);
             return ResponseEntity.ok(result);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
