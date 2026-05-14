@@ -2190,6 +2190,28 @@ public class EmployeeService {
                     avm.setCheckIn(checkIn);
                     avm.setCheckOut(checkOut);
                     avm.setTotalHours(totalHours);
+                    avm.setActiveHours(totalHours);
+                    avm.setLogDate(currentDate);
+
+                    if (logInEntry != null) {
+                        avm.setEsslLogInTime(timeFormat.format(logInEntry.getLogTime()));
+                        avm.setEsslLogOutTime(logOutEntry != null ? timeFormat.format(logOutEntry.getLogTime()) : "");
+                        if (workType.isEmpty()) {
+                            avm.setWorkType("ESSL");
+                            avm.setEsslActiveHours(totalHours);
+                        }
+                    }
+
+                    String shiftName = "";
+                    if (emp.getEmpCode() != null) {
+                        List<EmpShiftDetail> shiftDetails = empShiftDetailRepository
+                            .findByEmpCode(emp.getEmpCode());
+                        if (!shiftDetails.isEmpty()) {
+                            EmpShiftDetail sd = shiftDetails.get(0);
+                            if (sd.getShiftName() != null) shiftName = sd.getShiftName();
+                        }
+                    }
+                    avm.setShiftName(shiftName.isEmpty() ? "No Shift" : shiftName);
 
                     lstOfAtt.add(avm);
                 }
