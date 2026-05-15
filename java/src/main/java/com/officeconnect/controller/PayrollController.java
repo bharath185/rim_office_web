@@ -638,7 +638,7 @@ public class PayrollController {
     @PostMapping("/PayrollReportforALL")
     public ResponseEntity<?> payrollReportforALL(@RequestBody Map<String, Object> model) {
         try {
-            Map<String, Object> result = payrollService.payrollReportforALL(model);
+            List<Map<String, Object>> result = payrollService.payrollReportforALL(model);
             return ResponseEntity.ok(result);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
