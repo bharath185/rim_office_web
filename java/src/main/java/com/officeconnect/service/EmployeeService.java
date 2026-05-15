@@ -7738,10 +7738,123 @@ public class EmployeeService {
         return result;
     }
 
-    public List<Map<String, Object>> getDesignationHierarchy(Map<String, Object> model) {
-        List<Map<String, Object>> result = new ArrayList<>();
-        result.add(Map.of("Message", "GetDesignationHierarchy endpoint implemented", "StatusCode", 200));
-        return result;
+    public Map<String, Object> getDesignationHierarchy(Map<String, Object> model) {
+        Integer compId = parseInteger(model.get("CompId"));
+        Integer leId = parseInteger(model.get("LEId"));
+        Integer buId = parseInteger(model.get("BUId"));
+        Integer locationId = parseInteger(model.get("LocationId"));
+        Integer deptId = parseInteger(model.get("DeptId"));
+        Integer designationId = parseInteger(model.get("DesignationId"));
+        Integer reporterId = parseInteger(model.get("ReporterId"));
+        Integer gradeId = parseInteger(model.get("GradeId"));
+        Integer empId = parseInteger(model.get("EmpId"));
+
+        // Get all active employees with designation and department info
+        List<EmployeeMaster> allEmp = employeeMasterRepository.findByIsActiveAndIsDeleted(true, false).stream()
+            .filter(e -> "ACTIVE".equalsIgnoreCase(e.getEmpStatus()))
+            .filter(e -> compId == null || compId <= 0 || (e.getCompId() != null && e.getCompId().equals(compId)))
+            .filter(e -> leId == null || leId <= 0 || (e.getLeId() != null && e.getLeId().equals(leId)))
+            .filter(e -> buId == null || buId <= 0 || (e.getBuId() != null && e.getBuId().equals(buId)))
+            .filter(e -> locationId == null || locationId <= 0 || (e.getLocationId() != null && e.getLocationId().equals(locationId)))
+            .filter(e -> deptId == null || deptId <= 0 || (e.getCategoryId() != null && e.getCategoryId().equals(deptId)))
+            .filter(e -> designationId == null || designationId <= 0 || (e.getDesignationId() != null && e.getDesignationId().equals(designationId)))
+            .filter(e -> reporterId == null || reporterId <= 0 || (e.getReportId() != null && e.getReportId().equals(reporterId)))
+            .filter(e -> empId == null || empId <= 0 || e.getEmpId().equals(empId))
+            .collect(Collectors.toList());
+
+        // Preload designation and grade info
+        List<DesignationMaster> allDesigs = designationMasterRepository.findAll().stream()
+            .filter(d -> Boolean.TRUE.equals(d.getIsActive()) && (d.getIsDeleted() == null || !d.getIsDeleted()))
+            .collect(Collectors.toList());
+        Map<Integer, DesignationMaster> desigMap = allDesigs.stream()
+            .collect(Collectors.toMap(DesignationMaster::getDesignationId, d -> d));
+
+        // Build hierarchy nodes
+        List<Map<String, Object>> allNodes = new ArrayList<>();
+        Map<Integer, Map<String, Object>> nodeMap = new HashMap<>();
+
+        for (EmployeeMaster emp : allEmp) {
+            Map<String, Object> node = new LinkedHashMap<>();
+            node.put("EmpId", emp.getEmpId());
+            node.put("EmpCode", emp.getEmpCode());
+            String fn = emp.getFirstName() != null ? emp.getFirstName().trim() : "";
+            String mn = emp.getMiddleName() != null ? " " + emp.getMiddleName().trim() : "";
+            String ln = emp.getLastName() != null ? " " + emp.getLastName().trim() : "";
+            node.put("EmployeeName", (fn + mn + ln).trim());
+
+            DesignationMaster desig = emp.getDesignationId() != null ? desigMap.get(emp.getDesignationId()) : null;
+            node.put("DesignationName", desig != null ? desig.getDesignation() : "");
+            node.put("GradeId", desig != null ? desig.getGradeId() : null);
+            node.put("GradeName", desig != null && desig.getGrade() != null ? desig.getGrade() : "");
+            node.put("DeptName", "");
+            node.put("DeptShortName", "");
+            if (emp.getCategoryId() != null) {
+                deptMasterRepository.findById(emp.getCategoryId()).ifPresent(dept -> {
+                    node.put("DeptName", dept.getDeptName() != null ? dept.getDeptName() : "");
+                    node.put("DeptShortName", dept.getDeptShortName() != null ? dept.getDeptShortName() : "");
+                });
+            }
+            node.put("LocationId", emp.getLocationId());
+            node.put("ReporterId", emp.getReportId());
+            node.put("ReporteesCount", 0);
+            node.put("Reportees", new ArrayList<Map<String, Object>>());
+            node.put("HierarchyLevel", 0);
+            allNodes.add(node);
+            nodeMap.put(emp.getEmpId(), node);
+        }
+
+        // Build tree: find root employees and assign reportees
+        List<Map<String, Object>> roots = new ArrayList<>();
+        for (Map<String, Object> node : allNodes) {
+            Integer repId = (Integer) node.get("ReporterId");
+            Integer empIdVal = (Integer) node.get("EmpId");
+            if (repId == null || repId == 0 || repId.equals(empIdVal) || !nodeMap.containsKey(repId)) {
+                roots.add(node);
+            }
+        }
+
+        // Assign reportees
+        for (Map<String, Object> node : allNodes) {
+            Integer repId = (Integer) node.get("ReporterId");
+            if (repId != null && repId > 0 && nodeMap.containsKey(repId) && !repId.equals(node.get("EmpId"))) {
+                Map<String, Object> parent = nodeMap.get(repId);
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> reportees = (List<Map<String, Object>>) parent.get("Reportees");
+                reportees.add(node);
+                parent.put("ReporteesCount", reportees.size());
+            }
+        }
+
+        // Set hierarchy levels via BFS
+        for (Map<String, Object> root : roots) {
+            setLevels(root, 0);
+        }
+
+        // Build summary
+        Map<String, Object> summary = new HashMap<>();
+        summary.put("TotalEmployees", allNodes.size());
+        summary.put("TotalDepartments", (int) allNodes.stream().map(n -> n.get("DeptName")).distinct().count());
+        summary.put("TotalDesignations", (int) allNodes.stream().map(n -> n.get("DesignationName")).distinct().count());
+        summary.put("TotalGrades", (int) allNodes.stream().map(n -> n.get("GradeName")).filter(g -> g != null && !g.toString().isEmpty()).distinct().count());
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("Hierarchy", roots);
+        data.put("Summary", summary);
+        data.put("GeneratedOn", new Date());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("Success", true);
+        response.put("Data", data);
+        return response;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void setLevels(Map<String, Object> node, int level) {
+        node.put("HierarchyLevel", level);
+        List<Map<String, Object>> reportees = (List<Map<String, Object>>) node.get("Reportees");
+        for (Map<String, Object> child : reportees) {
+            setLevels(child, level + 1);
+        }
     }
 
     public Map<String, Object> addHoliday(Map<String, Object> model) {

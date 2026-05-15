@@ -1901,7 +1901,7 @@ public class EmployeeController {
     @PostMapping("/GetDesignationHierarchy")
     public ResponseEntity<?> getDesignationHierarchy(@RequestBody Map<String, Object> model) {
         try {
-            List<Map<String, Object>> result = employeeService.getDesignationHierarchy(model);
+            Map<String, Object> result = employeeService.getDesignationHierarchy(model);
             return ResponseEntity.ok(result);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
