@@ -164,6 +164,27 @@ public class VisitorManagement {
     public Boolean getAccept() { return accept; }
     public void setAccept(Boolean accept) { this.accept = accept; }
 
+    public String getOMail() { return oMail; }
+    public void setOMail(String oMail) { this.oMail = oMail; }
+
+    public String getAMobile() { return aMobile; }
+    public void setAMobile(String aMobile) { this.aMobile = aMobile; }
+
+    public String getCompId() { return compId; }
+    public void setCompId(String compId) { this.compId = compId; }
+
+    public String getPhoto() { return photo; }
+    public void setPhoto(String photo) { this.photo = photo; }
+
+    public String getAccessories() { return accessories; }
+    public void setAccessories(String accessories) { this.accessories = accessories; }
+
+    public String getTime() { return time; }
+    public void setTime(String time) { this.time = time; }
+
+    public String getIdCard() { return idCard; }
+    public void setIdCard(String idCard) { this.idCard = idCard; }
+
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
 

@@ -26,12 +26,12 @@ public class VisitorService {
     public VisitorManagementViewModel createVisitor(VisitorManagementViewModel model) {
         VisitorManagement vm = new VisitorManagement();
         vm.setName(model.getVisitorName());
-        vm.setDesignation(model.getVisitorName());
+        vm.setDesignation(model.getDesignation());
         vm.setCompany(model.getCompany());
-        vm.setMobile(model.getContactNo());
-        vm.setPMail(model.getEmailId());
+        vm.setMobile(model.getMobile());
+        vm.setPMail(model.getPMail());
         vm.setPurpose(model.getPurpose());
-        vm.setVisitDate(model.getVisitDate());
+        vm.setVisitDate(parseDateString(model.getVisitDateStr()));
         vm.setWhomToMeet(model.getEmpId());
         vm.setApproved(false);
         vm.setInvited(false);
@@ -60,10 +60,10 @@ public class VisitorService {
         VisitorManagement vm = vmOpt.get();
         vm.setName(model.getVisitorName());
         vm.setCompany(model.getCompany());
-        vm.setMobile(model.getContactNo());
-        vm.setPMail(model.getEmailId());
+        vm.setMobile(model.getMobile());
+        vm.setPMail(model.getPMail());
         vm.setPurpose(model.getPurpose());
-        vm.setVisitDate(model.getVisitDate());
+        vm.setVisitDate(parseDateString(model.getVisitDateStr()));
         vm.setWhomToMeet(model.getEmpId());
         vm.setIsUpdated(true);
         vm.setLastUpdatedDate(new Date());
@@ -114,21 +114,118 @@ public class VisitorService {
     private VisitorManagementViewModel convertToViewModel(VisitorManagement v) {
         VisitorManagementViewModel vm = new VisitorManagementViewModel();
         vm.setVisitorId(v.getVisitorId());
+        vm.setVisitId(v.getVisitorId());
         vm.setEmpId(v.getWhomToMeet());
         vm.setVisitorName(v.getName());
+        vm.setDesignation(v.getDesignation());
         vm.setCompany(v.getCompany());
-        vm.setContactNo(v.getMobile());
-        vm.setEmailId(v.getPMail());
         vm.setPurpose(v.getPurpose());
+        vm.setPMail(v.getPMail());
+        vm.setOMail(v.getOMail());
+        vm.setMobile(v.getMobile());
+        vm.setAMobile(v.getAMobile());
+        vm.setPhoto(v.getPhoto() != null && !v.getPhoto().isEmpty() ? normalizePhotoPath(v.getPhoto()) : null);
+        vm.setCompId(v.getCompId());
+        vm.setAccessories(v.getAccessories());
+        vm.setWhomtoMeet(v.getWhomToMeet());
+
+        // Resolve WName and WEmpCode from EmployeeMaster
+        String wName = "";
+        String wEmpCode = "";
+        if (v.getWhomToMeet() != null) {
+            Optional<EmployeeMaster> empOpt = employeeMasterRepository.findById(v.getWhomToMeet());
+            if (empOpt.isPresent()) {
+                EmployeeMaster emp = empOpt.get();
+                String fn = emp.getFirstName() != null ? emp.getFirstName().trim() : "";
+                String mn = emp.getMiddleName() != null ? " " + emp.getMiddleName().trim() : "";
+                String ln = emp.getLastName() != null ? " " + emp.getLastName().trim() : "";
+                wName = (fn + mn + ln).trim();
+                wEmpCode = emp.getEmpCode() != null ? emp.getEmpCode() : "";
+            }
+        }
+        vm.setWName(wName);
+        vm.setWEmpCode(wEmpCode);
+
         vm.setVisitDate(v.getVisitDate());
+        vm.setVisitTime(v.getTime());
+        vm.setInvited(v.getInvited());
+        vm.setAccept(v.getAccept());
+        vm.setApproved(v.getApproved());
+        vm.setExpired(v.getExpired());
+        vm.setDirectCheckIn(v.getDirectCheckIn());
+        vm.setCheckIn(v.getCheckIn());
+        vm.setCheckOut(v.getCheckOut());
+        vm.setIdCard(v.getIdCard());
         vm.setStatus(v.getApproved() != null && v.getApproved() ? "Approved" : "Pending");
         vm.setIsActive(v.getIsActive());
         return vm;
     }
 
+    private String normalizePhotoPath(String photo) {
+        if (photo == null || photo.isEmpty()) return "";
+        if (photo.contains("Uploads")) {
+            String[] parts = photo.split("Uploads", 2);
+            if (parts.length > 1) return "Uploads" + parts[1];
+        }
+        return photo;
+    }
+
+    private java.util.Date parseDateString(String dateStr) {
+        if (dateStr == null || dateStr.isEmpty()) return null;
+        try {
+            // Try DD-MM-YYYY format first (frontend format)
+            if (dateStr.contains("-") && dateStr.split("-")[0].length() == 2) {
+                return new java.text.SimpleDateFormat("dd-MM-yyyy").parse(dateStr);
+            }
+            // Try /Date(timestamp)/ format
+            java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("/Date\\((\\d+)\\)/").matcher(dateStr);
+            if (matcher.matches()) {
+                return new java.util.Date(Long.parseLong(matcher.group(1)));
+            }
+            // Try yyyy-MM-dd format
+            return new java.text.SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public VisitorManagementViewModel visitorInvite(VisitorManagementViewModel model) {
-        model.setMsg("Visitor invite sent successfully");
-        return model;
+        Integer empId = model.getEmpId();
+        if (empId == null || empId == 0) throw new RuntimeException("EmpId is Mismatching");
+
+        VisitorManagement ivm = new VisitorManagement();
+        ivm.setName(model.getVisitorName());
+        ivm.setDesignation(model.getDesignation() != null ? model.getDesignation() : "");
+        ivm.setCompany(model.getCompany() != null ? model.getCompany() : "");
+        ivm.setPurpose(model.getPurpose() != null ? model.getPurpose() : "");
+        ivm.setPMail(model.getPMail() != null ? model.getPMail() : "");
+        ivm.setOMail(model.getOMail() != null ? model.getOMail() : "");
+        ivm.setMobile(model.getMobile() != null ? model.getMobile() : "");
+        ivm.setAMobile(model.getAMobile() != null ? model.getAMobile() : "");
+        ivm.setPhoto(model.getPhoto() != null ? model.getPhoto() : "");
+        ivm.setCompId(model.getCompId() != null ? model.getCompId() : "");
+        ivm.setWhomToMeet(model.getWhomtoMeet() != null ? model.getWhomtoMeet() : 0);
+        ivm.setVisitDate(parseDateString(model.getVisitDateStr()));
+        ivm.setTime(model.getVisitTime());
+        ivm.setInvited(true);
+        ivm.setAccept(false);
+        ivm.setApproved(false);
+        ivm.setExpired(false);
+        ivm.setAccessories("");
+        ivm.setDirectCheckIn(false);
+        ivm.setIdCard("");
+        ivm.setIsActive(true);
+        ivm.setIsUpdated(false);
+        ivm.setIsDeleted(false);
+        ivm.setCreatedBy(empId);
+        ivm.setCreatedDate(new Date());
+        ivm.setLastUpdatedBy(empId);
+        ivm.setLastUpdatedDate(new Date());
+        visitorManagementRepository.save(ivm);
+
+        VisitorManagementViewModel result = new VisitorManagementViewModel();
+        result.setMsg("Invite Created");
+        return result;
     }
 
     public VisitorManagementViewModel visitorInviteHistory(VisitorManagementViewModel model) {
@@ -153,8 +250,11 @@ public class VisitorService {
     }
 
     public List<VisitorManagementViewModel> getAllVisitorByEmp(VisitorManagementViewModel model) {
+        Integer empId = model.getEmpId();
+        if (empId == null || empId == 0) throw new RuntimeException("EmpId is Missing");
+
         return visitorManagementRepository.findByIsActiveAndIsDeleted(true, false).stream()
-            .filter(v -> v.getWhomToMeet() != null && v.getWhomToMeet().equals(model.getEmpId()))
+            .filter(v -> empId.equals(v.getCreatedBy()))
             .map(v -> convertToViewModel(v))
             .collect(Collectors.toList());
     }
@@ -265,7 +365,23 @@ public class VisitorService {
     }
 
     public VisitorManagementViewModel cancelInvite(VisitorManagementViewModel model) {
-        model.setMsg("Invite cancelled successfully");
-        return model;
+        Integer empId = model.getEmpId();
+        Integer visitId = model.getVisitId();
+        if (empId == null || empId == 0) throw new RuntimeException("EmpId is Missing");
+        if (visitId == null || visitId == 0) throw new RuntimeException("VisitId is Missing");
+
+        VisitorManagement vm = visitorManagementRepository.findById(visitId)
+            .orElseThrow(() -> new RuntimeException("Invite Details Not Found"));
+
+        vm.setIsActive(true);
+        vm.setIsUpdated(true);
+        vm.setIsDeleted(true);
+        vm.setLastUpdatedBy(empId);
+        vm.setLastUpdatedDate(new Date());
+        visitorManagementRepository.save(vm);
+
+        VisitorManagementViewModel result = new VisitorManagementViewModel();
+        result.setMsg("Invite Cancelled");
+        return result;
     }
 }
