@@ -9,36 +9,32 @@ public class ReviewList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id")
-    private Integer id;
+    @Column(name = "ReviewId")
+    private Integer reviewId;
 
-    @Column(name = "EmpCode")
-    private String empCode;
+    @Column(name = "FYearId")
+    private Integer fYearId;
 
-    @Column(name = "ReviewCycle")
-    private String reviewCycle;
+    @Column(name = "QId")
+    private Integer qId;
 
-    @Column(name = "ReviewType")
-    private String reviewType;
+    @Column(name = "EmpId")
+    private Integer empId;
 
-    @Column(name = "ReviewerId")
-    private Integer reviewerId;
-
-    @Column(name = "ReviewerCode")
-    private String reviewerCode;
-
-    @Column(name = "ReviewDate")
-    @Temporal(TemporalType.DATE)
-    private Date reviewDate;
+    @Column(name = "QType")
+    private String qType;
 
     @Column(name = "Status")
     private String status;
 
-    @Column(name = "Rating")
-    private Double rating;
+    @Column(name = "ReviewedByEmp")
+    private Boolean reviewedByEmp;
 
-    @Column(name = "Comments")
-    private String comments;
+    @Column(name = "ReviewedByManager")
+    private Boolean reviewedByManager;
+
+    @Column(name = "Completed")
+    private Boolean completed;
 
     @Column(name = "CreatedBy")
     private Integer createdBy;
@@ -63,54 +59,36 @@ public class ReviewList {
     @Column(name = "IsDeleted")
     private Boolean isDeleted;
 
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
-
-    public String getEmpCode() { return empCode; }
-    public void setEmpCode(String empCode) { this.empCode = empCode; }
-
-    public String getReviewCycle() { return reviewCycle; }
-    public void setReviewCycle(String reviewCycle) { this.reviewCycle = reviewCycle; }
-
-    public String getReviewType() { return reviewType; }
-    public void setReviewType(String reviewType) { this.reviewType = reviewType; }
-
-    public Integer getReviewerId() { return reviewerId; }
-    public void setReviewerId(Integer reviewerId) { this.reviewerId = reviewerId; }
-
-    public String getReviewerCode() { return reviewerCode; }
-    public void setReviewerCode(String reviewerCode) { this.reviewerCode = reviewerCode; }
-
-    public Date getReviewDate() { return reviewDate; }
-    public void setReviewDate(Date reviewDate) { this.reviewDate = reviewDate; }
-
+    public Integer getReviewId() { return reviewId; }
+    public void setReviewId(Integer reviewId) { this.reviewId = reviewId; }
+    public Integer getFYearId() { return fYearId; }
+    public void setFYearId(Integer fYearId) { this.fYearId = fYearId; }
+    public Integer getQId() { return qId; }
+    public void setQId(Integer qId) { this.qId = qId; }
+    public Integer getEmpId() { return empId; }
+    public void setEmpId(Integer empId) { this.empId = empId; }
+    public String getQType() { return qType; }
+    public void setQType(String qType) { this.qType = qType; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
-
-    public Double getRating() { return rating; }
-    public void setRating(Double rating) { this.rating = rating; }
-
-    public String getComments() { return comments; }
-    public void setComments(String comments) { this.comments = comments; }
-
+    public Boolean getReviewedByEmp() { return reviewedByEmp; }
+    public void setReviewedByEmp(Boolean reviewedByEmp) { this.reviewedByEmp = reviewedByEmp; }
+    public Boolean getReviewedByManager() { return reviewedByManager; }
+    public void setReviewedByManager(Boolean reviewedByManager) { this.reviewedByManager = reviewedByManager; }
+    public Boolean getCompleted() { return completed; }
+    public void setCompleted(Boolean completed) { this.completed = completed; }
     public Integer getCreatedBy() { return createdBy; }
     public void setCreatedBy(Integer createdBy) { this.createdBy = createdBy; }
-
     public Date getCreatedDate() { return createdDate; }
     public void setCreatedDate(Date createdDate) { this.createdDate = createdDate; }
-
     public Integer getLastUpdatedBy() { return lastUpdatedBy; }
     public void setLastUpdatedBy(Integer lastUpdatedBy) { this.lastUpdatedBy = lastUpdatedBy; }
-
     public Date getLastUpdatedDate() { return lastUpdatedDate; }
     public void setLastUpdatedDate(Date lastUpdatedDate) { this.lastUpdatedDate = lastUpdatedDate; }
-
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
-
     public Boolean getIsUpdated() { return isUpdated; }
     public void setIsUpdated(Boolean isUpdated) { this.isUpdated = isUpdated; }
-
     public Boolean getIsDeleted() { return isDeleted; }
     public void setIsDeleted(Boolean isDeleted) { this.isDeleted = isDeleted; }
 }

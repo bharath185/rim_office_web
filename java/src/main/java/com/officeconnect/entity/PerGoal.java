@@ -12,24 +12,47 @@ public class PerGoal {
     @Column(name = "GoalId")
     private Integer goalId;
 
+    @Column(name = "QId")
+    private Integer qId;
+
+    @Column(name = "PeriodId")
+    private Integer periodId;
+
     @Column(name = "EmpId")
     private Integer empId;
 
-    @Column(name = "GoalTitle")
-    private String goalTitle;
+    @Column(name = "Goal")
+    private String goal;
 
-    @Column(name = "GoalDescription")
-    private String goalDescription;
+    @Column(name = "Description")
+    private String description;
 
-    @Column(name = "TargetDate")
-    @Temporal(TemporalType.DATE)
-    private Date targetDate;
+    @Column(name = "Weightage")
+    private String weightage;
+
+    @Column(name = "EmpReview")
+    private String empReview;
+
+    @Column(name = "ManagerReview")
+    private String managerReview;
+
+    @Column(name = "EDescription")
+    private String eDescription;
+
+    @Column(name = "MDescription")
+    private String mDescription;
 
     @Column(name = "Status")
     private String status;
 
-    @Column(name = "Rating")
-    private String rating;
+    @Column(name = "FinalSubmit")
+    private Boolean finalSubmit;
+
+    @Column(name = "ReviewedByEmp")
+    private Boolean reviewedByEmp;
+
+    @Column(name = "ReviewedByManager")
+    private Boolean reviewedByManager;
 
     @Column(name = "CreatedBy")
     private Integer createdBy;
@@ -38,42 +61,64 @@ public class PerGoal {
     @Temporal(TemporalType.DATE)
     private Date createdDate;
 
+    @Column(name = "LastUpdatedBy")
+    private Integer lastUpdatedBy;
+
+    @Column(name = "LastUpdatedDate")
+    @Temporal(TemporalType.DATE)
+    private Date lastUpdatedDate;
+
     @Column(name = "IsActive")
     private Boolean isActive;
+
+    @Column(name = "IsUpdated")
+    private Boolean isUpdated;
 
     @Column(name = "IsDeleted")
     private Boolean isDeleted;
 
     public Integer getGoalId() { return goalId; }
     public void setGoalId(Integer goalId) { this.goalId = goalId; }
-
+    public Integer getQId() { return qId; }
+    public void setQId(Integer qId) { this.qId = qId; }
+    public Integer getPeriodId() { return periodId; }
+    public void setPeriodId(Integer periodId) { this.periodId = periodId; }
     public Integer getEmpId() { return empId; }
     public void setEmpId(Integer empId) { this.empId = empId; }
-
-    public String getGoalTitle() { return goalTitle; }
-    public void setGoalTitle(String goalTitle) { this.goalTitle = goalTitle; }
-
-    public String getGoalDescription() { return goalDescription; }
-    public void setGoalDescription(String goalDescription) { this.goalDescription = goalDescription; }
-
-    public Date getTargetDate() { return targetDate; }
-    public void setTargetDate(Date targetDate) { this.targetDate = targetDate; }
-
+    public String getGoal() { return goal; }
+    public void setGoal(String goal) { this.goal = goal; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+    public String getWeightage() { return weightage; }
+    public void setWeightage(String weightage) { this.weightage = weightage; }
+    public String getEmpReview() { return empReview; }
+    public void setEmpReview(String empReview) { this.empReview = empReview; }
+    public String getManagerReview() { return managerReview; }
+    public void setManagerReview(String managerReview) { this.managerReview = managerReview; }
+    public String getEDescription() { return eDescription; }
+    public void setEDescription(String eDescription) { this.eDescription = eDescription; }
+    public String getMDescription() { return mDescription; }
+    public void setMDescription(String mDescription) { this.mDescription = mDescription; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
-
-    public String getRating() { return rating; }
-    public void setRating(String rating) { this.rating = rating; }
-
+    public Boolean getFinalSubmit() { return finalSubmit; }
+    public void setFinalSubmit(Boolean finalSubmit) { this.finalSubmit = finalSubmit; }
+    public Boolean getReviewedByEmp() { return reviewedByEmp; }
+    public void setReviewedByEmp(Boolean reviewedByEmp) { this.reviewedByEmp = reviewedByEmp; }
+    public Boolean getReviewedByManager() { return reviewedByManager; }
+    public void setReviewedByManager(Boolean reviewedByManager) { this.reviewedByManager = reviewedByManager; }
     public Integer getCreatedBy() { return createdBy; }
     public void setCreatedBy(Integer createdBy) { this.createdBy = createdBy; }
-
     public Date getCreatedDate() { return createdDate; }
     public void setCreatedDate(Date createdDate) { this.createdDate = createdDate; }
-
+    public Integer getLastUpdatedBy() { return lastUpdatedBy; }
+    public void setLastUpdatedBy(Integer lastUpdatedBy) { this.lastUpdatedBy = lastUpdatedBy; }
+    public Date getLastUpdatedDate() { return lastUpdatedDate; }
+    public void setLastUpdatedDate(Date lastUpdatedDate) { this.lastUpdatedDate = lastUpdatedDate; }
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
-
+    public Boolean getIsUpdated() { return isUpdated; }
+    public void setIsUpdated(Boolean isUpdated) { this.isUpdated = isUpdated; }
     public Boolean getIsDeleted() { return isDeleted; }
     public void setIsDeleted(Boolean isDeleted) { this.isDeleted = isDeleted; }
 }

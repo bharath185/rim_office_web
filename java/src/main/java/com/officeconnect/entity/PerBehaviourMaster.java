@@ -4,25 +4,28 @@ import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "QuaterMaster")
-public class QuaterMaster {
+@Table(name = "Per_BehaviourMaster")
+public class PerBehaviourMaster {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "Id")
+    private Integer id;
+
     @Column(name = "QId")
-    private Integer quaterId;
+    private Integer qId;
 
-    @Column(name = "Type")
-    private String type;
+    @Column(name = "PeriodId")
+    private Integer periodId;
 
-    @Column(name = "Name")
-    private String name;
+    @Column(name = "Behaviour")
+    private String behaviour;
 
-    @Column(name = "StartDate")
-    private String startDate;
+    @Column(name = "Description")
+    private String description;
 
-    @Column(name = "EndDate")
-    private String endDate;
+    @Column(name = "Weightage")
+    private String weightage;
 
     @Column(name = "Status")
     private Boolean status;
@@ -50,16 +53,18 @@ public class QuaterMaster {
     @Column(name = "IsDeleted")
     private Boolean isDeleted;
 
-    public Integer getQuaterId() { return quaterId; }
-    public void setQuaterId(Integer quaterId) { this.quaterId = quaterId; }
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getStartDate() { return startDate; }
-    public void setStartDate(String startDate) { this.startDate = startDate; }
-    public String getEndDate() { return endDate; }
-    public void setEndDate(String endDate) { this.endDate = endDate; }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
+    public Integer getQId() { return qId; }
+    public void setQId(Integer qId) { this.qId = qId; }
+    public Integer getPeriodId() { return periodId; }
+    public void setPeriodId(Integer periodId) { this.periodId = periodId; }
+    public String getBehaviour() { return behaviour; }
+    public void setBehaviour(String behaviour) { this.behaviour = behaviour; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+    public String getWeightage() { return weightage; }
+    public void setWeightage(String weightage) { this.weightage = weightage; }
     public Boolean getStatus() { return status; }
     public void setStatus(Boolean status) { this.status = status; }
     public Integer getCreatedBy() { return createdBy; }
