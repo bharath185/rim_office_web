@@ -23,6 +23,9 @@ public class VisitorService {
     @Autowired
     private EmployeeMasterRepository employeeMasterRepository;
 
+    @Autowired
+    private VisitorInviteHistoryRepository visitorInviteHistoryRepository;
+
     public VisitorManagementViewModel createVisitor(VisitorManagementViewModel model) {
         VisitorManagement vm = new VisitorManagement();
         vm.setName(model.getVisitorName());
@@ -147,6 +150,7 @@ public class VisitorService {
         vm.setWEmpCode(wEmpCode);
 
         vm.setVisitDate(v.getVisitDate());
+        vm.setVisitDateStr(v.getVisitDate() != null ? "/Date(" + v.getVisitDate().getTime() + ")/" : null);
         vm.setVisitTime(v.getTime());
         vm.setInvited(v.getInvited());
         vm.setAccept(v.getAccept());
@@ -344,8 +348,44 @@ public class VisitorService {
     }
 
     public VisitorManagementViewModel directCheckIn(VisitorManagementViewModel model) {
-        model.setMsg("Direct check-in successful");
-        return model;
+        Integer empId = model.getEmpId();
+        if (empId == null || empId == 0) throw new RuntimeException("EmpId is Missing");
+
+        VisitorManagement ivm = new VisitorManagement();
+        ivm.setName(model.getVisitorName());
+        ivm.setDesignation(model.getDesignation() != null ? model.getDesignation() : "");
+        ivm.setCompany(model.getCompany() != null ? model.getCompany() : "");
+        ivm.setPurpose(model.getPurpose() != null ? model.getPurpose() : "");
+        ivm.setPMail(model.getPMail() != null ? model.getPMail() : "");
+        ivm.setOMail(model.getOMail() != null ? model.getOMail() : "");
+        ivm.setMobile(model.getMobile() != null ? model.getMobile() : "");
+        ivm.setAMobile(model.getAMobile() != null ? model.getAMobile() : "");
+        ivm.setPhoto(model.getPhoto() != null ? model.getPhoto() : "");
+        ivm.setCompId(model.getCompId() != null ? model.getCompId() : "");
+        ivm.setWhomToMeet(model.getWhomtoMeet() != null ? model.getWhomtoMeet() : 0);
+        ivm.setVisitDate(parseDateString(model.getVisitDateStr()));
+        ivm.setTime(model.getVisitTime());
+        ivm.setInvited(true);
+        ivm.setAccept(true);
+        ivm.setApproved(true);
+        ivm.setExpired(false);
+        ivm.setAccessories(model.getAccessories() != null ? model.getAccessories() : "");
+        ivm.setCheckIn(new Date());
+        ivm.setDirectCheckIn(true);
+        ivm.setIdCard(model.getIdCard() != null ? model.getIdCard() : "");
+        ivm.setIsActive(true);
+        ivm.setIsUpdated(false);
+        ivm.setIsDeleted(false);
+        ivm.setCreatedBy(empId);
+        ivm.setCreatedDate(new Date());
+        ivm.setLastUpdatedBy(empId);
+        ivm.setLastUpdatedDate(new Date());
+        visitorManagementRepository.save(ivm);
+
+        VisitorManagementViewModel result = new VisitorManagementViewModel();
+        result.setMsg("Visitor Checked In Successfully");
+        result.setVisitorName(model.getVisitorName());
+        return result;
     }
 
     public VisitorManagementViewModel verifyOTPCheckIn(VisitorManagementViewModel model) {
