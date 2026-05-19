@@ -9,5 +9,8 @@ import java.util.List;
 @Repository
 public interface PerGoalRepository extends JpaRepository<PerGoal, Integer> {
     List<PerGoal> findByEmpIdAndIsDeleted(Integer empId, Boolean isDeleted);
+    List<PerGoal> findByEmpIdAndIsActiveAndIsDeleted(Integer empId, Boolean isActive, Boolean isDeleted);
     List<PerGoal> findByEmpIdAndStatus(Integer empId, String status);
+    PerGoal findByEmpIdAndGoalAndIsActiveAndIsDeleted(Integer empId, String goal, Boolean isActive, Boolean isDeleted);
+    PerGoal findByGoalIdAndIsActiveAndIsDeleted(Integer goalId, Boolean isActive, Boolean isDeleted);
 }

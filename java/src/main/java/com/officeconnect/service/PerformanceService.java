@@ -6,13 +6,7 @@ import com.officeconnect.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,6 +44,27 @@ public class PerformanceService {
 
     @Autowired
     private PerBehaviourMasterRepository perBehaviourMasterRepository;
+
+    @Autowired
+    private PerTaskRepository perTaskRepository;
+
+    @Autowired
+    private DeptMasterRepository deptMasterRepository;
+
+    @Autowired
+    private DesignationMasterRepository designationMasterRepository;
+
+    @Autowired
+    private ModuleMasterRepository moduleMasterRepository;
+
+    @Autowired
+    private SubModuleMasterRepository subModuleMasterRepository;
+
+    @Autowired
+    private PageModuleMasterRepository pageModuleMasterRepository;
+
+    @Autowired
+    private AccessPolicyRepository accessPolicyRepository;
 
     public PerformanceViewModel createGoal(PerformanceViewModel model) {
         PerGoal goal = new PerGoal();
@@ -406,13 +421,55 @@ public class PerformanceService {
         Integer empId = model.get("EmpId") != null ? Integer.parseInt(model.get("EmpId").toString()) : 0;
         if (empId == 0) throw new RuntimeException("EmpId is Missing");
 
-        List<PerGoal> goals = perGoalRepository.findByEmpIdAndIsDeleted(empId, false);
+        List<PerGoal> goals = perGoalRepository.findByEmpIdAndIsActiveAndIsDeleted(empId, true, false);
         List<Map<String, Object>> result = new ArrayList<>();
 
+        Map<Integer, EmployeeMaster> empCache = new HashMap<>();
+        Map<Integer, QuaterMaster> qCache = new HashMap<>();
+        Map<Integer, FinancialYearMaster> fyCache = new HashMap<>();
+
         for (PerGoal g : goals) {
+            EmployeeMaster emp = null;
+            if (g.getEmpId() != null) {
+                emp = empCache.get(g.getEmpId());
+                if (emp == null) {
+                    Optional<EmployeeMaster> empOpt = employeeMasterRepository.findById(g.getEmpId());
+                    if (empOpt.isPresent()) {
+                        emp = empOpt.get();
+                        empCache.put(g.getEmpId(), emp);
+                    }
+                }
+            }
+
+            QuaterMaster q = null;
+            if (g.getQId() != null) {
+                q = qCache.get(g.getQId());
+                if (q == null) {
+                    Optional<QuaterMaster> qOpt = quaterMasterRepository.findById(g.getQId());
+                    if (qOpt.isPresent()) {
+                        q = qOpt.get();
+                        qCache.put(g.getQId(), q);
+                    }
+                }
+            }
+
+            FinancialYearMaster fy = null;
+            if (g.getPeriodId() != null) {
+                fy = fyCache.get(g.getPeriodId());
+                if (fy == null) {
+                    Optional<FinancialYearMaster> fyOpt = financialYearMasterRepository.findById(g.getPeriodId());
+                    if (fyOpt.isPresent()) {
+                        fy = fyOpt.get();
+                        fyCache.put(g.getPeriodId(), fy);
+                    }
+                }
+            }
+
             Map<String, Object> m = new HashMap<>();
             m.put("GoalId", g.getGoalId());
             m.put("EmpId", g.getEmpId());
+            m.put("EmpCode", emp != null ? emp.getEmpCode() : null);
+            m.put("EmpName", emp != null ? emp.getFirstName() : null);
             m.put("Goal", g.getGoal());
             m.put("Description", g.getDescription());
             m.put("Weightage", g.getWeightage());
@@ -423,10 +480,18 @@ public class PerformanceService {
             m.put("ManagerReview", g.getManagerReview());
             m.put("MDescription", g.getMDescription());
             m.put("QId", g.getQId());
+            m.put("Type", q != null ? q.getType() : null);
+            m.put("QName", q != null ? q.getName() : null);
             m.put("PeriodId", g.getPeriodId());
+            m.put("FYear", fy != null ? fy.getFinancialYear() : null);
+            m.put("ReviewedByEmp", g.getReviewedByEmp());
+            m.put("ReviewedByManager", g.getReviewedByManager());
             m.put("CreatedBy", g.getCreatedBy());
             m.put("CreatedDate", g.getCreatedDate());
+            m.put("LastUpdatedBy", g.getLastUpdatedBy());
+            m.put("LastUpdatedDate", g.getLastUpdatedDate());
             m.put("IsActive", g.getIsActive());
+            m.put("IsUpdated", g.getIsUpdated());
             m.put("IsDeleted", g.getIsDeleted());
             result.add(m);
         }
@@ -441,8 +506,42 @@ public class PerformanceService {
         return Map.of();
     }
 
+    @SuppressWarnings("unchecked")
     public Map<String, Object> addAllGoal(Map<String, Object> model) {
-        return Map.of("StatusCode", 200, "Message", "Goals added successfully");
+        Object empIdObj = model.get("EmpId");
+        Integer empId = empIdObj != null ? Integer.parseInt(empIdObj.toString()) : 0;
+        if (empId == 0) throw new RuntimeException("EmpId is Missing");
+
+        Object listObj = model.get("listofGoal");
+        if (listObj == null) throw new RuntimeException("listofGoal is Missing");
+
+        List<Map<String, Object>> listofGoal = (List<Map<String, Object>>) listObj;
+
+        for (Map<String, Object> goalItem : listofGoal) {
+            Integer goalId = goalItem.get("GoalId") != null ? Integer.parseInt(goalItem.get("GoalId").toString()) : 0;
+            String goalName = goalItem.get("Goal") != null ? goalItem.get("Goal").toString() : "";
+            String weightage = goalItem.get("Weightage") != null ? goalItem.get("Weightage").toString() : "0";
+
+            PerGoal goal = perGoalRepository.findByGoalIdAndIsActiveAndIsDeleted(goalId, true, false);
+            if (goal == null) {
+                throw new RuntimeException("This " + goalName + " Detail is Not Found");
+            }
+
+            goal.setGoal(goalName);
+            goal.setWeightage(weightage);
+            goal.setStatus("Pending");
+            goal.setFinalSubmit(true);
+            goal.setIsActive(true);
+            goal.setIsUpdated(true);
+            goal.setIsDeleted(false);
+            goal.setLastUpdatedBy(empId);
+            goal.setLastUpdatedDate(new Date());
+            perGoalRepository.save(goal);
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("msg", "Final Subimission Done");
+        return result;
     }
 
     public Map<String, Object> approveAllGoal(Map<String, Object> model) {
@@ -450,19 +549,199 @@ public class PerformanceService {
     }
 
     public Map<String, Object> addGoal(Map<String, Object> model) {
-        return Map.of("StatusCode", 200, "Message", "Goal added successfully");
+        Integer empId = model.get("EmpId") != null ? Integer.parseInt(model.get("EmpId").toString()) : 0;
+        if (empId == 0) throw new RuntimeException("EmpId is Missing");
+
+        String goalName = model.get("Goal") != null ? model.get("Goal").toString() : "";
+
+        // Get active quarter and financial year
+        List<QuaterMaster> activeQuarters = quaterMasterRepository.findByIsActiveAndIsDeleted(true, false);
+        Integer qId = activeQuarters.isEmpty() ? 0 : activeQuarters.get(0).getQuaterId();
+
+        List<FinancialYearMaster> activeFYears = financialYearMasterRepository.findByStatus(true);
+        if (activeFYears.isEmpty()) {
+            activeFYears = financialYearMasterRepository.findByIsActiveAndIsDeleted(true, false);
+        }
+        Integer periodId = activeFYears.isEmpty() ? 0 : activeFYears.get(0).getYearId();
+
+        // Check if goal with same name already exists
+        PerGoal existing = perGoalRepository.findByEmpIdAndGoalAndIsActiveAndIsDeleted(empId, goalName, true, false);
+        if (existing != null) {
+            throw new RuntimeException("Goal Details Not Found");
+        }
+
+        PerGoal dm = new PerGoal();
+        dm.setGoal(goalName);
+        dm.setQId(qId != 0 ? qId : 0);
+        dm.setPeriodId(periodId != 0 ? periodId : 0);
+        dm.setEmpId(empId);
+        dm.setDescription(model.get("Description") != null ? model.get("Description").toString() : "");
+        dm.setWeightage(model.get("Weightage") != null ? model.get("Weightage").toString() : "");
+        dm.setEmpReview(model.get("EmpReview") != null ? model.get("EmpReview").toString() : "");
+        dm.setManagerReview(model.get("ManagerReview") != null ? model.get("ManagerReview").toString() : "");
+        dm.setStatus("");
+        dm.setReviewedByEmp(false);
+        dm.setReviewedByManager(false);
+        dm.setFinalSubmit(false);
+        dm.setIsActive(true);
+        dm.setIsDeleted(false);
+        dm.setCreatedBy(empId);
+        dm.setCreatedDate(new Date());
+        dm.setLastUpdatedBy(empId);
+        dm.setLastUpdatedDate(new Date());
+        perGoalRepository.save(dm);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("msg", "Added");
+        result.put("Goal", goalName);
+        return result;
     }
 
     public Map<String, Object> updateGoal(Map<String, Object> model) {
-        return Map.of("StatusCode", 200, "Message", "Goal updated successfully");
+        Integer empId = model.get("EmpId") != null ? Integer.parseInt(model.get("EmpId").toString()) : 0;
+        Integer goalId = model.get("GoalId") != null ? Integer.parseInt(model.get("GoalId").toString()) : 0;
+        if (empId == 0) throw new RuntimeException("EmpId is Missing");
+
+        PerGoal goal = perGoalRepository.findByGoalIdAndIsActiveAndIsDeleted(goalId, true, false);
+        if (goal == null) {
+            throw new RuntimeException("Goal Details Not Found");
+        }
+
+        goal.setGoal(model.get("Goal") != null ? model.get("Goal").toString() : "");
+        goal.setQId(model.get("QId") != null ? Integer.parseInt(model.get("QId").toString()) : 0);
+        goal.setPeriodId(model.get("PeriodId") != null ? Integer.parseInt(model.get("PeriodId").toString()) : 0);
+        goal.setEmpId(empId);
+        goal.setDescription(model.get("Description") != null ? model.get("Description").toString() : "");
+        goal.setWeightage(model.get("Weightage") != null ? model.get("Weightage").toString() : "");
+        goal.setEmpReview(model.get("EmpReview") != null ? model.get("EmpReview").toString() : "");
+        goal.setManagerReview(model.get("ManagerReview") != null ? model.get("ManagerReview").toString() : "");
+        goal.setStatus("");
+        goal.setFinalSubmit(false);
+        goal.setIsActive(true);
+        goal.setIsUpdated(true);
+        goal.setIsDeleted(false);
+        goal.setLastUpdatedBy(empId);
+        goal.setLastUpdatedDate(new Date());
+        perGoalRepository.save(goal);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("msg", "Updated");
+        result.put("Goal", model.get("Goal"));
+        return result;
     }
 
     public Map<String, Object> deleteGoalEndpoint(Map<String, Object> model) {
-        return Map.of("StatusCode", 200, "Message", "Goal deleted successfully");
+        Integer empId = model.get("EmpId") != null ? Integer.parseInt(model.get("EmpId").toString()) : 0;
+        Integer goalId = model.get("GoalId") != null ? Integer.parseInt(model.get("GoalId").toString()) : 0;
+        if (empId == 0) throw new RuntimeException("EmpId is Missing");
+
+        PerGoal goal = perGoalRepository.findByGoalIdAndIsActiveAndIsDeleted(goalId, true, false);
+        if (goal == null) {
+            throw new RuntimeException("Goal Details Not Found");
+        }
+
+        goal.setIsDeleted(true);
+        goal.setLastUpdatedBy(empId);
+        goal.setLastUpdatedDate(new Date());
+        perGoalRepository.save(goal);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("msg", "Deleted");
+        result.put("Goal", model.get("Goal"));
+        return result;
     }
 
     public List<Map<String, Object>> getAllTask(Map<String, Object> model) {
-        return List.of();
+        Integer empId = model.get("EmpId") != null ? Integer.parseInt(model.get("EmpId").toString()) : 0;
+        Integer goalId = model.get("GoalId") != null ? Integer.parseInt(model.get("GoalId").toString()) : 0;
+
+        if (empId == 0) throw new RuntimeException("EmpId is Missing");
+
+        List<PerTask> tasks = perTaskRepository.findByEmpIdAndGoalIdAndStatusAndIsActiveAndIsDeleted(empId, goalId, true, true, false);
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        Map<Integer, EmployeeMaster> empCache = new HashMap<>();
+        Map<Integer, QuaterMaster> qCache = new HashMap<>();
+        Map<Integer, FinancialYearMaster> fyCache = new HashMap<>();
+        Map<Integer, PerGoal> goalCache = new HashMap<>();
+
+        for (PerTask t : tasks) {
+            // Resolve quarter
+            QuaterMaster q = null;
+            if (t.getQId() != null) {
+                q = qCache.get(t.getQId());
+                if (q == null) {
+                    Optional<QuaterMaster> qOpt = quaterMasterRepository.findById(t.getQId());
+                    if (qOpt.isPresent()) {
+                        q = qOpt.get();
+                        qCache.put(t.getQId(), q);
+                    }
+                }
+            }
+
+            // Resolve financial year
+            FinancialYearMaster fy = null;
+            if (t.getPeriodId() != null) {
+                fy = fyCache.get(t.getPeriodId());
+                if (fy == null) {
+                    Optional<FinancialYearMaster> fyOpt = financialYearMasterRepository.findById(t.getPeriodId());
+                    if (fyOpt.isPresent()) {
+                        fy = fyOpt.get();
+                        fyCache.put(t.getPeriodId(), fy);
+                    }
+                }
+            }
+
+            // Resolve employee
+            EmployeeMaster emp = null;
+            if (t.getEmpId() != null) {
+                emp = empCache.get(t.getEmpId());
+                if (emp == null) {
+                    Optional<EmployeeMaster> empOpt = employeeMasterRepository.findById(t.getEmpId());
+                    if (empOpt.isPresent()) {
+                        emp = empOpt.get();
+                        empCache.put(t.getEmpId(), emp);
+                    }
+                }
+            }
+
+            // Resolve goal
+            PerGoal goal = null;
+            if (t.getGoalId() != null && t.getEmpId() != null) {
+                String goalKey = t.getEmpId() + "_" + t.getGoalId();
+                goal = goalCache.computeIfAbsent(t.getGoalId(), k -> {
+                    Optional<PerGoal> gOpt = perGoalRepository.findById(k);
+                    return gOpt.orElse(null);
+                });
+            }
+
+            Map<String, Object> m = new HashMap<>();
+            m.put("TaskId", t.getTaskId());
+            m.put("QId1", t.getQId1());
+            m.put("PeriodId", t.getPeriodId());
+            m.put("FYear", fy != null ? fy.getFinancialYear() : null);
+            m.put("EmpId", t.getEmpId());
+            m.put("EmpCode", emp != null ? emp.getEmpCode() : null);
+            m.put("EmpName", emp != null ? emp.getFirstName() : null);
+            m.put("GoalId", t.getGoalId());
+            m.put("Goal", goal != null ? goal.getGoal() : null);
+            m.put("QId", t.getQId());
+            m.put("Type", q != null ? q.getType() : null);
+            m.put("QName", q != null ? q.getName() : null);
+            m.put("Task", t.getTask());
+            m.put("Description", t.getDescription());
+            m.put("Status", t.getStatus());
+            m.put("IsActive", t.getIsActive());
+            m.put("IsUpdated", t.getIsUpdated());
+            m.put("IsDeleted", t.getIsDeleted());
+            m.put("CreatedBy", t.getCreatedBy());
+            m.put("CreatedDate", t.getCreatedDate());
+            m.put("LastUpdatedBy", t.getLastUpdatedBy());
+            m.put("LastUpdatedDate", t.getLastUpdatedDate());
+            result.add(m);
+        }
+
+        return result;
     }
 
     public Map<String, Object> getTask(Map<String, Object> model) {
