@@ -217,6 +217,9 @@ public class EmployeeService {
         }
 
         if (empId != 0) {
+            if (result == null || result.isEmpty()) {
+                throw new RuntimeException("Legal Entity Details Not Found");
+            }
             return result;
         } else {
             throw new RuntimeException("EmpId is Missing");
@@ -2474,6 +2477,16 @@ public class EmployeeService {
                 }
             }
 
+            // Fetch leave applications for date range for leave type computation
+            List<EmpLeaveApplication> empLeaves = empLeaveApplicationRepository
+                .findByEmpIdAndIsDeleted(empMaster.getEmpId(), false).stream()
+                .filter(l -> l.getFromDate() != null && l.getToDate() != null
+                    && !l.getToDate().before(startDate) && !l.getFromDate().after(endDate)
+                    && Boolean.TRUE.equals(l.getIsActive())
+                    && !"CANCELLED".equalsIgnoreCase(l.getStatus())
+                    && !"WITHDRAWN".equalsIgnoreCase(l.getStatus()))
+                .collect(Collectors.toList());
+
             List<AttendaceDateViewModel> lstOfDate = new ArrayList<>();
 
             Calendar dateCal = Calendar.getInstance();
@@ -2509,6 +2522,28 @@ public class EmployeeService {
                 avm.setDesignationId(empMaster.getDesignationId());
                 avm.setIsHoliday(isHoliday);
                 avm.setHolidayName(holidayReason);
+
+                // Determine leave type for this date
+                String leaveTypeForDate = "";
+                if (isHoliday) {
+                    leaveTypeForDate = "Holiday";
+                } else {
+                    for (EmpLeaveApplication leave : empLeaves) {
+                        if (!currentDate.before(leave.getFromDate()) && !currentDate.after(leave.getToDate())) {
+                            Integer ltId = leave.getLeaveTypeId();
+                            if (ltId != null && ltId == 0) {
+                                leaveTypeForDate = "LOP";
+                            } else if (ltId != null) {
+                                if (ltId.equals(clId)) leaveTypeForDate = "CL";
+                                else if (ltId.equals(elId)) leaveTypeForDate = "EL";
+                                else if (ltId.equals(rhId)) leaveTypeForDate = "RH";
+                                else leaveTypeForDate = "Leave";
+                            }
+                            break;
+                        }
+                    }
+                }
+                avm.setLeaveType(leaveTypeForDate);
 
                 String esslLogInTime = "00:00:00";
                 String esslLogOutTime = "00:00:00";
@@ -2713,6 +2748,10 @@ public class EmployeeService {
                 avm.setActiveHours(activeHours);
                 avm.setWorkType(workType);
 
+                // Set DaysPresent for valid attendance (matching .NET behavior)
+                int daysPresent = isHoliday ? 0 : (!logInTime.equals("00:00:00") || !logOutTime.equals("00:00:00") ? 1 : 0);
+                avm.setDaysPresent(daysPresent);
+
                 EmpShiftDetail empShift = null;
                 for (EmpShiftDetail shift : shiftDetails) {
                     if (shift.getStartDate() != null && shift.getEndDate() != null) {
@@ -2746,7 +2785,11 @@ public class EmployeeService {
                 dateCal.add(Calendar.DATE, 1);
             }
 
+            // Sort by date descending to match .NET behavior
+            lstOfDate.sort((a, b) -> b.getAttendaceDate().compareTo(a.getAttendaceDate()));
             return lstOfDate;
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (Exception ex) {
             throw new RuntimeException("Error: " + ex.getMessage());
         }

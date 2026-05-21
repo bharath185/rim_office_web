@@ -64,8 +64,7 @@ public class EmployeeController {
             List<DDLegalEntityViewModel> result = employeeService.getDDLegalEntity(model);
             return ResponseEntity.ok(result);
         } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("StatusCode", 404, "Message", ex.getMessage()));
+            return ResponseEntity.ok(Map.of("StatusCode", 404, "Message", ex.getMessage()));
         }
     }
 
@@ -929,8 +928,7 @@ public class EmployeeController {
             List<AttendaceDateViewModel> result = employeeService.eachEmployeeAttendance(model);
             return ResponseEntity.ok(result);
         } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("StatusCode", 404, "Message", ex.getMessage()));
+            return ResponseEntity.ok(Map.of("StatusCode", 404, "Message", ex.getMessage()));
         }
     }
 

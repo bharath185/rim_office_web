@@ -533,8 +533,7 @@ public class AccessController {
             List<Map<String, Object>> result = accessService.getAccessPolicy(model);
             return ResponseEntity.ok(result);
         } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("StatusCode", 404, "Message", ex.getMessage()));
+            return ResponseEntity.ok(Map.of("StatusCode", 404, "Message", ex.getMessage()));
         }
     }
 
