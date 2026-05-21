@@ -459,8 +459,9 @@ public class LeaveService {
         ela.setFromDate(startDate);
         ela.setToDate(endDate);
 
-        // Duration logic including EL Friday/weekend handling
+        // Duration logic including EL Friday/weekend handling (matching .NET)
         Double modelDuration = model.getDuration() != null ? model.getDuration() : 1.0;
+        ela.setNoOfDays(modelDuration);
         if (startDate != null) {
             Calendar startCal = Calendar.getInstance();
             startCal.setTime(startDate);
@@ -470,24 +471,21 @@ public class LeaveService {
                 lastFriday.add(Calendar.DAY_OF_MONTH, -3);
                 Date fridayDate = lastFriday.getTime();
 
+                // Use the ORIGINAL leaveTypeId (not finalLeaveTypeId) matching .NET which uses model.LeaveTypeId
                 boolean hasFridayLeave = empLeaveApplicationRepository.findByEmpIdAndIsDeleted(empId, false).stream()
                     .anyMatch(e -> e.getFromDate() != null && e.getToDate() != null
                         && !fridayDate.before(e.getFromDate()) && !fridayDate.after(e.getToDate())
                         && !"CANCELLED".equalsIgnoreCase(e.getStatus())
                         && Boolean.TRUE.equals(e.getIsActive())
-                        && (finalLeaveTypeId != 0 && finalLeaveTypeId.equals(e.getLeaveTypeId())));
+                        && (leaveTypeId != null && leaveTypeId.equals(e.getLeaveTypeId())));
 
                 if (hasFridayLeave) {
-                    ela.setNoOfDays(2);
-                    modelDuration = modelDuration + 2;
+                    ela.setNoOfDays(2.0);
+                    modelDuration = modelDuration + 2.0;
                 } else {
-                    ela.setNoOfDays(modelDuration.intValue());
+                    ela.setNoOfDays(modelDuration);
                 }
-            } else {
-                ela.setNoOfDays(modelDuration.intValue());
             }
-        } else {
-            ela.setNoOfDays(modelDuration.intValue());
         }
 
         ela.setReason(model.getReason());
@@ -518,8 +516,8 @@ public class LeaveService {
 
         ela = empLeaveApplicationRepository.save(ela);
 
-        // Update carry forward balance
-        if (carryForward != null) {
+        // Update carry forward balance (skip for LOP - matching .NET which sets LeaveTypeId=0 so re-fetch returns null)
+        if (!isLOP && carryForward != null) {
             double open = carryForward.getOpeningBalance() != null ? carryForward.getOpeningBalance() : 0.0;
             double avail = carryForward.getAvailed() != null ? carryForward.getAvailed() : 0.0;
             double close = carryForward.getClosingBalance() != null ? carryForward.getClosingBalance() : 0.0;
@@ -571,7 +569,7 @@ public class LeaveService {
         if ("Half Day".equals(leaveDay)) {
             duration = 0.5;
         }
-        ela.setNoOfDays(duration.intValue());
+        ela.setNoOfDays(duration);
         ela.setReason(model.getReason());
         ela.setStatus("Draft");
         ela.setIsActive(true);
@@ -1196,7 +1194,7 @@ public class LeaveService {
         }
         existingDraft.setFromDate(startDate);
         existingDraft.setToDate(endDate);
-        existingDraft.setNoOfDays(model.getDuration() != null ? model.getDuration().intValue() : 1);
+        existingDraft.setNoOfDays(model.getDuration() != null ? model.getDuration() : 1.0);
         existingDraft.setReason(model.getReason());
         existingDraft.setStatus("APPLIED");
 
@@ -1222,8 +1220,9 @@ public class LeaveService {
         existingDraft.setLastUpdatedDate(new Date());
         empLeaveApplicationRepository.save(existingDraft);
 
-        // Update carry forward balance
-        if (carryForward != null) {
+        // Update carry forward balance (skip for LOP - matching .NET)
+        boolean isLOP = Boolean.TRUE.equals(model.getIsLOP());
+        if (!isLOP && carryForward != null) {
             double open = carryForward.getOpeningBalance() != null ? carryForward.getOpeningBalance() : 0.0;
             double avail = carryForward.getAvailed() != null ? carryForward.getAvailed() : 0.0;
             double close = carryForward.getClosingBalance() != null ? carryForward.getClosingBalance() : 0.0;

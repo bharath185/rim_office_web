@@ -30,7 +30,7 @@ public class EmpLeaveApplication {
     private Date toDate;
 
     @Column(name = "Duration")
-    private Integer noOfDays;
+    private Double noOfDays;
 
     @Column(name = "Reason")
     private String reason;
@@ -110,8 +110,8 @@ public class EmpLeaveApplication {
     public Date getToDate() { return toDate; }
     public void setToDate(Date toDate) { this.toDate = toDate; }
 
-    public Integer getNoOfDays() { return noOfDays; }
-    public void setNoOfDays(Integer noOfDays) { this.noOfDays = noOfDays; }
+    public Double getNoOfDays() { return noOfDays; }
+    public void setNoOfDays(Double noOfDays) { this.noOfDays = noOfDays; }
 
     public String getReason() { return reason; }
     public void setReason(String reason) { this.reason = reason; }
