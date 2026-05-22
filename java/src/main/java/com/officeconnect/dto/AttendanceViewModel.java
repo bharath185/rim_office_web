@@ -1,7 +1,9 @@
 package com.officeconnect.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonInclude(JsonInclude.Include.ALWAYS)
 public class AttendanceViewModel {
 
     @JsonProperty("WFHDetails")

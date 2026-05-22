@@ -2053,6 +2053,14 @@ public class EmployeeService {
             List<WFHLoginlog> allWFHData = wfhLoginlogRepository.findByDateBetween(startDate, endDate);
             List<OnSiteLoginlog> allOnsiteData = onSiteLoginlogRepository.findByLoginDateBetween(startDate, endDate);
 
+            Map<String, String> shiftNameMap = new HashMap<>();
+            for (String code : empCodes) {
+                List<EmpShiftDetail> sdList = empShiftDetailRepository.findByEmpCode(code);
+                if (!sdList.isEmpty() && sdList.get(0).getShiftName() != null) {
+                    shiftNameMap.put(code, sdList.get(0).getShiftName());
+                }
+            }
+
             Calendar dateCal = Calendar.getInstance();
             dateCal.setTime(startDate);
             List<AttendaceDateViewModel> lstOfDate = new ArrayList<>();
@@ -2074,23 +2082,29 @@ public class EmployeeService {
 
                     Attendance logInEntry = null;
                     Attendance logOutEntry = null;
+                    Date firstESSLLogTime = null;
+                    Date lastESSLLogTime = null;
 
                     for (Attendance a : allLogInData) {
-                        if (a.getEmpCode() != null && a.getEmpCode().toUpperCase().equals(code) && a.getLogDate() != null) {
+                        if (a.getEmpCode() != null && a.getEmpCode().toUpperCase().equals(code) && a.getLogDate() != null && a.getLogTime() != null) {
                             String logDateStr = sdf.format(a.getLogDate());
                             if (logDateStr.equals(dateStr)) {
-                                logInEntry = a;
-                                break;
+                                if (firstESSLLogTime == null || a.getLogTime().before(firstESSLLogTime)) {
+                                    firstESSLLogTime = a.getLogTime();
+                                    logInEntry = a;
+                                }
                             }
                         }
                     }
 
                     for (Attendance a : allLogOutData) {
-                        if (a.getEmpCode() != null && a.getEmpCode().toUpperCase().equals(code) && a.getLogDate() != null) {
+                        if (a.getEmpCode() != null && a.getEmpCode().toUpperCase().equals(code) && a.getLogDate() != null && a.getLogTime() != null) {
                             String logDateStr = sdf.format(a.getLogDate());
                             if (logDateStr.equals(dateStr)) {
-                                logOutEntry = a;
-                                break;
+                                if (lastESSLLogTime == null || a.getLogTime().after(lastESSLLogTime)) {
+                                    lastESSLLogTime = a.getLogTime();
+                                    logOutEntry = a;
+                                }
                             }
                         }
                     }
@@ -2236,6 +2250,7 @@ public class EmployeeService {
                     avm.setLoginLocation("");
                     avm.setLogoutLocation("");
                     avm.setBreakTime("00:00:00");
+                    avm.setLeaveType("");
                     avm.setEsslLogInTime(esslLogInTimeStr);
                     avm.setEsslLogOutTime(esslLogOutTimeStr);
                     avm.setWfhLogInTime(wfhLogInTimeStr);
@@ -2250,15 +2265,7 @@ public class EmployeeService {
                         avm.setWorkType("ESSL");
                     }
 
-                    String shiftName = "";
-                    if (emp.getEmpCode() != null) {
-                        List<EmpShiftDetail> shiftDetails = empShiftDetailRepository
-                            .findByEmpCode(emp.getEmpCode());
-                        if (!shiftDetails.isEmpty()) {
-                            EmpShiftDetail sd = shiftDetails.get(0);
-                            if (sd.getShiftName() != null) shiftName = sd.getShiftName();
-                        }
-                    }
+                    String shiftName = shiftNameMap.getOrDefault(code, "");
                     avm.setShiftName(shiftName.isEmpty() ? "No Shift" : shiftName);
 
                     lstOfAtt.add(avm);
@@ -2275,7 +2282,6 @@ public class EmployeeService {
                 .filter(h -> h.getHolidayType() == null || !"RH HOLIDAYS".equalsIgnoreCase(h.getHolidayType()))
                 .filter(h -> h.getDate() != null && !h.getDate().before(startDate) && !h.getDate().after(endDate))
                 .collect(Collectors.toList());
-            List<Date> holidayDateList = activeHolidays.stream().map(Holiday::getDate).collect(Collectors.toList());
             Map<Integer, List<Holiday>> holidaysByLocation = activeHolidays.stream()
                 .filter(h -> h.getLocationId() != null)
                 .collect(Collectors.groupingBy(Holiday::getLocationId));
@@ -2303,9 +2309,17 @@ public class EmployeeService {
 
             for (AttendaceDateViewModel day : lstOfDate) {
                 boolean isHoliday = false;
+                String holidayNameValue = null;
                 try {
                     Date dayDate = sdf.parse(day.getAttendaceDate());
-                    isHoliday = holidayDateList.stream().anyMatch(h -> sdf.format(h).equals(day.getAttendaceDate()));
+                    String dayStr = day.getAttendaceDate();
+                    for (Holiday h : activeHolidays) {
+                        if (h.getDate() != null && sdf.format(h.getDate()).equals(dayStr)) {
+                            isHoliday = true;
+                            holidayNameValue = h.getTitle();
+                            break;
+                        }
+                    }
                 } catch (Exception ignored) {}
 
                 for (AttendanceViewModel emp : day.getLstofAttendance()) {
@@ -2315,6 +2329,7 @@ public class EmployeeService {
                         emp.setIsHoliday(true);
                         emp.setLeaveType("Holiday");
                         emp.setWorkType("HOLIDAY");
+                        emp.setHolidayName(holidayNameValue);
                         continue;
                     }
                     emp.setIsHoliday(false);
@@ -2332,6 +2347,26 @@ public class EmployeeService {
                     }
                     emp.setPayDays(payDays);
                     if (payDays == 0.5) emp.setDaysPresent(1);
+
+                    try {
+                        Date dayDt = sdf.parse(day.getAttendaceDate());
+                        Integer empIdVal = emp.getEmpId();
+                        for (EmpLeaveApplication leave : allLeaves) {
+                            if (leave.getEmpId() != null && leave.getEmpId().equals(empIdVal)
+                                && leave.getFromDate() != null && !dayDt.before(leave.getFromDate())
+                                && leave.getToDate() != null && !dayDt.after(leave.getToDate())) {
+                                Integer ltId = leave.getLeaveTypeId();
+                                if (ltId != null) {
+                                    if (ltId.equals(lopTypeId)) emp.setLeaveType("LOP");
+                                    else if (ltId.equals(clTypeId)) emp.setLeaveType("CL");
+                                    else if (ltId.equals(elTypeId)) emp.setLeaveType("EL");
+                                    else if (ltId.equals(rhTypeId)) emp.setLeaveType("RH");
+                                    else emp.setLeaveType("Leave");
+                                }
+                                break;
+                            }
+                        }
+                    } catch (Exception ignored) {}
                 }
             }
 
