@@ -1951,7 +1951,7 @@ public class EmployeeService {
             }
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
             Calendar today = Calendar.getInstance();
             today.set(Calendar.HOUR_OF_DAY, 0);
             today.set(Calendar.MINUTE, 0);
@@ -2037,6 +2037,17 @@ public class EmployeeService {
                 .filter(c -> !c.isEmpty())
                 .collect(Collectors.toList());
 
+            List<Integer> compIds = employees.stream().map(EmployeeMaster::getCompId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+            List<Integer> deptIds = employees.stream().map(EmployeeMaster::getCategoryId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+            List<Integer> desigIds = employees.stream().map(EmployeeMaster::getDesignationId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+
+            Map<Integer, String> compMap = companyMasterRepository.findAllById(compIds).stream()
+                .collect(Collectors.toMap(CompanyMaster::getCompId, c -> c.getCompany() != null ? c.getCompany() : ""));
+            Map<Integer, String> deptMap = deptMasterRepository.findAllById(deptIds).stream()
+                .collect(Collectors.toMap(DeptMaster::getDeptId, d -> d.getDeptName() != null ? d.getDeptName() : ""));
+            Map<Integer, String> desigMap = designationMasterRepository.findAllById(desigIds).stream()
+                .collect(Collectors.toMap(DesignationMaster::getDesignationId, d -> d.getDesignation() != null ? d.getDesignation() : ""));
+
             List<Attendance> allLogInData = attendanceRepository.findByTypeAndLogDateBetween("IN", startDate, endDate);
             List<Attendance> allLogOutData = attendanceRepository.findByTypeAndLogDateBetween("OUT", startDate, endDate);
             List<WFHLoginlog> allWFHData = wfhLoginlogRepository.findByDateBetween(startDate, endDate);
@@ -2084,21 +2095,34 @@ public class EmployeeService {
                         }
                     }
 
-                    String checkIn = "00:00";
-                    String checkOut = "00:00";
-                    String totalHours = "00:00";
+                    String checkIn = "00:00:00";
+                    String checkOut = "00:00:00";
+                    String totalHours = "00:00:00";
                     String status = "Absent";
                     String workType = "";
+                    String esslLogInTimeStr = "00:00:00";
+                    String esslLogOutTimeStr = "00:00:00";
+                    String wfhLogInTimeStr = "00:00:00";
+                    String wfhLogOutTimeStr = "00:00:00";
+                    String onsiteLogInTimeStr = "00:00:00";
+                    String onsiteLogOutTimeStr = "00:00:00";
+                    String esslActiveHoursStr = "00:00:00";
+                    String wfhActiveHoursStr = "00:00:00";
+                    String onsiteActiveHoursStr = "00:00:00";
 
                     if (logInEntry != null) {
-                        checkIn = timeFormat.format(logInEntry.getLogTime());
+                        esslLogInTimeStr = timeFormat.format(logInEntry.getLogTime());
+                        checkIn = esslLogInTimeStr;
                         if (logOutEntry != null) {
-                            checkOut = timeFormat.format(logOutEntry.getLogTime());
+                            esslLogOutTimeStr = timeFormat.format(logOutEntry.getLogTime());
+                            checkOut = esslLogOutTimeStr;
                             long diffMs = logOutEntry.getLogTime().getTime() - logInEntry.getLogTime().getTime();
                             if (diffMs > 0) {
                                 long hours = diffMs / (1000 * 60 * 60);
                                 long mins = (diffMs % (1000 * 60 * 60)) / (1000 * 60);
-                                totalHours = String.format("%02d:%02d", hours, mins);
+                                long secs = (diffMs % (1000 * 60)) / 1000;
+                                totalHours = String.format("%02d:%02d:%02d", hours, mins, secs);
+                                esslActiveHoursStr = totalHours;
                                 status = "Present";
                             }
                         } else {
@@ -2107,7 +2131,7 @@ public class EmployeeService {
                             defaultOut.setTime(logInEntry.getLogTime());
                             defaultOut.add(Calendar.HOUR_OF_DAY, 9);
                             checkOut = timeFormat.format(defaultOut.getTime());
-                            totalHours = "09:00";
+                            totalHours = "09:00:00";
                         }
                     } else {
                         List<WFHLoginlog> wfhEntries = allWFHData.stream()
@@ -2131,15 +2155,19 @@ public class EmployeeService {
                                 }
                             }
                             if (firstLogin != null) {
-                                checkIn = timeFormat.format(firstLogin);
+                                wfhLogInTimeStr = timeFormat.format(firstLogin);
+                                checkIn = wfhLogInTimeStr;
                             }
                             if (lastLogout != null) {
-                                checkOut = timeFormat.format(lastLogout);
+                                wfhLogOutTimeStr = timeFormat.format(lastLogout);
+                                checkOut = wfhLogOutTimeStr;
                                 long diffMs = lastLogout.getTime() - firstLogin.getTime();
                                 if (diffMs > 0) {
                                     long hours = diffMs / (1000 * 60 * 60);
                                     long mins = (diffMs % (1000 * 60 * 60)) / (1000 * 60);
-                                    totalHours = String.format("%02d:%02d", hours, mins);
+                                    long secs = (diffMs % (1000 * 60)) / 1000;
+                                    totalHours = String.format("%02d:%02d:%02d", hours, mins, secs);
+                                    wfhActiveHoursStr = totalHours;
                                 }
                             }
                             status = "Present";
@@ -2165,15 +2193,19 @@ public class EmployeeService {
                                     }
                                 }
                                 if (firstLogin != null) {
-                                    checkIn = timeFormat.format(firstLogin);
+                                    onsiteLogInTimeStr = timeFormat.format(firstLogin);
+                                    checkIn = onsiteLogInTimeStr;
                                 }
                                 if (lastLogout != null) {
-                                    checkOut = timeFormat.format(lastLogout);
+                                    onsiteLogOutTimeStr = timeFormat.format(lastLogout);
+                                    checkOut = onsiteLogOutTimeStr;
                                     long diffMs = lastLogout.getTime() - firstLogin.getTime();
                                     if (diffMs > 0) {
                                         long hours = diffMs / (1000 * 60 * 60);
                                         long mins = (diffMs % (1000 * 60 * 60)) / (1000 * 60);
-                                        totalHours = String.format("%02d:%02d", hours, mins);
+                                        long secs = (diffMs % (1000 * 60)) / 1000;
+                                        totalHours = String.format("%02d:%02d:%02d", hours, mins, secs);
+                                        onsiteActiveHoursStr = totalHours;
                                     }
                                 }
                                 status = "Present";
@@ -2195,14 +2227,27 @@ public class EmployeeService {
                     avm.setTotalHours(totalHours);
                     avm.setActiveHours(totalHours);
                     avm.setLogDate(currentDate);
+                    avm.setCompId(emp.getCompId());
+                    avm.setCompName(compMap.getOrDefault(emp.getCompId(), ""));
+                    avm.setDesignation(emp.getDesignationName() != null ? emp.getDesignationName() : desigMap.getOrDefault(emp.getDesignationId(), ""));
+                    avm.setDeptName(emp.getDeptName() != null ? emp.getDeptName() : deptMap.getOrDefault(emp.getCategoryId(), ""));
+                    avm.setDeptId(emp.getCategoryId());
+                    avm.setDesignationId(emp.getDesignationId());
+                    avm.setLoginLocation("");
+                    avm.setLogoutLocation("");
+                    avm.setBreakTime("00:00:00");
+                    avm.setEsslLogInTime(esslLogInTimeStr);
+                    avm.setEsslLogOutTime(esslLogOutTimeStr);
+                    avm.setWfhLogInTime(wfhLogInTimeStr);
+                    avm.setWfhLogOutTime(wfhLogOutTimeStr);
+                    avm.setOnsiteLogInTime(onsiteLogInTimeStr);
+                    avm.setOnsiteLogOutTime(onsiteLogOutTimeStr);
+                    avm.setEsslActiveHours(esslActiveHoursStr);
+                    avm.setWfhActiveHours(wfhActiveHoursStr);
+                    avm.setOnsiteActiveHours(onsiteActiveHoursStr);
 
                     if (logInEntry != null) {
-                        avm.setEsslLogInTime(timeFormat.format(logInEntry.getLogTime()));
-                        avm.setEsslLogOutTime(logOutEntry != null ? timeFormat.format(logOutEntry.getLogTime()) : "");
-                        if (workType.isEmpty()) {
-                            avm.setWorkType("ESSL");
-                            avm.setEsslActiveHours(totalHours);
-                        }
+                        avm.setWorkType("ESSL");
                     }
 
                     String shiftName = "";
@@ -2237,6 +2282,9 @@ public class EmployeeService {
 
             List<EmpLeaveApplication> allLeaves = empLeaveApplicationRepository.findByIsDeleted(false).stream()
                 .filter(l -> l.getStatus() != null && l.getStatus().contains("APPROVED"))
+                .filter(l -> Boolean.TRUE.equals(l.getIsActive()))
+                .filter(l -> l.getFromDate() != null && l.getToDate() != null
+                    && !l.getFromDate().after(endDate) && !l.getToDate().before(startDate))
                 .collect(Collectors.toList());
 
             Integer lopTypeId = leaveTypeMasterRepository.findLeaveTypeIdByShortName("LOP");
@@ -2264,13 +2312,17 @@ public class EmployeeService {
                     if (isHoliday) {
                         emp.setPayDays(0.0);
                         emp.setDaysPresent(0);
+                        emp.setIsHoliday(true);
+                        emp.setLeaveType("Holiday");
+                        emp.setWorkType("HOLIDAY");
                         continue;
                     }
+                    emp.setIsHoliday(false);
                     String wh = emp.getWorkingHours();
                     double payDays = 0.0;
-                    if (wh != null && !wh.isEmpty() && !"00:00".equals(wh)) {
+                    if (wh != null && !wh.isEmpty() && !"00:00:00".equals(wh)) {
                         String[] parts = wh.split(":");
-                        if (parts.length == 2) {
+                        if (parts.length >= 2) {
                             try {
                                 int totalMinutes = Integer.parseInt(parts[0]) * 60 + Integer.parseInt(parts[1]);
                                 if (totalMinutes >= 510) payDays = 1.0;
