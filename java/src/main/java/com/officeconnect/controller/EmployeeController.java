@@ -221,8 +221,14 @@ public class EmployeeController {
     }
 
     @PostMapping("/UploadMultiAttendance")
-    public ResponseEntity<?> uploadMultiAttendance(@RequestBody Map<String, Object> model) {
-        return ResponseEntity.ok(Map.of("StatusCode", 200, "Message", "UploadMultiAttendance accepted"));
+    public ResponseEntity<?> uploadMultiAttendance(@RequestBody List<UploadAttendanceSingleViewModel> model) {
+        try {
+            UploadResult result = employeeService.uploadMultiAttendance(model);
+            return ResponseEntity.ok(result);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("StatusCode", 404, "Message", ex.getMessage()));
+        }
     }
 
     @PostMapping("/UploadSingleAttendance")
