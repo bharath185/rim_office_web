@@ -2052,6 +2052,7 @@ public class EmployeeService {
             List<Attendance> allLogOutData = attendanceRepository.findByTypeAndLogDateBetween("OUT", startDate, endDate);
             List<WFHLoginlog> allWFHData = wfhLoginlogRepository.findByDateBetween(startDate, endDate);
             List<OnSiteLoginlog> allOnsiteData = onSiteLoginlogRepository.findByLoginDateBetween(startDate, endDate);
+            List<EmpAttendanceTime> allAttendanceTimes = empAttendanceTimeRepository.findByLogDateBetween(startDate, endDate);
 
             Map<String, String> shiftNameMap = new HashMap<>();
             for (String code : empCodes) {
@@ -2124,48 +2125,107 @@ public class EmployeeService {
                     String wfhActiveHoursStr = "00:00:00";
                     String onsiteActiveHoursStr = "00:00:00";
 
+                    // --- ESSL handling with EmpAttendanceTime Duration ---
+                    boolean hasValidESSL = false;
                     if (logInEntry != null) {
                         esslLogInTimeStr = timeFormat.format(logInEntry.getLogTime());
                         checkIn = esslLogInTimeStr;
                         if (logOutEntry != null) {
                             esslLogOutTimeStr = timeFormat.format(logOutEntry.getLogTime());
                             checkOut = esslLogOutTimeStr;
-                            long diffMs = logOutEntry.getLogTime().getTime() - logInEntry.getLogTime().getTime();
-                            if (diffMs > 0) {
-                                long hours = diffMs / (1000 * 60 * 60);
-                                long mins = (diffMs % (1000 * 60 * 60)) / (1000 * 60);
-                                long secs = (diffMs % (1000 * 60)) / 1000;
-                                totalHours = String.format("%02d:%02d:%02d", hours, mins, secs);
-                                esslActiveHoursStr = totalHours;
-                                status = "Present";
+
+                            // Find EmpAttendanceTime Duration for this employee/date
+                            EmpAttendanceTime attTime = null;
+                            for (EmpAttendanceTime at : allAttendanceTimes) {
+                                if (at.getEmpCode() != null && at.getEmpCode().toUpperCase().equals(code) && at.getLogDate() != null && sdf.format(at.getLogDate()).equals(dateStr)) {
+                                    if (attTime == null || (at.getAttendHours() != null && attTime.getAttendHours() != null && at.getAttendHours() > attTime.getAttendHours())) {
+                                        attTime = at;
+                                    }
+                                }
+                            }
+
+                            // Use Duration from Emp_AttendanceTime if available and non-zero
+                            if (attTime != null && attTime.getDuration() != null) {
+                                String durStr = new SimpleDateFormat("HH:mm:ss").format(attTime.getDuration());
+                                if (!"00:00:00".equals(durStr)) {
+                                    totalHours = durStr;
+                                    esslActiveHoursStr = totalHours;
+                                    status = "Present";
+                                    hasValidESSL = true;
+                                    workType = "ESSL";
+                                }
+                            }
+
+                            // Fallback: use CheckOut-CheckIn diff if Duration not used
+                            if (!hasValidESSL) {
+                                long diffMs = logOutEntry.getLogTime().getTime() - logInEntry.getLogTime().getTime();
+                                if (diffMs > 0) {
+                                    long hours = diffMs / (1000 * 60 * 60);
+                                    long mins = (diffMs % (1000 * 60 * 60)) / (1000 * 60);
+                                    long secs = (diffMs % (1000 * 60)) / 1000;
+                                    totalHours = String.format("%02d:%02d:%02d", hours, mins, secs);
+                                    esslActiveHoursStr = totalHours;
+                                    status = "Present";
+                                    hasValidESSL = true;
+                                    workType = "ESSL";
+                                } else {
+                                    // Invalid/midnight times - reset and fall through
+                                    esslLogInTimeStr = "00:00:00";
+                                    esslLogOutTimeStr = "00:00:00";
+                                    checkIn = "00:00:00";
+                                    checkOut = "00:00:00";
+                                }
                             }
                         } else {
                             status = "Half Day";
+                            hasValidESSL = true;
+                            workType = "ESSL";
                             Calendar defaultOut = Calendar.getInstance();
                             defaultOut.setTime(logInEntry.getLogTime());
                             defaultOut.add(Calendar.HOUR_OF_DAY, 9);
                             checkOut = timeFormat.format(defaultOut.getTime());
                             totalHours = "09:00:00";
                         }
-                    } else {
+                    }
+
+                    if (!hasValidESSL) {
                         List<WFHLoginlog> wfhEntries = allWFHData.stream()
                             .filter(w -> w.getEmpCode() != null && w.getEmpCode().toUpperCase().equals(code) && w.getDate() != null && sdf.format(w.getDate()).equals(dateStr))
                             .collect(Collectors.toList());
 
                         if (!wfhEntries.isEmpty()) {
                             workType = "WFH";
+                            wfhEntries.sort((a, b) -> {
+                                if (a.getLoginTime() == null) return 1;
+                                if (b.getLoginTime() == null) return -1;
+                                return a.getLoginTime().compareTo(b.getLoginTime());
+                            });
                             Date firstLogin = null;
                             Date lastLogout = null;
-                            for (WFHLoginlog w : wfhEntries) {
-                                if (w.getLoginTime() != null) {
-                                    if (firstLogin == null || w.getLoginTime().before(firstLogin)) {
-                                        firstLogin = w.getLoginTime();
-                                    }
+                            long totalWfhMs = 0;
+                            for (int i = 0; i < wfhEntries.size(); i++) {
+                                WFHLoginlog entry = wfhEntries.get(i);
+                                if (entry.getLoginTime() == null) continue;
+                                if (firstLogin == null || entry.getLoginTime().before(firstLogin)) {
+                                    firstLogin = entry.getLoginTime();
                                 }
-                                if (w.getLogOutTime() != null) {
-                                    if (lastLogout == null || w.getLogOutTime().after(lastLogout)) {
-                                        lastLogout = w.getLogOutTime();
-                                    }
+                                Date logOut;
+                                if (entry.getLogOutTime() != null) {
+                                    logOut = entry.getLogOutTime();
+                                } else if (i + 1 < wfhEntries.size() && wfhEntries.get(i + 1).getLoginTime() != null) {
+                                    logOut = wfhEntries.get(i + 1).getLoginTime();
+                                } else {
+                                    Calendar defaultLogout = Calendar.getInstance();
+                                    defaultLogout.set(Calendar.HOUR_OF_DAY, 18);
+                                    defaultLogout.set(Calendar.MINUTE, 35);
+                                    defaultLogout.set(Calendar.SECOND, 0);
+                                    logOut = defaultLogout.getTime();
+                                }
+                                if (lastLogout == null || logOut.after(lastLogout)) {
+                                    lastLogout = logOut;
+                                }
+                                if (logOut.after(entry.getLoginTime())) {
+                                    totalWfhMs += logOut.getTime() - entry.getLoginTime().getTime();
                                 }
                             }
                             if (firstLogin != null) {
@@ -2175,14 +2235,13 @@ public class EmployeeService {
                             if (lastLogout != null) {
                                 wfhLogOutTimeStr = timeFormat.format(lastLogout);
                                 checkOut = wfhLogOutTimeStr;
-                                long diffMs = lastLogout.getTime() - firstLogin.getTime();
-                                if (diffMs > 0) {
-                                    long hours = diffMs / (1000 * 60 * 60);
-                                    long mins = (diffMs % (1000 * 60 * 60)) / (1000 * 60);
-                                    long secs = (diffMs % (1000 * 60)) / 1000;
-                                    totalHours = String.format("%02d:%02d:%02d", hours, mins, secs);
-                                    wfhActiveHoursStr = totalHours;
-                                }
+                            }
+                            if (totalWfhMs > 0) {
+                                long hours = totalWfhMs / (1000 * 60 * 60);
+                                long mins = (totalWfhMs % (1000 * 60 * 60)) / (1000 * 60);
+                                long secs = (totalWfhMs % (1000 * 60)) / 1000;
+                                totalHours = String.format("%02d:%02d:%02d", hours, mins, secs);
+                                wfhActiveHoursStr = totalHours;
                             }
                             status = "Present";
                         } else {
@@ -2192,18 +2251,37 @@ public class EmployeeService {
 
                             if (!onsiteEntries.isEmpty()) {
                                 workType = "OnSite";
+                                onsiteEntries.sort((a, b) -> {
+                                    if (a.getLogInTime() == null) return 1;
+                                    if (b.getLogInTime() == null) return -1;
+                                    return a.getLogInTime().compareTo(b.getLogInTime());
+                                });
                                 Date firstLogin = null;
                                 Date lastLogout = null;
-                                for (OnSiteLoginlog o : onsiteEntries) {
-                                    if (o.getLogInTime() != null) {
-                                        if (firstLogin == null || o.getLogInTime().before(firstLogin)) {
-                                            firstLogin = o.getLogInTime();
-                                        }
+                                long totalOnsiteMs = 0;
+                                for (int i = 0; i < onsiteEntries.size(); i++) {
+                                    OnSiteLoginlog entry = onsiteEntries.get(i);
+                                    if (entry.getLogInTime() == null) continue;
+                                    if (firstLogin == null || entry.getLogInTime().before(firstLogin)) {
+                                        firstLogin = entry.getLogInTime();
                                     }
-                                    if (o.getLogOutTime() != null) {
-                                        if (lastLogout == null || o.getLogOutTime().after(lastLogout)) {
-                                            lastLogout = o.getLogOutTime();
-                                        }
+                                    Date logOut;
+                                    if (entry.getLogOutTime() != null) {
+                                        logOut = entry.getLogOutTime();
+                                    } else if (i + 1 < onsiteEntries.size() && onsiteEntries.get(i + 1).getLogInTime() != null) {
+                                        logOut = onsiteEntries.get(i + 1).getLogInTime();
+                                    } else {
+                                        Calendar defaultLogout = Calendar.getInstance();
+                                        defaultLogout.set(Calendar.HOUR_OF_DAY, 18);
+                                        defaultLogout.set(Calendar.MINUTE, 36);
+                                        defaultLogout.set(Calendar.SECOND, 0);
+                                        logOut = defaultLogout.getTime();
+                                    }
+                                    if (lastLogout == null || logOut.after(lastLogout)) {
+                                        lastLogout = logOut;
+                                    }
+                                    if (logOut.after(entry.getLogInTime())) {
+                                        totalOnsiteMs += logOut.getTime() - entry.getLogInTime().getTime();
                                     }
                                 }
                                 if (firstLogin != null) {
@@ -2213,14 +2291,13 @@ public class EmployeeService {
                                 if (lastLogout != null) {
                                     onsiteLogOutTimeStr = timeFormat.format(lastLogout);
                                     checkOut = onsiteLogOutTimeStr;
-                                    long diffMs = lastLogout.getTime() - firstLogin.getTime();
-                                    if (diffMs > 0) {
-                                        long hours = diffMs / (1000 * 60 * 60);
-                                        long mins = (diffMs % (1000 * 60 * 60)) / (1000 * 60);
-                                        long secs = (diffMs % (1000 * 60)) / 1000;
-                                        totalHours = String.format("%02d:%02d:%02d", hours, mins, secs);
-                                        onsiteActiveHoursStr = totalHours;
-                                    }
+                                }
+                                if (totalOnsiteMs > 0) {
+                                    long hours = totalOnsiteMs / (1000 * 60 * 60);
+                                    long mins = (totalOnsiteMs % (1000 * 60 * 60)) / (1000 * 60);
+                                    long secs = (totalOnsiteMs % (1000 * 60)) / 1000;
+                                    totalHours = String.format("%02d:%02d:%02d", hours, mins, secs);
+                                    onsiteActiveHoursStr = totalHours;
                                 }
                                 status = "Present";
                             }
@@ -2261,7 +2338,7 @@ public class EmployeeService {
                     avm.setWfhActiveHours(wfhActiveHoursStr);
                     avm.setOnsiteActiveHours(onsiteActiveHoursStr);
 
-                    if (logInEntry != null) {
+                    if (hasValidESSL) {
                         avm.setWorkType("ESSL");
                     }
 
@@ -2685,6 +2762,7 @@ public class EmployeeService {
 
                             Date firstLogin = null;
                             Date lastLogout = null;
+                            long totalWfhMs = 0;
 
                             for (int i = 0; i < wfhEntries.size(); i++) {
                                 WFHLoginlog entry = wfhEntries.get(i);
@@ -2710,6 +2788,10 @@ public class EmployeeService {
                                 if (lastLogout == null || logOut.after(lastLogout)) {
                                     lastLogout = logOut;
                                 }
+
+                                if (logOut.after(entry.getLoginTime())) {
+                                    totalWfhMs += logOut.getTime() - entry.getLoginTime().getTime();
+                                }
                             }
 
                             if (firstLogin != null) {
@@ -2723,11 +2805,10 @@ public class EmployeeService {
                             wfhDetails = "1";
                             workType = "WFH";
 
-                            if (firstLogin != null && lastLogout != null && lastLogout.after(firstLogin)) {
-                                long diffMs = lastLogout.getTime() - firstLogin.getTime();
-                                long hours = diffMs / (1000 * 60 * 60);
-                                long mins = (diffMs % (1000 * 60 * 60)) / (1000 * 60);
-                                long secs = (diffMs % (1000 * 60)) / 1000;
+                            if (totalWfhMs > 0) {
+                                long hours = totalWfhMs / (1000 * 60 * 60);
+                                long mins = (totalWfhMs % (1000 * 60 * 60)) / (1000 * 60);
+                                long secs = (totalWfhMs % (1000 * 60)) / 1000;
                                 wfhActiveHours = String.format("%02d:%02d:%02d", hours, mins, secs);
                                 activeHours = wfhActiveHours;
                             }
@@ -2745,6 +2826,7 @@ public class EmployeeService {
 
                                 Date onsiteFirstLogin = null;
                                 Date onsiteLastLogout = null;
+                                long totalOnsiteMs = 0;
 
                                 for (int i = 0; i < onsiteEntries.size(); i++) {
                                     OnSiteLoginlog entry = onsiteEntries.get(i);
@@ -2770,6 +2852,10 @@ public class EmployeeService {
                                     if (onsiteLastLogout == null || logOut.after(onsiteLastLogout)) {
                                         onsiteLastLogout = logOut;
                                     }
+
+                                    if (logOut.after(entry.getLogInTime())) {
+                                        totalOnsiteMs += logOut.getTime() - entry.getLogInTime().getTime();
+                                    }
                                 }
 
                                 if (onsiteFirstLogin != null) {
@@ -2783,11 +2869,10 @@ public class EmployeeService {
                                 onsiteDetails = "2";
                                 workType = "OnSite";
 
-                                if (onsiteFirstLogin != null && onsiteLastLogout != null && onsiteLastLogout.after(onsiteFirstLogin)) {
-                                    long diffMs = onsiteLastLogout.getTime() - onsiteFirstLogin.getTime();
-                                    long hours = diffMs / (1000 * 60 * 60);
-                                    long mins = (diffMs % (1000 * 60 * 60)) / (1000 * 60);
-                                    long secs = (diffMs % (1000 * 60)) / 1000;
+                                if (totalOnsiteMs > 0) {
+                                    long hours = totalOnsiteMs / (1000 * 60 * 60);
+                                    long mins = (totalOnsiteMs % (1000 * 60 * 60)) / (1000 * 60);
+                                    long secs = (totalOnsiteMs % (1000 * 60)) / 1000;
                                     onsiteActiveHours = String.format("%02d:%02d:%02d", hours, mins, secs);
                                     activeHours = onsiteActiveHours;
                                 }
