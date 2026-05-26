@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PerBehaviourDetailRepository extends JpaRepository<PerBehaviourDetail, Integer> {
+    PerBehaviourDetail findByBehaviourIdAndEmpIdAndIsActiveAndIsDeleted(Integer behaviourId, Integer empId, Boolean isActive, Boolean isDeleted);
 }

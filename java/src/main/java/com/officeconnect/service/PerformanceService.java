@@ -840,8 +840,139 @@ public class PerformanceService {
         return Map.of("StatusCode", 200, "Message", "Self development deleted successfully");
     }
 
+    @SuppressWarnings("unchecked")
     public Map<String, Object> saveEmployeeReview(Map<String, Object> model) {
-        return Map.of("StatusCode", 200, "Message", "Employee review saved successfully");
+        Object empIdObj = model.get("EmpId");
+        Integer empId = null;
+        if (empIdObj != null) {
+            String val = empIdObj.toString().trim();
+            if (!val.isEmpty()) {
+                empId = Integer.parseInt(val);
+            }
+        }
+        if (empId != null && empId == 0) {
+            throw new RuntimeException("EmpId is Missing");
+        }
+
+        List<QuaterMaster> activeQuarters = quaterMasterRepository.findByIsActiveAndIsDeleted(true, false);
+        Integer qId = activeQuarters.isEmpty() ? 0 : activeQuarters.get(0).getQuaterId();
+
+        List<FinancialYearMaster> activeFYears = financialYearMasterRepository.findByStatus(true);
+        if (activeFYears.isEmpty()) {
+            activeFYears = financialYearMasterRepository.findByIsActiveAndIsDeleted(true, false);
+        }
+        Integer fYearId = activeFYears.isEmpty() ? 0 : activeFYears.get(0).getYearId();
+
+        Object listofGoalObj = model.get("listofGoal");
+        if (listofGoalObj == null) {
+            throw new RuntimeException("Goal Details Not Found");
+        }
+
+        List<Map<String, Object>> listofGoal = (List<Map<String, Object>>) listofGoalObj;
+        for (Map<String, Object> goalItem : listofGoal) {
+            Integer goalId = goalItem.get("GoalId") != null ? Integer.parseInt(goalItem.get("GoalId").toString()) : 0;
+
+            PerGoal goalDetails = perGoalRepository.findByGoalIdAndEmpIdAndReviewedByEmpAndReviewedByManagerAndIsActiveAndIsDeleted(
+                    goalId, empId, false, false, true, false);
+
+            if (goalDetails != null) {
+                goalDetails.setEmpReview(goalItem.get("EmpReview") != null ? goalItem.get("EmpReview").toString() : "");
+                goalDetails.setEDescription(goalItem.get("EDescription") != null ? goalItem.get("EDescription").toString() : "");
+                goalDetails.setReviewedByEmp(true);
+                goalDetails.setStatus("Emp Review Completed");
+                goalDetails.setFinalSubmit(true);
+                goalDetails.setIsActive(true);
+                goalDetails.setIsUpdated(true);
+                goalDetails.setIsDeleted(false);
+                goalDetails.setLastUpdatedBy(empId);
+                goalDetails.setLastUpdatedDate(new Date());
+                perGoalRepository.save(goalDetails);
+            } else {
+                String goalName = goalItem.get("Goal") != null ? goalItem.get("Goal").toString() : "Unknown";
+                throw new RuntimeException("This " + goalName + " Detail is Not Found");
+            }
+        }
+
+        Object listofBehaviorObj = model.get("listofBehavior");
+        if (listofBehaviorObj == null) {
+            throw new RuntimeException("Employee Review Details Not Found");
+        }
+
+        List<Map<String, Object>> listofBehavior = (List<Map<String, Object>>) listofBehaviorObj;
+        for (Map<String, Object> behaviorItem : listofBehavior) {
+            Integer behaviourId = behaviorItem.get("Id") != null ? Integer.parseInt(behaviorItem.get("Id").toString()) : 0;
+
+            PerBehaviourDetail behaviourDetails = perBehaviourDetailRepository.findByBehaviourIdAndEmpIdAndIsActiveAndIsDeleted(
+                    behaviourId, empId, true, false);
+
+            if (behaviourDetails != null) {
+                behaviourDetails.setEmpReview(behaviorItem.get("EmpReview") != null ? behaviorItem.get("EmpReview").toString() : "");
+                behaviourDetails.setEDescription(behaviorItem.get("EDescription") != null ? behaviorItem.get("EDescription").toString() : "");
+                behaviourDetails.setReviewedByEmp(true);
+                behaviourDetails.setIsActive(true);
+                behaviourDetails.setIsUpdated(true);
+                behaviourDetails.setIsDeleted(false);
+                behaviourDetails.setLastUpdatedBy(empId);
+                behaviourDetails.setLastUpdatedDate(new Date());
+                perBehaviourDetailRepository.save(behaviourDetails);
+            } else {
+                PerBehaviourMaster behaviour = perBehaviourMasterRepository.findById(behaviourId).orElse(null);
+                if (behaviour != null && behaviour.getIsActive() != null && behaviour.getIsActive()
+                        && behaviour.getIsDeleted() != null && !behaviour.getIsDeleted()) {
+                    PerBehaviourDetail pbd = new PerBehaviourDetail();
+                    pbd.setQId(behaviour.getQId() != null ? behaviour.getQId() : 0);
+                    pbd.setPeriodId(behaviour.getPeriodId() != null ? behaviour.getPeriodId() : 0);
+                    pbd.setEmpId(empId);
+                    pbd.setBehaviourId(behaviour.getId());
+                    pbd.setBehaviour(behaviour.getBehaviour());
+                    pbd.setDescription(behaviour.getDescription() != null ? behaviour.getDescription() : "");
+                    pbd.setWeightage(behaviour.getWeightage());
+                    pbd.setEmpReview(behaviorItem.get("EmpReview") != null ? behaviorItem.get("EmpReview").toString() : "");
+                    pbd.setManagerReview("");
+                    pbd.setEDescription(behaviorItem.get("EDescription") != null ? behaviorItem.get("EDescription").toString() : "");
+                    pbd.setMDescription("");
+                    pbd.setReviewedByEmp(true);
+                    pbd.setReviewedByManager(false);
+                    pbd.setIsActive(true);
+                    pbd.setIsUpdated(false);
+                    pbd.setIsDeleted(false);
+                    pbd.setCreatedBy(empId);
+                    pbd.setCreatedDate(new Date());
+                    pbd.setLastUpdatedBy(empId);
+                    pbd.setLastUpdatedDate(new Date());
+                    perBehaviourDetailRepository.save(pbd);
+                }
+            }
+        }
+
+        ReviewList empReviewDetails = reviewListRepository.findByQIdAndFYearIdAndEmpIdAndIsActiveAndIsDeleted(
+                qId, fYearId, empId, true, false);
+
+        if (empReviewDetails == null) {
+            String qType = activeQuarters.isEmpty() ? "" : activeQuarters.get(0).getType();
+
+            ReviewList rl = new ReviewList();
+            rl.setFYearId(fYearId);
+            rl.setQId(qId);
+            rl.setEmpId(empId);
+            rl.setQType(qType);
+            rl.setStatus("Emp Review Completed");
+            rl.setReviewedByEmp(true);
+            rl.setReviewedByManager(false);
+            rl.setCompleted(false);
+            rl.setCreatedBy(empId);
+            rl.setCreatedDate(new Date());
+            rl.setLastUpdatedBy(empId);
+            rl.setLastUpdatedDate(new Date());
+            rl.setIsActive(true);
+            rl.setIsUpdated(false);
+            rl.setIsDeleted(false);
+            reviewListRepository.save(rl);
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("msg", "Employee Reviw Completed");
+        return result;
     }
 
     public List<Map<String, Object>> getAllEmployeeReviewList(Map<String, Object> model) {

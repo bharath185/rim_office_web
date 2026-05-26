@@ -4643,57 +4643,167 @@ public class EmployeeService {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     public Map<String, Object> updateHoliday(Map<String, Object> model) {
-        Integer id = (Integer) model.get("id");
-        if (id == null) {
-            throw new RuntimeException("Holiday ID is required");
+        Object modifyByObj = model.get("Modify_By");
+        if (modifyByObj == null || Integer.parseInt(modifyByObj.toString()) == 0) {
+            throw new RuntimeException("Invalid ModifiedBy ID.");
         }
-        
-        Optional<Holiday> holidayOpt = holidayRepository.findById(id);
-        if (holidayOpt.isEmpty()) {
-            throw new RuntimeException("Holiday not found");
+        Integer modifyBy = Integer.parseInt(modifyByObj.toString());
+
+        Object holidayIdObj = model.get("Holiday_Id");
+        if (holidayIdObj == null) {
+            throw new RuntimeException("Invalid Holiday ID list.");
         }
-        
-        Holiday holiday = holidayOpt.get();
-        Object holidayDate = model.get("holidayDate");
-        Object holidayName = model.get("holidayName");
-        Object day = model.get("day");
-        Object locationId = model.get("locationId");
-        
-        if (holidayName != null) {
-            holiday.setTitle(holidayName.toString());
+        List<Integer> holidayIdList = new ArrayList<>();
+        if (holidayIdObj instanceof List) {
+            for (Object o : (List<Object>) holidayIdObj) {
+                if (o instanceof Number) {
+                    holidayIdList.add(((Number) o).intValue());
+                } else {
+                    holidayIdList.add(Integer.parseInt(o.toString()));
+                }
+            }
+        } else {
+            holidayIdList.add(Integer.parseInt(holidayIdObj.toString()));
         }
-        if (day != null) {
-            holiday.setHolidayType(day.toString());
+        if (holidayIdList.isEmpty()) {
+            throw new RuntimeException("Invalid Holiday ID list.");
         }
-        if (locationId != null) {
-            holiday.setLocationId(Integer.parseInt(locationId.toString()));
+
+        Object holidayLocationIdObj = model.get("HolidayLocationId");
+        if (holidayLocationIdObj == null) {
+            throw new RuntimeException("HolidayLocationId list is required.");
         }
-        holidayRepository.save(holiday);
-        
+        List<Integer> selectedLocationIds = new ArrayList<>();
+        if (holidayLocationIdObj instanceof List) {
+            for (Object o : (List<Object>) holidayLocationIdObj) {
+                if (o instanceof Number) {
+                    selectedLocationIds.add(((Number) o).intValue());
+                } else {
+                    selectedLocationIds.add(Integer.parseInt(o.toString()));
+                }
+            }
+        } else {
+            selectedLocationIds.add(Integer.parseInt(holidayLocationIdObj.toString()));
+        }
+
+        List<Object> holidayLocationList = new ArrayList<>();
+        Object holidayLocationObj = model.get("HolidayLocation");
+        if (holidayLocationObj instanceof List) {
+            holidayLocationList = (List<Object>) holidayLocationObj;
+        }
+
+        List<Holiday> existingHolidays = holidayRepository.findAllById(holidayIdList);
+
+        List<Holiday> holidaysToRemove = existingHolidays.stream()
+            .filter(h -> h.getLocationId() != null && !selectedLocationIds.contains(h.getLocationId()))
+            .collect(Collectors.toList());
+
+        for (Holiday h : holidaysToRemove) {
+            holidayRepository.delete(h);
+        }
+
+        String dateStr = model.get("Date") != null ? model.get("Date").toString() : "";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date holidayDate;
+        try {
+            holidayDate = dateStr.isEmpty() ? null : sdf.parse(dateStr);
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid date format: " + dateStr);
+        }
+
+        for (int i = 0; i < selectedLocationIds.size(); i++) {
+            int locationId = selectedLocationIds.get(i);
+            String locationName = (i < holidayLocationList.size()) ? holidayLocationList.get(i).toString() : "";
+
+            Holiday existingHoliday = existingHolidays.stream()
+                .filter(h -> h.getLocationId() != null && h.getLocationId() == locationId)
+                .findFirst().orElse(null);
+
+            if (existingHoliday != null) {
+                existingHoliday.setTitle(model.get("Title") != null ? model.get("Title").toString() : "");
+                if (holidayDate != null) existingHoliday.setDate(holidayDate);
+                existingHoliday.setYear(model.get("Year") != null ? Integer.parseInt(model.get("Year").toString()) : null);
+                existingHoliday.setDescription(model.get("Description") != null ? model.get("Description").toString() : "");
+                existingHoliday.setLocation(locationName);
+                existingHoliday.setModifyBy(modifyBy);
+                existingHoliday.setModifyDate(new Date());
+                existingHoliday.setStatus(model.get("Status") != null ? model.get("Status").toString() : "Active");
+                existingHoliday.setHolidayType(model.get("HolidayType") != null ? model.get("HolidayType").toString() : "");
+                holidayRepository.save(existingHoliday);
+            } else {
+                Holiday newHoliday = new Holiday();
+                newHoliday.setTitle(model.get("Title") != null ? model.get("Title").toString() : "");
+                if (holidayDate != null) newHoliday.setDate(holidayDate);
+                newHoliday.setYear(model.get("Year") != null ? Integer.parseInt(model.get("Year").toString()) : null);
+                newHoliday.setDescription(model.get("Description") != null ? model.get("Description").toString() : "");
+                newHoliday.setLocationId(locationId);
+                newHoliday.setLocation(locationName);
+                newHoliday.setCreatedBy(model.get("Created_By") != null ? Integer.parseInt(model.get("Created_By").toString()) : 0);
+                newHoliday.setCreatedDate(new Date());
+                newHoliday.setModifyBy(modifyBy);
+                newHoliday.setModifyDate(new Date());
+                newHoliday.setStatus(model.get("Status") != null ? model.get("Status").toString() : "Active");
+                newHoliday.setHolidayType(model.get("HolidayType") != null ? model.get("HolidayType").toString() : "");
+                holidayRepository.save(newHoliday);
+            }
+        }
+
         Map<String, Object> result = new HashMap<>();
-        result.put("msg", "Holiday updated successfully");
-        result.put("id", holiday.getHolidayId());
+        result.put("msg", "Holiday(s) updated successfully.");
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     public Map<String, Object> deleteHoliday(Map<String, Object> model) {
-        Integer id = (Integer) model.get("id");
-        if (id == null) {
-            throw new RuntimeException("Holiday ID is required");
+        Object holidayIdObj = model.get("Holiday_Id");
+        if (holidayIdObj == null) {
+            throw new RuntimeException("Invalid Holiday_Id list.");
         }
-        
-        Optional<Holiday> holidayOpt = holidayRepository.findById(id);
-        if (holidayOpt.isEmpty()) {
-            throw new RuntimeException("Holiday not found");
+
+        List<Integer> holidayIdList = new ArrayList<>();
+        if (holidayIdObj instanceof List) {
+            for (Object o : (List<Object>) holidayIdObj) {
+                if (o instanceof Number) {
+                    holidayIdList.add(((Number) o).intValue());
+                } else {
+                    holidayIdList.add(Integer.parseInt(o.toString()));
+                }
+            }
+        } else {
+            holidayIdList.add(Integer.parseInt(holidayIdObj.toString()));
         }
-        
-        Holiday holiday = holidayOpt.get();
-        holidayRepository.delete(holiday);
-        
+        if (holidayIdList.isEmpty()) {
+            throw new RuntimeException("Invalid Holiday_Id list.");
+        }
+
+        List<Holiday> holidays = holidayRepository.findAllById(holidayIdList).stream()
+            .filter(h -> "Active".equals(h.getStatus()))
+            .collect(Collectors.toList());
+
+        if (holidays.isEmpty()) {
+            throw new RuntimeException("No matching Holidays found.");
+        }
+
+        Object modifyByObj = model.get("Modify_By");
+        Integer modifyBy = (modifyByObj != null) ? Integer.parseInt(modifyByObj.toString()) : 0;
+        if (modifyBy == 0) {
+            Object loginIdObj = model.get("LoginId");
+            if (loginIdObj != null) {
+                modifyBy = Integer.parseInt(loginIdObj.toString());
+            }
+        }
+
+        for (Holiday holiday : holidays) {
+            holiday.setStatus("Inactive");
+            holiday.setModifyBy(modifyBy);
+            holiday.setModifyDate(new Date());
+            holidayRepository.save(holiday);
+        }
+
         Map<String, Object> result = new HashMap<>();
-        result.put("msg", "Holiday deleted successfully");
-        result.put("id", holiday.getId());
+        result.put("msg", "Holiday(s) Deleted Successfully");
         return result;
     }
 
@@ -7736,8 +7846,131 @@ public class EmployeeService {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public Map<String, Object> addHoliday(Map<String, Object> model) {
-        return Map.of("msg", "Added", "StatusCode", 200);
+        String holidayType = model.get("HolidayType") != null ? model.get("HolidayType").toString() : "";
+
+        if ("Weekly Holidays".equals(holidayType)) {
+            Object dayObj = model.get("Day");
+            Object locationIdObj = model.get("LocationId");
+            if (dayObj == null || locationIdObj == null) {
+                throw new RuntimeException("Day and LocationId are required for weekly holidays.");
+            }
+
+            List<Object> dayList;
+            if (dayObj instanceof List) {
+                dayList = (List<Object>) dayObj;
+            } else {
+                dayList = List.of(dayObj);
+            }
+
+            List<Object> locationIdList;
+            if (locationIdObj instanceof List) {
+                locationIdList = (List<Object>) locationIdObj;
+            } else {
+                locationIdList = List.of(locationIdObj);
+            }
+
+            String combinedDays = String.join(", ", dayList.stream().map(Object::toString).toArray(String[]::new));
+
+            Object locationListObj = model.get("Location");
+
+            for (int i = 0; i < locationIdList.size(); i++) {
+                int locId = Integer.parseInt(locationIdList.get(i).toString());
+                String locName = "";
+                if (locationListObj instanceof List) {
+                    List<Object> locationList = (List<Object>) locationListObj;
+                    if (i < locationList.size()) {
+                        locName = locationList.get(i).toString();
+                    }
+                }
+
+                WeekHoliday exists = weekHolidayRepository.findByDayAndLocationIdAndStatus(combinedDays, locId, "Active");
+                if (exists != null) {
+                    throw new RuntimeException("Weekly holiday for '" + combinedDays + "' already exists at location '" + locName + "'.");
+                }
+
+                WeekHoliday weekHoliday = new WeekHoliday();
+                weekHoliday.setDay(combinedDays);
+                weekHoliday.setCreatedBy(model.get("Created_By") != null ? Integer.parseInt(model.get("Created_By").toString()) : 0);
+                weekHoliday.setCreatedDate(new Date());
+                weekHoliday.setStatus(model.get("Status") != null ? model.get("Status").toString() : "Active");
+                weekHoliday.setLocationId(locId);
+                weekHoliday.setTitle(model.get("Title") != null ? model.get("Title").toString() : "");
+                weekHoliday.setDescription(model.get("Description") != null ? model.get("Description").toString() : "");
+                weekHoliday.setLocation(locName);
+                weekHoliday.setHolidayType(holidayType);
+                weekHoliday.setYear(model.get("Year") != null ? Integer.parseInt(model.get("Year").toString()) : null);
+                weekHolidayRepository.save(weekHoliday);
+            }
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("msg", "Weekly Holidays Created Successfully");
+            return result;
+        } else {
+            Object holidayLocationIdObj = model.get("HolidayLocationId");
+            if (holidayLocationIdObj == null) {
+                throw new RuntimeException("HolidayLocationId is required.");
+            }
+
+            List<Object> holidayLocationIdList;
+            if (holidayLocationIdObj instanceof List) {
+                holidayLocationIdList = (List<Object>) holidayLocationIdObj;
+            } else {
+                holidayLocationIdList = List.of(holidayLocationIdObj);
+            }
+
+            Object holidayLocationObj = model.get("HolidayLocation");
+            String dateStr = model.get("Date") != null ? model.get("Date").toString() : "";
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date holidayDate;
+            try {
+                holidayDate = sdf.parse(dateStr);
+            } catch (Exception e) {
+                throw new RuntimeException("Invalid date format: " + dateStr);
+            }
+
+            for (int i = 0; i < holidayLocationIdList.size(); i++) {
+                int locId = Integer.parseInt(holidayLocationIdList.get(i).toString());
+                String locName = "";
+                if (holidayLocationObj instanceof List) {
+                    List<Object> holidayLocationList = (List<Object>) holidayLocationObj;
+                    if (i < holidayLocationList.size()) {
+                        locName = holidayLocationList.get(i).toString();
+                    }
+                }
+
+                List<Holiday> existingHolidays = holidayRepository.findByDateAndLocationIdAndHolidayTypeAndStatus(
+                        holidayDate, locId, holidayType, "Active");
+
+                if (!existingHolidays.isEmpty()) {
+                    if (existingHolidays.size() == 1) {
+                        Holiday existing = existingHolidays.get(0);
+                        throw new RuntimeException("Records already exists");
+                    } else {
+                        throw new RuntimeException("Records already exists");
+                    }
+                }
+
+                Holiday newHoliday = new Holiday();
+                newHoliday.setTitle(model.get("Title") != null ? model.get("Title").toString() : "");
+                newHoliday.setDate(holidayDate);
+                newHoliday.setDescription(model.get("Description") != null ? model.get("Description").toString() : "");
+                newHoliday.setLocationId(locId);
+                newHoliday.setCreatedBy(model.get("Created_By") != null ? Integer.parseInt(model.get("Created_By").toString()) : 0);
+                newHoliday.setCreatedDate(new Date());
+                newHoliday.setStatus(model.get("Status") != null ? model.get("Status").toString() : "Active");
+                newHoliday.setYear(model.get("Year") != null ? Integer.parseInt(model.get("Year").toString()) : null);
+                newHoliday.setHolidayType(holidayType);
+                newHoliday.setLocation(locName);
+                holidayRepository.save(newHoliday);
+            }
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("msg", " Holidays Created Successfully");
+            return result;
+        }
     }
 
     public Map<String, Object> getHolidayById(Map<String, Object> model) {
@@ -7748,17 +7981,224 @@ public class EmployeeService {
         return Map.of("msg", "Added", "StatusCode", 200);
     }
 
+    @SuppressWarnings("unchecked")
     public Map<String, Object> updateWeekHoliday(Map<String, Object> model) {
-        return Map.of("msg", "Updated", "StatusCode", 200);
+        Object modifiedByObj = model.get("Modified_By");
+        Integer modifiedBy = modifiedByObj != null ? Integer.parseInt(modifiedByObj.toString()) : 0;
+        if (modifiedBy == 0) {
+            throw new RuntimeException("Invalid Modified_By ID.");
+        }
+
+        Object locationIdObj = model.get("LocationId");
+        if (locationIdObj == null) {
+            throw new RuntimeException("LocationId list is required.");
+        }
+        List<Integer> selectedLocationIds = new ArrayList<>();
+        if (locationIdObj instanceof List) {
+            for (Object o : (List<Object>) locationIdObj) {
+                selectedLocationIds.add(o instanceof Number ? ((Number) o).intValue() : Integer.parseInt(o.toString()));
+            }
+        } else {
+            selectedLocationIds.add(Integer.parseInt(locationIdObj.toString()));
+        }
+        if (selectedLocationIds.isEmpty()) {
+            throw new RuntimeException("LocationId list is required.");
+        }
+
+        Object dayObj = model.get("Day");
+        if (dayObj == null) {
+            throw new RuntimeException("Day list is required.");
+        }
+        List<Object> dayList;
+        if (dayObj instanceof List) {
+            dayList = (List<Object>) dayObj;
+        } else {
+            dayList = List.of(dayObj);
+        }
+        if (dayList.isEmpty()) {
+            throw new RuntimeException("Day list is required.");
+        }
+
+        List<String> distinctDays = dayList.stream()
+            .map(Object::toString)
+            .distinct()
+            .collect(Collectors.toList());
+        String combinedDays = String.join(", ", distinctDays);
+
+        Object locationListObj = model.get("Location");
+        List<Object> locationList = locationListObj instanceof List ? (List<Object>) locationListObj : new ArrayList<>();
+
+        Integer year = model.get("Year") != null ? Integer.parseInt(model.get("Year").toString()) : null;
+        String title = model.get("Title") != null ? model.get("Title").toString() : "";
+
+        List<WeekHoliday> existingWeekHolidays = weekHolidayRepository.findAll().stream()
+            .filter(w -> year != null && year.equals(w.getYear()))
+            .filter(w -> title.equals(w.getTitle() != null ? w.getTitle() : ""))
+            .collect(Collectors.toList());
+
+        List<WeekHoliday> holidaysToRemove = existingWeekHolidays.stream()
+            .filter(w -> w.getLocationId() != null && !selectedLocationIds.contains(w.getLocationId()))
+            .collect(Collectors.toList());
+
+        for (WeekHoliday h : holidaysToRemove) {
+            weekHolidayRepository.delete(h);
+        }
+
+        for (int i = 0; i < selectedLocationIds.size(); i++) {
+            int locId = selectedLocationIds.get(i);
+            String locName = i < locationList.size() ? locationList.get(i).toString() : "";
+
+            WeekHoliday existing = existingWeekHolidays.stream()
+                .filter(w -> w.getLocationId() != null && w.getLocationId() == locId)
+                .findFirst().orElse(null);
+
+            if (existing != null) {
+                existing.setDay(combinedDays);
+                existing.setTitle(title);
+                existing.setDescription(model.get("Description") != null ? model.get("Description").toString() : "");
+                existing.setYear(year);
+                existing.setStatus(model.get("Status") != null ? model.get("Status").toString() : "Active");
+                existing.setModifiedBy(modifiedBy);
+                existing.setModifiedDate(new Date());
+                existing.setLocation(locName);
+                weekHolidayRepository.save(existing);
+            } else {
+                WeekHoliday newWeekHoliday = new WeekHoliday();
+                newWeekHoliday.setDay(combinedDays);
+                newWeekHoliday.setLocationId(locId);
+                newWeekHoliday.setLocation(locName);
+                newWeekHoliday.setTitle(title);
+                newWeekHoliday.setDescription(model.get("Description") != null ? model.get("Description").toString() : "");
+                newWeekHoliday.setYear(year);
+                newWeekHoliday.setStatus(model.get("Status") != null ? model.get("Status").toString() : "Active");
+                newWeekHoliday.setCreatedBy(model.get("Created_By") != null ? Integer.parseInt(model.get("Created_By").toString()) : 0);
+                newWeekHoliday.setCreatedDate(new Date());
+                newWeekHoliday.setModifiedBy(modifiedBy);
+                newWeekHoliday.setModifiedDate(new Date());
+                weekHolidayRepository.save(newWeekHoliday);
+            }
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("msg", "Week Holidays updated successfully");
+        return result;
     }
 
+    @SuppressWarnings("unchecked")
     public Map<String, Object> deleteWeekHoliday(Map<String, Object> model) {
-        return Map.of("msg", "Deleted", "StatusCode", 200);
+        Object weekDayIdObj = model.get("WeekDay_ID");
+        if (weekDayIdObj == null) {
+            throw new RuntimeException("Invalid WeekDay_ID list.");
+        }
+
+        List<Integer> weekDayIdList = new ArrayList<>();
+        if (weekDayIdObj instanceof List) {
+            for (Object o : (List<Object>) weekDayIdObj) {
+                weekDayIdList.add(o instanceof Number ? ((Number) o).intValue() : Integer.parseInt(o.toString()));
+            }
+        } else {
+            weekDayIdList.add(Integer.parseInt(weekDayIdObj.toString()));
+        }
+        if (weekDayIdList.isEmpty()) {
+            throw new RuntimeException("Invalid WeekDay_ID list.");
+        }
+
+        List<WeekHoliday> holidays = weekHolidayRepository.findAllById(weekDayIdList).stream()
+            .filter(w -> "Active".equals(w.getStatus()))
+            .collect(Collectors.toList());
+
+        if (holidays.isEmpty()) {
+            throw new RuntimeException("No matching Week Holidays found.");
+        }
+
+        Object modifiedByObj = model.get("Modified_By");
+        Integer modifiedBy = modifiedByObj != null ? Integer.parseInt(modifiedByObj.toString()) : 0;
+        if (modifiedBy == 0) {
+            Object loginIdObj = model.get("LoginId");
+            if (loginIdObj != null) {
+                modifiedBy = Integer.parseInt(loginIdObj.toString());
+            }
+        }
+
+        for (WeekHoliday holiday : holidays) {
+            holiday.setStatus("Inactive");
+            holiday.setModifiedBy(modifiedBy);
+            holiday.setModifiedDate(new Date());
+            weekHolidayRepository.save(holiday);
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("msg", "Week Holiday(s) Deleted Successfully");
+        return result;
     }
 
     public List<Map<String, Object>> getAllWeekHolidays(Map<String, Object> model) {
+        Object loginIdObj = model.get("LoginId");
+        Integer loginId = loginIdObj != null ? Integer.parseInt(loginIdObj.toString()) : 0;
+        if (loginId == 0) {
+            throw new RuntimeException("LoginId is Missing");
+        }
+
+        List<WeekHoliday> holidays = weekHolidayRepository.findByStatusOrderByWeekDayIdDesc("Active");
+
+        if (holidays == null || holidays.isEmpty()) {
+            throw new RuntimeException("No Week Holidays Found");
+        }
+
+        Map<String, List<WeekHoliday>> grouped = new LinkedHashMap<>();
+        for (WeekHoliday h : holidays) {
+            String title = h.getTitle() != null ? h.getTitle() : "";
+            String desc = h.getDescription() != null ? h.getDescription() : "";
+            String status = h.getStatus() != null ? h.getStatus() : "";
+            String key = title + "|" + desc + "|" + status;
+            grouped.computeIfAbsent(key, k -> new ArrayList<>()).add(h);
+        }
+
         List<Map<String, Object>> result = new ArrayList<>();
-        result.add(Map.of("WeekHolidayId", 1, "WeekDay", "Sunday", "StatusCode", 200));
+        for (Map.Entry<String, List<WeekHoliday>> entry : grouped.entrySet()) {
+            List<WeekHoliday> group = entry.getValue();
+            WeekHoliday first = group.get(0);
+
+            List<Integer> weekDayIds = group.stream()
+                .map(WeekHoliday::getWeekDayId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+
+            List<String> days = group.stream()
+                .map(WeekHoliday::getDay)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+
+            List<Integer> locationIds = group.stream()
+                .map(WeekHoliday::getLocationId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+
+            List<String> locations = group.stream()
+                .map(WeekHoliday::getLocation)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+
+            Map<String, Object> item = new LinkedHashMap<>();
+            item.put("WeekDay_ID", weekDayIds);
+            item.put("Day", days);
+            item.put("Title", first.getTitle());
+            item.put("Description", first.getDescription());
+            item.put("Year", first.getYear() != null ? first.getYear() : 2025);
+            item.put("Status", first.getStatus());
+            item.put("Created_By", first.getCreatedBy() != null ? first.getCreatedBy() : 0);
+            item.put("Created_Date", first.getCreatedDate());
+            item.put("Modified_By", first.getModifiedBy());
+            item.put("Modified_Date", first.getModifiedDate());
+            item.put("LocationId", locationIds);
+            item.put("Location", locations);
+            result.add(item);
+        }
+
         return result;
     }
 

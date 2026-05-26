@@ -9,4 +9,8 @@ import java.util.List;
 public interface WeekHolidayRepository extends JpaRepository<WeekHoliday, Integer> {
     List<WeekHoliday> findByYearAndStatus(Integer year, String status);
     List<WeekHoliday> findByYearAndStatusAndLocationId(Integer year, String status, Integer locationId);
+
+    WeekHoliday findByDayAndLocationIdAndStatus(String day, Integer locationId, String status);
+
+    List<WeekHoliday> findByStatusOrderByWeekDayIdDesc(String status);
 }

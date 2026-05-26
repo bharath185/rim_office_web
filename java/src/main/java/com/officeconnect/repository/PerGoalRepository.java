@@ -13,4 +13,5 @@ public interface PerGoalRepository extends JpaRepository<PerGoal, Integer> {
     List<PerGoal> findByEmpIdAndStatus(Integer empId, String status);
     PerGoal findByEmpIdAndGoalAndIsActiveAndIsDeleted(Integer empId, String goal, Boolean isActive, Boolean isDeleted);
     PerGoal findByGoalIdAndIsActiveAndIsDeleted(Integer goalId, Boolean isActive, Boolean isDeleted);
+    PerGoal findByGoalIdAndEmpIdAndReviewedByEmpAndReviewedByManagerAndIsActiveAndIsDeleted(Integer goalId, Integer empId, Boolean reviewedByEmp, Boolean reviewedByManager, Boolean isActive, Boolean isDeleted);
 }

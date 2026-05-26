@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -577,9 +578,17 @@ public class PerformanceController {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @PostMapping("/SaveEmployeeReview")
-    public ResponseEntity<?> saveEmployeeReview(@RequestBody Map<String, Object> model) {
+    public ResponseEntity<?> saveEmployeeReview(@RequestBody Object requestBody) {
         try {
+            Map<String, Object> model;
+            if (requestBody instanceof List) {
+                List<Map<String, Object>> list = (List<Map<String, Object>>) requestBody;
+                model = list.isEmpty() ? new HashMap<>() : list.get(0);
+            } else {
+                model = (Map<String, Object>) requestBody;
+            }
             return ResponseEntity.ok(performanceService.saveEmployeeReview(model));
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

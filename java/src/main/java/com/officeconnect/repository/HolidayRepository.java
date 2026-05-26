@@ -18,4 +18,7 @@ public interface HolidayRepository extends JpaRepository<Holiday, Integer> {
 
     @Query("SELECT h FROM Holiday h WHERE h.locationId = ?1 AND h.date >= ?2 AND h.date <= ?3 AND h.status = 'Active'")
     List<Holiday> findByLocationIdAndDateBetween(Integer locationId, java.util.Date startDate, java.util.Date endDate);
+
+    @Query("SELECT h FROM Holiday h WHERE h.date = ?1 AND h.locationId = ?2 AND h.holidayType = ?3 AND h.status = ?4")
+    List<Holiday> findByDateAndLocationIdAndHolidayTypeAndStatus(java.util.Date date, Integer locationId, String holidayType, String status);
 }
