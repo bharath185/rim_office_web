@@ -161,8 +161,21 @@ public class LeaveService {
         // Get RH holiday count for date range
         Integer rhCount = 0;
         if (model.getStartDate() != null && model.getEndDate() != null) {
-            // This would need HolidayRepository - for now skip
-            rhCount = 0;
+            Date startDate = model.getStartDate();
+            Date endDate = model.getEndDate();
+
+            Integer leId = emp.getLeId() != null ? emp.getLeId() : 0;
+            Integer rhLocId = locationId;
+            if (leId == 2) {
+                rhLocId = 4;
+            }
+
+            List<Holiday> rhHolidays = holidayRepository.findByLocationIdAndDateBetween(rhLocId, startDate, endDate)
+                .stream()
+                .filter(h -> h.getHolidayType() != null && "RH Holidays".equalsIgnoreCase(h.getHolidayType().trim()))
+                .collect(Collectors.toList());
+
+            rhCount = rhHolidays.size();
         }
 
         // Get leave types applicable to location
