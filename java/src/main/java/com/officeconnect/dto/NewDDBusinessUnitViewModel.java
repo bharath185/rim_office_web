@@ -8,7 +8,7 @@ public class NewDDBusinessUnitViewModel {
     @JsonAlias({"buId", "BUId"})
     private Integer buId;
     @JsonProperty("LeId")
-    @JsonAlias({"leId", "LeId"})
+    @JsonAlias({"leId", "LeId", "LEId"})
     private Integer leId;
     @JsonProperty("CompId")
     @JsonAlias({"compId", "CompId"})

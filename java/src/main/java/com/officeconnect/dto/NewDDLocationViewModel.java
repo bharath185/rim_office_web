@@ -8,7 +8,7 @@ public class NewDDLocationViewModel {
     @JsonAlias({"locationId", "LocationId"})
     private Integer locationId;
     @JsonProperty("LeId")
-    @JsonAlias({"leId", "LeId"})
+    @JsonAlias({"leId", "LeId", "LEId"})
     private Integer leId;
     @JsonProperty("CompId")
     @JsonAlias({"compId", "CompId"})

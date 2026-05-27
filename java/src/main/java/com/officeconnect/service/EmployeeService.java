@@ -368,20 +368,16 @@ public class EmployeeService {
     }
 
     public List<NewDDBusinessUnitViewModel> getNewDDBusinessUnit(NewDDBusinessUnitViewModel model) {
+        Integer loginId = model.getLoginId();
+        if (loginId == null || loginId == 0) throw new RuntimeException("EmpId is Missing");
+
+        Integer compId = model.getCompId();
         Integer leId = model.getLeId();
-        if (leId != null && leId != 0) {
-            return businessUnitMasterRepository.findByLeIdAndIsActiveAndIsDeleted(leId, true, false).stream()
-                .map(bu -> {
-                    NewDDBusinessUnitViewModel vm = new NewDDBusinessUnitViewModel();
-                    vm.setBuId(bu.getBuId());
-                    vm.setLeId(bu.getLeId());
-                    vm.setCompId(bu.getCompId());
-                    vm.setBusinessUnit(bu.getBusinessUnit());
-                    return vm;
-                })
-                .collect(Collectors.toList());
-        }
-        return businessUnitMasterRepository.findByIsActiveAndIsDeleted(true, false).stream()
+
+        List<NewDDBusinessUnitViewModel> result = businessUnitMasterRepository.findByIsActiveAndIsDeleted(true, false)
+            .stream()
+            .filter(bu -> compId == null || compId == 0 || (bu.getCompId() != null && bu.getCompId().equals(compId)))
+            .filter(bu -> leId == null || leId == 0 || (bu.getLeId() != null && bu.getLeId().equals(leId)))
             .map(bu -> {
                 NewDDBusinessUnitViewModel vm = new NewDDBusinessUnitViewModel();
                 vm.setBuId(bu.getBuId());
@@ -391,36 +387,24 @@ public class EmployeeService {
                 return vm;
             })
             .collect(Collectors.toList());
+
+        if (result.isEmpty()) {
+            throw new RuntimeException("Business Unit Details Not Found");
+        }
+        return result;
     }
 
     public List<NewDDLocationViewModel> getNewDDLocation(NewDDLocationViewModel model) {
-        Integer leId = model.getLeId();
-        if (leId != null && leId != 0) {
-            return locationMasterRepository.findByLeIdAndIsActiveAndIsDeleted(leId, true, false).stream()
-                .map(loc -> {
-                    NewDDLocationViewModel vm = new NewDDLocationViewModel();
-                    vm.setLocationId(loc.getLocationId());
-                    vm.setLeId(loc.getLeId());
-                    vm.setCompId(loc.getCompId());
-                    vm.setLocation(loc.getLocation());
-                    return vm;
-                })
-                .collect(Collectors.toList());
-        }
+        Integer loginId = model.getLoginId();
+        if (loginId == null || loginId == 0) throw new RuntimeException("EmpId is Missing");
+
         Integer compId = model.getCompId();
-        if (compId != null && compId != 0) {
-            return locationMasterRepository.findByCompIdAndIsActiveAndIsDeleted(compId, true, false).stream()
-                .map(loc -> {
-                    NewDDLocationViewModel vm = new NewDDLocationViewModel();
-                    vm.setLocationId(loc.getLocationId());
-                    vm.setLeId(loc.getLeId());
-                    vm.setCompId(loc.getCompId());
-                    vm.setLocation(loc.getLocation());
-                    return vm;
-                })
-                .collect(Collectors.toList());
-        }
-        return locationMasterRepository.findByIsActiveAndIsDeleted(true, false).stream()
+        Integer leId = model.getLeId();
+
+        List<NewDDLocationViewModel> result = locationMasterRepository.findByIsActiveAndIsDeleted(true, false)
+            .stream()
+            .filter(loc -> compId == null || compId == 0 || (loc.getCompId() != null && loc.getCompId().equals(compId)))
+            .filter(loc -> leId == null || leId == 0 || (loc.getLeId() != null && loc.getLeId().equals(leId)))
             .map(loc -> {
                 NewDDLocationViewModel vm = new NewDDLocationViewModel();
                 vm.setLocationId(loc.getLocationId());
@@ -430,6 +414,11 @@ public class EmployeeService {
                 return vm;
             })
             .collect(Collectors.toList());
+
+        if (result.isEmpty()) {
+            throw new RuntimeException("Location Details Not Found");
+        }
+        return result;
     }
 
     public EmployeeMasterViewModel saveEmployee(EmployeeMasterViewModel model) {
