@@ -10,4 +10,5 @@ import java.util.List;
 public interface VisitorManagementRepository extends JpaRepository<VisitorManagement, Integer> {
     List<VisitorManagement> findByIsActiveAndIsDeleted(Boolean isActive, Boolean isDeleted);
     List<VisitorManagement> findByWhomToMeetAndIsDeleted(Integer whomToMeet, Boolean isDeleted);
+    List<VisitorManagement> findByIsDeleted(Boolean isDeleted);
 }

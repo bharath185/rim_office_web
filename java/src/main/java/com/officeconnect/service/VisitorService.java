@@ -129,6 +129,7 @@ public class VisitorService {
         vm.setAMobile(v.getAMobile());
         vm.setPhoto(v.getPhoto() != null && !v.getPhoto().isEmpty() ? normalizePhotoPath(v.getPhoto()) : null);
         vm.setCompId(v.getCompId());
+        vm.setCompName(v.getCompId());
         vm.setAccessories(v.getAccessories());
         vm.setWhomtoMeet(v.getWhomToMeet());
 
@@ -238,9 +239,40 @@ public class VisitorService {
     }
 
     public List<VisitorManagementViewModel> getAllVisitorInviteHistory(VisitorManagementViewModel model) {
-        return visitorManagementRepository.findByIsActiveAndIsDeleted(true, false).stream()
-            .map(v -> convertToViewModel(v))
+        Integer empId = model.getEmpId();
+        if (empId == null || empId == 0) throw new RuntimeException("EmpId is Missing");
+
+        java.util.Calendar todayCal = java.util.Calendar.getInstance();
+        todayCal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        todayCal.set(java.util.Calendar.MINUTE, 0);
+        todayCal.set(java.util.Calendar.SECOND, 0);
+        todayCal.set(java.util.Calendar.MILLISECOND, 0);
+        Date today = todayCal.getTime();
+
+        List<VisitorManagement> visitors = visitorManagementRepository.findByIsDeleted(false);
+
+        List<VisitorManagement> sorted = visitors.stream()
+            .sorted((a, b) -> {
+                Date aDate = a.getVisitDate();
+                Date bDate = b.getVisitDate();
+                boolean aIsToday = aDate != null && !aDate.before(today);
+                boolean bIsToday = bDate != null && !bDate.before(today);
+                if (aIsToday != bIsToday) return aIsToday ? -1 : 1;
+                if (aDate != null && bDate != null) {
+                    int dateCmp = bDate.compareTo(aDate);
+                    if (dateCmp != 0) return dateCmp;
+                }
+                int aId = a.getVisitorId() != null ? a.getVisitorId() : 0;
+                int bId = b.getVisitorId() != null ? b.getVisitorId() : 0;
+                return Integer.compare(bId, aId);
+            })
             .collect(Collectors.toList());
+
+        List<VisitorManagementViewModel> result = new ArrayList<>();
+        for (VisitorManagement v : sorted) {
+            result.add(convertToViewModel(v));
+        }
+        return result;
     }
 
     public VisitorManagementViewModel visitorUpdateInvite(VisitorManagementViewModel model) {
@@ -269,8 +301,35 @@ public class VisitorService {
     }
 
     public VisitorManagementViewModel visitorCheckOut(VisitorManagementViewModel model) {
-        model.setMsg("Visitor checked out successfully");
-        return model;
+        Integer empId = model.getEmpId();
+        Integer visitId = model.getVisitId();
+        if (empId == null || empId == 0) throw new RuntimeException("EmpId is Missing");
+        if (visitId == null || visitId == 0) throw new RuntimeException("VisitId is Missing");
+
+        Optional<VisitorManagement> opt = visitorManagementRepository.findById(visitId);
+        if (opt.isEmpty()) throw new RuntimeException("Visitor Details Not Found");
+
+        VisitorManagement vm = opt.get();
+        if (Boolean.TRUE.equals(vm.getIsDeleted()) || Boolean.TRUE.equals(vm.getExpired())
+                || Boolean.FALSE.equals(vm.getInvited()) || Boolean.FALSE.equals(vm.getAccept())
+                || vm.getCheckIn() == null) {
+            throw new RuntimeException("Visitor Details Not Found");
+        }
+
+        if (model.getIdCard() != null) vm.setIdCard(model.getIdCard());
+        if (model.getAccessories() != null) vm.setAccessories(model.getAccessories());
+        vm.setCheckOut(new Date());
+        vm.setIsUpdated(true);
+        vm.setLastUpdatedBy(visitId);
+        vm.setLastUpdatedDate(new Date());
+        if (model.getPhoto() != null && !model.getPhoto().isEmpty()) {
+            vm.setPhoto(model.getPhoto());
+        }
+        visitorManagementRepository.save(vm);
+
+        VisitorManagementViewModel result = new VisitorManagementViewModel();
+        result.setMsg("Visitor Checked out Successfully");
+        return result;
     }
 
     public List<VisitorManagementViewModel> getVisitorToday(VisitorManagementViewModel model) {
