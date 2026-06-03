@@ -6,6 +6,7 @@ import com.officeconnect.dto.EmployeeMasterViewModel;
 import com.officeconnect.dto.FRViewModel;
 import com.officeconnect.dto.LoginDetailsViewModel;
 import com.officeconnect.dto.LoginViewModel;
+import com.officeconnect.dto.ScreenshotsViewModel;
 import com.officeconnect.dto.WFHLoginlogViewModel;
 import com.officeconnect.entity.*;
 import com.officeconnect.repository.*;
@@ -61,6 +62,12 @@ public class LoginService {
 
     @Autowired
     private WFHLoginlogRepository wfhLoginlogRepository;
+
+    @Autowired
+    private DeptMasterRepository deptMasterRepository;
+
+    @Autowired
+    private DesignationMasterRepository designationMasterRepository;
 
     public EmployeeMasterViewModel checkLogin(LoginViewModel loginUser) {
         if (loginUser == null || loginUser.getUserName() == null || loginUser.getPassword() == null ||
@@ -479,16 +486,299 @@ EmployeeMasterViewModel userDetails = new EmployeeMasterViewModel();
         return ldvm;
     }
 
-    public Map<String, Object> getAllWFHDetails(Map<String, Object> model) {
-        Map<String, Object> result = new java.util.HashMap<>();
-        result.put("msg", "WFH details retrieved");
-        return result;
+    public List<WFHLoginlogViewModel> getAllWFHDetails(Map<String, Object> model) {
+        Integer loginId = 0;
+        if (model.containsKey("LoginId") && model.get("LoginId") != null) {
+            loginId = parseInteger(model.get("LoginId"));
+        }
+        if (loginId == 0) {
+            throw new RuntimeException("LoginId is Missing");
+        }
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        Date today = cal.getTime();
+
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        Date startDate = cal.getTime();
+
+        List<WFHLoginlog> allWfh = wfhLoginlogRepository.findByDateBetween(startDate, today).stream()
+            .filter(w -> w.getIsActive() != null && w.getIsActive())
+            .filter(w -> w.getIsDeleted() == null || !w.getIsDeleted())
+            .filter(w -> w.getLoginTime() != null)
+            .collect(Collectors.toList());
+
+        if (allWfh.isEmpty()) {
+            throw new RuntimeException("Employees Detail Not Found");
+        }
+
+        List<EmployeeMaster> activeEmployees = employeeMasterRepository.findByIsActiveAndIsDeleted(true, false).stream()
+            .filter(e -> e.getEmpStatus() != null && "ACTIVE".equalsIgnoreCase(e.getEmpStatus()))
+            .collect(Collectors.toList());
+        Map<Integer, EmployeeMaster> empMap = activeEmployees.stream()
+            .collect(Collectors.toMap(EmployeeMaster::getEmpId, e -> e, (a, b) -> a));
+
+        List<CompanyMaster> companies = companyMasterRepository.findByIsActiveAndIsDeleted(true, false);
+        Map<Integer, String> compMap = companies.stream()
+            .collect(Collectors.toMap(CompanyMaster::getCompId, CompanyMaster::getCompany, (a, b) -> a));
+
+        Map<String, List<WFHLoginlog>> groupedData = allWfh.stream()
+            .filter(w -> empMap.containsKey(w.getEmpId()))
+            .collect(Collectors.groupingBy(w -> w.getEmpId() + "_" + new SimpleDateFormat("yyyy-MM-dd").format(w.getDate())));
+
+        List<WFHLoginlogViewModel> resultList = new ArrayList<>();
+        int defaultLogoutMs = ((18 * 3600 + 35 * 60) * 1000);
+
+        for (Map.Entry<String, List<WFHLoginlog>> entry : groupedData.entrySet()) {
+            List<WFHLoginlog> records = entry.getValue().stream()
+                .sorted((a, b) -> Integer.compare(getTimeMsFromDate(a.getLoginTime()), getTimeMsFromDate(b.getLoginTime())))
+                .collect(Collectors.toList());
+
+            if (records.isEmpty()) continue;
+
+            WFHLoginlog firstRecord = records.get(0);
+            int firstLoginMs = getTimeMsFromDate(firstRecord.getLoginTime());
+            int lastLogoutMs = 0;
+            int totalActiveMs = 0;
+
+            for (int i = 0; i < records.size(); i++) {
+                int logInMs = getTimeMsFromDate(records.get(i).getLoginTime());
+                int logOutMs;
+
+                if (records.get(i).getLogOutTime() != null) {
+                    logOutMs = getTimeMsFromDate(records.get(i).getLogOutTime());
+                } else if (i + 1 < records.size()) {
+                    logOutMs = getTimeMsFromDate(records.get(i + 1).getLoginTime());
+                } else {
+                    logOutMs = defaultLogoutMs;
+                }
+
+                if (logOutMs > logInMs) {
+                    totalActiveMs += (logOutMs - logInMs);
+                }
+                if (logOutMs > lastLogoutMs) {
+                    lastLogoutMs = logOutMs;
+                }
+            }
+
+            EmployeeMaster emp = empMap.get(firstRecord.getEmpId());
+            if (emp == null) continue;
+
+            String empName = (emp.getFirstName() != null ? emp.getFirstName() : "") + " " +
+                (emp.getMiddleName() != null ? emp.getMiddleName() : "") + " " +
+                (emp.getLastName() != null ? emp.getLastName() : "");
+
+            WFHLoginlogViewModel vm = new WFHLoginlogViewModel();
+            vm.setWfhId(firstRecord.getWfhId());
+            vm.setLoginId(loginId);
+            vm.setEmpId(firstRecord.getEmpId());
+            vm.setEmpCode(firstRecord.getEmpCode());
+            vm.setEmpName(empName.trim());
+            vm.setIpAddress(firstRecord.getIpAddress());
+            vm.setDate(firstRecord.getDate() != null ? "/Date(" + firstRecord.getDate().getTime() + ")/" : null);
+            vm.setLoginTime(msToTimeSpanObject(firstLoginMs));
+            vm.setLogOutTime(msToTimeSpanObject(lastLogoutMs));
+            vm.setActivehrs(msToTimeSpanObject(totalActiveMs));
+            vm.setIsLoggedIn(firstRecord.getIsLoggedIn());
+            vm.setIsLoggedOut(firstRecord.getIsLoggedOut());
+            vm.setIsActive(firstRecord.getIsActive());
+            vm.setIsDeleted(firstRecord.getIsDeleted());
+            vm.setCreatedBy(firstRecord.getCreatedBy());
+            vm.setCreatedDate(firstRecord.getCreatedDate() != null ? "/Date(" + firstRecord.getCreatedDate().getTime() + ")/" : null);
+            vm.setLastUpdatedBy(firstRecord.getLastUpdatedBy());
+            vm.setLastUpdatedDate(firstRecord.getLastUpdatedDate() != null ? "/Date(" + firstRecord.getLastUpdatedDate().getTime() + ")/" : null);
+            vm.setCompId(emp.getCompId());
+            vm.setCompName(compMap.getOrDefault(emp.getCompId(), ""));
+            vm.setDeptId(emp.getCategoryId());
+            vm.setDeptName(emp.getDeptName());
+            vm.setDesignationId(emp.getDesignationId());
+            vm.setDesignation(emp.getDesignationName());
+
+            if (firstRecord.getDate() != null) {
+                Calendar recCal = Calendar.getInstance();
+                recCal.setTime(firstRecord.getDate());
+                Calendar todayCal = Calendar.getInstance();
+                if (recCal.get(Calendar.YEAR) == todayCal.get(Calendar.YEAR) &&
+                    recCal.get(Calendar.DAY_OF_YEAR) == todayCal.get(Calendar.DAY_OF_YEAR)) {
+                    vm.setLogOutTime(msToTimeSpanObject(0));
+                    vm.setActivehrs(msToTimeSpanObject(0));
+                }
+            }
+
+            resultList.add(vm);
+        }
+
+        resultList.sort((a, b) -> {
+            String dateA = (String) a.getDate();
+            String dateB = (String) b.getDate();
+            int dateCompare = dateB.compareTo(dateA);
+            if (dateCompare != 0) return dateCompare;
+            Integer empIdA = a.getEmpId() != null ? a.getEmpId() : 0;
+            Integer empIdB = b.getEmpId() != null ? b.getEmpId() : 0;
+            return empIdB.compareTo(empIdA);
+        });
+
+        return resultList;
     }
 
-    public Map<String, Object> getAllWFHAnalysis(Map<String, Object> model) {
-        Map<String, Object> result = new java.util.HashMap<>();
-        result.put("msg", "WFH analysis retrieved");
-        return result;
+    public List<WFHLoginlogViewModel> getAllWFHAnalysis(Map<String, Object> model) {
+        Integer loginId = 0;
+        if (model.containsKey("LoginId") && model.get("LoginId") != null) {
+            loginId = parseInteger(model.get("LoginId"));
+        } else if (model.containsKey("loginId") && model.get("loginId") != null) {
+            loginId = parseInteger(model.get("loginId"));
+        }
+        if (loginId == 0) {
+            throw new RuntimeException("LoginId is Missing");
+        }
+
+        List<WFHLoginlog> wfhLogs = wfhLoginlogRepository.findByAnalysisHrIsNotNullAndIsActiveAndIsDeleted();
+
+        if (wfhLogs == null || wfhLogs.isEmpty()) {
+            throw new RuntimeException("Employees Detail Not Found");
+        }
+
+        List<EmployeeMaster> activeEmployees = employeeMasterRepository.findByIsActiveAndIsDeleted(true, false).stream()
+            .filter(e -> e.getEmpStatus() != null && "ACTIVE".equalsIgnoreCase(e.getEmpStatus()))
+            .collect(Collectors.toList());
+        Map<Integer, EmployeeMaster> empMap = activeEmployees.stream()
+            .collect(Collectors.toMap(EmployeeMaster::getEmpId, e -> e, (a, b) -> a));
+
+        List<CompanyMaster> companies = companyMasterRepository.findByIsActiveAndIsDeleted(true, false);
+        Map<Integer, String> compMap = companies.stream()
+            .collect(Collectors.toMap(CompanyMaster::getCompId, CompanyMaster::getCompany, (a, b) -> a));
+
+        List<DeptMaster> depts = deptMasterRepository.findByIsDeleted(false);
+        Set<Integer> validDeptIds = depts.stream()
+            .map(DeptMaster::getDeptId)
+            .collect(Collectors.toSet());
+
+        List<DesignationMaster> designations = designationMasterRepository.findByIsDeleted(false);
+        Set<Integer> validDesignationIds = designations.stream()
+            .map(DesignationMaster::getDesignationId)
+            .collect(Collectors.toSet());
+
+        List<WFHLoginlogViewModel> resultList = new ArrayList<>();
+
+        for (WFHLoginlog wfh : wfhLogs) {
+            EmployeeMaster emp = empMap.get(wfh.getEmpId());
+            if (emp == null) continue;
+
+            if (!validDeptIds.contains(emp.getCategoryId())) continue;
+            if (!validDesignationIds.contains(emp.getDesignationId())) continue;
+
+            String empName = (emp.getFirstName() != null ? emp.getFirstName() : "") + " " +
+                (emp.getMiddleName() != null ? emp.getMiddleName() : "") + " " +
+                (emp.getLastName() != null ? emp.getLastName() : "");
+
+            WFHLoginlogViewModel vm = new WFHLoginlogViewModel();
+            vm.setWfhId(wfh.getWfhId());
+            vm.setLoginId(loginId);
+            vm.setEmpId(wfh.getEmpId());
+            vm.setEmpCode(wfh.getEmpCode());
+            vm.setEmpName(empName.trim());
+            vm.setIpAddress(wfh.getIpAddress());
+
+            if (wfh.getDate() != null) {
+                vm.setDate("/Date(" + wfh.getDate().getTime() + ")/");
+            } else {
+                vm.setDate(null);
+            }
+
+            vm.setLoginTime(toTimeSpanObject(wfh.getLoginTime()));
+            vm.setLogOutTime(toTimeSpanObject(wfh.getLogOutTime()));
+            vm.setActivehrs(toTimeSpanObject(wfh.getActivehrs()));
+            vm.setAnalysisHr(toTimeSpanObject(wfh.getAnalysisHr()));
+
+            vm.setIsLoggedIn(wfh.getIsLoggedIn());
+            vm.setIsLoggedOut(wfh.getIsLoggedOut());
+            vm.setCreatedBy(wfh.getCreatedBy());
+            vm.setCreatedDate(wfh.getCreatedDate() != null ? "/Date(" + wfh.getCreatedDate().getTime() + ")/" : null);
+            vm.setLastUpdatedBy(wfh.getLastUpdatedBy());
+            vm.setLastUpdatedDate(wfh.getLastUpdatedDate() != null ? "/Date(" + wfh.getLastUpdatedDate().getTime() + ")/" : null);
+            vm.setIsActive(wfh.getIsActive());
+            vm.setIsUpdated(wfh.getIsUpdated());
+            vm.setIsDeleted(wfh.getIsDeleted());
+
+            vm.setCompId(emp.getCompId());
+            vm.setCompName(compMap.getOrDefault(emp.getCompId(), ""));
+            vm.setDeptId(emp.getCategoryId());
+            vm.setDeptName(emp.getDeptName());
+            vm.setDesignationId(emp.getDesignationId());
+            vm.setDesignation(emp.getDesignationName());
+
+            resultList.add(vm);
+        }
+
+        resultList.sort((a, b) -> {
+            Integer empIdA = a.getEmpId() != null ? a.getEmpId() : 0;
+            Integer empIdB = b.getEmpId() != null ? b.getEmpId() : 0;
+            return empIdB.compareTo(empIdA);
+        });
+
+        return resultList;
+    }
+
+    private Map<String, Object> toTimeSpanObject(Date date) {
+        if (date == null) return null;
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int hours = cal.get(Calendar.HOUR_OF_DAY);
+        int minutes = cal.get(Calendar.MINUTE);
+        int seconds = cal.get(Calendar.SECOND);
+        int millis = cal.get(Calendar.MILLISECOND);
+
+        long totalMs = (long) hours * 3600000L + (long) minutes * 60000L + (long) seconds * 1000L + millis;
+        long ticks = totalMs * 10000L;
+        double totalDays = totalMs / 86400000.0;
+        double totalHoursDouble = totalMs / 3600000.0;
+        double totalMinutes = totalMs / 60000.0;
+        double totalSecondsDouble = totalMs / 1000.0;
+
+        Map<String, Object> timeSpan = new LinkedHashMap<>();
+        timeSpan.put("Hours", hours);
+        timeSpan.put("Minutes", minutes);
+        timeSpan.put("Seconds", seconds);
+        timeSpan.put("Milliseconds", millis);
+        timeSpan.put("Ticks", ticks);
+        timeSpan.put("Days", (int) totalDays);
+        timeSpan.put("TotalDays", totalDays);
+        timeSpan.put("TotalHours", totalHoursDouble);
+        timeSpan.put("TotalMilliseconds", (double) totalMs);
+        timeSpan.put("TotalMinutes", totalMinutes);
+        timeSpan.put("TotalSeconds", totalSecondsDouble);
+        return timeSpan;
+    }
+
+    private Map<String, Object> msToTimeSpanObject(int ms) {
+        int totalSecs = ms / 1000;
+        int hours = totalSecs / 3600;
+        int minutes = (totalSecs % 3600) / 60;
+        int seconds = totalSecs % 60;
+        int millis = ms % 1000;
+
+        long ticks = (long) ms * 10000L;
+        double totalDays = ms / 86400000.0;
+        double totalHoursDouble = ms / 3600000.0;
+        double totalMinutes = ms / 60000.0;
+        double totalSecondsDouble = ms / 1000.0;
+
+        Map<String, Object> timeSpan = new LinkedHashMap<>();
+        timeSpan.put("Hours", hours);
+        timeSpan.put("Minutes", minutes);
+        timeSpan.put("Seconds", seconds);
+        timeSpan.put("Milliseconds", millis);
+        timeSpan.put("Ticks", ticks);
+        timeSpan.put("Days", (int) totalDays);
+        timeSpan.put("TotalDays", totalDays);
+        timeSpan.put("TotalHours", totalHoursDouble);
+        timeSpan.put("TotalMilliseconds", (double) ms);
+        timeSpan.put("TotalMinutes", totalMinutes);
+        timeSpan.put("TotalSeconds", totalSecondsDouble);
+        return timeSpan;
     }
 
     public Map<String, Object> getAllWFHFilterDetails(Map<String, Object> model) {
@@ -512,16 +802,8 @@ EmployeeMasterViewModel userDetails = new EmployeeMasterViewModel();
             String toDateStr = model.get("ToDate") != null ? model.get("ToDate").toString() : "";
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-            Calendar today = Calendar.getInstance();
-            today.set(Calendar.HOUR_OF_DAY, 0);
-            today.set(Calendar.MINUTE, 0);
-            today.set(Calendar.SECOND, 0);
-            today.set(Calendar.MILLISECOND, 0);
-            Date todayDate = today.getTime();
 
-            List<WFHLoginlog> allWFH = wfhLoginlogRepository.findAll().stream()
-                .filter(w -> w.getIsActive() != null && w.getIsActive() && w.getIsDeleted() != null && !w.getIsDeleted())
+            List<WFHLoginlog> allWFH = wfhLoginlogRepository.findByIsActiveAndIsDeleted(true, false).stream()
                 .filter(w -> w.getLoginTime() != null)
                 .collect(Collectors.toList());
 
@@ -540,20 +822,11 @@ EmployeeMasterViewModel userDetails = new EmployeeMasterViewModel();
                 .collect(Collectors.groupingBy(w -> w.getEmpId() + "_" + sdf.format(w.getDate())));
 
             List<WFHLoginlogViewModel> vmList = new ArrayList<>();
-            Calendar defaultLogout = Calendar.getInstance();
-            defaultLogout.set(Calendar.HOUR_OF_DAY, 18);
-            defaultLogout.set(Calendar.MINUTE, 35);
-            defaultLogout.set(Calendar.SECOND, 0);
-            defaultLogout.set(Calendar.MILLISECOND, 0);
             int defaultLogoutMs = ((18 * 3600 + 35 * 60) * 1000);
 
             for (Map.Entry<String, List<WFHLoginlog>> entry : groupedData.entrySet()) {
                 List<WFHLoginlog> records = entry.getValue().stream()
-                    .sorted((a, b) -> {
-                        int msA = getTimeMsFromDate(a.getLoginTime());
-                        int msB = getTimeMsFromDate(b.getLoginTime());
-                        return Integer.compare(msA, msB);
-                    })
+                    .sorted((a, b) -> Integer.compare(getTimeMsFromDate(a.getLoginTime()), getTimeMsFromDate(b.getLoginTime())))
                     .collect(Collectors.toList());
 
                 if (records.isEmpty()) continue;
@@ -564,12 +837,11 @@ EmployeeMasterViewModel userDetails = new EmployeeMasterViewModel();
                 int totalActiveMs = 0;
 
                 for (int i = 0; i < records.size(); i++) {
-                    WFHLoginlog record = records.get(i);
-                    int logInMs = getTimeMsFromDate(record.getLoginTime());
+                    int logInMs = getTimeMsFromDate(records.get(i).getLoginTime());
                     int logOutMs;
 
-                    if (record.getLogOutTime() != null) {
-                        logOutMs = getTimeMsFromDate(record.getLogOutTime());
+                    if (records.get(i).getLogOutTime() != null) {
+                        logOutMs = getTimeMsFromDate(records.get(i).getLogOutTime());
                     } else if (i + 1 < records.size()) {
                         logOutMs = getTimeMsFromDate(records.get(i + 1).getLoginTime());
                     } else {
@@ -598,24 +870,18 @@ EmployeeMasterViewModel userDetails = new EmployeeMasterViewModel();
                 vm.setEmpCode(firstRecord.getEmpCode());
                 vm.setEmpName(empName.trim());
                 vm.setIpAddress(firstRecord.getIpAddress());
-                vm.setDate(sdf.format(firstRecord.getDate()));
-                vm.setLoginTime(msToTimeString(firstLoginMs));
-                vm.setLogOutTime(msToTimeString(lastLogoutMs));
-
-                int hours = totalActiveMs / (1000 * 60 * 60);
-                int mins = (totalActiveMs % (1000 * 60 * 60)) / (1000 * 60);
-                int secs = (totalActiveMs % (1000 * 60)) / 1000;
-                vm.setActivehrs(String.format("%02d:%02d:%02d", hours, mins, secs));
-
+                vm.setDate(firstRecord.getDate() != null ? "/Date(" + firstRecord.getDate().getTime() + ")/" : null);
+                vm.setLoginTime(msToTimeSpanObject(firstLoginMs));
+                vm.setLogOutTime(msToTimeSpanObject(lastLogoutMs));
+                vm.setActivehrs(msToTimeSpanObject(totalActiveMs));
                 vm.setIsLoggedIn(firstRecord.getIsLoggedIn());
                 vm.setIsLoggedOut(firstRecord.getIsLoggedOut());
                 vm.setIsActive(firstRecord.getIsActive());
                 vm.setIsDeleted(firstRecord.getIsDeleted());
                 vm.setCreatedBy(firstRecord.getCreatedBy());
-                vm.setCreatedDate(firstRecord.getCreatedDate() != null ? sdf.format(firstRecord.getCreatedDate()) : null);
+                vm.setCreatedDate(firstRecord.getCreatedDate() != null ? "/Date(" + firstRecord.getCreatedDate().getTime() + ")/" : null);
                 vm.setLastUpdatedBy(firstRecord.getLastUpdatedBy());
-                vm.setLastUpdatedDate(firstRecord.getLastUpdatedDate() != null ? sdf.format(firstRecord.getLastUpdatedDate()) : null);
-
+                vm.setLastUpdatedDate(firstRecord.getLastUpdatedDate() != null ? "/Date(" + firstRecord.getLastUpdatedDate().getTime() + ")/" : null);
                 vm.setCompId(emp.getCompId());
                 vm.setCompName(compMap.getOrDefault(emp.getCompId(), ""));
                 vm.setDeptId(emp.getCategoryId());
@@ -627,7 +893,9 @@ EmployeeMasterViewModel userDetails = new EmployeeMasterViewModel();
             }
 
             vmList.sort((a, b) -> {
-                int dateCompare = b.getDate().compareTo(a.getDate());
+                String dateA = (String) a.getDate();
+                String dateB = (String) b.getDate();
+                int dateCompare = dateB.compareTo(dateA);
                 if (dateCompare != 0) return dateCompare;
                 return b.getEmpId().compareTo(a.getEmpId());
             });
@@ -661,28 +929,39 @@ EmployeeMasterViewModel userDetails = new EmployeeMasterViewModel();
                 try {
                     Date fDate = sdf.parse(fromDateStr);
                     Date tDate = sdf.parse(toDateStr);
+                    SimpleDateFormat dateOnlySdf = new SimpleDateFormat("yyyy-MM-dd");
                     vmList = vmList.stream()
                         .filter(v -> {
                             try {
-                                Date itemDate = sdf.parse(v.getDate());
-                                return !itemDate.before(fDate) && !itemDate.after(tDate) && v.getIsActive();
+                                String d = (String) v.getDate();
+                                long ts = Long.parseLong(d.replaceAll("\\D", ""));
+                                Date itemDate = new Date(ts);
+                                String itemDateStr = dateOnlySdf.format(itemDate);
+                                Date parsedItemDate = dateOnlySdf.parse(itemDateStr);
+                                return !parsedItemDate.before(fDate) && !parsedItemDate.after(tDate) && v.getIsActive();
                             } catch (Exception e) { return false; }
                         })
                         .collect(Collectors.toList());
                 } catch (Exception e) {
-                    // Invalid date format, skip date filtering
+                    // skip
                 }
             }
 
+            Calendar todayCal = Calendar.getInstance();
             for (WFHLoginlogViewModel item : vmList) {
                 try {
-                    Date itemDate = sdf.parse(item.getDate());
-                    if (itemDate.equals(todayDate)) {
-                        item.setLogOutTime("00:00:00");
-                        item.setActivehrs("00:00:00");
+                    String d = (String) item.getDate();
+                    long ts = Long.parseLong(d.replaceAll("\\D", ""));
+                    Date itemDate = new Date(ts);
+                    Calendar itemCal = Calendar.getInstance();
+                    itemCal.setTime(itemDate);
+                    if (itemCal.get(Calendar.YEAR) == todayCal.get(Calendar.YEAR) &&
+                        itemCal.get(Calendar.DAY_OF_YEAR) == todayCal.get(Calendar.DAY_OF_YEAR)) {
+                        item.setLogOutTime(msToTimeSpanObject(0));
+                        item.setActivehrs(msToTimeSpanObject(0));
                     }
                 } catch (Exception e) {
-                    // Skip date parsing errors
+                    // skip
                 }
             }
 
@@ -720,20 +999,382 @@ EmployeeMasterViewModel userDetails = new EmployeeMasterViewModel();
     }
 
     public Map<String, Object> saveWFHAnalysis(Map<String, Object> model) {
-        Map<String, Object> result = new java.util.HashMap<>();
-        result.put("msg", "WFH analysis saved");
+        try {
+            String empCode = model.get("EmpCode") != null ? model.get("EmpCode").toString() : "";
+            String dateStr = model.get("Date") != null ? model.get("Date").toString() : "";
+            String analysisHrStr = model.get("AnalysisHr") != null ? model.get("AnalysisHr").toString() : "";
+
+            if (empCode.isEmpty() || dateStr.isEmpty() || analysisHrStr.isEmpty()) {
+                Map<String, Object> err = new java.util.HashMap<>();
+                err.put("Message", "Employee WFH Login Details not found");
+                return err;
+            }
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date parsedDate = dateFormat.parse(dateStr);
+
+            List<WFHLoginlog> wfhRecords = wfhLoginlogRepository
+                .findByEmpCodeIgnoreCaseAndDateAndIsActiveAndIsDeleted(empCode, parsedDate, true, false);
+
+            if (wfhRecords == null || wfhRecords.isEmpty()) {
+                Map<String, Object> err = new java.util.HashMap<>();
+                err.put("Message", "Employee WFH Login Details not found");
+                return err;
+            }
+
+            String[] timeParts = analysisHrStr.split(":");
+            int hours = Integer.parseInt(timeParts[0]);
+            int minutes = Integer.parseInt(timeParts[1]);
+            String[] secParts = timeParts[2].split("\\.");
+            int seconds = Integer.parseInt(secParts[0]);
+            int millis = secParts.length > 1 ? Integer.parseInt(secParts[1]) : 0;
+
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.HOUR_OF_DAY, hours);
+            cal.set(Calendar.MINUTE, minutes);
+            cal.set(Calendar.SECOND, seconds);
+            cal.set(Calendar.MILLISECOND, millis);
+            Date analysisTime = cal.getTime();
+
+            for (WFHLoginlog record : wfhRecords) {
+                record.setAnalysisHr(analysisTime);
+                record.setLastUpdatedDate(new Date());
+                wfhLoginlogRepository.save(record);
+            }
+
+            Map<String, Object> success = new java.util.HashMap<>();
+            success.put("EmpCode", empCode);
+            success.put("msg", "Analysis Hr Added");
+            return success;
+        } catch (Exception ex) {
+            Map<String, Object> err = new java.util.HashMap<>();
+            err.put("Message", "Employee WFH Login Details not found");
+            return err;
+        }
+    }
+
+    public EmployeeMasterViewModel wfhLogin(LoginViewModel loginUser) {
+        if (loginUser == null || loginUser.getUserName() == null || loginUser.getPassword() == null ||
+            loginUser.getUserName().isEmpty() || loginUser.getPassword().isEmpty()) {
+            throw new RuntimeException("{\"StatusCode\":404,\"Message\":\"Invalid Input Parameters\"}");
+        }
+
+        String username = loginUser.getUserName();
+        String password = loginUser.getPassword();
+
+        List<EmployeeMaster> empDetails = employeeMasterRepository.findActiveUserByUserName(username);
+        if (empDetails == null || empDetails.isEmpty()) {
+            throw new RuntimeException("{\"StatusCode\":404,\"Message\":\"UserName is Mismatching\"}");
+        }
+
+        EmployeeMaster emp = empDetails.get(0);
+        int empId = emp.getEmpId();
+        Integer oldEmpId = emp.getOldEmp_ID();
+
+        List<EmployeeMaster> authorizedEmp = employeeMasterRepository.findByReportId(oldEmpId);
+        if (authorizedEmp == null || authorizedEmp.isEmpty()) {
+            authorizedEmp = employeeMasterRepository.findByReportId(empId);
+        }
+
+        EmployeeMasterViewModel userDetails = new EmployeeMasterViewModel();
+        userDetails.setCompId(emp.getCompId());
+        if (emp.getCompId() != null) {
+            Optional<CompanyMaster> company = companyMasterRepository.findById(emp.getCompId());
+            company.ifPresent(c -> userDetails.setCompany(c.getCompany()));
+        }
+        userDetails.setEmpId(emp.getEmpId());
+        userDetails.setLoginId(emp.getEmpId());
+        userDetails.setEmpCode(emp.getEmpCode());
+        userDetails.setUserName(emp.getUserName());
+        userDetails.setPassword(emp.getPassword());
+        userDetails.setFirstName(emp.getFirstName());
+        userDetails.setMiddleName(emp.getMiddleName());
+        userDetails.setLastName(emp.getLastName());
+        userDetails.setMobileNo(emp.getMobileNo());
+        userDetails.setEmailId(emp.getEmailId());
+        userDetails.setGender(capitalizeFirst(emp.getGender()));
+        userDetails.setJoiningDate(formatDate(emp.getJoiningDate()));
+        userDetails.setEmpStatus(emp.getEmpStatus());
+        userDetails.setReportId(emp.getReportId());
+        userDetails.setDeptId(emp.getCategoryId());
+        userDetails.setDeptName(emp.getDeptName());
+        userDetails.setDesignationId(emp.getDesignationId());
+        userDetails.setDesignation(emp.getDesignationName());
+        userDetails.setIsActive(emp.getIsActive());
+        userDetails.setIsUpdated(emp.getIsUpdated());
+        userDetails.setIsDeleted(emp.getIsDeleted());
+        userDetails.setCreatedBy(emp.getCreatedBy());
+        userDetails.setCreatedDate(formatDate(emp.getCreatedDate()));
+        userDetails.setLastUpdatedBy(emp.getLastUpdatedBy());
+        userDetails.setLastUpdatedDate(formatDate(emp.getLastUpdatedDate()));
+
+        if (emp.getReportId() != null) {
+            Optional<EmployeeMaster> reporter = employeeMasterRepository.findById(emp.getReportId());
+            reporter.ifPresent(r -> userDetails.setReportEmpCode(r.getEmpCode()));
+        }
+        if (authorizedEmp != null && !authorizedEmp.isEmpty()) {
+            userDetails.setAuthorised(true);
+        } else {
+            userDetails.setAuthorised(false);
+        }
+
+        String userName = userDetails.getUserName();
+        Integer roleId = userDetails.getDesignationId();
+        String roleIdStr = (roleId != null) ? String.valueOf(roleId) : "1";
+        String tokenId = JwtAuthenticationFilter.encodeAuthToken(userName);
+        String userAuth = JwtAuthenticationFilter.encodeToken(userName, roleIdStr);
+        userDetails.setTokenId(tokenId);
+        userDetails.setUserAuth(userAuth);
+
+        // Verify password
+        try {
+            String storedPassword = emp.getPassword();
+            boolean passwordMatch = false;
+            if (storedPassword != null) {
+                try {
+                    byte[] decrypted = Base64.getDecoder().decode(storedPassword);
+                    String decryptedPassword = new String(decrypted, StandardCharsets.UTF_16);
+                    if (!decryptedPassword.trim().equals(password.trim())) {
+                        decryptedPassword = new String(decrypted, StandardCharsets.UTF_16LE);
+                    }
+                    if (decryptedPassword.trim().equals(password.trim())) {
+                        passwordMatch = true;
+                    }
+                } catch (Exception e) {
+                    // not base64
+                }
+                if (!passwordMatch && storedPassword.equals(password)) {
+                    passwordMatch = true;
+                }
+            }
+            if (!passwordMatch) {
+                throw new RuntimeException("{\"StatusCode\":404,\"Message\":\"Password is Mismatching\"}");
+            }
+
+            // Create session with WFH=true
+            SessionMaster session = new SessionMaster();
+            session.setUsername(username);
+            session.setTockenId(userDetails.getTokenId());
+            session.setAuthKey(userDetails.getUserAuth());
+            session.setRoleId(userDetails.getDesignationId());
+            session.setStatus(true);
+            session.setExpired(false);
+            session.setWfh(true);
+            session.setIsActive(true);
+            session.setIsDeleted(false);
+            session.setCreatedDate(new Date());
+            session.setLastUpdatedDate(new Date());
+            sessionMasterRepository.save(session);
+
+            // Create WFHLoginlog entry
+            WFHLoginlog wfhLog = new WFHLoginlog();
+            wfhLog.setEmpId(emp.getEmpId());
+            wfhLog.setEmpCode(username);
+            wfhLog.setIpAddress(loginUser.getIpAddress());
+            Date now = new Date();
+            Calendar nowCal = Calendar.getInstance();
+            nowCal.setTime(now);
+            nowCal.set(Calendar.HOUR_OF_DAY, 0);
+            nowCal.set(Calendar.MINUTE, 0);
+            nowCal.set(Calendar.SECOND, 0);
+            nowCal.set(Calendar.MILLISECOND, 0);
+            wfhLog.setDate(nowCal.getTime());
+            wfhLog.setLoginTime(now);
+            wfhLog.setIsLoggedIn(true);
+            wfhLog.setIsLoggedOut(false);
+            wfhLog.setIsActive(true);
+            wfhLog.setIsUpdated(false);
+            wfhLog.setIsDeleted(false);
+            wfhLog.setCreatedBy(emp.getEmpId());
+            wfhLog.setCreatedDate(now);
+            wfhLog.setLastUpdatedBy(emp.getEmpId());
+            wfhLog.setLastUpdatedDate(now);
+            wfhLoginlogRepository.save(wfhLog);
+
+            return userDetails;
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("{\"StatusCode\":404,\"Message\":\"Password is Mismatching\"}");
+        }
+    }
+
+    public EmployeeMasterViewModel wfhLogout(LoginViewModel loginUser) {
+        if (loginUser == null || loginUser.getUserName() == null || loginUser.getUserName().isEmpty()) {
+            throw new RuntimeException("{\"StatusCode\":404,\"Message\":\"Not Found\"}");
+        }
+
+        String username = loginUser.getUserName();
+        String token = loginUser.getTokenId();
+        String authKey = loginUser.getAuthKey();
+        Integer roleId = loginUser.getRoleId();
+
+        List<EmployeeMaster> empDetails = employeeMasterRepository.findActiveUserByUserName(username);
+        if (empDetails == null || empDetails.isEmpty()) {
+            throw new RuntimeException("{\"StatusCode\":404,\"Message\":\"User is Not Found\"}");
+        }
+
+        EmployeeMaster emp = empDetails.get(0);
+        EmployeeMasterViewModel userDetails = new EmployeeMasterViewModel();
+        userDetails.setEmpId(emp.getEmpId());
+        userDetails.setCompId(0);
+        userDetails.setCategoryId(0);
+        userDetails.setDesignationId(0);
+        userDetails.setEmpCode(emp.getEmpCode());
+        userDetails.setUserName(emp.getUserName());
+        userDetails.setEmpStatus(emp.getEmpStatus());
+        userDetails.setTokenId("Expired");
+
+        Optional<SessionMaster> sessionOpt = sessionMasterRepository.findActiveSessionByUsernameAndToken(username, token);
+        if (sessionOpt.isPresent()) {
+            SessionMaster session = sessionOpt.get();
+            if (!Boolean.TRUE.equals(session.getWfh())) {
+                throw new RuntimeException("{\"StatusCode\":404,\"Message\":\"User Authorization is Failed\"}");
+            }
+            Optional<SessionMaster> sessionWithAuth = sessionMasterRepository.findActiveSessionByUsernameTokenAuthKeyAndRole(username, token, authKey, roleId);
+            if (sessionWithAuth.isPresent()) {
+                SessionMaster s = sessionWithAuth.get();
+                s.setExpired(true);
+                s.setLastUpdatedDate(new Date());
+                sessionMasterRepository.save(s);
+
+                // Update WFHLoginlog for today
+                Date now = new Date();
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(now);
+                cal.set(Calendar.HOUR_OF_DAY, 0);
+                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 0);
+                Date today = cal.getTime();
+
+                List<WFHLoginlog> wfhLogs = wfhLoginlogRepository.findTodayActiveLogin(username, emp.getEmpId(), today);
+                if (wfhLogs != null && !wfhLogs.isEmpty()) {
+                    WFHLoginlog wfhLog = wfhLogs.get(0);
+                    wfhLog.setLogOutTime(now);
+                    wfhLog.setIsLoggedOut(true);
+
+                    if (wfhLog.getLoginTime() != null) {
+                        long diffMs = now.getTime() - wfhLog.getLoginTime().getTime();
+                        Calendar timeCal = Calendar.getInstance();
+                        timeCal.setTimeInMillis(diffMs);
+                        // Create a time-only Date from the diff
+                        Calendar activeCal = Calendar.getInstance();
+                        activeCal.set(Calendar.HOUR_OF_DAY, timeCal.get(Calendar.HOUR_OF_DAY));
+                        activeCal.set(Calendar.MINUTE, timeCal.get(Calendar.MINUTE));
+                        activeCal.set(Calendar.SECOND, timeCal.get(Calendar.SECOND));
+                        activeCal.set(Calendar.MILLISECOND, timeCal.get(Calendar.MILLISECOND));
+                        wfhLog.setActivehrs(activeCal.getTime());
+                    }
+
+                    wfhLog.setIsUpdated(true);
+                    wfhLog.setLastUpdatedBy(emp.getEmpId());
+                    wfhLog.setLastUpdatedDate(now);
+                    wfhLoginlogRepository.save(wfhLog);
+                }
+            } else {
+                throw new RuntimeException("{\"StatusCode\":404,\"Message\":\"User Authorization is Failed\"}");
+            }
+        } else {
+            throw new RuntimeException("{\"StatusCode\":404,\"Message\":\"User Token is Expired\"}");
+        }
+
+        return userDetails;
+    }
+
+    public List<ScreenshotsViewModel> wfhEmpList(Map<String, Object> model) {
+        String basePath = "C:\\Users\\rim0972\\Documents\\office_web\\java\\Uploads\\Images\\Screenshot\\";
+        String currentMonth = new SimpleDateFormat("MMMM", Locale.ENGLISH).format(new Date());
+        String empPath = basePath + currentMonth;
+
+        java.io.File dir = new java.io.File(empPath);
+        if (!dir.exists() || !dir.isDirectory()) {
+            return new ArrayList<>();
+        }
+
+        java.io.File[] empDirs = dir.listFiles(java.io.File::isDirectory);
+        if (empDirs == null) return new ArrayList<>();
+
+        List<ScreenshotsViewModel> result = new ArrayList<>();
+        for (java.io.File f : empDirs) {
+            ScreenshotsViewModel vm = new ScreenshotsViewModel();
+            vm.setEmpCode(f.getName());
+            result.add(vm);
+        }
         return result;
     }
 
-    public Map<String, Object> wfhEmpList(Map<String, Object> model) {
-        Map<String, Object> result = new java.util.HashMap<>();
-        result.put("msg", "WFH employee list retrieved");
-        return result;
-    }
+    public Object viewScreenShots(Map<String, Object> model) {
+        String empCode = model.get("EmpCode") != null ? model.get("EmpCode").toString() : "";
+        String dateStr = model.get("Date") != null ? model.get("Date").toString() : "";
 
-    public Map<String, Object> viewScreenShots(Map<String, Object> model) {
-        Map<String, Object> result = new java.util.HashMap<>();
-        result.put("msg", "Screen shots retrieved");
-        return result;
+        if (empCode.isEmpty()) {
+            throw new RuntimeException("Employee code is required.");
+        }
+
+        String basePath = "C:\\Users\\rim0972\\Documents\\office_web\\java\\Uploads\\Images\\Screenshot\\";
+        String currentMonth = new SimpleDateFormat("MMMM", Locale.ENGLISH).format(new Date());
+        String empPath = basePath + currentMonth + "\\" + empCode;
+
+        java.io.File empDir = new java.io.File(empPath);
+        if (!empDir.exists() || !empDir.isDirectory()) {
+            throw new RuntimeException("Path not found: " + empPath);
+        }
+
+        // If date not provided, return list of date folders
+        if (dateStr.isEmpty()) {
+            java.io.File[] dateDirs = empDir.listFiles(java.io.File::isDirectory);
+            List<ScreenshotsViewModel> folders = new ArrayList<>();
+            if (dateDirs != null) {
+                for (java.io.File f : dateDirs) {
+                    ScreenshotsViewModel vm = new ScreenshotsViewModel();
+                    vm.setEmpCode(empCode);
+                    vm.setDate(f.getName());
+                    folders.add(vm);
+                }
+            }
+            return folders;
+        }
+
+        // If date provided, return ZIP
+        String dateFolderPath = empPath + "\\" + dateStr;
+        java.io.File dateDir = new java.io.File(dateFolderPath);
+        if (!dateDir.exists() || !dateDir.isDirectory()) {
+            throw new RuntimeException("Date folder not found.");
+        }
+
+        try {
+            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+            try (java.util.zip.ZipOutputStream zos = new java.util.zip.ZipOutputStream(baos)) {
+                java.io.File[] files = dateDir.listFiles();
+                if (files != null) {
+                    byte[] buffer = new byte[4096];
+                    for (java.io.File file : files) {
+                        if (file.isFile()) {
+                            java.util.zip.ZipEntry entry = new java.util.zip.ZipEntry(file.getName());
+                            zos.putNextEntry(entry);
+                            try (java.io.FileInputStream fis = new java.io.FileInputStream(file)) {
+                                int len;
+                                while ((len = fis.read(buffer)) > 0) {
+                                    zos.write(buffer, 0, len);
+                                }
+                            }
+                            zos.closeEntry();
+                        }
+                    }
+                }
+            }
+
+            String zipFileName = empCode + "_" + dateStr + ".zip";
+            byte[] zipBytes = baos.toByteArray();
+
+            Map<String, Object> fileResponse = new LinkedHashMap<>();
+            fileResponse.put("fileName", zipFileName);
+            fileResponse.put("fileBytes", zipBytes);
+            fileResponse.put("contentType", "application/zip");
+            return fileResponse;
+        } catch (Exception ex) {
+            throw new RuntimeException("Failed to create zip file: " + ex.getMessage());
+        }
     }
 }

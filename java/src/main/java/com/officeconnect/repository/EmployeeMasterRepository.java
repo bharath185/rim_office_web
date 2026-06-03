@@ -48,6 +48,8 @@ public interface EmployeeMasterRepository extends JpaRepository<EmployeeMaster, 
 
     List<EmployeeMaster> findByEmpCodeAndIsActiveAndIsDeleted(String empCode, Boolean isActive, Boolean isDeleted);
 
+    List<EmployeeMaster> findByEmpTypeAndIsActiveAndIsDeleted(Integer empType, Boolean isActive, Boolean isDeleted);
+
     @Query("SELECT e FROM EmployeeMaster e WHERE (e.reportId = ?1 OR e.reportId = ?2) AND e.isActive = true AND e.isDeleted = false")
     List<EmployeeMaster> findByReportIdOrOldEmpId(Integer reportId, Integer oldEmpId);
 }

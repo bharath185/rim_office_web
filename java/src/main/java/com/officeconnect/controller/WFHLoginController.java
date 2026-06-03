@@ -2,7 +2,9 @@ package com.officeconnect.controller;
 
 import com.officeconnect.dto.LoginViewModel;
 import com.officeconnect.dto.EmployeeMasterViewModel;
+import com.officeconnect.dto.ScreenshotsViewModel;
 import com.officeconnect.dto.WFHLoginlogFilterViewModel;
+import com.officeconnect.dto.WFHLoginlogViewModel;
 import com.officeconnect.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,7 +24,7 @@ public class WFHLoginController {
     @PostMapping("/Login")
     public ResponseEntity<?> wfhLogin(@RequestBody LoginViewModel loginUser) {
         try {
-            EmployeeMasterViewModel emp = loginService.checkLogin(loginUser);
+            EmployeeMasterViewModel emp = loginService.wfhLogin(loginUser);
             return ResponseEntity.ok(emp);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -33,7 +35,7 @@ public class WFHLoginController {
     @PostMapping("/LogOut")
     public ResponseEntity<?> wfhLogout(@RequestBody LoginViewModel loginUser) {
         try {
-            EmployeeMasterViewModel emp = loginService.checkLogOut(loginUser);
+            EmployeeMasterViewModel emp = loginService.wfhLogout(loginUser);
             return ResponseEntity.ok(emp);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -44,7 +46,7 @@ public class WFHLoginController {
     @PostMapping("/GetAllWFHDetails")
     public ResponseEntity<?> getAllWFHDetails(@RequestBody Map<String, Object> model) {
         try {
-            Map<String, Object> result = loginService.getAllWFHDetails(model);
+            List<WFHLoginlogViewModel> result = loginService.getAllWFHDetails(model);
             return ResponseEntity.ok(result);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -55,7 +57,7 @@ public class WFHLoginController {
     @PostMapping("/GetAllWFHAnalysis")
     public ResponseEntity<?> getAllWFHAnalysis(@RequestBody Map<String, Object> model) {
         try {
-            Map<String, Object> result = loginService.getAllWFHAnalysis(model);
+            List<WFHLoginlogViewModel> result = loginService.getAllWFHAnalysis(model);
             return ResponseEntity.ok(result);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -107,7 +109,7 @@ public class WFHLoginController {
     @PostMapping("/WFHEmpList")
     public ResponseEntity<?> wfhEmpList(@RequestBody Map<String, Object> model) {
         try {
-            Map<String, Object> result = loginService.wfhEmpList(model);
+            List<ScreenshotsViewModel> result = loginService.wfhEmpList(model);
             return ResponseEntity.ok(result);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -129,7 +131,7 @@ public class WFHLoginController {
     @PostMapping("/ViewScreenShots")
     public ResponseEntity<?> viewScreenShots(@RequestBody Map<String, Object> model) {
         try {
-            Map<String, Object> result = loginService.viewScreenShots(model);
+            Object result = loginService.viewScreenShots(model);
             return ResponseEntity.ok(result);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

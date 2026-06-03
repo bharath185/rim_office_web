@@ -19,6 +19,9 @@ public class LoginViewModel {
     @JsonProperty("RoleId")
     @JsonAlias({"roleId", "RoleId"})
     private Integer roleId;
+    @JsonProperty("IPAddress")
+    @JsonAlias({"ipAddress", "IPAddress"})
+    private String ipAddress;
 
     public String getUserName() { return userName; }
     public void setUserName(String userName) { this.userName = userName; }
@@ -34,4 +37,7 @@ public class LoginViewModel {
 
     public Integer getRoleId() { return roleId; }
     public void setRoleId(Integer roleId) { this.roleId = roleId; }
+
+    public String getIpAddress() { return ipAddress; }
+    public void setIpAddress(String ipAddress) { this.ipAddress = ipAddress; }
 }

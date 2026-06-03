@@ -1975,6 +1975,7 @@ public class EmployeeService {
             Integer deptId = parseInteger(model.get("DeptId"));
             Integer designationId = parseInteger(model.get("DesignationId"));
             Integer empId = parseInteger(model.get("EmpId"));
+            Integer empTypeId = parseInteger(model.get("EmpTypeId"));
 
             Query spQuery = entityManager.createNativeQuery(
                 "EXEC sp_GetAttendanceReport22 @LoginId = :loginId, @CompId = :compId, @LEId = :leId, @BUId = :buId, @LocId = :locId, @DeptId = :deptId, @DesignationId = :designationId, @EmpId = :empId, @StartDate = :startDate, @EndDate = :endDate");
@@ -2047,6 +2048,17 @@ public class EmployeeService {
 
                 String dateKey = logDateFormat.format(rowDate);
                 grouped.computeIfAbsent(dateKey, k -> new ArrayList<>()).add(avm);
+            }
+
+            if (empTypeId != null && empTypeId > 0) {
+                List<Integer> validEmpIds = employeeMasterRepository
+                    .findByEmpTypeAndIsActiveAndIsDeleted(empTypeId, true, false)
+                    .stream()
+                    .map(EmployeeMaster::getEmpId)
+                    .collect(Collectors.toList());
+                grouped.forEach((dateKey, attendanceList) ->
+                    attendanceList.removeIf(avm -> !validEmpIds.contains(avm.getEmpId())));
+                grouped.values().removeIf(List::isEmpty);
             }
 
             List<AttendaceDateViewModel> result = new ArrayList<>();

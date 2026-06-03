@@ -2,6 +2,7 @@ package com.officeconnect.controller;
 
 import com.officeconnect.dto.*;
 import com.officeconnect.dto.EmployeeMasterViewModel;
+import com.officeconnect.service.LoginService;
 import com.officeconnect.service.PerformanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,9 @@ public class PerformanceController {
 
     @Autowired
     private PerformanceService performanceService;
+
+    @Autowired
+    private LoginService loginService;
 
     @PostMapping("/CreateGoal")
     public ResponseEntity<?> createGoal(@RequestBody PerformanceViewModel model) {
@@ -623,6 +627,26 @@ public class PerformanceController {
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Map.of("StatusCode", 404, "Message", ex.getMessage()));
+        }
+    }
+
+    @PostMapping("/ViewScreenShots")
+    public ResponseEntity<?> viewScreenShots(@RequestBody Map<String, Object> model) {
+        try {
+            Object result = loginService.viewScreenShots(model);
+            if (result instanceof List) {
+                return ResponseEntity.ok(result);
+            }
+            @SuppressWarnings("unchecked")
+            Map<String, Object> fileResp = (Map<String, Object>) result;
+            byte[] fileBytes = (byte[]) fileResp.get("fileBytes");
+            String fileName = (String) fileResp.get("fileName");
+            return ResponseEntity.ok()
+                .header("Content-Type", "application/zip")
+                .header("Content-Disposition", "attachment; filename=" + fileName)
+                .body(fileBytes);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.ok(Map.of("StatusCode", 404, "Message", ex.getMessage()));
         }
     }
 }

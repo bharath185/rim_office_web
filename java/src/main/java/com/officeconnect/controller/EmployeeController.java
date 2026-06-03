@@ -2058,7 +2058,49 @@ public class EmployeeController {
 
     @PostMapping("/WFHUploadImage")
     public ResponseEntity<?> wfhUploadImage(@RequestBody Map<String, Object> model) {
-        return ResponseEntity.ok(Map.of("StatusCode", 200, "Message", "WFHUploadImage accepted"));
+        try {
+            String base64File = model.get("File") != null ? model.get("File").toString() : "";
+            String empCode = model.get("EmpCode") != null ? model.get("EmpCode").toString() : "";
+            String empIdStr = model.get("EmpId") != null ? model.get("EmpId").toString() : "0";
+
+            String basePath = "C:\\Users\\rim0972\\Documents\\office_web\\java\\Uploads\\Images\\Screenshot\\";
+            String currentMonth = new java.text.SimpleDateFormat("MMMM", java.util.Locale.ENGLISH).format(new java.util.Date());
+            String formattedDate = new java.text.SimpleDateFormat("dd-MM-yyyy").format(new java.util.Date());
+
+            String uploadDir = basePath + currentMonth;
+            String uploadDir1 = uploadDir + "\\" + empCode;
+            String uploadDir2 = uploadDir1 + "\\" + formattedDate;
+
+            java.io.File dir2 = new java.io.File(uploadDir2);
+            if (!dir2.exists()) dir2.mkdirs();
+
+            String extension = ".png";
+            if (!base64File.isEmpty()) {
+                String[] parts = base64File.split(",");
+                String base64Data = parts.length > 1 ? parts[1] : parts[0];
+                String mimeType = parts.length > 1 ? parts[0] : "";
+                if (mimeType.contains("jpeg") || mimeType.contains("jpg")) extension = ".jpg";
+                else if (mimeType.contains("gif")) extension = ".gif";
+                else if (mimeType.contains("pdf")) extension = ".pdf";
+
+                byte[] imageBytes = java.util.Base64.getDecoder().decode(base64Data);
+                String imgName = "ScreenShot_" + empCode + "_" + empIdStr + "_" + new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new java.util.Date()) + extension;
+                String filePath = uploadDir2 + "\\" + imgName;
+
+                java.nio.file.Files.write(java.nio.file.Paths.get(filePath), imageBytes);
+
+                return ResponseEntity.ok(Map.of(
+                    "StatusCode", 200,
+                    "Message", "ScreenShot is Uploaded",
+                    "msg", "ScreenShot is Uploaded",
+                    "path", filePath
+                ));
+            }
+
+            return ResponseEntity.ok(Map.of("StatusCode", 200, "Message", "ScreenShot is Uploaded"));
+        } catch (Exception ex) {
+            return ResponseEntity.ok(Map.of("StatusCode", 500, "Message", "Failed to upload screenshot: " + ex.getMessage()));
+        }
     }
 
     private Object getIgnoreCase(Map<String, Object> map, String key) {

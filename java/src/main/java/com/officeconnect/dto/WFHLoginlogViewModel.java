@@ -25,19 +25,19 @@ public class WFHLoginlogViewModel {
     private String ipAddress;
 
     @JsonProperty("Date")
-    private String date;
+    private Object date;
 
     @JsonProperty("LoginTime")
-    private String loginTime;
+    private Object loginTime;
 
     @JsonProperty("LogOutTime")
-    private String logOutTime;
+    private Object logOutTime;
 
     @JsonProperty("Activehrs")
-    private String activehrs;
+    private Object activehrs;
 
     @JsonProperty("AnalysisHr")
-    private String analysisHr;
+    private Object analysisHr;
 
     @JsonProperty("IsLoggedIn")
     private Boolean isLoggedIn;
@@ -111,20 +111,20 @@ public class WFHLoginlogViewModel {
     public String getIpAddress() { return ipAddress; }
     public void setIpAddress(String ipAddress) { this.ipAddress = ipAddress; }
 
-    public String getDate() { return date; }
-    public void setDate(String date) { this.date = date; }
+    public Object getDate() { return date; }
+    public void setDate(Object date) { this.date = date; }
 
-    public String getLoginTime() { return loginTime; }
-    public void setLoginTime(String loginTime) { this.loginTime = loginTime; }
+    public Object getLoginTime() { return loginTime; }
+    public void setLoginTime(Object loginTime) { this.loginTime = loginTime; }
 
-    public String getLogOutTime() { return logOutTime; }
-    public void setLogOutTime(String logOutTime) { this.logOutTime = logOutTime; }
+    public Object getLogOutTime() { return logOutTime; }
+    public void setLogOutTime(Object logOutTime) { this.logOutTime = logOutTime; }
 
-    public String getActivehrs() { return activehrs; }
-    public void setActivehrs(String activehrs) { this.activehrs = activehrs; }
+    public Object getActivehrs() { return activehrs; }
+    public void setActivehrs(Object activehrs) { this.activehrs = activehrs; }
 
-    public String getAnalysisHr() { return analysisHr; }
-    public void setAnalysisHr(String analysisHr) { this.analysisHr = analysisHr; }
+    public Object getAnalysisHr() { return analysisHr; }
+    public void setAnalysisHr(Object analysisHr) { this.analysisHr = analysisHr; }
 
     public Boolean getIsLoggedIn() { return isLoggedIn; }
     public void setIsLoggedIn(Boolean isLoggedIn) { this.isLoggedIn = isLoggedIn; }
