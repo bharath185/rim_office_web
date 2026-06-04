@@ -9,8 +9,8 @@ public class PassHistoryManagement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PassHistoryId")
-    private Integer passHistoryId;
+    @Column(name = "Id")
+    private Integer id;
 
     @Column(name = "EmpId")
     private Integer empId;
@@ -40,6 +40,13 @@ public class PassHistoryManagement {
     @Temporal(TemporalType.DATE)
     private Date createdDate;
 
+    @Column(name = "LastUpdatedBy")
+    private Integer lastUpdatedBy;
+
+    @Column(name = "LastUpdatedDate")
+    @Temporal(TemporalType.DATE)
+    private Date lastUpdatedDate;
+
     @Column(name = "IsActive")
     private Boolean isActive;
 
@@ -49,8 +56,8 @@ public class PassHistoryManagement {
     @Column(name = "IsDeleted")
     private Boolean isDeleted;
 
-    public Integer getPassHistoryId() { return passHistoryId; }
-    public void setPassHistoryId(Integer passHistoryId) { this.passHistoryId = passHistoryId; }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
     public Integer getEmpId() { return empId; }
     public void setEmpId(Integer empId) { this.empId = empId; }
@@ -78,6 +85,12 @@ public class PassHistoryManagement {
 
     public Date getCreatedDate() { return createdDate; }
     public void setCreatedDate(Date createdDate) { this.createdDate = createdDate; }
+
+    public Integer getLastUpdatedBy() { return lastUpdatedBy; }
+    public void setLastUpdatedBy(Integer lastUpdatedBy) { this.lastUpdatedBy = lastUpdatedBy; }
+
+    public Date getLastUpdatedDate() { return lastUpdatedDate; }
+    public void setLastUpdatedDate(Date lastUpdatedDate) { this.lastUpdatedDate = lastUpdatedDate; }
 
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }

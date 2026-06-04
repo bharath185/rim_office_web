@@ -6,6 +6,7 @@ import com.officeconnect.dto.EmployeeMasterViewModel;
 import com.officeconnect.dto.FRViewModel;
 import com.officeconnect.dto.LoginDetailsViewModel;
 import com.officeconnect.dto.LoginViewModel;
+import com.officeconnect.dto.PassHistoryManagementViewModel;
 import com.officeconnect.dto.ScreenshotsViewModel;
 import com.officeconnect.dto.WFHLoginlogViewModel;
 import com.officeconnect.entity.*;
@@ -14,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.mail.*;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -385,6 +389,17 @@ EmployeeMasterViewModel userDetails = new EmployeeMasterViewModel();
         fpm.setIsDeleted(false);
         fpwdManagementRepository.save(fpm);
 
+        // Send email asynchronously (fire-and-forget like .NET)
+        String subject = "Password Reset Request";
+        String body = "<p>Dear " + username + ",</p>"
+            + "<p>We received a request to reset your password. Please use the OTP (One-Time Password) below to proceed with resetting your password:</p>"
+            + "<p><strong>OTP: </strong> " + otp + "</p>"
+            + "<p>This OTP is valid for [Time Duration, e.g., 10 minutes] and can only be used once. If you did not request a password reset, please ignore this email or contact our support team.</p>"
+            + "<p>Thank you,</p>"
+            + "<p>Best regards,</p>"
+            + "<p>3DCAD-Support Team</p>";
+        sendEmail(email, subject, body);
+
         FRViewModel frvm = new FRViewModel();
         frvm.setMsg("OTP Send successfully");
         frvm.setOtp(otp);
@@ -422,52 +437,196 @@ EmployeeMasterViewModel userDetails = new EmployeeMasterViewModel();
         return frvm;
     }
 
-    public FRViewModel changePassword(FRViewModel model) {
-        String empCode = model.getUserName();
-        String newPassword = model.getOtp(); // Using OTP field for new password
-        Boolean fpwd = model.getMsg() != null && model.getMsg().equals("FPwd");
+    public PassHistoryManagementViewModel changePassword(PassHistoryManagementViewModel model) {
+        String empCode = model.getEmpCode();
+        Integer empId = model.getEmpId();
+        String oldPassword = model.getOldPassword();
+        String newPassword = model.getNewPassword();
+        Boolean fpwd = model.getFpwd() != null && model.getFpwd();
+        Boolean cpwd = model.getCpwd() != null && model.getCpwd();
 
-        List<EmployeeMaster> empDetails = employeeMasterRepository.findActiveUserByUserName(empCode);
-        if (empDetails == null || empDetails.isEmpty()) {
-            throw new RuntimeException("{\"StatusCode\":404,\"Message\":\"User details is Mismatching\"}");
+        if (empCode == null || empCode.isEmpty()) {
+            throw new RuntimeException("{\"StatusCode\":404,\"Message\":\"UserName is Mismatching\"}");
         }
 
-        EmployeeMaster emp = empDetails.get(0);
+        // Expire all active PassHistoryManagement for this user
+        List<PassHistoryManagement> passHistoryList = passHistoryManagementRepository.findActiveByEmpCode(empCode);
+        for (PassHistoryManagement ph : passHistoryList) {
+            ph.setExpired(true);
+            passHistoryManagementRepository.save(ph);
+        }
 
-        // Update password
-        String encodedPassword = Base64.getEncoder().encodeToString(newPassword.getBytes(StandardCharsets.UTF_16));
-        emp.setPassword(encodedPassword);
-        emp.setIsUpdated(true);
-        emp.setLastUpdatedBy(emp.getEmpId());
-        emp.setLastUpdatedDate(new Date());
-        employeeMasterRepository.save(emp);
+        if (fpwd) {
+            // Forgot password flow
+            List<EmployeeMaster> empDetails = employeeMasterRepository.findActiveUserByUserName(empCode);
+            if (empDetails == null || empDetails.isEmpty()) {
+                throw new RuntimeException("{\"StatusCode\":404,\"Message\":\"User details is Mismatching\"}");
+            }
+            EmployeeMaster emp = empDetails.get(0);
 
-        // Create history
-        PassHistoryManagement phm = new PassHistoryManagement();
-        phm.setEmpId(emp.getEmpId());
-        phm.setEmpCode(empCode);
-        phm.setOldPassword(emp.getPassword());
-        phm.setNewPassword(newPassword);
-        phm.setFpwd(fpwd);
-        phm.setCpwd(!fpwd);
-        phm.setExpired(false);
-        phm.setCreatedBy(emp.getEmpId());
-        phm.setCreatedDate(new Date());
-        phm.setIsActive(true);
-        phm.setIsUpdated(false);
-        phm.setIsDeleted(false);
-        passHistoryManagementRepository.save(phm);
+            // Check password history for duplicates
+            List<PassHistoryManagement> allHistory = passHistoryManagementRepository.findAllByEmpCode(empCode);
+            boolean cnPwd = false;
+            for (PassHistoryManagement ph : allHistory) {
+                if (ph.getNewPassword() != null && ph.getNewPassword().equals(newPassword)) {
+                    cnPwd = true;
+                    break;
+                }
+            }
+            if (cnPwd) {
+                throw new RuntimeException("{\"StatusCode\":404,\"Message\":\"New Password and Old Password is Same\"}");
+            }
 
-        FRViewModel frvm = new FRViewModel();
-        frvm.setMsg("Password Changed");
-        frvm.setEmpCode(empCode);
+            // Encode and update password
+            String encodedPassword = Base64.getEncoder().encodeToString(newPassword.getBytes(StandardCharsets.UTF_16LE));
+            emp.setPassword(encodedPassword);
+            emp.setIsUpdated(true);
+            emp.setLastUpdatedBy(empId != null ? empId : emp.getEmpId());
+            emp.setLastUpdatedDate(new Date());
+            employeeMasterRepository.save(emp);
 
-        return frvm;
+            // Create PassHistoryManagement record
+            PassHistoryManagement phm = new PassHistoryManagement();
+            phm.setEmpId(empId != null ? empId : emp.getEmpId());
+            phm.setEmpCode(empCode);
+            phm.setOldPassword(oldPassword);
+            phm.setNewPassword(newPassword);
+            phm.setFpwd(true);
+            phm.setCpwd(false);
+            phm.setExpired(false);
+            phm.setCreatedBy(empId != null ? empId : emp.getEmpId());
+            phm.setCreatedDate(new Date());
+            phm.setIsActive(true);
+            phm.setIsUpdated(false);
+            phm.setIsDeleted(false);
+            passHistoryManagementRepository.save(phm);
+
+            PassHistoryManagementViewModel result = new PassHistoryManagementViewModel();
+            result.setMsg("Password Changed");
+            result.setEmpCode(empCode);
+            return result;
+
+        } else if (cpwd) {
+            // Change password flow
+            List<EmployeeMaster> empDetails = employeeMasterRepository.findActiveUserByUserName(empCode);
+            if (empDetails == null || empDetails.isEmpty()) {
+                throw new RuntimeException("{\"StatusCode\":404,\"Message\":\"User details is Mismatching\"}");
+            }
+            EmployeeMaster emp = empDetails.get(0);
+
+            // Verify old password
+            String encodedOldPwd = Base64.getEncoder().encodeToString(oldPassword.getBytes(StandardCharsets.UTF_16LE));
+            if (!emp.getPassword().equals(encodedOldPwd)) {
+                throw new RuntimeException("{\"StatusCode\":404,\"Message\":\"Old password is Mismatching\"}");
+            }
+
+            // Get CPwdManagement records (from the compulsory password change request)
+            List<CPwdManagement> cpwdDetailsList = cpwdManagementRepository
+                .findByEmpCodeIgnoreCaseAndCpwdAndExpiredAndIsActiveAndIsDeleted(empCode, true, false, true, false);
+
+            // Check password history for duplicates
+            List<PassHistoryManagement> allHistory = passHistoryManagementRepository.findAllByEmpCode(empCode);
+            boolean cnPwd = false;
+            for (PassHistoryManagement ph : allHistory) {
+                if (ph.getNewPassword() != null && ph.getNewPassword().equals(newPassword)) {
+                    cnPwd = true;
+                    break;
+                }
+            }
+            if (cnPwd) {
+                throw new RuntimeException("{\"StatusCode\":404,\"Message\":\"New Password and Old Password is Same\"}");
+            }
+
+            // Encode and update password
+            String encodedNewPassword = Base64.getEncoder().encodeToString(newPassword.getBytes(StandardCharsets.UTF_16LE));
+            emp.setPassword(encodedNewPassword);
+            emp.setIsUpdated(true);
+            emp.setLastUpdatedBy(empId != null ? empId : emp.getEmpId());
+            emp.setLastUpdatedDate(new Date());
+            employeeMasterRepository.save(emp);
+
+            // Create PassHistoryManagement record
+            PassHistoryManagement phm = new PassHistoryManagement();
+            phm.setEmpId(empId != null ? empId : emp.getEmpId());
+            phm.setEmpCode(empCode);
+            phm.setOldPassword(oldPassword);
+            phm.setNewPassword(newPassword);
+            phm.setFpwd(false);
+            phm.setCpwd(true);
+            phm.setExpired(false);
+            phm.setCreatedBy(empId != null ? empId : emp.getEmpId());
+            phm.setCreatedDate(new Date());
+            phm.setIsActive(true);
+            phm.setIsUpdated(false);
+            phm.setIsDeleted(false);
+            passHistoryManagementRepository.save(phm);
+
+            // Expire all CPwdManagement records
+            for (CPwdManagement cp : cpwdDetailsList) {
+                cp.setExpired(true);
+                cpwdManagementRepository.save(cp);
+            }
+
+            PassHistoryManagementViewModel result = new PassHistoryManagementViewModel();
+            result.setMsg("Password Changed");
+            result.setEmpCode(empCode);
+            return result;
+
+        } else {
+            throw new RuntimeException("{\"StatusCode\":404,\"Message\":\"Password Type is Mismatching\"}");
+        }
     }
 
     private String generateSecureOTP() {
         int randomNumber = (int) (Math.random() * 900000) + 100000;
         return String.valueOf(randomNumber);
+    }
+
+    private void sendEmail(String toEmail, String subject, String body) {
+        try {
+            List<EmailSetUp> smtpList = emailSetUpRepository.findAll();
+            if (smtpList == null || smtpList.isEmpty()) {
+                System.err.println("sendEmail: No SMTP config found in EmailSetUps table");
+                return;
+            }
+            EmailSetUp smtp = smtpList.get(0);
+
+            int port = 587;
+            if (smtp.getSmtpPort() != null && !smtp.getSmtpPort().isEmpty()) {
+                port = Integer.parseInt(smtp.getSmtpPort());
+            }
+
+            Properties props = new Properties();
+            props.put("mail.smtp.host", smtp.getSmtpServer());
+            props.put("mail.smtp.port", String.valueOf(port));
+            props.put("mail.smtp.auth", "true");
+
+            if (port == 465) {
+                props.put("mail.smtp.ssl.enable", "true");
+            } else {
+                props.put("mail.smtp.starttls.enable", "true");
+            }
+
+            jakarta.mail.Authenticator auth = new jakarta.mail.Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(smtp.getSmtpMailId(), smtp.getSmtpPassword());
+                }
+            };
+
+            Session session = Session.getInstance(props, auth);
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(smtp.getSmtpMailId()));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+            message.setSubject(subject);
+            message.setContent(body, "text/html; charset=utf-8");
+
+            Transport.send(message);
+            System.out.println("sendEmail: Email sent successfully to " + toEmail);
+        } catch (Exception ex) {
+            System.err.println("sendEmail: Failed to send email - " + ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 
     public LoginDetailsViewModel getLoginDetails(LoginDetailsViewModel model) {

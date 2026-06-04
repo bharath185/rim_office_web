@@ -9,8 +9,8 @@ public class CPwdManagement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CPwdId")
-    private Integer cpwdId;
+    @Column(name = "Id")
+    private Integer id;
 
     @Column(name = "EmpId")
     private Integer empId;
@@ -47,8 +47,8 @@ public class CPwdManagement {
     @Column(name = "IsDeleted")
     private Boolean isDeleted;
 
-    public Integer getCpwdId() { return cpwdId; }
-    public void setCpwdId(Integer cpwdId) { this.cpwdId = cpwdId; }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
     public Integer getEmpId() { return empId; }
     public void setEmpId(Integer empId) { this.empId = empId; }

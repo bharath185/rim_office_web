@@ -6,6 +6,7 @@ import com.officeconnect.dto.EmployeeMasterViewModel;
 import com.officeconnect.dto.FRViewModel;
 import com.officeconnect.dto.LoginDetailsViewModel;
 import com.officeconnect.dto.LoginViewModel;
+import com.officeconnect.dto.PassHistoryManagementViewModel;
 import com.officeconnect.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -88,10 +89,9 @@ public class LoginController {
             try {
                 Map<String, Object> error = (Map<String, Object>) new com.fasterxml.jackson.databind.ObjectMapper()
                     .readValue(message, Map.class);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+                return ResponseEntity.ok(error);
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("StatusCode", 404, "Message", message));
+                return ResponseEntity.ok(Map.of("StatusCode", 404, "Message", message));
             }
         }
     }
@@ -115,19 +115,18 @@ public class LoginController {
     }
 
     @PostMapping("/ChangePassword")
-    public ResponseEntity<?> changePassword(@RequestBody FRViewModel model) {
+    public ResponseEntity<?> changePassword(@RequestBody PassHistoryManagementViewModel model) {
         try {
-            FRViewModel result = loginService.changePassword(model);
+            PassHistoryManagementViewModel result = loginService.changePassword(model);
             return ResponseEntity.ok(result);
         } catch (RuntimeException ex) {
             String message = ex.getMessage();
             try {
                 Map<String, Object> error = (Map<String, Object>) new com.fasterxml.jackson.databind.ObjectMapper()
                     .readValue(message, Map.class);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+                return ResponseEntity.ok(error);
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("StatusCode", 404, "Message", message));
+                return ResponseEntity.ok(Map.of("StatusCode", 404, "Message", message));
             }
         }
     }

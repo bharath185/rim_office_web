@@ -1,7 +1,6 @@
 package com.officeconnect.entity;
 
 import jakarta.persistence.*;
-import java.util.Date;
 
 @Entity
 @Table(name = "EmailSetUp")
@@ -9,17 +8,20 @@ public class EmailSetUp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "EmailId")
-    private Integer emailId;
+    @Column(name = "Id")
+    private Integer id;
 
     @Column(name = "CompId")
     private Integer compId;
+
+    @Column(name = "EmailId")
+    private String emailId;
 
     @Column(name = "SMTPServer")
     private String smtpServer;
 
     @Column(name = "SMTPPort")
-    private Integer smtpPort;
+    private String smtpPort;
 
     @Column(name = "SMTPMailId")
     private String smtpMailId;
@@ -27,71 +29,24 @@ public class EmailSetUp {
     @Column(name = "SMTPPassword")
     private String smtpPassword;
 
-    @Column(name = "EmailIdField")
-    private String emailIdField;
-
-    @Column(name = "CreatedBy")
-    private Integer createdBy;
-
-    @Column(name = "CreatedDate")
-    @Temporal(TemporalType.DATE)
-    private Date createdDate;
-
-    @Column(name = "LastUpdatedBy")
-    private Integer lastUpdatedBy;
-
-    @Column(name = "LastUpdatedDate")
-    @Temporal(TemporalType.DATE)
-    private Date lastUpdatedDate;
-
-    @Column(name = "IsActive")
-    private Boolean isActive;
-
-    @Column(name = "IsUpdated")
-    private Boolean isUpdated;
-
-    @Column(name = "IsDeleted")
-    private Boolean isDeleted;
-
-    public Integer getEmailId() { return emailId; }
-    public void setEmailId(Integer emailId) { this.emailId = emailId; }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
     public Integer getCompId() { return compId; }
     public void setCompId(Integer compId) { this.compId = compId; }
 
+    public String getEmailId() { return emailId; }
+    public void setEmailId(String emailId) { this.emailId = emailId; }
+
     public String getSmtpServer() { return smtpServer; }
     public void setSmtpServer(String smtpServer) { this.smtpServer = smtpServer; }
 
-    public Integer getSmtpPort() { return smtpPort; }
-    public void setSmtpPort(Integer smtpPort) { this.smtpPort = smtpPort; }
+    public String getSmtpPort() { return smtpPort; }
+    public void setSmtpPort(String smtpPort) { this.smtpPort = smtpPort; }
 
     public String getSmtpMailId() { return smtpMailId; }
     public void setSmtpMailId(String smtpMailId) { this.smtpMailId = smtpMailId; }
 
     public String getSmtpPassword() { return smtpPassword; }
     public void setSmtpPassword(String smtpPassword) { this.smtpPassword = smtpPassword; }
-
-    public String getEmailIdField() { return emailIdField; }
-    public void setEmailIdField(String emailIdField) { this.emailIdField = emailIdField; }
-
-    public Integer getCreatedBy() { return createdBy; }
-    public void setCreatedBy(Integer createdBy) { this.createdBy = createdBy; }
-
-    public Date getCreatedDate() { return createdDate; }
-    public void setCreatedDate(Date createdDate) { this.createdDate = createdDate; }
-
-    public Integer getLastUpdatedBy() { return lastUpdatedBy; }
-    public void setLastUpdatedBy(Integer lastUpdatedBy) { this.lastUpdatedBy = lastUpdatedBy; }
-
-    public Date getLastUpdatedDate() { return lastUpdatedDate; }
-    public void setLastUpdatedDate(Date lastUpdatedDate) { this.lastUpdatedDate = lastUpdatedDate; }
-
-    public Boolean getIsActive() { return isActive; }
-    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
-
-    public Boolean getIsUpdated() { return isUpdated; }
-    public void setIsUpdated(Boolean isUpdated) { this.isUpdated = isUpdated; }
-
-    public Boolean getIsDeleted() { return isDeleted; }
-    public void setIsDeleted(Boolean isDeleted) { this.isDeleted = isDeleted; }
 }

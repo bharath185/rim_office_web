@@ -12,7 +12,7 @@ public class FRViewModel {
     @JsonProperty("AuthKey")
     private String authKey;
     @JsonProperty("RoleId")
-    private Integer roleId;
+    private int roleId;
     @JsonProperty("EmpId")
     private Integer empId;
     @JsonProperty("EmpCode")
