@@ -1616,8 +1616,9 @@ public class LeaveService {
                     cfm.put("LeaveYear", cf.getLeaveYear());
                     cfm.put("OpeningBalance", cf.getOpeningBalance() != null ? cf.getOpeningBalance() : 0.0);
                     cfm.put("Availed", cf.getAvailed() != null ? cf.getAvailed() : 0.0);
-                    cfm.put("CarryForward", cf.getClosingBalance() != null ? cf.getClosingBalance() : 0.0);
+                    cfm.put("CarryForward", cf.getCarryForward() != null ? cf.getCarryForward() : 0.0);
                     cfm.put("ClosingBalance", cf.getClosingBalance() != null ? cf.getClosingBalance() : 0.0);
+                    cfm.put("Encashment", cf.getEncashment() != null ? cf.getEncashment() : 0.0);
                     cfDetails.add(cfm);
                 }
             }

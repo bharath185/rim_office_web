@@ -591,50 +591,80 @@ public class EmployeeService {
 
         boolean hasCompletedOneYear = false;
         boolean isEligibleForCLThisMonth = true;
+        String empCode = model.getEmpCode() != null ? model.getEmpCode() : "";
         if (model.getJoiningDate() != null) {
             Date joiningDate = parseDate(model.getJoiningDate());
             if (joiningDate != null) {
-                Calendar joinCal = Calendar.getInstance();
-                joinCal.setTime(joiningDate);
-                joinCal.add(Calendar.YEAR, 1);
-                hasCompletedOneYear = today.after(joinCal.getTime());
-                if (currentMonth > 10) isEligibleForCLThisMonth = false;
+                long diffMs = today.getTime() - joiningDate.getTime();
+                hasCompletedOneYear = diffMs >= 365L * 24 * 60 * 60 * 1000;
+
+                Calendar now = Calendar.getInstance();
+                Calendar jCal = Calendar.getInstance();
+                jCal.setTime(joiningDate);
+                if (jCal.get(Calendar.YEAR) == now.get(Calendar.YEAR) &&
+                    jCal.get(Calendar.MONTH) == now.get(Calendar.MONTH) &&
+                    jCal.get(Calendar.DAY_OF_MONTH) > 15) {
+                    isEligibleForCLThisMonth = false;
+                }
             }
         }
 
         for (LeaveTypeMaster lt : leaveTypes) {
-            if ("CL".equalsIgnoreCase(lt.getLeaveName())) {
-                if (!hasCompletedOneYear && isEligibleForCLThisMonth) {
-                    LeaveCarryForwardMaster lcfm = new LeaveCarryForwardMaster();
-                    lcfm.setEmpId(empId);
-                    lcfm.setLeaveTypeId(lt.getLeaveTypeId());
-                    lcfm.setOpeningBalance(lt.getCredit() != null ? lt.getCredit().doubleValue() : 0.0);
-                    lcfm.setLeaveYear(currentYear);
-                    lcfm.setLeaveMonth(currentMonth);
-                    lcfm.setCreatedBy(loginId);
-                    lcfm.setCreatedDate(new Date());
-                    lcfm.setLastUpdatedBy(loginId);
-                    lcfm.setLastUpdatedDate(new Date());
-                    lcfm.setIsActive(true);
-                    lcfm.setIsUpdated(false);
-                    lcfm.setIsDeleted(false);
-                    leaveCarryForwardMasterRepository.save(lcfm);
+            LeaveCarryForwardMaster lcfm = new LeaveCarryForwardMaster();
+            lcfm.setEmpId(empId);
+            lcfm.setEmpCode(empCode);
+            lcfm.setLeaveTypeId(lt.getLeaveTypeId());
+            lcfm.setLeaveYear(currentYear);
+            lcfm.setAvailed(0.0);
+            lcfm.setCarryForward(0.0);
+            lcfm.setEncashment(0.0);
+            lcfm.setCreatedBy(loginId);
+            lcfm.setCreatedDate(today);
+            lcfm.setLastUpdatedBy(loginId);
+            lcfm.setLastUpdatedDate(today);
+            lcfm.setIsActive(true);
+            lcfm.setIsUpdated(false);
+            lcfm.setIsDeleted(false);
+
+            if ("CL".equalsIgnoreCase(lt.getShortName())) {
+                lcfm.setLeaveMonth(currentMonth);
+                if (isEligibleForCLThisMonth) {
+                    double credit = lt.getCredit() != null ? lt.getCredit().doubleValue() : 0.0;
+                    lcfm.setOpeningBalance(credit);
+                    lcfm.setClosingBalance(credit);
+                } else {
+                    lcfm.setOpeningBalance(0.0);
+                    lcfm.setClosingBalance(0.0);
                 }
-            } else if ("EL".equalsIgnoreCase(lt.getLeaveName()) && hasCompletedOneYear) {
-                LeaveCarryForwardMaster lcfm = new LeaveCarryForwardMaster();
-                lcfm.setEmpId(empId);
-                lcfm.setLeaveTypeId(lt.getLeaveTypeId());
-                lcfm.setOpeningBalance(lt.getCredit() != null ? lt.getCredit().doubleValue() : 0.0);
-                lcfm.setLeaveYear(currentYear);
-                lcfm.setCreatedBy(loginId);
-                lcfm.setCreatedDate(new Date());
-                lcfm.setLastUpdatedBy(loginId);
-                lcfm.setLastUpdatedDate(new Date());
-                lcfm.setIsActive(true);
-                lcfm.setIsUpdated(false);
-                lcfm.setIsDeleted(false);
-                leaveCarryForwardMasterRepository.save(lcfm);
+            } else if ("EL".equalsIgnoreCase(lt.getShortName())) {
+                lcfm.setLeaveMonth(0);
+                if (hasCompletedOneYear) {
+                    double credit = lt.getCredit() != null ? lt.getCredit().doubleValue() : 0.0;
+                    lcfm.setOpeningBalance(credit);
+                    lcfm.setClosingBalance(credit);
+                } else {
+                    lcfm.setOpeningBalance(0.0);
+                    lcfm.setClosingBalance(0.0);
+                }
+            } else if ("RH".equalsIgnoreCase(lt.getShortName())) {
+                lcfm.setLeaveMonth(0);
+                double maxPerYear = lt.getMaxPerYear() != null ? lt.getMaxPerYear().doubleValue() : 0.0;
+                lcfm.setOpeningBalance(maxPerYear);
+                lcfm.setClosingBalance(maxPerYear);
+            } else {
+                lcfm.setLeaveMonth(0);
+                double credit = lt.getCredit() != null ? lt.getCredit().doubleValue() : 0.0;
+                if (credit != 0.0) {
+                    lcfm.setOpeningBalance(credit);
+                    lcfm.setClosingBalance(credit);
+                } else {
+                    double maxPerYear = lt.getMaxPerYear() != null ? lt.getMaxPerYear().doubleValue() : 0.0;
+                    lcfm.setOpeningBalance(maxPerYear);
+                    lcfm.setClosingBalance(maxPerYear);
+                }
             }
+
+            leaveCarryForwardMasterRepository.save(lcfm);
         }
 
         model.setEmpId(empId);
@@ -8212,11 +8242,159 @@ public class EmployeeService {
     }
 
     public Map<String, Object> fetchAttendance() {
-        return Map.of("StatusCode", 200, "Message", "Attendance fetched successfully for yesterday!");
+        try {
+            fetchAttendanceScheduled();
+            return Map.of("StatusCode", 200, "Message", "Attendance fetched successfully for yesterday!");
+        } catch (Exception ex) {
+            return Map.of("StatusCode", 500, "Message", "Attendance fetch failed: " + ex.getMessage());
+        }
     }
 
     public Map<String, Object> cfLeaveCredits() {
-        return Map.of("StatusCode", 200, "Message", "CL and EL Credited and Carry forwarded successfully for Today!");
+        try {
+            processLeaveCreditsScheduled();
+            return Map.of("StatusCode", 200, "Message", "CL and EL Credited and Carry forwarded successfully for Today!");
+        } catch (Exception ex) {
+            return Map.of("StatusCode", 500, "Message", "Leave credits processing failed: " + ex.getMessage());
+        }
+    }
+
+    public void fetchAttendanceScheduled() {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_MONTH, -1);
+        java.sql.Date yesterday = new java.sql.Date(cal.getTimeInMillis());
+        entityManager.createNativeQuery("EXEC dbo.sp_InsertAttendanceData @StartDate = :startDate")
+            .setParameter("startDate", yesterday)
+            .executeUpdate();
+    }
+
+    public void processLeaveCreditsScheduled() {
+        try {
+            entityManager.createNativeQuery("EXEC dbo.sp_ProcessLeaveCredits @CurrentDate = :currentDate")
+                .setParameter("currentDate", new java.sql.Date(System.currentTimeMillis()))
+                .executeUpdate();
+        } catch (Exception ex) {
+            System.err.println("sp_ProcessLeaveCredits failed, falling back to Java logic: " + ex.getMessage());
+            processLeaveCreditsJava();
+        }
+    }
+
+    private void processLeaveCreditsJava() {
+        Calendar cal = Calendar.getInstance();
+        int currentYear = cal.get(Calendar.YEAR);
+        int currentMonth = cal.get(Calendar.MONTH) + 1;
+        Date today = new Date();
+
+        List<EmployeeMaster> employees = employeeMasterRepository.findByIsActiveAndIsDeleted(true, false);
+
+        Integer clLeaveTypeId = null;
+        Integer elLeaveTypeId = null;
+        int clCredit = 1;
+        int elCredit = 0;
+        int elMaxCarryForward = 0;
+        List<LeaveTypeMaster> leaveTypes = leaveTypeMasterRepository.findByIsActiveAndIsDeleted(true, false);
+        for (LeaveTypeMaster lt : leaveTypes) {
+            if ("CL".equalsIgnoreCase(lt.getShortName())) {
+                clLeaveTypeId = lt.getLeaveTypeId();
+                if (lt.getCredit() != null) clCredit = lt.getCredit();
+            } else if ("EL".equalsIgnoreCase(lt.getShortName())) {
+                elLeaveTypeId = lt.getLeaveTypeId();
+                if (lt.getCredit() != null) elCredit = lt.getCredit();
+                if (lt.getMaxCarryForward() != null) elMaxCarryForward = lt.getMaxCarryForward();
+            }
+        }
+
+        for (EmployeeMaster emp : employees) {
+            if (emp.getEmpId() == null) continue;
+
+            // ----- CL Monthly Processing -----
+            if (clLeaveTypeId != null) {
+                LeaveCarryForwardMaster clRecord = leaveCarryForwardMasterRepository
+                    .findByEmpIdAndLeaveTypeIdAndLeaveYearAndLeaveMonth(emp.getEmpId(), clLeaveTypeId, currentYear, currentMonth);
+
+                if (clRecord == null) {
+                    // Get previous month's closing balance
+                    int prevMonth = currentMonth == 1 ? 12 : currentMonth - 1;
+                    int prevYear = currentMonth == 1 ? currentYear - 1 : currentYear;
+
+                    LeaveCarryForwardMaster prevCL = leaveCarryForwardMasterRepository
+                        .findByEmpIdAndLeaveTypeIdAndLeaveYearAndLeaveMonth(emp.getEmpId(), clLeaveTypeId, prevYear, prevMonth);
+
+                    double prevClosing = (prevCL != null && prevCL.getClosingBalance() != null) ? prevCL.getClosingBalance() : 0.0;
+
+                    LeaveCarryForwardMaster newCL = new LeaveCarryForwardMaster();
+                    newCL.setEmpId(emp.getEmpId());
+                    newCL.setEmpCode(emp.getEmpCode());
+                    newCL.setLeaveTypeId(clLeaveTypeId);
+                    newCL.setLeaveYear(currentYear);
+                    newCL.setLeaveMonth(currentMonth);
+                    newCL.setOpeningBalance(prevClosing);
+                    newCL.setAvailed(0.0);
+                    newCL.setCarryForward(0.0);
+                    newCL.setEncashment(0.0);
+                    newCL.setClosingBalance(prevClosing + clCredit);
+                    newCL.setCreatedBy(1);
+                    newCL.setCreatedDate(today);
+                    newCL.setLastUpdatedBy(1);
+                    newCL.setLastUpdatedDate(today);
+                    newCL.setIsActive(true);
+                    newCL.setIsUpdated(false);
+                    newCL.setIsDeleted(false);
+                    leaveCarryForwardMasterRepository.save(newCL);
+                }
+            }
+
+            // ----- EL Yearly Processing (January) -----
+            if (elLeaveTypeId != null && currentMonth == 1) {
+                // Employee must have completed 1 year
+                Date joiningDate = emp.getJoiningDate();
+                if (joiningDate != null) {
+                    Calendar joinCal = Calendar.getInstance();
+                    joinCal.setTime(joiningDate);
+                    joinCal.add(Calendar.YEAR, 1);
+                    if (!joinCal.getTime().after(today)) {
+                        LeaveCarryForwardMaster elRecord = leaveCarryForwardMasterRepository
+                            .findByEmpIdAndLeaveTypeIdAndLeaveYearAndLeaveMonth(emp.getEmpId(), elLeaveTypeId, currentYear, 1);
+
+                        if (elRecord == null) {
+                            // Get previous year's closing balance
+                            List<LeaveCarryForwardMaster> prevELList = leaveCarryForwardMasterRepository
+                                .findByEmpIdAndLeaveTypeIdAndLeaveYear(emp.getEmpId(), elLeaveTypeId, currentYear - 1);
+
+                            double prevClosing = 0.0;
+                            for (LeaveCarryForwardMaster p : prevELList) {
+                                if (p.getClosingBalance() != null) {
+                                    prevClosing = Math.max(prevClosing, p.getClosingBalance());
+                                }
+                            }
+
+                            double carryForward = Math.min(prevClosing, elMaxCarryForward > 0 ? elMaxCarryForward : 30);
+                            double closingBalance = carryForward + elCredit;
+
+                            LeaveCarryForwardMaster newEL = new LeaveCarryForwardMaster();
+                            newEL.setEmpId(emp.getEmpId());
+                            newEL.setEmpCode(emp.getEmpCode());
+                            newEL.setLeaveTypeId(elLeaveTypeId);
+                            newEL.setLeaveYear(currentYear);
+                            newEL.setLeaveMonth(1);
+                            newEL.setOpeningBalance(carryForward);
+                            newEL.setAvailed(0.0);
+                            newEL.setCarryForward(carryForward);
+                            newEL.setEncashment(0.0);
+                            newEL.setClosingBalance(closingBalance);
+                            newEL.setCreatedBy(1);
+                            newEL.setCreatedDate(today);
+                            newEL.setLastUpdatedBy(1);
+                            newEL.setLastUpdatedDate(today);
+                            newEL.setIsActive(true);
+                            newEL.setIsUpdated(false);
+                            newEL.setIsDeleted(false);
+                            leaveCarryForwardMasterRepository.save(newEL);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public Map<String, Object> addVendorList(Map<String, Object> model) {

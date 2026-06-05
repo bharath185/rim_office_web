@@ -36,6 +36,12 @@ public class LeaveCarryForwardMaster {
     @Column(name = "ClosingBalance")
     private Double closingBalance;
 
+    @Column(name = "CarryForward")
+    private Double carryForward;
+
+    @Column(name = "Encashment")
+    private Double encashment;
+
     @Column(name = "CreatedBy")
     private Integer createdBy;
 
@@ -85,6 +91,12 @@ public class LeaveCarryForwardMaster {
 
     public Double getClosingBalance() { return closingBalance; }
     public void setClosingBalance(Double closingBalance) { this.closingBalance = closingBalance; }
+
+    public Double getCarryForward() { return carryForward; }
+    public void setCarryForward(Double carryForward) { this.carryForward = carryForward; }
+
+    public Double getEncashment() { return encashment; }
+    public void setEncashment(Double encashment) { this.encashment = encashment; }
 
     public Integer getCreatedBy() { return createdBy; }
     public void setCreatedBy(Integer createdBy) { this.createdBy = createdBy; }
